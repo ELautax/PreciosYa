@@ -1,4 +1,3 @@
-/** Formato estándar de respuesta exitosa de la API */
 export type ApiSuccess<T> = {
   success: true
   data: T
@@ -9,7 +8,6 @@ export type ApiErrorBody = {
   code: string
 }
 
-/** Formato estándar de respuesta de error de la API */
 export type ApiFailure = {
   success: false
   error: ApiErrorBody

@@ -2,10 +2,11 @@ import { Router, type IRouter } from 'express'
 
 import { asyncHandler } from '../utils/asyncHandler.js'
 import { sendSuccess } from '../utils/response.js'
+import { authRoutes } from './auth.routes.js'
 
-export const routes: IRouter = Router()
+const root = Router()
 
-routes.get(
+root.get(
   '/health',
   asyncHandler(async (_req, res) => {
     sendSuccess(res, {
@@ -15,3 +16,9 @@ routes.get(
     })
   }),
 )
+
+const api = Router()
+api.use('/auth', authRoutes)
+
+export const routes: IRouter = root
+export const apiRoutes: IRouter = api

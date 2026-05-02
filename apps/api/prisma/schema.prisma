@@ -2,8 +2,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Conexión Postgres (Supabase u otro). Si más adelante usás pooler + URL directa para migraciones,
-// ver documentación de Prisma para shadow DB / directUrl.
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")

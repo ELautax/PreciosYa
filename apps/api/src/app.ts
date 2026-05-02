@@ -6,7 +6,7 @@ import morgan from 'morgan'
 
 import { env } from './config/env.js'
 import { errorMiddleware } from './middlewares/error.middleware.js'
-import { routes } from './routes/index.js'
+import { apiRoutes, routes } from './routes/index.js'
 import { AppError } from './utils/AppError.js'
 
 export const app: Express = express()
@@ -37,6 +37,7 @@ const limiter = rateLimit({
 app.use(limiter)
 
 app.use(routes)
+app.use('/api', apiRoutes)
 
 app.use((_req, _res, next) => {
   next(

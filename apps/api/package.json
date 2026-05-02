@@ -10,7 +10,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
-    "db:check": "node scripts/check-db.cjs"
+    "db:check": "node scripts/check-db.cjs",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",

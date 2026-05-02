@@ -4,13 +4,11 @@ import { fileURLToPath } from 'node:url'
 import dotenv from 'dotenv'
 import { z } from 'zod'
 
-// override: true → apps/api/.env gana sobre variables del sistema (ej. DATABASE_URL viejo en Windows)
 dotenv.config({
   path: path.join(path.dirname(fileURLToPath(import.meta.url)), '../../.env'),
   override: true,
 })
 
-/** En .env suele haber `CLAVE=` vacío; tratamos como indefinido para no romper Zod en desarrollo */
 const emptyToUndefined = (v: unknown): unknown =>
   typeof v === 'string' && v.trim() === '' ? undefined : v
 

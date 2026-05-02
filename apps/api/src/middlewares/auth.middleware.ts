@@ -16,6 +16,7 @@ export const authMiddleware: RequestHandler = asyncHandler(async (req, _res, nex
   }
   const token = authHeader.slice('Bearer '.length).trim()
   const authUser = await verifyToken(token)
-  req.user = await syncUserFromSupabase(authUser)
+  const { user } = await syncUserFromSupabase(authUser)
+  req.user = user
   next()
 })
