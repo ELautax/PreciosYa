@@ -1,9 +1,9 @@
 import cors from 'cors'
-import express from 'express'
+import express, { type Express } from 'express'
 
 import { env } from './config/env.js'
 
-export const app = express()
+export const app: Express = express()
 
 app.use(
   cors({
