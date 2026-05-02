@@ -394,7 +394,7 @@ All routes under `/dashboard` and below are wrapped in `ProtectedRoute`.
 ```
 PORT=3001
 NODE_ENV=development
-DATABASE_URL=postgresql://postgres:[password]@[host]:5432/postgres
+DATABASE_URL=postgresql://postgres:[image.png]@[host]:5432/postgres
 DIRECT_URL=postgresql://postgres:[password]@[host]:5432/postgres
 SUPABASE_URL=https://[project-ref].supabase.co
 SUPABASE_SERVICE_ROLE_KEY=eyJ...

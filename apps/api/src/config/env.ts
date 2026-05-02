@@ -4,22 +4,31 @@ import { fileURLToPath } from 'node:url'
 import dotenv from 'dotenv'
 import { z } from 'zod'
 
+// override: true → apps/api/.env gana sobre variables del sistema (ej. DATABASE_URL viejo en Windows)
 dotenv.config({
   path: path.join(path.dirname(fileURLToPath(import.meta.url)), '../../.env'),
+  override: true,
 })
+
+/** En .env suele haber `CLAVE=` vacío; tratamos como indefinido para no romper Zod en desarrollo */
+const emptyToUndefined = (v: unknown): unknown =>
+  typeof v === 'string' && v.trim() === '' ? undefined : v
 
 const schema = z
   .object({
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     PORT: z.coerce.number().int().positive().max(65535).default(3001),
     FRONTEND_URL: z.string().url().default('http://localhost:5173'),
-    DATABASE_URL: z.string().url().optional(),
-    DIRECT_URL: z.string().url().optional(),
-    SUPABASE_URL: z.string().url().optional(),
-    SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
-    SUPABASE_ANON_KEY: z.string().min(1).optional(),
-    JWT_SECRET: z.string().min(32).optional(),
-    RESEND_API_KEY: z.string().min(1).optional(),
+    DATABASE_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
+    DIRECT_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
+    SUPABASE_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
+    SUPABASE_SERVICE_ROLE_KEY: z.preprocess(
+      emptyToUndefined,
+      z.string().min(1).optional(),
+    ),
+    SUPABASE_ANON_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    JWT_SECRET: z.preprocess(emptyToUndefined, z.string().min(32).optional()),
+    RESEND_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
     INDEC_API_BASE_URL: z
       .string()
       .url()

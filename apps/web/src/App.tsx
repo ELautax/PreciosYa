@@ -8,6 +8,18 @@ type HealthResponse = {
   version: string
 }
 
+type HealthOkBody = {
+  success: true
+  data: HealthResponse
+}
+
+function isHealthOkBody(value: unknown): value is HealthOkBody {
+  if (typeof value !== 'object' || value === null) return false
+  if (!('success' in value) || !('data' in value)) return false
+  const v = value as { success?: unknown; data?: unknown }
+  return v.success === true && typeof v.data === 'object' && v.data !== null
+}
+
 export default function App() {
   const [data, setData] = useState<HealthResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -22,7 +34,10 @@ export default function App() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const json: unknown = await res.json()
         if (cancelled) return
-        setData(json as HealthResponse)
+        if (!isHealthOkBody(json)) {
+          throw new Error('Respuesta inválida del servidor')
+        }
+        setData(json.data)
       } catch (e) {
         if (cancelled) return
         setError(e instanceof Error ? e.message : 'Unknown error')
