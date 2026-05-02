@@ -1,0 +1,15 @@
+{
+  "name": "preciosya",
+  "private": true,
+  "packageManager": "pnpm@10.12.3",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n web,api -c blue,green \"pnpm --filter web dev\" \"pnpm --filter api dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

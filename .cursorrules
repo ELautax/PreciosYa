@@ -1,0 +1,769 @@
+# PreciosYa — Project Context & TODO for Codex
+
+> **Read this entire file before touching any code.**
+> This is the single source of truth for the project. Every architectural decision, every naming convention, every technology choice is documented here.
+
+---
+
+## 1. What is PreciosYa?
+
+PreciosYa is a SaaS web application for Argentine small business owners (kiosk owners, corner stores, bakeries, resellers) that helps them:
+
+1. Calculate sale prices automatically from cost + desired margin
+2. Apply Argentina's official monthly inflation index (IPC from INDEC) to all product costs in one tap
+3. Get real-time alerts when a product's margin drops below a configured minimum
+4. Generate a shareable PNG price list for WhatsApp or printing
+5. Track the price history of every product over time
+
+**The core insight:** 94% of Argentine small merchants update prices manually (paper, memory, Excel). There is no simple mobile-first tool that integrates the official INDEC inflation API. PreciosYa fills that gap.
+
+---
+
+## 2. Tech Stack
+
+### Monorepo structure (pnpm workspaces)
+```
+preciosya/
+├── apps/
+│   ├── web/          → React 18 + Vite + TypeScript + Tailwind CSS + PWA
+│   └── api/          → Node.js 20 + Express 4 + TypeScript
+├── packages/
+│   └── shared/       → Shared TypeScript types + PricingEngine
+├── .cursorrules
+├── package.json
+└── pnpm-workspace.yaml
+```
+
+### Frontend (`apps/web`)
+- **Framework:** React 18 with TypeScript (strict mode)
+- **Build:** Vite 5
+- **Styles:** Tailwind CSS
+- **PWA:** vite-plugin-pwa + Workbox (offline support via IndexedDB)
+- **Routing:** React Router v6
+- **State:** TanStack Query (server state) + React Context (auth)
+- **Forms:** React Hook Form + Zod
+- **Charts:** Chart.js
+- **HTTP:** Axios with JWT interceptors
+- **Export:** html2canvas (PNG generation, runs in browser)
+- **Share:** Web Share API (native WhatsApp sharing)
+- **Supabase SDK:** used ONLY for auth (login/logout) and Realtime (notifications)
+
+### Backend (`apps/api`)
+- **Runtime:** Node.js 20 + TypeScript (strict mode)
+- **Framework:** Express 4
+- **ORM:** Prisma 5
+- **Database:** Supabase (PostgreSQL 15) — NO RLS, all access control is done in Express middlewares
+- **Auth:** Supabase Auth (Google OAuth 2.0) + JWT verification in middleware
+- **Storage:** Supabase Storage (bucket: `price-lists`) for PNG/PDF files
+- **Scheduler:** node-cron (monthly IPC fetch, daily BCRA rate fetch)
+- **Emails:** Resend
+- **Validation:** Zod on every incoming request body
+
+### External APIs
+- **INDEC IPC:** `https://apis.datos.gob.ar/series/api/series/?ids=148.3_INIVELNAL_DICI_M_26&limit=1&format=json`
+- **BCRA rate:** `https://api.bcra.gob.ar/estadisticas/v3.0/monetarias/reservas`
+- **Google OAuth:** managed entirely by Supabase Auth
+
+### No RLS
+Supabase Row Level Security is **disabled**. All data access control happens in the Express backend via `authMiddleware` and `ownerGuard`. The frontend uses the Supabase `anon` key only for auth and Realtime. All business data goes through the REST API.
+
+---
+
+## 3. Naming Conventions
+
+| Context | Convention | Example |
+|---|---|---|
+| TypeScript variables | camelCase | `salePrice`, `marginPct` |
+| TypeScript types/interfaces | PascalCase | `Product`, `CreateProductDTO` |
+| Database tables | snake_case | `price_history`, `economic_indices` |
+| Database columns | snake_case | `user_id`, `min_margin_pct` |
+| API routes | kebab-case | `/api/price-lists`, `/api/bulk-update` |
+| React components | PascalCase | `ProductForm`, `MarginBadge` |
+| React hooks | camelCase with `use` prefix | `useProducts`, `useAuth` |
+| Files (components) | PascalCase | `ProductForm.tsx` |
+| Files (hooks/utils) | camelCase | `useProducts.ts`, `pricing.ts` |
+| Environment variables (api) | UPPER_SNAKE_CASE | `SUPABASE_URL`, `JWT_SECRET` |
+| Environment variables (web) | `VITE_` prefix | `VITE_API_URL`, `VITE_SUPABASE_URL` |
+| Git commits | English, conventional commits | `feat: add bulk update endpoint` |
+| Code comments | Spanish | `// Calcula el precio de venta con el margen aplicado` |
+
+---
+
+## 4. Database Schema (PostgreSQL via Supabase + Prisma)
+
+### Tables
+
+```
+users
+  id              UUID    PK  default uuid_generate_v4()
+  email           String  unique
+  name            String
+  avatar_url      String?
+  google_id       String? unique
+  plan            Enum    PlanType  default FREE
+  plan_expires_at DateTime?
+  created_at      DateTime
+  updated_at      DateTime  @updatedAt
+
+locals
+  id              UUID    PK
+  user_id         UUID    FK → users
+  name            String
+  address         String?
+  min_margin_pct  Decimal(5,2)  default 20.00
+  currency        String        default 'ARS'
+  is_active       Boolean       default true
+  created_at      DateTime
+  updated_at      DateTime  @updatedAt
+
+categories
+  id              UUID    PK
+  local_id        UUID    FK → locals  onDelete: Cascade
+  name            String
+  color_hex       String? default '#16A34A'
+  created_at      DateTime
+  [unique: local_id + name]
+
+products
+  id              UUID    PK
+  local_id        UUID    FK → locals      onDelete: Cascade
+  category_id     UUID?   FK → categories  onDelete: SetNull
+  name            String
+  barcode         String?
+  unit            String  default 'unidad'
+  cost            Decimal(12,2)
+  margin_pct      Decimal(5,2)
+  sale_price      Decimal(12,2)   → calculated: cost * (1 + margin_pct/100)
+  is_margin_alert Boolean         default false
+  notes           String?
+  is_active       Boolean         default true
+  created_at      DateTime
+  updated_at      DateTime  @updatedAt
+  [unique: local_id + barcode where barcode IS NOT NULL]
+
+price_history   (append-only, never modified)
+  id              UUID    PK
+  product_id      UUID    FK → products  onDelete: Cascade
+  cost            Decimal(12,2)
+  margin_pct      Decimal(5,2)
+  sale_price      Decimal(12,2)
+  change_reason   Enum    ChangeReason  (MANUAL | BULK_PCT | IPC_INDEC | BCRA_RATE | IMPORT)
+  ipc_reference   Decimal(5,2)?
+  note            String?
+  recorded_at     DateTime  default now()
+
+economic_indices
+  id              UUID    PK
+  type            Enum    IndexType  (IPC_INDEC | IPC_INDEC_ALIMENTOS | BCRA_USD_OFICIAL | BCRA_USD_MEP)
+  period          DateTime   (first day of the month)
+  value_pct       Decimal(6,3)
+  source_url      String?
+  fetched_at      DateTime   default now()
+  [unique: type + period]
+
+price_lists
+  id              UUID    PK
+  local_id        UUID    FK → locals  onDelete: Cascade
+  format          Enum    ExportFormat  (PNG | PDF)
+  file_url        String?   (Supabase Storage URL)
+  shared_via      String?
+  created_at      DateTime  default now()
+
+notifications
+  id              UUID    PK
+  user_id         UUID    FK → users  onDelete: Cascade
+  type            Enum    NotifType  (NEW_IPC | MARGIN_ALERT | PLAN_EXPIRING | PLAN_EXPIRED | WELCOME)
+  title           String
+  body            String
+  is_read         Boolean  default false
+  metadata        Json?
+  created_at      DateTime  default now()
+
+subscriptions
+  id                  UUID    PK
+  user_id             UUID    FK → users  onDelete: Cascade
+  plan                Enum    PlanType
+  status              Enum    SubStatus  (ACTIVE | CANCELLED | EXPIRED | PENDING)
+  mp_subscription_id  String?
+  amount_ars          Decimal(10,2)
+  billing_cycle       String  default 'monthly'
+  started_at          DateTime  default now()
+  expires_at          DateTime?
+  cancelled_at        DateTime?
+  created_at          DateTime  default now()
+```
+
+### PostgreSQL triggers (run once in Supabase SQL editor)
+
+```sql
+-- 1. Auto-insert into price_history on cost or margin change
+CREATE OR REPLACE FUNCTION record_price_change()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF (OLD.cost <> NEW.cost OR OLD.margin_pct <> NEW.margin_pct) THEN
+    INSERT INTO price_history(product_id, cost, margin_pct, sale_price, change_reason)
+    VALUES (NEW.id, NEW.cost, NEW.margin_pct, NEW.sale_price, 'MANUAL');
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_products_price_history
+  AFTER UPDATE ON products
+  FOR EACH ROW EXECUTE FUNCTION record_price_change();
+
+-- 2. Auto-update updated_at
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_users_updated_at   BEFORE UPDATE ON users    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE TRIGGER trg_locals_updated_at  BEFORE UPDATE ON locals   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE TRIGGER trg_products_updated_at BEFORE UPDATE ON products FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+```
+
+---
+
+## 5. Core Business Logic
+
+### PricingEngine (`packages/shared/src/pricing.ts`)
+
+The most critical module. Must be pure TypeScript with no external dependencies and covered by unit tests.
+
+```typescript
+calculateSalePrice(cost: number, marginPct: number): number
+// Formula: roundToTen(cost * (1 + marginPct / 100))
+// roundToTen: Math.round(n / 10) * 10
+// Throws if cost <= 0 or marginPct < 0
+
+calculateMarginPct(cost: number, salePrice: number): number
+// Formula: ((salePrice - cost) / cost) * 100
+// Throws if cost <= 0
+
+applyPercentageIncrease(cost: number, increasePct: number): number
+// Formula: cost * (1 + increasePct / 100), rounded to 2 decimals
+
+applyIPC(cost: number, ipcPct: number): IPCResult
+// Returns: { newCost, previousCost, appliedIpc, differenceAmount }
+
+isMarginAlert(marginPct: number, minMarginPct: number): boolean
+// Returns: marginPct < minMarginPct
+
+bulkUpdateCosts(products: ProductForPricing[], increasePct: number): ProductUpdateResult[]
+```
+
+### Plan limits
+
+| Plan | Max products | Max locals |
+|---|---|---|
+| FREE | 30 | 1 |
+| PRO | unlimited | 3 |
+| AGENCY | unlimited | unlimited |
+
+Plan enforcement happens in `product.service.ts` (before create) and `local.service.ts` (before create).
+
+### Margin alert logic
+
+`is_margin_alert = true` when `product.margin_pct < local.min_margin_pct`
+
+Updated automatically:
+- When a product's `cost` or `margin_pct` is updated (recalculate in service layer)
+- When `local.min_margin_pct` is changed (run batch update on all products of that local)
+
+---
+
+## 6. API Endpoints
+
+All routes prefixed with `/api`. All routes except `POST /api/auth/google` require a valid JWT in `Authorization: Bearer <token>`.
+
+### Auth
+```
+POST /api/auth/google         → login/register with Supabase token
+POST /api/auth/refresh        → refresh token
+POST /api/auth/logout         → invalidate session
+GET  /api/auth/me             → current user profile
+```
+
+### Locals
+```
+GET  /api/locals              → list user's locals
+POST /api/locals              → create local (plan limit checked)
+PUT  /api/locals/:id          → update local
+```
+
+### Categories
+```
+GET  /api/categories?localId= → list categories
+POST /api/categories          → create category
+PUT  /api/categories/:id      → update category
+DEL  /api/categories/:id      → delete (products become uncategorized)
+```
+
+### Products
+```
+GET  /api/products?localId=&categoryId=&isAlert=&search=&page=&limit=
+POST /api/products            → create (plan limit checked, sale_price calculated)
+PUT  /api/products/:id        → update (recalculate sale_price, update is_margin_alert)
+DEL  /api/products/:id        → soft delete (is_active = false)
+GET  /api/products/:id/history → price history (last 50 entries)
+PUT  /api/products/bulk-update → { localId, categoryId?, increasePct }
+```
+
+### IPC & Economic Indices
+```
+GET  /api/ipc/latest          → latest IPC and BCRA values from DB
+GET  /api/ipc/history         → last 12 months of indices
+PUT  /api/locals/:id/apply-ipc → apply latest IPC to all products of a local
+```
+
+### Exports
+```
+POST /api/exports/price-list  → upload PNG (multipart/form-data), save to Supabase Storage, create price_lists record
+```
+
+### Notifications
+```
+GET  /api/notifications?page=      → paginated list
+GET  /api/notifications/unread-count → { count }
+PUT  /api/notifications/:id/read   → mark one as read
+PUT  /api/notifications/read-all   → mark all as read
+```
+
+### Admin (requires is_admin flag on user)
+```
+GET  /api/admin/users?page=&search=
+PUT  /api/admin/users/:id/plan
+GET  /api/admin/stats
+GET  /api/admin/indices
+POST /api/admin/ipc/force-fetch    → manually trigger the INDEC scheduler
+```
+
+### Health
+```
+GET  /health → { status: 'ok', timestamp, version }
+```
+
+---
+
+## 7. API Response Format
+
+Every response from the API follows this structure:
+
+```typescript
+// Success
+{ success: true, data: T }
+
+// Error
+{ success: false, error: { message: string, code: string } }
+```
+
+HTTP status codes used:
+- `200` OK
+- `201` Created
+- `400` Bad Request (validation error)
+- `401` Unauthorized (no token or invalid token)
+- `403` Forbidden (valid token but insufficient plan or wrong owner)
+- `404` Not Found
+- `429` Too Many Requests (rate limit)
+- `500` Internal Server Error (unexpected)
+
+---
+
+## 8. Frontend Route Structure
+
+```
+/                   → redirect to /dashboard if logged in, else /login
+/login              → LoginPage (Google OAuth button)
+/dashboard          → DashboardPage (summary cards + margin alerts)
+/products           → ProductsPage (full product list)
+/categories         → CategoriesPage
+/price-list         → PriceListPage (generate + share PNG)
+/history            → HistoryPage (IPC history + per-product charts)
+/settings           → SettingsPage (local config, account, plan)
+/admin              → AdminPage (only if user.is_admin)
+```
+
+All routes under `/dashboard` and below are wrapped in `ProtectedRoute`.
+
+---
+
+## 9. Environment Variables
+
+### `apps/api/.env`
+```
+PORT=3001
+NODE_ENV=development
+DATABASE_URL=postgresql://postgres:[password]@[host]:5432/postgres
+DIRECT_URL=postgresql://postgres:[password]@[host]:5432/postgres
+SUPABASE_URL=https://[project-ref].supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+SUPABASE_ANON_KEY=eyJ...
+JWT_SECRET=[min 32 chars random string]
+RESEND_API_KEY=re_...
+FRONTEND_URL=http://localhost:5173
+INDEC_API_BASE_URL=https://apis.datos.gob.ar/series/api
+BCRA_API_BASE_URL=https://api.bcra.gob.ar
+```
+
+### `apps/web/.env`
+```
+VITE_API_URL=http://localhost:3001
+VITE_SUPABASE_URL=https://[project-ref].supabase.co
+VITE_SUPABASE_ANON_KEY=eyJ...
+```
+
+---
+
+## 10. Scheduler Jobs
+
+### IPC Scheduler — runs monthly
+- **Cron:** `0 9 1-7 * 1-5` (first business day of the month at 9am)
+- **Logic:**
+  1. Check if IPC for current month already exists in `economic_indices` → if yes, skip (idempotent)
+  2. Fetch from INDEC API with retry (3 attempts, exponential backoff: 1s, 2s, 4s)
+  3. Save to `economic_indices`
+  4. Create `NEW_IPC` notifications for all active users
+  5. Send email via Resend to Pro users
+- **Fallback:** if INDEC API is down, use last cached value from `economic_indices`
+
+### BCRA Scheduler — runs daily
+- **Cron:** `0 10 * * 1-5` (weekdays at 10am)
+- **Logic:** fetch BCRA rate, upsert into `economic_indices`
+- **No notifications** for users (internal reference only)
+
+---
+
+## 11. Color System
+
+```css
+--green:        #16A34A   /* primary actions, OK margin status */
+--green-dark:   #0F7A35   /* hover states */
+--green-deep:   #0A5425   /* darkest, for headings */
+--green-light:  #DCFCE7   /* backgrounds, badges */
+--amber:        #D97706   /* accent, logo "Ya", medium alerts */
+--amber-bright: #FBBF24   /* IPC values, highlights */
+--amber-light:  #FEF3C7   /* alert backgrounds */
+--red:          #DC2626   /* critical margin alerts, errors */
+--red-light:    #FEE2E2   /* error backgrounds */
+--neutral-bg:   #F5F5F4   /* page background (light mode) */
+--text-primary: #1C1917
+--text-mid:     #44403C
+--text-light:   #78716C
+--border:       #E7E5E4
+```
+
+---
+
+## 12. TODO — Ordered Build List
+
+The tasks are ordered by dependency. Do not start a task until its prerequisites are complete.
+
+---
+
+### PHASE 1 — Project Skeleton
+
+- [ ] **TASK-001** Initialize monorepo with pnpm workspaces
+  - Root `package.json` with workspaces: `["apps/*", "packages/*"]`
+  - `pnpm-workspace.yaml`
+  - Root `.gitignore` (node_modules, dist, .env, .DS_Store)
+  - Root `.cursorrules` with project context
+  - Root `README.md`
+
+- [ ] **TASK-002** Initialize `apps/web` (React + Vite + TypeScript + Tailwind + PWA)
+  - `pnpm create vite@latest web --template react-ts`
+  - Install: `tailwindcss postcss autoprefixer vite-plugin-pwa workbox-window`
+  - Configure `tailwind.config.js` with custom color tokens from section 11
+  - Configure `vite.config.ts` with PWA plugin, path alias `@/ → src/`
+  - Configure `tsconfig.json` strict mode + paths
+  - Create folder structure: `src/components/ src/pages/ src/hooks/ src/utils/ src/lib/ src/contexts/ src/types/ src/assets/`
+
+- [ ] **TASK-003** Initialize `apps/api` (Node.js + Express + TypeScript)
+  - `npm init -y` + install dependencies
+  - Configure `tsconfig.json` strict mode, `outDir: ./dist`, `rootDir: ./src`
+  - Create folder structure: `src/controllers/ src/middlewares/ src/routes/ src/services/ src/lib/ src/jobs/ src/types/ src/config/ src/utils/`
+
+- [ ] **TASK-004** Initialize `packages/shared`
+  - TypeScript package with `src/types/` and `src/pricing.ts`
+  - Export types used by both `web` and `api`
+
+- [ ] **TASK-005** Environment variable validation with Zod
+  - `apps/api/src/config/env.ts` — validate all required vars at startup, throw descriptive error if missing
+  - `apps/web/src/config/env.ts` — same for VITE_ vars
+  - Create `.env.example` files for both apps
+
+---
+
+### PHASE 2 — Database
+
+- [ ] **TASK-006** Write Prisma schema
+  - `apps/api/prisma/schema.prisma` with all 9 tables from section 4
+  - All enums: `PlanType`, `ChangeReason`, `IndexType`, `ExportFormat`, `NotifType`, `SubStatus`
+  - First migration: `npx prisma migrate dev --name init`
+
+- [ ] **TASK-007** PostgreSQL triggers
+  - File: `apps/api/prisma/migrations/manual/triggers.sql`
+  - Triggers: `record_price_change`, `set_updated_at` (for users, locals, products)
+  - Indexes: `price_history(product_id, recorded_at DESC)`, `products(local_id, is_active)`, `products(barcode)`, `economic_indices(type, period DESC)`
+  - Instructions: must be run manually in Supabase SQL Editor
+
+- [ ] **TASK-008** Database clients
+  - `apps/api/src/lib/prisma.ts` — singleton PrismaClient with slow query logging
+  - `apps/api/src/lib/supabase.ts` — supabaseAdmin (service_role), `verifyToken(token)` function
+  - `apps/web/src/lib/supabase.ts` — anon client for auth and Realtime only
+
+---
+
+### PHASE 3 — Backend Foundation
+
+- [ ] **TASK-009** Express app setup
+  - `apps/api/src/app.ts` — cors, express.json, helmet, morgan, rate-limiter, router mount
+  - `apps/api/src/server.ts` — listen on PORT, connect Prisma, graceful shutdown
+  - `GET /health` endpoint
+
+- [ ] **TASK-010** Error handling utilities
+  - `src/utils/AppError.ts` — custom error class with `statusCode`, `message`, `code`, `isOperational`
+  - `src/utils/asyncHandler.ts` — wrap async controllers
+  - `src/utils/response.ts` — `sendSuccess(res, data)` and `sendError(res, error)`
+  - Global error handler middleware (catches AppError + unexpected errors)
+
+- [ ] **TASK-011** Auth middleware
+  - `src/middlewares/auth.middleware.ts` — extract Bearer token, call `verifyToken()`, find/create user in DB, attach `req.user`
+  - `src/middlewares/planGuard.middleware.ts` — factory `requirePlan(minPlan)` for plan enforcement
+  - `src/middlewares/ownerGuard.middleware.ts` — verify resource belongs to authenticated user
+  - `src/types/express.d.ts` — extend Express Request type to include `req.user`
+
+---
+
+### PHASE 4 — PricingEngine
+
+- [ ] **TASK-012** PricingEngine core functions
+  - File: `packages/shared/src/pricing.ts`
+  - All functions from section 5
+  - TypeScript strict, no dependencies
+
+- [ ] **TASK-013** PricingEngine unit tests
+  - File: `packages/shared/src/__tests__/pricing.test.ts` with Vitest
+  - Cover: normal cases, edge cases (cost = 0, margin = 0, IPC = 0, negative IPC), bulk update with empty array
+  - Run: `pnpm --filter shared test`
+
+---
+
+### PHASE 5 — Authentication
+
+- [ ] **TASK-014** Auth service + controller + routes
+  - `src/services/auth.service.ts` — `findOrCreateUser(supabaseUser)`, send welcome email on first login
+  - `src/controllers/auth.controller.ts` — `googleLogin`, `getMe`, `logout`
+  - `src/routes/auth.routes.ts`
+
+- [ ] **TASK-015** Frontend auth context
+  - `apps/web/src/contexts/AuthContext.tsx` — session state, `signInWithGoogle()`, `signOut()`, `onAuthStateChange` listener
+  - `apps/web/src/hooks/useApiClient.ts` — Axios instance with JWT interceptor, auto-logout on 401
+  - `apps/web/src/pages/auth/LoginPage.tsx` — Google OAuth button, redirect if already logged in
+  - `apps/web/src/components/ProtectedRoute.tsx` — redirect to /login if no session
+
+---
+
+### PHASE 6 — Products CRUD
+
+- [ ] **TASK-016** Product service (backend)
+  - `src/services/product.service.ts`
+  - All methods: `getProducts` (paginated + filtered), `getProductById`, `createProduct` (with plan limit check), `updateProduct` (recalculate price + alert), `deleteProduct` (soft), `bulkUpdateByPercentage`
+  - Use PricingEngine for all calculations
+
+- [ ] **TASK-017** Product controller + routes (backend)
+  - `src/controllers/product.controller.ts`
+  - `src/routes/product.routes.ts` — all endpoints from section 6
+  - Zod validation for all request bodies
+
+- [ ] **TASK-018** Product hooks (frontend)
+  - `apps/web/src/hooks/useProducts.ts` — TanStack Query hooks: `useProducts`, `useCreateProduct`, `useUpdateProduct`, `useDeleteProduct`, `useBulkUpdate`
+
+- [ ] **TASK-019** Product UI components (frontend)
+  - `ProductList.tsx` — list with search, filter by category/alert, infinite scroll or pagination
+  - `ProductCard.tsx` — mobile card view
+  - `ProductForm.tsx` — React Hook Form + Zod, real-time price preview as user types
+  - `MarginBadge.tsx` — color-coded margin status badge
+
+---
+
+### PHASE 7 — Categories & Locals
+
+- [ ] **TASK-020** Local service + controller + routes (backend)
+  - `getLocals`, `createLocal` (plan limit), `updateLocal`
+
+- [ ] **TASK-021** Category service + controller + routes (backend)
+  - `getCategories`, `createCategory`, `updateCategory`, `deleteCategory`
+
+- [ ] **TASK-022** Frontend pages
+  - `LocalsPage.tsx` — list + form, plan limit modal on upgrade needed
+  - `CategoriesPage.tsx` — list + color picker
+  - `LocalSelector.tsx` component in header
+
+---
+
+### PHASE 8 — IPC & Economic Indices
+
+- [ ] **TASK-023** INDEC + BCRA fetcher services (backend)
+  - `src/services/indec.service.ts` — `fetchLatestIPC()` with retry logic
+  - `src/services/economic-index.service.ts` — `saveEconomicIndex()` (upsert), `getLatestIndex()`, `applyIPCToLocal()`
+
+- [ ] **TASK-024** IPC routes (backend)
+  - `GET /api/ipc/latest`, `GET /api/ipc/history`, `PUT /api/locals/:id/apply-ipc`
+
+- [ ] **TASK-025** Scheduler setup (backend)
+  - `src/jobs/ipc-scheduler.ts` — both cron jobs (monthly IPC, daily BCRA)
+  - Call `initScheduler()` from `server.ts` after server starts
+  - Idempotency check before each fetch
+
+- [ ] **TASK-026** Frontend: IPC banner + bulk update modal
+  - `IPCBanner.tsx` — dismissible banner when new IPC is available
+  - `BulkUpdateModal.tsx` — two tabs: "By percentage" and "Apply IPC", with preview of affected products
+
+---
+
+### PHASE 9 — Notifications
+
+- [ ] **TASK-027** Notification service + routes (backend)
+  - `src/services/notification.service.ts` — `createNotification`, `createBulkNotifications`, `markAsRead`, `getUserNotifications`, `getUnreadCount`
+  - `src/routes/notification.routes.ts`
+
+- [ ] **TASK-028** Email service (backend)
+  - `src/services/email.service.ts` — `sendWelcomeEmail`, `sendNewIPCEmail`, `sendMarginAlertEmail`
+  - In development: log to console instead of sending
+
+- [ ] **TASK-029** Frontend: notification center
+  - `NotificationCenter.tsx` — bell icon + dropdown, real-time via Supabase Realtime subscriptions
+  - `useNotifications.ts` hook
+
+---
+
+### PHASE 10 — Price History
+
+- [ ] **TASK-030** Price history endpoint (backend)
+  - `GET /api/products/:id/history` already defined in routes
+  - Service method `getProductHistory(productId, userId, options?)` with pagination
+
+- [ ] **TASK-031** Frontend: history components
+  - `PriceHistoryChart.tsx` — Chart.js line chart, color-coded by change reason
+  - `PriceHistoryTable.tsx` — tabular view with badges
+
+---
+
+### PHASE 11 — PNG Export & WhatsApp Share
+
+- [ ] **TASK-032** Export backend
+  - `src/controllers/export.controller.ts`
+  - `src/services/export.service.ts` — receive PNG blob, upload to Supabase Storage, create `price_lists` record, return signed URL
+  - Storage path convention: `{userId}/{localId}/{timestamp}.png`
+
+- [ ] **TASK-033** Frontend: export module
+  - `PriceListTemplate.tsx` — hidden DOM element captured by html2canvas
+  - `ExportModal.tsx` — preview + share/download buttons
+  - `useExport.ts` hook — orchestrates html2canvas → upload → Web Share API
+
+---
+
+### PHASE 12 — PWA & Offline
+
+- [ ] **TASK-034** PWA configuration
+  - `vite.config.ts` — VitePWA plugin with manifest and Workbox runtime caching
+  - `src/lib/offline.ts` — IndexedDB operations via `idb` library (read-only in V1)
+  - `useOfflineSync.ts` hook — detect online/offline, sync on reconnect
+  - `OfflineBanner.tsx` — non-blocking offline indicator
+
+---
+
+### PHASE 13 — Dashboard & Layout
+
+- [ ] **TASK-035** App layout
+  - `AppLayout.tsx` — sidebar (desktop) + bottom nav (mobile), header with notifications
+  - React Router v6 setup with lazy-loaded pages
+  - `DashboardPage.tsx` — summary cards: products count, active alerts, last IPC, last export
+
+---
+
+### PHASE 14 — Settings & Admin
+
+- [ ] **TASK-036** Settings page (frontend)
+  - `SettingsPage.tsx` — tabs: My Business, My Account, My Plan
+  - Plan usage bar (Free: 18/30 products)
+  - Notification preferences stored in `users.metadata`
+
+- [ ] **TASK-037** Admin panel (backend + frontend)
+  - Backend: admin routes with `is_admin` check
+  - Frontend: `AdminPage.tsx` — user table, global stats, manual IPC trigger
+
+---
+
+### PHASE 15 — Testing
+
+- [ ] **TASK-038** Backend unit tests
+  - Setup: Vitest + vitest-mock-extended (Prisma mock)
+  - Tests: `pricing.test.ts`, `product.service.test.ts`, `indec.service.test.ts`, `auth.middleware.test.ts`
+  - Coverage threshold: 70% for `services/` and `utils/`
+
+- [ ] **TASK-039** Backend integration tests
+  - Setup: supertest + test Supabase project (or in-memory SQLite via Prisma)
+  - Tests: products CRUD, bulk update, IPC apply, export upload
+
+- [ ] **TASK-040** Frontend component tests
+  - Setup: Vitest + @testing-library/react + MSW (mock API)
+  - Tests: `ProductForm`, `BulkUpdateModal`, `useProducts` hook
+
+---
+
+### PHASE 16 — Deploy
+
+- [ ] **TASK-041** Backend Dockerfile + Railway config
+  - Multi-stage Dockerfile in `apps/api/`
+  - `railway.json` with health check path `/health`
+  - All env vars configured in Railway dashboard
+
+- [ ] **TASK-042** Frontend Vercel config
+  - `vercel.json` with build command, output dir, SPA rewrite rule
+  - All `VITE_` env vars configured in Vercel dashboard
+
+- [ ] **TASK-043** Supabase Storage setup
+  - Create bucket `price-lists` (public)
+  - SQL for storage policies (backend service_role can INSERT, public can SELECT)
+  - Run `triggers.sql` in Supabase SQL Editor
+
+- [ ] **TASK-044** CI/CD with GitHub Actions
+  - `ci.yml` — typecheck + lint + test on every PR
+  - `deploy.yml` — auto-deploy to Railway + Vercel on push to `main`
+
+---
+
+## 13. What is NOT in scope (V1)
+
+These are explicitly out of scope for the first version. Document them as future work, do not implement them:
+
+- Mercado Pago integration (subscriptions are manually managed in V1)
+- Android APK / React Native app
+- Barcode scanning
+- Multi-user / team accounts
+- PDF export (PNG only in V1)
+- Full bidirectional offline sync (read-only offline in V1)
+- WhatsApp Business API (Web Share API is sufficient for V1)
+- AI-powered price recommendation
+
+---
+
+## 14. Key Rules for Codex
+
+1. **Never write `any` in TypeScript.** If you don't know the type, use `unknown` and narrow it.
+2. **Never hardcode env variables in code.** Always import from `src/config/env.ts`.
+3. **Every async function in Express controllers must be wrapped in `asyncHandler`.** No unhandled promise rejections.
+4. **Every API response must use `sendSuccess` or `sendError` helpers.** Never call `res.json()` directly in controllers.
+5. **PricingEngine calculations must never happen in the frontend alone.** The frontend shows a preview, but the backend recalculates and stores the authoritative value.
+6. **The `sale_price` field in `products` is always recalculated by the service layer**, never trusted from the client request body.
+7. **The `price_history` table is append-only.** Never UPDATE or DELETE rows there.
+8. **No RLS.** Do not add Supabase RLS policies. Authorization is done in Express middlewares only.
+9. **The Supabase `anon` key is only used in the frontend** for auth (login/logout) and Realtime. All business data goes through `apps/api`.
+10. **Comments in Spanish, commits in English.**
+
+---
+
+*Last updated: May 2026 — PreciosYa v1.0 build scope*
+*Author: Lautaro Nahuel Villanueva — Escuela Multimedial Da Vinci*
