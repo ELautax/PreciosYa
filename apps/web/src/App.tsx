@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 
+import { env } from '@/config/env'
+
 type HealthResponse = {
   status: 'ok'
   timestamp: string
@@ -16,7 +18,7 @@ export default function App() {
     async function run() {
       try {
         setError(null)
-        const res = await fetch('http://localhost:3001/health')
+        const res = await fetch(`${env.VITE_API_URL}/health`)
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const json: unknown = await res.json()
         if (cancelled) return
@@ -43,7 +45,7 @@ export default function App() {
 
         <div className="mt-8 rounded-xl border border-stone-200 bg-white p-5">
           <div className="text-xs font-medium text-stone-500">
-            GET http://localhost:3001/health
+            GET {env.VITE_API_URL}/health
           </div>
 
           {error ? (

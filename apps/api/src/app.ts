@@ -1,11 +1,13 @@
 import cors from 'cors'
 import express from 'express'
 
+import { env } from './config/env.js'
+
 export const app = express()
 
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: env.FRONTEND_URL,
   }),
 )
 app.use(express.json())
