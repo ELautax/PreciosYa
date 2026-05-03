@@ -1,2 +1,2 @@
-export * from './types/index'
-export * from './pricing'
+export * from './types/index.js'
+export * from './pricing.js'

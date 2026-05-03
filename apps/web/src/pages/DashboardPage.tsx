@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import type { ApiSuccess } from 'shared'
 
@@ -78,13 +79,21 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-2xl px-6 py-12">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h1 className="text-3xl font-semibold tracking-tight">Panel</h1>
-          <button
-            type="button"
-            onClick={() => void signOut()}
-            className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
-          >
-            Cerrar sesión
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              to="/products"
+              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+            >
+              Productos
+            </Link>
+            <button
+              type="button"
+              onClick={() => void signOut()}
+              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+            >
+              Cerrar sesión
+            </button>
+          </div>
         </div>
         {profile ? (
           <p className="mt-2 text-sm text-stone-600">

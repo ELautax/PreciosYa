@@ -1,0 +1,18 @@
+type MarginBadgeProps = {
+  marginPct: number
+  isAlert: boolean
+}
+
+export function MarginBadge({ marginPct, isAlert }: MarginBadgeProps) {
+  const cls = isAlert
+    ? 'border-red-200 bg-red-50 text-red-800'
+    : 'border-emerald-200 bg-emerald-50 text-emerald-900'
+
+  return (
+    <span
+      className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${cls}`}
+    >
+      {marginPct.toFixed(1)}%
+    </span>
+  )
+}

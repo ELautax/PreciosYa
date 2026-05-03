@@ -3,6 +3,8 @@ import { Router, type IRouter } from 'express'
 import { asyncHandler } from '../utils/asyncHandler.js'
 import { sendSuccess } from '../utils/response.js'
 import { authRoutes } from './auth.routes.js'
+import { localRoutes } from './local.routes.js'
+import { productRoutes } from './product.routes.js'
 
 const root = Router()
 
@@ -19,6 +21,8 @@ root.get(
 
 const api = Router()
 api.use('/auth', authRoutes)
+api.use('/locals', localRoutes)
+api.use('/products', productRoutes)
 
 export const routes: IRouter = root
 export const apiRoutes: IRouter = api
