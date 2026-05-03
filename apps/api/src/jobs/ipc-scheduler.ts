@@ -1,4 +1,5 @@
 import cron from 'node-cron'
+import { PlanType } from '@prisma/client'
 
 import {
   fetchPersistAndReturnLatestBcraUsdOficial,
@@ -6,6 +7,9 @@ import {
   getLatestIpcCached,
   hasIpcForPeriod,
 } from '../services/economic-index.service.js'
+import { prisma } from '../lib/prisma.js'
+import { sendNewIPCEmail } from '../services/email.service.js'
+import { createNewIpcNotificationsForActiveUsers } from '../services/notification.service.js'
 
 const TZ = 'America/Argentina/Buenos_Aires'
 
@@ -51,8 +55,26 @@ async function runIpcJob(): Promise<void> {
   for (let i = 0; i < backoffMs.length; i += 1) {
     try {
       const result = await fetchPersistAndReturnLatestIpc()
+      const sent = await createNewIpcNotificationsForActiveUsers({
+        valuePct: result.valuePct,
+        period: result.period,
+      })
+      const proUsers = await prisma.user.findMany({
+        where: { plan: PlanType.PRO },
+        select: { email: true, name: true },
+      })
+      await Promise.all(
+        proUsers.map((u) =>
+          sendNewIPCEmail({
+            toEmail: u.email,
+            displayName: u.name,
+            ipcPct: result.valuePct,
+            period: result.period,
+          }),
+        ),
+      )
       console.info(
-        `[scheduler][IPC] guardado ${result.valuePct.toFixed(3)} para ${result.period.toISOString()}`,
+        `[scheduler][IPC] guardado ${result.valuePct.toFixed(3)} para ${result.period.toISOString()} (notifs: ${sent}, emails-pro: ${proUsers.length})`,
       )
       return
     } catch (error) {

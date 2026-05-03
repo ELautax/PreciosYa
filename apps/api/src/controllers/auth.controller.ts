@@ -9,6 +9,7 @@ import {
   syncUserFromSupabase,
 } from '../services/auth.service.js'
 import { sendWelcomeEmail } from '../services/email.service.js'
+import { createNotification } from '../services/notification.service.js'
 import { AppError } from '../utils/AppError.js'
 import type { User } from '@prisma/client'
 
@@ -61,6 +62,12 @@ export async function googleLogin(req: Request, res: Response): Promise<void> {
 
   if (isNew) {
     void sendWelcomeEmail(user.email, user.name)
+    void createNotification({
+      userId: user.id,
+      type: 'WELCOME',
+      title: 'Bienvenido a PreciosYa',
+      body: 'Tu cuenta se creó correctamente. Ya podés empezar a cargar productos.',
+    })
   }
 
   sendSuccess(res, { user: serializeUser(user) })

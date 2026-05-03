@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import type { ApiSuccess } from 'shared'
 
+import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import { useAuth } from '@/contexts/AuthContext'
 import { env } from '@/config/env'
 import { useApiClient } from '@/hooks/useApiClient'
@@ -92,6 +93,7 @@ export default function DashboardPage() {
             >
               Categorías
             </Link>
+            <NotificationCenter />
             <button
               type="button"
               onClick={() => void signOut()}

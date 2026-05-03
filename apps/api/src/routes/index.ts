@@ -6,6 +6,7 @@ import { authRoutes } from './auth.routes.js'
 import { categoryRoutes } from './category.routes.js'
 import { ipcRoutes } from './ipc.routes.js'
 import { localRoutes } from './local.routes.js'
+import { notificationRoutes } from './notification.routes.js'
 import { productRoutes } from './product.routes.js'
 
 const root = Router()
@@ -26,6 +27,7 @@ api.use('/auth', authRoutes)
 api.use('/locals', localRoutes)
 api.use('/categories', categoryRoutes)
 api.use('/ipc', ipcRoutes)
+api.use('/notifications', notificationRoutes)
 api.use('/products', productRoutes)
 
 export const routes: IRouter = root
