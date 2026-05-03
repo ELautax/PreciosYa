@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import { useCategories } from '@/hooks/useCategories'
 import { useCreateProduct, useUpdateProduct } from '@/hooks/useProducts'
 import type { ProductDto } from '@/types/product'
 
@@ -10,6 +11,7 @@ const schema = z.object({
   name: z.string().min(1, 'Nombre obligatorio'),
   cost: z.number().positive('Costo debe ser mayor que 0'),
   marginPct: z.number().min(0, 'Margen no puede ser negativo'),
+  categoryId: z.string().optional(),
   unit: z.string().optional(),
   barcode: z.string().optional(),
   notes: z.string().optional(),
@@ -24,6 +26,7 @@ type ProductFormProps = {
 }
 
 export function ProductForm({ localId, product, onClose }: ProductFormProps) {
+  const categoriesQuery = useCategories(localId)
   const createMut = useCreateProduct()
   const updateMut = useUpdateProduct(localId)
 
@@ -38,6 +41,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
       name: '',
       cost: 0,
       marginPct: 20,
+      categoryId: '',
       unit: 'unidad',
       barcode: '',
       notes: '',
@@ -50,6 +54,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
         name: product.name,
         cost: product.cost,
         marginPct: product.marginPct,
+        categoryId: product.categoryId ?? '',
         unit: product.unit,
         barcode: product.barcode ?? '',
         notes: product.notes ?? '',
@@ -62,6 +67,10 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
       values.barcode?.trim() === '' ? null : values.barcode?.trim() ?? null
     const notes =
       values.notes?.trim() === '' ? null : values.notes?.trim() ?? null
+    const categoryId =
+      values.categoryId && values.categoryId.trim() !== ''
+        ? values.categoryId
+        : null
 
     if (product) {
       await updateMut.mutateAsync({
@@ -72,6 +81,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
           marginPct: values.marginPct,
           unit: values.unit,
           barcode,
+          categoryId,
           notes,
         },
       })
@@ -83,6 +93,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
         marginPct: values.marginPct,
         unit: values.unit,
         barcode,
+        categoryId,
         notes,
       })
     }
@@ -111,6 +122,22 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
             {errors.name ? (
               <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>
             ) : null}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-stone-700">
+              Categoría
+            </label>
+            <select
+              className="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+              {...register('categoryId')}
+            >
+              <option value="">Sin categoría</option>
+              {categoriesQuery.data?.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>

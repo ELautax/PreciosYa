@@ -13,7 +13,13 @@ export type ProductListResult = {
 
 export function useProducts(
   localId: string | undefined,
-  opts?: { search?: string; page?: number; limit?: number; isAlert?: boolean },
+  opts?: {
+    search?: string
+    page?: number
+    limit?: number
+    isAlert?: boolean
+    categoryId?: string
+  },
 ) {
   const api = useApiClient()
   return useQuery({
@@ -27,6 +33,7 @@ export function useProducts(
           page: opts?.page,
           limit: opts?.limit ?? 20,
           ...(opts?.isAlert ? { isAlert: 'true' as const } : {}),
+          ...(opts?.categoryId ? { categoryId: opts.categoryId } : {}),
         },
       })
       return res.data.data
@@ -45,6 +52,7 @@ export function useCreateProduct() {
       barcode?: string | null
       cost: number
       marginPct: number
+      categoryId?: string | null
       notes?: string | null
     }) => {
       const res = await api.post<ApiSuccess<{ product: ProductDto }>>(
@@ -71,6 +79,7 @@ export function useUpdateProduct(localId: string) {
         barcode: string | null
         cost: number
         marginPct: number
+        categoryId: string | null
         notes: string | null
       }>
     }) => {
@@ -92,6 +101,27 @@ export function useDeleteProduct(localId: string) {
   return useMutation({
     mutationFn: async (id: string) => {
       await api.delete<ApiSuccess<{ ok: boolean }>>(`/api/products/${id}`)
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['products', localId] })
+    },
+  })
+}
+
+export function useBulkUpdate(localId: string) {
+  const api = useApiClient()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (input: {
+      localId: string
+      increasePct: number
+      categoryId?: string
+    }) => {
+      const res = await api.put<ApiSuccess<{ updated: number }>>(
+        '/api/products/bulk-update',
+        input,
+      )
+      return res.data.data
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['products', localId] })

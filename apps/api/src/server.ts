@@ -1,5 +1,6 @@
 import { env } from './config/env.js'
 import { app } from './app.js'
+import { initScheduler } from './jobs/ipc-scheduler.js'
 import { prisma } from './lib/prisma.js'
 
 async function shutdown(signal: string): Promise<void> {
@@ -13,6 +14,7 @@ async function main(): Promise<void> {
 
   app.listen(env.PORT, () => {
     console.log(`API listening on http://localhost:${env.PORT}`)
+    initScheduler()
   })
 
   process.on('SIGINT', () => {

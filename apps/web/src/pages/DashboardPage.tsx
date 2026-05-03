@@ -86,6 +86,12 @@ export default function DashboardPage() {
             >
               Productos
             </Link>
+            <Link
+              to="/categories"
+              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+            >
+              Categorías
+            </Link>
             <button
               type="button"
               onClick={() => void signOut()}

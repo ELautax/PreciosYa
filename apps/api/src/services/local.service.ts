@@ -1,4 +1,5 @@
 import type { Local, User } from '@prisma/client'
+import { isMarginAlert } from 'shared'
 
 import { isWithinLimit, maxLocalsForPlan } from '../lib/planLimits.js'
 import { prisma } from '../lib/prisma.js'
@@ -68,4 +69,58 @@ export async function createLocal(
           : input.address.trim(),
     },
   })
+}
+
+export async function updateLocal(
+  userId: string,
+  localId: string,
+  input: {
+    name?: string
+    address?: string | null
+    minMarginPct?: number
+    currency?: string
+  },
+): Promise<Local> {
+  await assertLocalOwnership(userId, localId)
+
+  const updated = await prisma.local.update({
+    where: { id: localId },
+    data: {
+      ...(input.name !== undefined ? { name: input.name.trim() } : {}),
+      ...(input.address !== undefined
+        ? {
+            address:
+              input.address === null || input.address === ''
+                ? null
+                : input.address.trim(),
+          }
+        : {}),
+      ...(input.minMarginPct !== undefined
+        ? { minMarginPct: input.minMarginPct }
+        : {}),
+      ...(input.currency !== undefined ? { currency: input.currency.trim() } : {}),
+    },
+  })
+
+  if (input.minMarginPct !== undefined) {
+    const min = input.minMarginPct
+    const products = await prisma.product.findMany({
+      where: { localId, isActive: true },
+      select: { id: true, marginPct: true },
+    })
+    if (products.length > 0) {
+      await prisma.$transaction(
+        products.map((p) =>
+          prisma.product.update({
+            where: { id: p.id },
+            data: {
+              isMarginAlert: isMarginAlert(Number(p.marginPct), min),
+            },
+          }),
+        ),
+      )
+    }
+  }
+
+  return updated
 }

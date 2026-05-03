@@ -31,3 +31,20 @@ export function useCreateLocal() {
     },
   })
 }
+
+export function useApplyIpcToLocal(localId: string) {
+  const api = useApiClient()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      const res = await api.put<
+        ApiSuccess<{ updated: number; appliedIpcPct: number }>
+      >(`/api/locals/${localId}/apply-ipc`)
+      return res.data.data
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['products', localId] })
+      void qc.invalidateQueries({ queryKey: ['ipc-latest'] })
+    },
+  })
+}

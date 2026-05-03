@@ -1,20 +1,59 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { BulkUpdateModal } from '@/components/products/BulkUpdateModal'
+import { IPCBanner } from '@/components/products/IPCBanner'
 import { ProductForm } from '@/components/products/ProductForm'
 import { ProductList } from '@/components/products/ProductList'
+import { useCategories } from '@/hooks/useCategories'
+import { useIpcLatest } from '@/hooks/useIpc'
 import { useCreateLocal, useLocals } from '@/hooks/useLocals'
 import { useDeleteProduct, useProducts } from '@/hooks/useProducts'
 import type { LocalDto } from '@/types/local'
 import type { ProductDto } from '@/types/product'
 
+function CategoryFilterSelect({
+  localId,
+  value,
+  onChange,
+}: {
+  localId: string
+  value: string
+  onChange: (v: string) => void
+}) {
+  const q = useCategories(localId)
+  return (
+    <label className="flex items-center gap-2 text-sm text-stone-700">
+      Categoría
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+      >
+        <option value="">Todas</option>
+        {q.data?.map((c) => (
+          <option key={c.id} value={c.id}>
+            {c.name}
+          </option>
+        ))}
+      </select>
+    </label>
+  )
+}
+
 function ProductsMain({ locals }: { locals: LocalDto[] }) {
   const [localId, setLocalId] = useState(locals[0].id)
   const [search, setSearch] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('')
   const [formOpen, setFormOpen] = useState(false)
+  const [bulkOpen, setBulkOpen] = useState(false)
   const [editing, setEditing] = useState<ProductDto | null>(null)
 
-  const productsQuery = useProducts(localId, { search: search.trim() || undefined })
+  const ipcQuery = useIpcLatest()
+  const productsQuery = useProducts(localId, {
+    search: search.trim() || undefined,
+    ...(categoryFilter ? { categoryId: categoryFilter } : {}),
+  })
   const deleteMut = useDeleteProduct(localId)
 
   useEffect(() => {
@@ -42,16 +81,31 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
             </Link>
             <h1 className="mt-2 text-2xl font-semibold text-stone-900">Productos</h1>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              setEditing(null)
-              setFormOpen(true)
-            }}
-            className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
-          >
-            Nuevo producto
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              to="/categories"
+              className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm text-stone-800 hover:bg-stone-100"
+            >
+              Categorías
+            </Link>
+            <button
+              type="button"
+              onClick={() => setBulkOpen(true)}
+              className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-800 hover:bg-amber-100"
+            >
+              Actualización masiva
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEditing(null)
+                setFormOpen(true)
+              }}
+              className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+            >
+              Nuevo producto
+            </button>
+          </div>
         </div>
 
         <div className="mt-6 flex flex-wrap gap-3">
@@ -80,7 +134,12 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
               className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
             />
           </label>
+          <CategoryFilterSelect localId={localId} value={categoryFilter} onChange={setCategoryFilter} />
         </div>
+        <IPCBanner
+          ipcPct={ipcQuery.data?.ipc?.valuePct ?? null}
+          onOpenBulk={() => setBulkOpen(true)}
+        />
 
         <div className="mt-8">
           {productsQuery.isLoading ? (
@@ -114,6 +173,13 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
             setFormOpen(false)
             setEditing(null)
           }}
+        />
+      ) : null}
+      {bulkOpen ? (
+        <BulkUpdateModal
+          localId={localId}
+          ipcPct={ipcQuery.data?.ipc?.valuePct ?? null}
+          onClose={() => setBulkOpen(false)}
         />
       ) : null}
     </main>
