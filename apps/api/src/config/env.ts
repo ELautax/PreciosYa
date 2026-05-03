@@ -24,6 +24,7 @@ const schema = z
       emptyToUndefined,
       z.string().min(1).optional(),
     ),
+    ADMIN_EMAILS: z.preprocess(emptyToUndefined, z.string().optional()),
     SUPABASE_ANON_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
     JWT_SECRET: z.preprocess(emptyToUndefined, z.string().min(32).optional()),
     RESEND_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),

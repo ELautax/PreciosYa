@@ -50,6 +50,11 @@ export default function DashboardPage() {
               <p className="mt-1 text-sm text-stone-600">
                 Hola, <span className="font-medium text-stone-800">{profile.name}</span> (
                 {profile.email})
+                {profile.isAdmin ? (
+                  <span className="ml-2 rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                    Admin
+                  </span>
+                ) : null}
               </p>
             ) : (
               <p className="mt-1 text-sm text-stone-600">Cargando perfil…</p>

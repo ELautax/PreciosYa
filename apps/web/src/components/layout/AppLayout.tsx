@@ -3,13 +3,14 @@ import { NavLink, Outlet } from 'react-router-dom'
 
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import { useAuth } from '@/contexts/AuthContext'
+import { useMe } from '@/hooks/useMe'
 
 type NavItem = {
   to: string
   label: string
 }
 
-const navItems: NavItem[] = [
+const baseNavItems: NavItem[] = [
   { to: '/dashboard', label: 'Panel' },
   { to: '/products', label: 'Productos' },
   { to: '/categories', label: 'Categorías' },
@@ -18,16 +19,31 @@ const navItems: NavItem[] = [
   { to: '/settings', label: 'Ajustes' },
 ]
 
-function MobileBottomNav({ children }: { children: ReactNode }) {
+function MobileBottomNav({
+  children,
+  columns,
+}: {
+  children: ReactNode
+  columns: number
+}) {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-stone-200 bg-white p-2 md:hidden">
-      <div className="mx-auto grid max-w-xl grid-cols-5 gap-1">{children}</div>
+      <div
+        className="mx-auto grid max-w-xl gap-1"
+        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+      >
+        {children}
+      </div>
     </nav>
   )
 }
 
 export function AppLayout() {
   const { signOut } = useAuth()
+  const { data: me } = useMe()
+  const navItems: NavItem[] = me?.isAdmin
+    ? [...baseNavItems, { to: '/admin', label: 'Admin' }]
+    : baseNavItems
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900">
@@ -67,7 +83,7 @@ export function AppLayout() {
         <Outlet />
       </div>
 
-      <MobileBottomNav>
+      <MobileBottomNav columns={navItems.length}>
         {navItems.map((item) => (
           <NavLink
             key={item.to}

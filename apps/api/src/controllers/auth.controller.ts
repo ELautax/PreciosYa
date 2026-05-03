@@ -10,6 +10,7 @@ import {
 } from '../services/auth.service.js'
 import { sendWelcomeEmail } from '../services/email.service.js'
 import { createNotification } from '../services/notification.service.js'
+import { isAdminEmail } from '../lib/adminAccess.js'
 import { AppError } from '../utils/AppError.js'
 import type { User } from '@prisma/client'
 
@@ -29,6 +30,7 @@ function serializeUser(user: User) {
     avatarUrl: user.avatarUrl,
     googleId: user.googleId,
     plan: user.plan,
+    isAdmin: isAdminEmail(user.email),
     planExpiresAt: user.planExpiresAt?.toISOString() ?? null,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),

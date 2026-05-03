@@ -13,6 +13,7 @@ const CategoriesPage = lazy(() => import('@/pages/CategoriesPage'))
 const LocalsPage = lazy(() => import('@/pages/LocalsPage'))
 const HistoryPage = lazy(() => import('@/pages/HistoryPage'))
 const SettingsPage = lazy(() => import('@/pages/SettingsPage'))
+const AdminPage = lazy(() => import('@/pages/AdminPage'))
 
 function RootRedirect() {
   const { session, loading } = useAuth()
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="/locals" element={<LocalsPage />} />
             <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/admin" element={<AdminPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

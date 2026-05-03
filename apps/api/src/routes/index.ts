@@ -2,6 +2,7 @@ import { Router, type IRouter } from 'express'
 
 import { asyncHandler } from '../utils/asyncHandler.js'
 import { sendSuccess } from '../utils/response.js'
+import { adminRoutes } from './admin.routes.js'
 import { authRoutes } from './auth.routes.js'
 import { categoryRoutes } from './category.routes.js'
 import { exportRoutes } from './export.routes.js'
@@ -24,6 +25,7 @@ root.get(
 )
 
 const api = Router()
+api.use('/admin', adminRoutes)
 api.use('/auth', authRoutes)
 api.use('/locals', localRoutes)
 api.use('/categories', categoryRoutes)

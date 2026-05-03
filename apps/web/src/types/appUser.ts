@@ -5,6 +5,7 @@ export type AppUser = {
   avatarUrl: string | null
   googleId: string | null
   plan: string
+  isAdmin: boolean
   planExpiresAt: string | null
   createdAt: string
   updatedAt: string

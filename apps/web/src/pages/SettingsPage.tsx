@@ -146,6 +146,10 @@ export default function SettingsPage() {
                   <dd>{user.plan}</dd>
                 </div>
                 <div>
+                  <dt className="text-xs text-stone-500">Rol</dt>
+                  <dd>{user.isAdmin ? 'Administrador' : 'Usuario'}</dd>
+                </div>
+                <div>
                   <dt className="text-xs text-stone-500">Vencimiento</dt>
                   <dd>{user.planExpiresAt ? new Date(user.planExpiresAt).toLocaleDateString('es-AR') : '—'}</dd>
                 </div>
