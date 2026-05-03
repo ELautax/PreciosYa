@@ -17,9 +17,13 @@ app.use(
   }),
 )
 
+// En desarrollo Vite puede cambiar de puerto (5173, 5174…); origin fijo rompe fetch desde el browser.
 app.use(
   cors({
-    origin: env.FRONTEND_URL,
+    origin:
+      env.NODE_ENV === 'development'
+        ? true
+        : env.FRONTEND_URL,
   }),
 )
 
