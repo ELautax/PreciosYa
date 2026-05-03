@@ -41,13 +41,13 @@ export default function DashboardPage() {
   }, [api])
 
   return (
-    <main className="px-6 py-8 text-stone-900">
-      <div className="mx-auto max-w-6xl">
+    <main className="page-shell text-stone-900">
+      <div className="page-wrap">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight">Panel</h1>
+            <h1 className="page-heading">Panel</h1>
             {profile ? (
-              <p className="mt-1 text-sm text-stone-600">
+              <p className="page-subtitle">
                 Hola, <span className="font-medium text-stone-800">{profile.name}</span> (
                 {profile.email})
                 {profile.isAdmin ? (
@@ -71,24 +71,24 @@ export default function DashboardPage() {
         </div>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-xl border border-stone-200 bg-white p-4">
-            <p className="text-xs text-stone-500">Productos activos</p>
-            <p className="mt-1 text-2xl font-semibold text-stone-900">
+          <div className="kpi-card">
+            <p className="kpi-label">Productos activos</p>
+            <p className="kpi-value">
               {productsQ.data?.total ?? 0}
             </p>
           </div>
-          <div className="rounded-xl border border-stone-200 bg-white p-4">
-            <p className="text-xs text-stone-500">Alertas de margen</p>
-            <p className="mt-1 text-2xl font-semibold text-red-700">{alertsQ.data?.total ?? 0}</p>
+          <div className="kpi-card">
+            <p className="kpi-label">Alertas de margen</p>
+            <p className="kpi-value text-red-700">{alertsQ.data?.total ?? 0}</p>
           </div>
-          <div className="rounded-xl border border-stone-200 bg-white p-4">
-            <p className="text-xs text-stone-500">Último IPC</p>
-            <p className="mt-1 text-2xl font-semibold text-amber-700">
+          <div className="kpi-card">
+            <p className="kpi-label">Último IPC</p>
+            <p className="kpi-value text-amber-700">
               {ipcQ.data?.ipc ? `${ipcQ.data.ipc.valuePct.toFixed(2)}%` : '—'}
             </p>
           </div>
-          <div className="rounded-xl border border-stone-200 bg-white p-4">
-            <p className="text-xs text-stone-500">Última exportación</p>
+          <div className="kpi-card">
+            <p className="kpi-label">Última exportación</p>
             <p className="mt-1 text-sm font-semibold text-stone-900">
               {latestExportQ.data?.priceList
                 ? new Date(latestExportQ.data.priceList.createdAt).toLocaleDateString('es-AR')
@@ -97,7 +97,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-xl border border-stone-200 bg-white p-4 text-sm text-stone-600">
+        <div className="mt-6 surface-card p-4 text-sm text-stone-600">
           {selectedLocal ? (
             <p>
               Estás viendo datos del local <span className="font-medium text-stone-800">{selectedLocal.name}</span>.

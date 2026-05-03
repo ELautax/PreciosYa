@@ -45,7 +45,7 @@ export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalPro
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
       <div
-        className="w-full max-w-xl rounded-xl border border-stone-200 bg-white p-6 shadow-lg"
+        className="surface-card w-full max-w-xl p-6 shadow-lg"
         role="dialog"
         aria-modal="true"
       >
@@ -57,7 +57,7 @@ export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalPro
             className={`rounded-lg px-3 py-1.5 text-sm ${
               tab === 'percentage'
                 ? 'bg-green-600 text-white'
-                : 'border border-stone-300 text-stone-700'
+                : 'btn-soft'
             }`}
           >
             Por porcentaje
@@ -68,7 +68,7 @@ export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalPro
             className={`rounded-lg px-3 py-1.5 text-sm ${
               tab === 'ipc'
                 ? 'bg-green-600 text-white'
-                : 'border border-stone-300 text-stone-700'
+                : 'btn-soft'
             }`}
           >
             Aplicar IPC
@@ -140,7 +140,7 @@ export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalPro
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-stone-300 px-4 py-2 text-sm text-stone-800 hover:bg-stone-50"
+            className="btn-soft px-4 py-2"
           >
             Cerrar
           </button>

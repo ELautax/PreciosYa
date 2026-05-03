@@ -30,7 +30,7 @@ export function NotificationCenter() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="relative rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+        className="btn-soft relative"
       >
         Notificaciones
         {unread > 0 ? (
@@ -41,7 +41,7 @@ export function NotificationCenter() {
       </button>
 
       {open ? (
-        <div className="absolute right-0 z-50 mt-2 w-[360px] rounded-xl border border-stone-200 bg-white p-3 shadow-lg">
+        <div className="surface-card absolute right-0 z-50 mt-2 w-[360px] p-3 shadow-lg">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="text-sm font-semibold text-stone-900">Centro de notificaciones</h3>
             <button

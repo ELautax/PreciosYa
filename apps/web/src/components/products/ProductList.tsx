@@ -11,7 +11,7 @@ type ProductListProps = {
 export function ProductList({ products, onEdit, onDelete }: ProductListProps) {
   if (products.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed border-stone-300 bg-white p-8 text-center text-sm text-stone-600">
+      <p className="surface-card border-dashed p-8 text-center text-sm text-stone-600">
         No hay productos. Creá el primero con &quot;Nuevo producto&quot;.
       </p>
     )

@@ -71,7 +71,7 @@ export function ExportModal({ local, products, onClose }: ExportModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
       <div
-        className="max-h-[92vh] w-full max-w-4xl overflow-y-auto overflow-x-hidden rounded-xl border border-stone-200 bg-white p-6 shadow-lg"
+        className="surface-card max-h-[92vh] w-full max-w-4xl overflow-y-auto overflow-x-hidden p-6 shadow-lg"
         role="dialog"
         aria-modal="true"
       >
@@ -80,14 +80,14 @@ export function ExportModal({ local, products, onClose }: ExportModalProps) {
           Se genera un PNG con los productos visibles del local seleccionado.
         </p>
 
-        <div className="mt-4 rounded-lg border border-stone-200 bg-stone-50 p-3">
+        <div className="surface-soft mt-4 p-3">
           <div className="mx-auto max-w-full">
             <PriceListTemplate local={local} products={products} variant="preview" />
           </div>
         </div>
 
         {message ? (
-          <div className="mt-3 rounded-lg border border-stone-200 bg-white p-2 text-sm text-stone-700">
+          <div className="surface-card mt-3 p-2 text-sm text-stone-700">
             {message}
           </div>
         ) : null}
@@ -96,7 +96,7 @@ export function ExportModal({ local, products, onClose }: ExportModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-stone-300 px-4 py-2 text-sm text-stone-800 hover:bg-stone-50"
+            className="btn-soft px-4 py-2"
           >
             Cerrar
           </button>

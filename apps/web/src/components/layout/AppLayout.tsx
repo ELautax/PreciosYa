@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTheme } from '@/contexts/ThemeContext'
 import { useMe } from '@/hooks/useMe'
 import preciosYaLogo from '@/assets/preciosya-logo.png'
 
@@ -41,54 +42,88 @@ function MobileBottomNav({
 
 export function AppLayout() {
   const { signOut } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const { data: me } = useMe()
   const navItems: NavItem[] = me?.isAdmin
     ? [...baseNavItems, { to: '/admin', label: 'Admin' }]
     : baseNavItems
 
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-900">
-      <div className="pb-16 md:pb-0">
-        <header className="sticky top-0 z-30 border-b border-stone-200 bg-white/95 backdrop-blur">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-            <div className="flex items-center gap-2">
-              <img
-                src={preciosYaLogo}
-                alt="Logo de PreciosYa"
-                className="h-8 w-8 rounded-md object-contain"
-              />
-              <p className="font-semibold text-stone-900">PreciosYa</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <NotificationCenter />
-              <button
-                type="button"
-                onClick={() => void signOut()}
-                className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
-              >
-                Salir
-              </button>
+    <div className="app-shell min-h-screen text-stone-900">
+      <div className="md:grid md:min-h-screen md:grid-cols-[250px_1fr]">
+        <aside className="app-sidebar hidden border-r border-stone-200 bg-white/90 p-5 md:block">
+          <div className="mb-6 flex items-center gap-2">
+            <img
+              src={preciosYaLogo}
+              alt="Logo de PreciosYa"
+              className="h-9 w-9 rounded-md object-contain"
+            />
+            <div>
+              <p className="font-extrabold text-stone-900">
+                Precios<span className="text-amber-700">Ya</span>
+              </p>
+              <p className="text-xs text-stone-500">Gestión confiable diaria</p>
             </div>
           </div>
-          <div className="mx-auto hidden max-w-6xl items-center gap-2 px-4 pb-3 sm:px-6 md:flex">
+
+          <nav className="space-y-1">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `rounded-lg px-3 py-2 text-sm ${
+                  `block rounded-lg px-3 py-2 text-sm ${
                     isActive
                       ? 'bg-green-100 font-medium text-green-900'
-                      : 'text-stone-700 hover:bg-stone-100'
+                      : 'text-stone-700 hover:bg-stone-100/80'
                   }`
                 }
               >
                 {item.label}
               </NavLink>
             ))}
-          </div>
-        </header>
-        <Outlet />
+          </nav>
+        </aside>
+
+        <div className="pb-16 md:pb-0">
+          <header className="app-topbar sticky top-0 z-30 border-b border-stone-200 bg-white/95 backdrop-blur">
+            <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+              <div className="flex items-center gap-2">
+                <img
+                  src={preciosYaLogo}
+                  alt="Logo de PreciosYa"
+                  className="h-8 w-8 rounded-md object-contain md:hidden"
+                />
+                <p className="font-extrabold text-stone-900">
+                  Precios<span className="text-amber-700">Ya</span>
+                </p>
+                {me?.isAdmin ? (
+                  <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                    Admin
+                  </span>
+                ) : null}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="btn-soft"
+                >
+                  {theme === 'light' ? 'Modo oscuro' : 'Modo claro'}
+                </button>
+                <NotificationCenter />
+                <button
+                  type="button"
+                  onClick={() => void signOut()}
+                  className="btn-soft"
+                >
+                  Salir
+                </button>
+              </div>
+            </div>
+          </header>
+          <Outlet />
+        </div>
       </div>
 
       <MobileBottomNav columns={navItems.length}>

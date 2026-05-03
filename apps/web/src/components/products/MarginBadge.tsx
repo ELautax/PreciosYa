@@ -6,7 +6,7 @@ type MarginBadgeProps = {
 export function MarginBadge({ marginPct, isAlert }: MarginBadgeProps) {
   const cls = isAlert
     ? 'border-red-200 bg-red-50 text-red-800'
-    : 'border-emerald-200 bg-emerald-50 text-emerald-900'
+    : 'border-green-300 bg-green-50 text-green-900'
 
   return (
     <span

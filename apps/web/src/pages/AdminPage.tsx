@@ -19,12 +19,12 @@ export default function AdminPage() {
   const forceIpcMut = useAdminForceFetchIpc()
 
   if (loadingMe) {
-    return <main className="px-6 py-8 text-sm text-stone-600">Cargando…</main>
+    return <main className="page-shell text-sm text-stone-600">Cargando…</main>
   }
 
   if (!me?.isAdmin) {
     return (
-      <main className="px-6 py-8">
+      <main className="page-shell">
         <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
           Esta sección es solo para administradores.
         </div>
@@ -33,10 +33,10 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="px-6 py-8">
-      <div className="mx-auto max-w-6xl space-y-5">
+    <main className="page-shell">
+      <div className="page-wrap max-w-6xl space-y-5">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-stone-900">Panel Admin</h1>
+          <h1 className="page-heading">Panel Admin</h1>
           <button
             type="button"
             onClick={() => void forceIpcMut.mutateAsync()}
@@ -54,7 +54,7 @@ export default function AdminPage() {
           <Card label="Alertas" value={statsQ.data?.alerts ?? 0} />
         </div>
 
-        <section className="rounded-xl border border-stone-200 bg-white p-4">
+        <section className="surface-card p-4">
           <h2 className="text-sm font-medium text-stone-800">Usuarios</h2>
           <input
             value={search}
@@ -101,11 +101,11 @@ export default function AdminPage() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-stone-200 bg-white p-4">
+        <section className="surface-card p-4">
           <h2 className="text-sm font-medium text-stone-800">Índices recientes</h2>
           <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {indicesQ.data?.map((idx) => (
-              <div key={idx.id} className="rounded-lg border border-stone-200 bg-stone-50 p-3">
+              <div key={idx.id} className="surface-soft p-3">
                 <p className="text-xs text-stone-500">{idx.type}</p>
                 <p className="text-sm font-semibold text-stone-900">{idx.valuePct.toFixed(2)}</p>
                 <p className="text-xs text-stone-500">
@@ -122,9 +122,9 @@ export default function AdminPage() {
 
 function Card({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-4">
-      <p className="text-xs text-stone-500">{label}</p>
-      <p className="mt-1 text-2xl font-semibold text-stone-900">{value}</p>
+    <div className="kpi-card">
+      <p className="kpi-label">{label}</p>
+      <p className="kpi-value">{value}</p>
     </div>
   )
 }

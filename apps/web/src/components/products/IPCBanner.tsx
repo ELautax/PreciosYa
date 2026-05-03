@@ -7,7 +7,7 @@ export function IPCBanner({ ipcPct, onOpenBulk }: IPCBannerProps) {
   if (ipcPct === null) return null
 
   return (
-    <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
+    <div className="surface-card mt-6 border-amber-300/60 bg-amber-50 p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-amber-900">

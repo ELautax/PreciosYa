@@ -36,7 +36,7 @@ export function PriceListTemplate({
         color: '#1C1917',
         padding: '32px',
         fontFamily:
-          'Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif',
+          '"Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif',
       }}
     >
       <header style={{ borderBottom: '1px solid #E7E5E4', paddingBottom: '16px' }}>
@@ -91,6 +91,7 @@ export function PriceListTemplate({
                 fontSize: rowPriceSize,
                 lineHeight: rowPriceLine,
                 fontWeight: 700,
+                fontFamily: '"DM Mono", monospace',
               }}
             >
               ${p.salePrice.toFixed(2)}

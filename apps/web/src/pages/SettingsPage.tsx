@@ -47,10 +47,10 @@ export default function SettingsPage() {
   const usagePct = productLimit ? Math.min(100, (usedProducts / productLimit) * 100) : 0
 
   return (
-    <main className="px-6 py-8">
-      <div className="mx-auto max-w-4xl">
-        <h1 className="text-2xl font-semibold text-stone-900">Configuración</h1>
-        <p className="mt-1 text-sm text-stone-600">
+    <main className="page-shell">
+      <div className="page-wrap max-w-4xl">
+        <h1 className="page-heading">Configuración</h1>
+        <p className="page-subtitle">
           Ajustá tu negocio, cuenta y plan desde un solo lugar.
         </p>
 
@@ -91,7 +91,7 @@ export default function SettingsPage() {
         </div>
 
         {tab === 'business' ? (
-          <section className="mt-4 rounded-xl border border-stone-200 bg-white p-5">
+          <section className="surface-card mt-4 p-5">
             <h2 className="text-sm font-medium text-stone-800">Datos del local</h2>
             {locals && locals.length > 0 ? (
               <div className="mt-4 space-y-3 text-sm text-stone-700">
@@ -129,7 +129,7 @@ export default function SettingsPage() {
         ) : null}
 
         {tab === 'account' ? (
-          <section className="mt-4 rounded-xl border border-stone-200 bg-white p-5">
+          <section className="surface-card mt-4 p-5">
             <h2 className="text-sm font-medium text-stone-800">Datos de la cuenta</h2>
             {user ? (
               <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
@@ -161,7 +161,7 @@ export default function SettingsPage() {
         ) : null}
 
         {tab === 'plan' ? (
-          <section className="mt-4 rounded-xl border border-stone-200 bg-white p-5">
+          <section className="surface-card mt-4 p-5">
             <h2 className="text-sm font-medium text-stone-800">Uso del plan</h2>
             <p className="mt-2 text-sm text-stone-600">
               Productos activos en el local seleccionado.

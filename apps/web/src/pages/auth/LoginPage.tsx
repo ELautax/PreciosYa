@@ -33,19 +33,21 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-stone-50 text-stone-900">
+    <main className="page-shell text-stone-900">
       <div className="mx-auto flex max-w-md flex-col items-center justify-center px-6 py-16">
         <img
           src={preciosYaLogo}
           alt="Logo de PreciosYa"
           className="mb-4 h-20 w-20 object-contain"
         />
-        <h1 className="text-3xl font-semibold tracking-tight">PreciosYa</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">
+          Precios<span className="text-amber-700">Ya</span>
+        </h1>
         <p className="mt-2 text-center text-sm text-stone-600">
           Iniciá sesión para gestionar precios y listas.
         </p>
 
-        <div className="mt-10 w-full rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+        <div className="surface-card mt-10 w-full p-6 shadow-sm">
           {!supabaseConfigured ? (
             <p className="text-sm text-red-700">
               Configurá <code className="rounded bg-red-50 px-1">VITE_SUPABASE_URL</code> y{' '}

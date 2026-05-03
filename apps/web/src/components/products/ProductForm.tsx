@@ -105,7 +105,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
       <div
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl border border-stone-200 bg-white p-6 shadow-lg"
+        className="surface-card max-h-[90vh] w-full max-w-lg overflow-y-auto p-6 shadow-lg"
         role="dialog"
         aria-modal="true"
       >
@@ -197,7 +197,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-stone-300 px-4 py-2 text-sm text-stone-800 hover:bg-stone-50"
+              className="btn-soft px-4 py-2"
             >
               Cancelar
             </button>

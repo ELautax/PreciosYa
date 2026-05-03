@@ -21,7 +21,7 @@ export function LocalSelector({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+        className="btn-soft"
       >
         {locals.map((l) => (
           <option key={l.id} value={l.id}>

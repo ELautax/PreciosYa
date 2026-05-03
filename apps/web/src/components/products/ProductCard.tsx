@@ -10,7 +10,7 @@ type ProductCardProps = {
 
 export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
   return (
-    <article className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+    <article className="surface-card p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <h3 className="font-semibold text-stone-900">{product.name}</h3>
@@ -24,18 +24,18 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
       <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
         <div>
           <dt className="text-xs text-stone-500">Costo</dt>
-          <dd className="font-medium">${product.cost.toFixed(2)}</dd>
+          <dd className="mono font-medium">${product.cost.toFixed(2)}</dd>
         </div>
         <div>
           <dt className="text-xs text-stone-500">Venta</dt>
-          <dd className="font-medium">${product.salePrice.toFixed(2)}</dd>
+          <dd className="mono font-medium">${product.salePrice.toFixed(2)}</dd>
         </div>
       </dl>
       <div className="mt-4 flex gap-2">
         <button
           type="button"
           onClick={() => onEdit(product)}
-          className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-50"
+          className="btn-soft"
         >
           Editar
         </button>

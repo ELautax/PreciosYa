@@ -14,6 +14,17 @@ import { productRoutes } from './product.routes.js'
 const root = Router()
 
 root.get(
+  '/',
+  asyncHandler(async (_req, res) => {
+    sendSuccess(res, {
+      name: 'PreciosYa API',
+      health: '/health',
+      apiBase: '/api',
+    })
+  }),
+)
+
+root.get(
   '/health',
   asyncHandler(async (_req, res) => {
     sendSuccess(res, {

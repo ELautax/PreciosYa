@@ -62,34 +62,34 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
   }
 
   return (
-    <main className="min-h-screen bg-stone-50 px-6 py-10">
-      <div className="mx-auto max-w-2xl">
+    <main className="page-shell">
+      <div className="page-wrap max-w-2xl">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <Link to="/dashboard" className="text-sm text-green-700 hover:underline">
               ← Panel
             </Link>
-            <h1 className="mt-2 text-2xl font-semibold text-stone-900">Categorías</h1>
-            <p className="mt-1 text-sm text-stone-600">
+            <h1 className="mt-2 page-heading">Categorías</h1>
+            <p className="page-subtitle">
               Agrupá productos por rubro y asignalos al cargar o editar cada ítem.
             </p>
           </div>
           <div className="flex gap-2">
             <Link
               to="/history"
-              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+              className="btn-soft"
             >
               Historial
             </Link>
             <Link
               to="/locals"
-              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+              className="btn-soft"
             >
               Locales
             </Link>
             <Link
               to="/products"
-              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+              className="btn-soft"
             >
               Productos
             </Link>
@@ -102,7 +102,7 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
 
         <form
           onSubmit={(e) => void handleCreate(e)}
-          className="mt-8 space-y-3 rounded-xl border border-stone-200 bg-white p-5"
+          className="surface-card mt-8 space-y-3 p-5"
         >
           <h2 className="text-sm font-medium text-stone-800">Nueva categoría</h2>
           <div className="flex flex-wrap items-end gap-3">
@@ -138,7 +138,7 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
           {listQuery.isLoading ? (
             <p className="text-sm text-stone-600">Cargando…</p>
           ) : listQuery.data ? (
-            <ul className="divide-y divide-stone-200 rounded-xl border border-stone-200 bg-white">
+            <ul className="surface-card divide-y divide-stone-200">
               {listQuery.data.length === 0 ? (
                 <li className="px-4 py-8 text-center text-sm text-stone-500">
                   No hay categorías en este local.
@@ -225,12 +225,12 @@ export default function CategoriesPage() {
 
   if (!locals?.length) {
     return (
-      <main className="min-h-screen bg-stone-50 px-6 py-10">
+      <main className="page-shell">
         <div className="mx-auto max-w-md">
           <Link to="/dashboard" className="text-sm text-green-700 hover:underline">
             ← Panel
           </Link>
-          <h1 className="mt-4 text-2xl font-semibold text-stone-900">Categorías</h1>
+          <h1 className="mt-4 page-heading">Categorías</h1>
           <p className="mt-2 text-sm text-stone-600">Primero creá un local desde Productos.</p>
           <Link
             to="/products"

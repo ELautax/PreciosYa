@@ -27,7 +27,7 @@ function reasonLabel(reason: string): string {
 
 export function PriceHistoryTable({ rows }: PriceHistoryTableProps) {
   return (
-    <div className="rounded-xl border border-stone-200 bg-white p-4">
+    <div className="surface-card p-4">
       <h3 className="text-sm font-medium text-stone-800">Tabla de cambios</h3>
       <div className="mt-3 overflow-x-auto">
         <table className="min-w-full text-left text-sm">
@@ -49,9 +49,9 @@ export function PriceHistoryTable({ rows }: PriceHistoryTableProps) {
                     {reasonLabel(r.changeReason)}
                   </span>
                 </td>
-                <td className="px-2 py-2 text-stone-800">${r.cost.toFixed(2)}</td>
-                <td className="px-2 py-2 text-stone-800">{r.marginPct.toFixed(2)}%</td>
-                <td className="px-2 py-2 font-medium text-stone-900">${r.salePrice.toFixed(2)}</td>
+                <td className="mono px-2 py-2 text-stone-800">${r.cost.toFixed(2)}</td>
+                <td className="mono px-2 py-2 text-stone-800">{r.marginPct.toFixed(2)}%</td>
+                <td className="mono px-2 py-2 font-medium text-stone-900">${r.salePrice.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>

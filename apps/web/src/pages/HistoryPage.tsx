@@ -44,12 +44,12 @@ export default function HistoryPage() {
 
   if (!locals?.length) {
     return (
-      <main className="min-h-screen bg-stone-50 px-6 py-10">
+      <main className="page-shell">
         <div className="mx-auto max-w-lg">
           <Link to="/dashboard" className="text-sm text-green-700 hover:underline">
             ← Panel
           </Link>
-          <h1 className="mt-2 text-2xl font-semibold text-stone-900">Historial</h1>
+            <h1 className="mt-2 page-heading">Historial</h1>
           <p className="mt-2 text-sm text-stone-600">Primero creá un local y productos.</p>
         </div>
       </main>
@@ -57,25 +57,25 @@ export default function HistoryPage() {
   }
 
   return (
-    <main className="min-h-screen bg-stone-50 px-6 py-10">
-      <div className="mx-auto max-w-5xl space-y-6">
+    <main className="page-shell">
+      <div className="page-wrap max-w-5xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <Link to="/dashboard" className="text-sm text-green-700 hover:underline">
               ← Panel
             </Link>
-            <h1 className="mt-2 text-2xl font-semibold text-stone-900">Historial de precios</h1>
+            <h1 className="mt-2 page-heading">Historial de precios</h1>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
               to="/products"
-              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+              className="btn-soft"
             >
               Productos
             </Link>
             <Link
               to="/locals"
-              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+              className="btn-soft"
             >
               Locales
             </Link>
@@ -114,16 +114,16 @@ export default function HistoryPage() {
             <PriceHistoryTable rows={historyQ.data} />
           </>
         ) : (
-          <div className="rounded-xl border border-stone-200 bg-white p-5 text-sm text-stone-600">
+          <div className="surface-card p-5 text-sm text-stone-600">
             No hay historial para este producto todavía.
           </div>
         )}
 
-        <section className="rounded-xl border border-stone-200 bg-white p-4">
+        <section className="surface-card p-4">
           <h3 className="text-sm font-medium text-stone-800">Últimos IPC registrados</h3>
           <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {ipcHistoryQ.data?.map((row) => (
-              <div key={row.id} className="rounded-lg border border-stone-200 bg-stone-50 p-3">
+              <div key={row.id} className="surface-soft p-3">
                 <p className="text-xs text-stone-500">
                   {new Date(row.period).toLocaleDateString('es-AR')}
                 </p>

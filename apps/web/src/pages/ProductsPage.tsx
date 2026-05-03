@@ -71,31 +71,31 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   }
 
   return (
-    <main className="min-h-screen bg-stone-50 px-6 py-10">
-      <div className="mx-auto max-w-4xl">
+    <main className="page-shell">
+      <div className="page-wrap max-w-4xl">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <Link to="/dashboard" className="text-sm text-green-700 hover:underline">
               ← Panel
             </Link>
-            <h1 className="mt-2 text-2xl font-semibold text-stone-900">Productos</h1>
+            <h1 className="mt-2 page-heading">Productos</h1>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
               to="/locals"
-              className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm text-stone-800 hover:bg-stone-100"
+              className="btn-soft"
             >
               Locales
             </Link>
             <Link
               to="/history"
-              className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm text-stone-800 hover:bg-stone-100"
+              className="btn-soft"
             >
               Historial
             </Link>
             <Link
               to="/categories"
-              className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm text-stone-800 hover:bg-stone-100"
+              className="btn-soft"
             >
               Categorías
             </Link>
@@ -218,7 +218,7 @@ export default function ProductsPage() {
 
   if (!locals?.length) {
     return (
-      <main className="min-h-screen bg-stone-50 px-6 py-10">
+      <main className="page-shell">
         <div className="mx-auto max-w-md">
           <Link to="/dashboard" className="text-sm text-green-700 hover:underline">
             ← Volver al panel
