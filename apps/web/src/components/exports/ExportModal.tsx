@@ -1,6 +1,10 @@
 import { useRef, useState } from 'react'
 
-import { useExportPriceList, sharePngIfSupported } from '@/hooks/useExport'
+import {
+  getExportErrorMessage,
+  useExportPriceList,
+  sharePngIfSupported,
+} from '@/hooks/useExport'
 import type { LocalDto } from '@/types/local'
 import type { ProductDto } from '@/types/product'
 
@@ -24,7 +28,7 @@ function downloadBlob(blob: Blob, fileName: string): void {
 }
 
 export function ExportModal({ local, products, onClose }: ExportModalProps) {
-  const templateRef = useRef<HTMLDivElement | null>(null)
+  const exportTemplateRef = useRef<HTMLDivElement | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const exportMut = useExportPriceList(local.id)
 
@@ -32,17 +36,17 @@ export function ExportModal({ local, products, onClose }: ExportModalProps) {
     blob: Blob
     fileName: string
   } | null> {
-    if (!templateRef.current) return null
+    if (!exportTemplateRef.current) return null
     setMessage(null)
     try {
       const res = await exportMut.mutateAsync({
-        target: templateRef.current,
+        target: exportTemplateRef.current,
         sharedVia,
       })
       setMessage('Lista exportada y guardada correctamente.')
       return { blob: res.blob, fileName: res.fileName }
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No se pudo exportar')
+      setMessage(getExportErrorMessage(error))
       return null
     }
   }
@@ -67,7 +71,7 @@ export function ExportModal({ local, products, onClose }: ExportModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
       <div
-        className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-xl border border-stone-200 bg-white p-6 shadow-lg"
+        className="max-h-[92vh] w-full max-w-4xl overflow-y-auto overflow-x-hidden rounded-xl border border-stone-200 bg-white p-6 shadow-lg"
         role="dialog"
         aria-modal="true"
       >
@@ -76,9 +80,9 @@ export function ExportModal({ local, products, onClose }: ExportModalProps) {
           Se genera un PNG con los productos visibles del local seleccionado.
         </p>
 
-        <div className="mt-4 overflow-x-auto rounded-lg border border-stone-200 bg-stone-50 p-3">
-          <div ref={templateRef} className="mx-auto w-fit">
-            <PriceListTemplate local={local} products={products} />
+        <div className="mt-4 rounded-lg border border-stone-200 bg-stone-50 p-3">
+          <div className="mx-auto max-w-full">
+            <PriceListTemplate local={local} products={products} variant="preview" />
           </div>
         </div>
 
@@ -112,6 +116,15 @@ export function ExportModal({ local, products, onClose }: ExportModalProps) {
           >
             Compartir
           </button>
+        </div>
+
+        <div
+          className="pointer-events-none fixed left-[-10000px] top-0 opacity-0"
+          aria-hidden
+        >
+          <div ref={exportTemplateRef}>
+            <PriceListTemplate local={local} products={products} variant="export" />
+          </div>
         </div>
       </div>
     </div>

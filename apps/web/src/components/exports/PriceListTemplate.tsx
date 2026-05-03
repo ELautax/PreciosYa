@@ -4,16 +4,34 @@ import type { ProductDto } from '@/types/product'
 type PriceListTemplateProps = {
   local: LocalDto
   products: ProductDto[]
+  variant?: 'preview' | 'export'
 }
 
-export function PriceListTemplate({ local, products }: PriceListTemplateProps) {
+export function PriceListTemplate({
+  local,
+  products,
+  variant = 'preview',
+}: PriceListTemplateProps) {
   const generatedAt = new Date().toLocaleString('es-AR')
   const visibleProducts = products.slice(0, 60)
+  const isExport = variant === 'export'
+
+  const width = isExport ? '900px' : '100%'
+  const headingSize = isExport ? '40px' : '34px'
+  const headingLine = isExport ? '44px' : '38px'
+  const subSize = isExport ? '18px' : '16px'
+  const headerSize = isExport ? '24px' : '20px'
+  const rowNameSize = isExport ? '30px' : '26px'
+  const rowNameLine = isExport ? '34px' : '30px'
+  const rowUnitSize = isExport ? '18px' : '16px'
+  const rowPriceSize = isExport ? '32px' : '28px'
+  const rowPriceLine = isExport ? '36px' : '32px'
+  const footerSize = isExport ? '18px' : '16px'
 
   return (
     <section
       style={{
-        width: '900px',
+        width,
         background: '#FFFFFF',
         color: '#1C1917',
         padding: '32px',
@@ -22,10 +40,10 @@ export function PriceListTemplate({ local, products }: PriceListTemplateProps) {
       }}
     >
       <header style={{ borderBottom: '1px solid #E7E5E4', paddingBottom: '16px' }}>
-        <h2 style={{ fontSize: '40px', lineHeight: '44px', fontWeight: 700, color: '#0F7A35' }}>
+        <h2 style={{ fontSize: headingSize, lineHeight: headingLine, fontWeight: 700, color: '#0F7A35' }}>
           {local.name}
         </h2>
-        <p style={{ marginTop: '6px', fontSize: '18px', color: '#44403C' }}>
+        <p style={{ marginTop: '6px', fontSize: subSize, color: '#44403C' }}>
           Lista de precios · {generatedAt}
         </p>
       </header>
@@ -39,7 +57,7 @@ export function PriceListTemplate({ local, products }: PriceListTemplateProps) {
           borderBottom: '1px solid #E7E5E4',
           paddingBottom: '8px',
           fontWeight: 700,
-          fontSize: '24px',
+          fontSize: headerSize,
           color: '#1C1917',
         }}
       >
@@ -61,17 +79,17 @@ export function PriceListTemplate({ local, products }: PriceListTemplateProps) {
             }}
           >
             <div>
-              <p style={{ margin: 0, fontSize: '30px', lineHeight: '34px', fontWeight: 600 }}>
+              <p style={{ margin: 0, fontSize: rowNameSize, lineHeight: rowNameLine, fontWeight: 600 }}>
                 {p.name}
               </p>
-              <p style={{ margin: '4px 0 0', fontSize: '18px', color: '#78716C' }}>{p.unit}</p>
+              <p style={{ margin: '4px 0 0', fontSize: rowUnitSize, color: '#78716C' }}>{p.unit}</p>
             </div>
             <p
               style={{
                 margin: 0,
                 textAlign: 'right',
-                fontSize: '32px',
-                lineHeight: '36px',
+                fontSize: rowPriceSize,
+                lineHeight: rowPriceLine,
                 fontWeight: 700,
               }}
             >
@@ -86,7 +104,7 @@ export function PriceListTemplate({ local, products }: PriceListTemplateProps) {
           marginTop: '24px',
           borderTop: '1px solid #E7E5E4',
           paddingTop: '10px',
-          fontSize: '18px',
+          fontSize: footerSize,
           color: '#78716C',
         }}
       >

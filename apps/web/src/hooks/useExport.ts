@@ -1,5 +1,6 @@
-import html2canvas from 'html2canvas'
 import { useMutation } from '@tanstack/react-query'
+import axios from 'axios'
+import { toBlob } from 'html-to-image'
 import type { ApiSuccess } from 'shared'
 
 import { useApiClient } from '@/hooks/useApiClient'
@@ -13,18 +14,6 @@ type UploadedPriceList = {
   createdAt: string
 }
 
-async function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        reject(new Error('No se pudo generar PNG'))
-        return
-      }
-      resolve(blob)
-    }, 'image/png')
-  })
-}
-
 export function useExportPriceList(localId: string) {
   const api = useApiClient()
 
@@ -33,21 +22,30 @@ export function useExportPriceList(localId: string) {
       target: HTMLElement
       sharedVia?: string
     }): Promise<{ uploaded: UploadedPriceList; blob: Blob; fileName: string }> => {
-      const canvas = await html2canvas(input.target, {
-        scale: 2,
+      const blob = await toBlob(input.target, {
+        pixelRatio: 2,
         backgroundColor: '#ffffff',
+        cacheBust: true,
       })
-      const blob = await canvasToBlob(canvas)
+      if (!blob) {
+        throw new Error('No se pudo generar PNG')
+      }
       const fileName = `preciosya-${Date.now()}.png`
+      const file = new File([blob], fileName, { type: 'image/png' })
 
       const form = new FormData()
       form.append('localId', localId)
       form.append('sharedVia', input.sharedVia ?? 'web')
-      form.append('file', blob, fileName)
+      form.append('file', file)
 
       const res = await api.post<ApiSuccess<{ priceList: UploadedPriceList }>>(
         '/api/exports/price-list',
         form,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
       )
 
       return {
@@ -86,4 +84,14 @@ export async function sharePngIfSupported(
     text: 'Lista de precios generada con PreciosYa',
   })
   return true
+}
+
+export function getExportErrorMessage(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    const message = error.response?.data?.error?.message
+    if (typeof message === 'string' && message.trim() !== '') return message
+    if (typeof error.message === 'string' && error.message.trim() !== '') return error.message
+  }
+  if (error instanceof Error) return error.message
+  return 'No se pudo exportar'
 }

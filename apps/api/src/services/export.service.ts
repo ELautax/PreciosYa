@@ -33,6 +33,30 @@ function serializePriceList(row: {
   }
 }
 
+async function ensureBucketExists(): Promise<void> {
+  const supabase = getSupabaseAdmin()
+  const { data, error } = await supabase.storage.getBucket(BUCKET_NAME)
+  if (!error && data) return
+
+  const { error: createError } = await supabase.storage.createBucket(BUCKET_NAME, {
+    public: true,
+    fileSizeLimit: 5 * 1024 * 1024,
+    allowedMimeTypes: ['image/png'],
+  })
+
+  // Si ya existe por carrera entre requests, no debe cortar el flujo.
+  if (
+    createError &&
+    !createError.message.toLowerCase().includes('already exists')
+  ) {
+    throw new AppError({
+      statusCode: 502,
+      message: `No se pudo crear bucket ${BUCKET_NAME}: ${createError.message}`,
+      code: 'STORAGE_BUCKET_CREATE_FAILED',
+    })
+  }
+}
+
 export async function uploadPriceListPng(input: {
   userId: string
   localId: string
@@ -42,7 +66,7 @@ export async function uploadPriceListPng(input: {
 }): Promise<PriceListDto> {
   await assertLocalOwnership(input.userId, input.localId)
 
-  if (input.mimeType !== 'image/png') {
+  if (input.mimeType !== 'image/png' && input.mimeType !== 'application/octet-stream') {
     throw new AppError({
       statusCode: 400,
       message: 'El archivo debe ser PNG',
@@ -52,13 +76,25 @@ export async function uploadPriceListPng(input: {
 
   const filePath = `${input.userId}/${input.localId}/${Date.now()}.png`
   const supabase = getSupabaseAdmin()
+  await ensureBucketExists()
 
-  const { error: uploadError } = await supabase.storage
+  let { error: uploadError } = await supabase.storage
     .from(BUCKET_NAME)
     .upload(filePath, input.fileBuffer, {
       contentType: 'image/png',
       upsert: false,
     })
+
+  if (uploadError?.message.toLowerCase().includes('bucket not found')) {
+    await ensureBucketExists()
+    const retry = await supabase.storage
+      .from(BUCKET_NAME)
+      .upload(filePath, input.fileBuffer, {
+        contentType: 'image/png',
+        upsert: false,
+      })
+    uploadError = retry.error
+  }
 
   if (uploadError) {
     throw new AppError({
