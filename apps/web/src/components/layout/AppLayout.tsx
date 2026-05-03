@@ -4,6 +4,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import { useAuth } from '@/contexts/AuthContext'
 import { useMe } from '@/hooks/useMe'
+import preciosYaLogo from '@/assets/preciosya-logo.png'
 
 type NavItem = {
   to: string
@@ -50,7 +51,14 @@ export function AppLayout() {
       <div className="pb-16 md:pb-0">
         <header className="sticky top-0 z-30 border-b border-stone-200 bg-white/95 backdrop-blur">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-            <p className="font-semibold text-stone-900">PreciosYa</p>
+            <div className="flex items-center gap-2">
+              <img
+                src={preciosYaLogo}
+                alt="Logo de PreciosYa"
+                className="h-8 w-8 rounded-md object-contain"
+              />
+              <p className="font-semibold text-stone-900">PreciosYa</p>
+            </div>
             <div className="flex items-center gap-2">
               <NotificationCenter />
               <button

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@/contexts/AuthContext'
+import preciosYaLogo from '@/assets/preciosya-logo.png'
 
 export default function LoginPage() {
   const { session, loading, supabaseConfigured, signInWithGoogle } = useAuth()
@@ -34,6 +35,11 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen bg-stone-50 text-stone-900">
       <div className="mx-auto flex max-w-md flex-col items-center justify-center px-6 py-16">
+        <img
+          src={preciosYaLogo}
+          alt="Logo de PreciosYa"
+          className="mb-4 h-20 w-20 object-contain"
+        />
         <h1 className="text-3xl font-semibold tracking-tight">PreciosYa</h1>
         <p className="mt-2 text-center text-sm text-stone-600">
           Iniciá sesión para gestionar precios y listas.
