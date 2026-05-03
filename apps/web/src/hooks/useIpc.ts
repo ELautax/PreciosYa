@@ -24,3 +24,14 @@ export function useIpcLatest() {
     },
   })
 }
+
+export function useIpcHistory() {
+  const api = useApiClient()
+  return useQuery({
+    queryKey: ['ipc-history'],
+    queryFn: async () => {
+      const res = await api.get<ApiSuccess<{ indices: EconomicIndexDto[] }>>('/api/ipc/history')
+      return res.data.data.indices
+    },
+  })
+}

@@ -14,3 +14,14 @@ export type ProductDto = {
   createdAt: string
   updatedAt: string
 }
+
+export type ProductHistoryEntryDto = {
+  id: string
+  cost: number
+  marginPct: number
+  salePrice: number
+  changeReason: string
+  ipcReference: number | null
+  note: string | null
+  recordedAt: string
+}

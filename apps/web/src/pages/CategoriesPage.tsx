@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { LocalSelector } from '@/components/locals/LocalSelector'
 import {
   useCategories,
   useCreateCategory,
@@ -8,11 +9,12 @@ import {
   useUpdateCategory,
 } from '@/hooks/useCategories'
 import { useLocals } from '@/hooks/useLocals'
+import { useSelectedLocal } from '@/hooks/useSelectedLocal'
 import type { CategoryDto } from '@/types/category'
 import type { LocalDto } from '@/types/local'
 
 function CategoriesMain({ locals }: { locals: LocalDto[] }) {
-  const [localId, setLocalId] = useState(locals[0].id)
+  const [localId, setLocalId] = useSelectedLocal(locals)
   const [newName, setNewName] = useState('')
   const [newColor, setNewColor] = useState('#16A34A')
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -23,12 +25,6 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
   const createMut = useCreateCategory(localId)
   const updateMut = useUpdateCategory(localId)
   const deleteMut = useDeleteCategory(localId)
-
-  useEffect(() => {
-    if (!locals.some((l) => l.id === localId)) {
-      setLocalId(locals[0].id)
-    }
-  }, [locals, localId])
 
   async function handleCreate(e: React.FormEvent): Promise<void> {
     e.preventDefault()
@@ -78,30 +74,31 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
               Agrupá productos por rubro y asignalos al cargar o editar cada ítem.
             </p>
           </div>
-          <Link
-            to="/products"
-            className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
-          >
-            Productos
-          </Link>
+          <div className="flex gap-2">
+            <Link
+              to="/history"
+              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+            >
+              Historial
+            </Link>
+            <Link
+              to="/locals"
+              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+            >
+              Locales
+            </Link>
+            <Link
+              to="/products"
+              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+            >
+              Productos
+            </Link>
+          </div>
         </div>
 
-        {locals.length > 1 ? (
-          <label className="mt-6 flex flex-wrap items-center gap-2 text-sm text-stone-700">
-            Local
-            <select
-              value={localId}
-              onChange={(e) => setLocalId(e.target.value)}
-              className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
-            >
-              {locals.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.name}
-                </option>
-              ))}
-            </select>
-          </label>
-        ) : null}
+        <div className="mt-6">
+          <LocalSelector locals={locals} value={localId} onChange={setLocalId} />
+        </div>
 
         <form
           onSubmit={(e) => void handleCreate(e)}

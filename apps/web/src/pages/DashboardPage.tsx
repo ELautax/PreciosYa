@@ -93,6 +93,18 @@ export default function DashboardPage() {
             >
               Categorías
             </Link>
+            <Link
+              to="/locals"
+              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+            >
+              Locales
+            </Link>
+            <Link
+              to="/history"
+              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
+            >
+              Historial
+            </Link>
             <NotificationCenter />
             <button
               type="button"

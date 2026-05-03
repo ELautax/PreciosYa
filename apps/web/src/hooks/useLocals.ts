@@ -32,6 +32,31 @@ export function useCreateLocal() {
   })
 }
 
+export function useUpdateLocal() {
+  const api = useApiClient()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (input: {
+      id: string
+      body: Partial<{
+        name: string
+        address: string | null
+        minMarginPct: number
+        currency: string
+      }>
+    }) => {
+      const res = await api.put<ApiSuccess<{ local: LocalDto }>>(
+        `/api/locals/${input.id}`,
+        input.body,
+      )
+      return res.data.data.local
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['locals'] })
+    },
+  })
+}
+
 export function useApplyIpcToLocal(localId: string) {
   const api = useApiClient()
   const qc = useQueryClient()

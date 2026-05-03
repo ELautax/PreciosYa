@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ApiSuccess } from 'shared'
 
 import { useApiClient } from '@/hooks/useApiClient'
-import type { ProductDto } from '@/types/product'
+import type { ProductDto, ProductHistoryEntryDto } from '@/types/product'
 
 export type ProductListResult = {
   items: ProductDto[]
@@ -104,6 +104,20 @@ export function useDeleteProduct(localId: string) {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['products', localId] })
+    },
+  })
+}
+
+export function useProductHistory(productId: string | undefined) {
+  const api = useApiClient()
+  return useQuery({
+    queryKey: ['product-history', productId],
+    enabled: Boolean(productId),
+    queryFn: async () => {
+      const res = await api.get<ApiSuccess<{ history: ProductHistoryEntryDto[] }>>(
+        `/api/products/${productId}/history`,
+      )
+      return res.data.data.history
     },
   })
 }

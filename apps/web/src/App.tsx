@@ -4,6 +4,8 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { useAuth } from '@/contexts/AuthContext'
 import CategoriesPage from '@/pages/CategoriesPage'
 import DashboardPage from '@/pages/DashboardPage'
+import HistoryPage from '@/pages/HistoryPage'
+import LocalsPage from '@/pages/LocalsPage'
 import ProductsPage from '@/pages/ProductsPage'
 import LoginPage from '@/pages/auth/LoginPage'
 
@@ -39,6 +41,22 @@ export default function App() {
         element={
           <ProtectedRoute>
             <ProductsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/history"
+        element={
+          <ProtectedRoute>
+            <HistoryPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/locals"
+        element={
+          <ProtectedRoute>
+            <LocalsPage />
           </ProtectedRoute>
         }
       />

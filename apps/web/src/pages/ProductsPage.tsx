@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { LocalSelector } from '@/components/locals/LocalSelector'
 import { BulkUpdateModal } from '@/components/products/BulkUpdateModal'
 import { IPCBanner } from '@/components/products/IPCBanner'
 import { ProductForm } from '@/components/products/ProductForm'
@@ -8,6 +9,7 @@ import { ProductList } from '@/components/products/ProductList'
 import { useCategories } from '@/hooks/useCategories'
 import { useIpcLatest } from '@/hooks/useIpc'
 import { useCreateLocal, useLocals } from '@/hooks/useLocals'
+import { useSelectedLocal } from '@/hooks/useSelectedLocal'
 import { useDeleteProduct, useProducts } from '@/hooks/useProducts'
 import type { LocalDto } from '@/types/local'
 import type { ProductDto } from '@/types/product'
@@ -42,7 +44,7 @@ function CategoryFilterSelect({
 }
 
 function ProductsMain({ locals }: { locals: LocalDto[] }) {
-  const [localId, setLocalId] = useState(locals[0].id)
+  const [localId, setLocalId] = useSelectedLocal(locals)
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [formOpen, setFormOpen] = useState(false)
@@ -55,12 +57,6 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
     ...(categoryFilter ? { categoryId: categoryFilter } : {}),
   })
   const deleteMut = useDeleteProduct(localId)
-
-  useEffect(() => {
-    if (!locals.some((l) => l.id === localId)) {
-      setLocalId(locals[0].id)
-    }
-  }, [locals, localId])
 
   function handleDelete(p: ProductDto): void {
     if (
@@ -82,6 +78,18 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
             <h1 className="mt-2 text-2xl font-semibold text-stone-900">Productos</h1>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Link
+              to="/locals"
+              className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm text-stone-800 hover:bg-stone-100"
+            >
+              Locales
+            </Link>
+            <Link
+              to="/history"
+              className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm text-stone-800 hover:bg-stone-100"
+            >
+              Historial
+            </Link>
             <Link
               to="/categories"
               className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm text-stone-800 hover:bg-stone-100"
@@ -109,22 +117,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
         </div>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          {locals.length > 1 ? (
-            <label className="flex items-center gap-2 text-sm text-stone-700">
-              Local
-              <select
-                value={localId}
-                onChange={(e) => setLocalId(e.target.value)}
-                className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
-              >
-                {locals.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
+          <LocalSelector locals={locals} value={localId} onChange={setLocalId} />
           <label className="flex flex-1 items-center gap-2 text-sm text-stone-700 sm:min-w-[200px]">
             Buscar
             <input
