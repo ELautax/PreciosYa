@@ -7,20 +7,39 @@ import { AppError } from '../utils/AppError.js'
 
 const BUCKET_NAME = 'price-lists'
 
-export async function uploadPriceListPng(input: {
-  userId: string
-  localId: string
-  fileBuffer: Buffer
-  mimeType: string
-  sharedVia?: string | null
-}): Promise<{
+type PriceListDto = {
   id: string
   localId: string
   format: 'PNG'
   fileUrl: string | null
   sharedVia: string | null
   createdAt: string
-}> {
+}
+
+function serializePriceList(row: {
+  id: string
+  localId: string
+  fileUrl: string | null
+  sharedVia: string | null
+  createdAt: Date
+}): PriceListDto {
+  return {
+    id: row.id,
+    localId: row.localId,
+    format: 'PNG',
+    fileUrl: row.fileUrl,
+    sharedVia: row.sharedVia,
+    createdAt: row.createdAt.toISOString(),
+  }
+}
+
+export async function uploadPriceListPng(input: {
+  userId: string
+  localId: string
+  fileBuffer: Buffer
+  mimeType: string
+  sharedVia?: string | null
+}): Promise<PriceListDto> {
   await assertLocalOwnership(input.userId, input.localId)
 
   if (input.mimeType !== 'image/png') {
@@ -70,12 +89,27 @@ export async function uploadPriceListPng(input: {
     },
   })
 
+  return serializePriceList(row)
+}
+
+export async function getLatestPriceListForUser(userId: string): Promise<{
+  priceList: PriceListDto
+  localName: string
+} | null> {
+  const row = await prisma.priceList.findFirst({
+    where: {
+      local: { userId, isActive: true },
+    },
+    include: {
+      local: { select: { name: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+
+  if (!row) return null
+
   return {
-    id: row.id,
-    localId: row.localId,
-    format: 'PNG',
-    fileUrl: row.fileUrl,
-    sharedVia: row.sharedVia,
-    createdAt: row.createdAt.toISOString(),
+    priceList: serializePriceList(row),
+    localName: row.local.name,
   }
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { ExportModal } from '@/components/exports/ExportModal'
 import { LocalSelector } from '@/components/locals/LocalSelector'
 import { BulkUpdateModal } from '@/components/products/BulkUpdateModal'
 import { IPCBanner } from '@/components/products/IPCBanner'
@@ -49,6 +50,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   const [categoryFilter, setCategoryFilter] = useState('')
   const [formOpen, setFormOpen] = useState(false)
   const [bulkOpen, setBulkOpen] = useState(false)
+  const [exportOpen, setExportOpen] = useState(false)
   const [editing, setEditing] = useState<ProductDto | null>(null)
 
   const ipcQuery = useIpcLatest()
@@ -57,6 +59,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
     ...(categoryFilter ? { categoryId: categoryFilter } : {}),
   })
   const deleteMut = useDeleteProduct(localId)
+  const selectedLocal = locals.find((l) => l.id === localId) ?? locals[0]
 
   function handleDelete(p: ProductDto): void {
     if (
@@ -102,6 +105,13 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
               className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-800 hover:bg-amber-100"
             >
               Actualización masiva
+            </button>
+            <button
+              type="button"
+              onClick={() => setExportOpen(true)}
+              className="rounded-lg border border-green-300 bg-green-50 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-100"
+            >
+              Exportar lista
             </button>
             <button
               type="button"
@@ -173,6 +183,13 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
           localId={localId}
           ipcPct={ipcQuery.data?.ipc?.valuePct ?? null}
           onClose={() => setBulkOpen(false)}
+        />
+      ) : null}
+      {exportOpen && selectedLocal && productsQuery.data ? (
+        <ExportModal
+          local={selectedLocal}
+          products={productsQuery.data.items}
+          onClose={() => setExportOpen(false)}
         />
       ) : null}
     </main>

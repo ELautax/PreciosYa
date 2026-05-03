@@ -1,26 +1,29 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
 
 import type { ApiSuccess } from 'shared'
 
-import { NotificationCenter } from '@/components/notifications/NotificationCenter'
-import { useAuth } from '@/contexts/AuthContext'
-import { env } from '@/config/env'
+import { LocalSelector } from '@/components/locals/LocalSelector'
+import { useLatestExport } from '@/hooks/useExports'
 import { useApiClient } from '@/hooks/useApiClient'
+import { useIpcLatest } from '@/hooks/useIpc'
+import { useLocals } from '@/hooks/useLocals'
+import { useSelectedLocal } from '@/hooks/useSelectedLocal'
+import { useProducts } from '@/hooks/useProducts'
 import type { AppUser } from '@/types/appUser'
 
-type HealthData = {
-  status: string
-  timestamp: string
-  version: string
-}
-
 export default function DashboardPage() {
-  const { signOut } = useAuth()
   const api = useApiClient()
   const [profile, setProfile] = useState<AppUser | null>(null)
-  const [health, setHealth] = useState<HealthData | null>(null)
-  const [healthErr, setHealthErr] = useState<string | null>(null)
+  const { data: locals } = useLocals()
+  const [localId, setLocalId] = useSelectedLocal(locals)
+  const selectedLocal = useMemo(
+    () => locals?.find((l) => l.id === localId) ?? null,
+    [locals, localId],
+  )
+  const productsQ = useProducts(localId || undefined, { page: 1, limit: 1 })
+  const alertsQ = useProducts(localId || undefined, { page: 1, limit: 1, isAlert: true })
+  const ipcQ = useIpcLatest()
+  const latestExportQ = useLatestExport()
 
   useEffect(() => {
     let cancelled = false
@@ -37,118 +40,65 @@ export default function DashboardPage() {
     }
   }, [api])
 
-  useEffect(() => {
-    let cancelled = false
-    void (async () => {
-      try {
-        const res = await fetch(`${env.VITE_API_URL}/health`)
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const json: unknown = await res.json()
-        if (cancelled || typeof json !== 'object' || json === null) return
-        if (
-          'success' in json &&
-          json.success === true &&
-          'data' in json &&
-          typeof json.data === 'object' &&
-          json.data !== null
-        ) {
-          const d = json.data as Record<string, unknown>
-          if (
-            typeof d.status === 'string' &&
-            typeof d.timestamp === 'string' &&
-            typeof d.version === 'string'
-          ) {
-            setHealth({
-              status: d.status,
-              timestamp: d.timestamp,
-              version: d.version,
-            })
-          }
-        }
-      } catch (e) {
-        if (!cancelled)
-          setHealthErr(e instanceof Error ? e.message : 'Error de red')
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
   return (
-    <main className="min-h-screen bg-stone-50 text-stone-900">
-      <div className="mx-auto max-w-2xl px-6 py-12">
+    <main className="px-6 py-8 text-stone-900">
+      <div className="mx-auto max-w-6xl">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-3xl font-semibold tracking-tight">Panel</h1>
-          <div className="flex flex-wrap gap-2">
-            <Link
-              to="/products"
-              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
-            >
-              Productos
-            </Link>
-            <Link
-              to="/categories"
-              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
-            >
-              Categorías
-            </Link>
-            <Link
-              to="/locals"
-              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
-            >
-              Locales
-            </Link>
-            <Link
-              to="/history"
-              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
-            >
-              Historial
-            </Link>
-            <NotificationCenter />
-            <button
-              type="button"
-              onClick={() => void signOut()}
-              className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 hover:bg-stone-100"
-            >
-              Cerrar sesión
-            </button>
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight">Panel</h1>
+            {profile ? (
+              <p className="mt-1 text-sm text-stone-600">
+                Hola, <span className="font-medium text-stone-800">{profile.name}</span> (
+                {profile.email})
+              </p>
+            ) : (
+              <p className="mt-1 text-sm text-stone-600">Cargando perfil…</p>
+            )}
+          </div>
+          {locals ? (
+            <LocalSelector
+              locals={locals}
+              value={localId}
+              onChange={setLocalId}
+              label="Local activo"
+            />
+          ) : null}
+        </div>
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-xl border border-stone-200 bg-white p-4">
+            <p className="text-xs text-stone-500">Productos activos</p>
+            <p className="mt-1 text-2xl font-semibold text-stone-900">
+              {productsQ.data?.total ?? 0}
+            </p>
+          </div>
+          <div className="rounded-xl border border-stone-200 bg-white p-4">
+            <p className="text-xs text-stone-500">Alertas de margen</p>
+            <p className="mt-1 text-2xl font-semibold text-red-700">{alertsQ.data?.total ?? 0}</p>
+          </div>
+          <div className="rounded-xl border border-stone-200 bg-white p-4">
+            <p className="text-xs text-stone-500">Último IPC</p>
+            <p className="mt-1 text-2xl font-semibold text-amber-700">
+              {ipcQ.data?.ipc ? `${ipcQ.data.ipc.valuePct.toFixed(2)}%` : '—'}
+            </p>
+          </div>
+          <div className="rounded-xl border border-stone-200 bg-white p-4">
+            <p className="text-xs text-stone-500">Última exportación</p>
+            <p className="mt-1 text-sm font-semibold text-stone-900">
+              {latestExportQ.data?.priceList
+                ? new Date(latestExportQ.data.priceList.createdAt).toLocaleDateString('es-AR')
+                : 'Sin exportaciones'}
+            </p>
           </div>
         </div>
-        {profile ? (
-          <p className="mt-2 text-sm text-stone-600">
-            Hola, <span className="font-medium text-stone-800">{profile.name}</span> (
-            {profile.email})
-          </p>
-        ) : (
-          <p className="mt-2 text-sm text-stone-600">Cargando perfil…</p>
-        )}
 
-        <div className="mt-8 rounded-xl border border-stone-200 bg-white p-5">
-          <div className="text-xs font-medium text-stone-500">
-            GET {env.VITE_API_URL}/health
-          </div>
-          {healthErr ? (
-            <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-              {healthErr}
-            </div>
-          ) : health ? (
-            <dl className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
-              <div className="rounded-lg bg-stone-50 p-3">
-                <dt className="text-xs text-stone-500">status</dt>
-                <dd className="font-medium">{health.status}</dd>
-              </div>
-              <div className="rounded-lg bg-stone-50 p-3">
-                <dt className="text-xs text-stone-500">timestamp</dt>
-                <dd className="font-medium">{health.timestamp}</dd>
-              </div>
-              <div className="rounded-lg bg-stone-50 p-3">
-                <dt className="text-xs text-stone-500">version</dt>
-                <dd className="font-medium">{health.version}</dd>
-              </div>
-            </dl>
+        <div className="mt-6 rounded-xl border border-stone-200 bg-white p-4 text-sm text-stone-600">
+          {selectedLocal ? (
+            <p>
+              Estás viendo datos del local <span className="font-medium text-stone-800">{selectedLocal.name}</span>.
+            </p>
           ) : (
-            <div className="mt-3 text-sm text-stone-700">Loading…</div>
+            <p>Creá un local para comenzar a trabajar con productos y precios.</p>
           )}
         </div>
       </div>

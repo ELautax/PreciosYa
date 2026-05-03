@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ApiSuccess } from 'shared'
 
 import { useApiClient } from '@/hooks/useApiClient'
+import { readOfflineSnapshot, saveOfflineSnapshot } from '@/lib/offline'
 import type { ProductDto, ProductHistoryEntryDto } from '@/types/product'
 
 export type ProductListResult = {
@@ -22,21 +23,30 @@ export function useProducts(
   },
 ) {
   const api = useApiClient()
+  const snapshotKey = `products:${localId ?? 'none'}:${opts?.categoryId ?? ''}:${opts?.search ?? ''}`
   return useQuery({
     queryKey: ['products', localId, opts],
     enabled: Boolean(localId),
     queryFn: async () => {
-      const res = await api.get<ApiSuccess<ProductListResult>>('/api/products', {
-        params: {
-          localId,
-          search: opts?.search || undefined,
-          page: opts?.page,
-          limit: opts?.limit ?? 20,
-          ...(opts?.isAlert ? { isAlert: 'true' as const } : {}),
-          ...(opts?.categoryId ? { categoryId: opts.categoryId } : {}),
-        },
-      })
-      return res.data.data
+      try {
+        const res = await api.get<ApiSuccess<ProductListResult>>('/api/products', {
+          params: {
+            localId,
+            search: opts?.search || undefined,
+            page: opts?.page,
+            limit: opts?.limit ?? 20,
+            ...(opts?.isAlert ? { isAlert: 'true' as const } : {}),
+            ...(opts?.categoryId ? { categoryId: opts.categoryId } : {}),
+          },
+        })
+        const data = res.data.data
+        void saveOfflineSnapshot(snapshotKey, data)
+        return data
+      } catch (error) {
+        const cached = await readOfflineSnapshot<ProductListResult>(snapshotKey)
+        if (cached) return cached
+        throw error
+      }
     },
   })
 }

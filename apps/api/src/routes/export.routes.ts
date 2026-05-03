@@ -1,7 +1,10 @@
 import { Router, type IRouter } from 'express'
 import multer from 'multer'
 
-import { createPriceListExport } from '../controllers/export.controller.js'
+import {
+  createPriceListExport,
+  getLatestPriceListExport,
+} from '../controllers/export.controller.js'
 import { authMiddleware } from '../middlewares/auth.middleware.js'
 import { asyncHandler } from '../utils/asyncHandler.js'
 
@@ -11,6 +14,8 @@ const upload = multer({
 })
 
 export const exportRoutes: IRouter = Router()
+
+exportRoutes.get('/latest', authMiddleware, asyncHandler(getLatestPriceListExport))
 
 exportRoutes.post(
   '/price-list',
