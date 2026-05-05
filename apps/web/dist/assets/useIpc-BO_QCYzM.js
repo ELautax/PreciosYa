@@ -1,0 +1,1 @@
+import{s as e,t}from"./useApiClient-BA4OFUPQ.js";function n(){let n=t();return e({queryKey:[`ipc-latest`],queryFn:async()=>(await n.get(`/api/ipc/latest`)).data.data})}function r(){let n=t();return e({queryKey:[`ipc-history`],queryFn:async()=>(await n.get(`/api/ipc/history`)).data.data.indices})}export{n,r as t};
