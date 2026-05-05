@@ -22,8 +22,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Lora:ital,wght@1,400;1,500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:FILL@0..1" rel="stylesheet" />
 
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2316A34A'%3E%3Cpath d='M21 11.59V3h-8.59L2.59 12.83a2 2 0 0 0 0 2.83l5.75 5.75a2 2 0 0 0 2.83 0L21 11.59zM6 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4z'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/png" href="./assets/preciosya-logo.png" />
 
   <style>
     /* =========================================================
@@ -102,7 +103,15 @@
     }
     img, svg { display: block; max-width: 100%; }
     a { color: inherit; text-decoration: none; }
-    button { font: inherit; color: inherit; cursor: pointer; }
+    button {
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      background: transparent;
+      border: 0;
+      -webkit-appearance: none;
+      appearance: none;
+    }
     input, textarea, select, button { font-family: inherit; }
     ::selection { background: var(--green); color: var(--white); }
 
@@ -155,6 +164,20 @@
       letter-spacing: 0.05em;
       text-transform: uppercase;
     }
+    .msr {
+      font-family: 'Material Symbols Rounded';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 18px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    .eyebrow .msr { font-size: 15px; }
     .eyebrow.amber {
       background: rgba(217,119,6,0.08);
       border-color: var(--border-amber);
@@ -262,7 +285,13 @@
       gap: 24px;
     }
     .brand { display: inline-flex; align-items: center; gap: 10px; }
-    .brand-mark { width: 30px; height: 30px; }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
     .brand-name {
       font-family: var(--font-display);
       font-weight: 800;
@@ -526,6 +555,7 @@
       font-size: 12px;
       position: relative;
     }
+    .phone-bell .msr { font-size: 14px; }
     .phone-bell::after {
       content: "";
       position: absolute; top: 2px; right: 2px;
@@ -684,6 +714,7 @@
       align-items: center;
       gap: 12px;
     }
+    .marquee-item .msr { font-size: 20px; color: var(--green-light); }
     @keyframes marquee {
       from { transform: translateX(0); }
       to { transform: translateX(-50%); }
@@ -833,6 +864,7 @@
       font-size: 20px;
       margin-bottom: 18px;
     }
+    .feature .ico .msr { font-size: 22px; color: var(--green-light); }
     .feature h3 {
       font-family: var(--font-display);
       font-weight: 700;
@@ -974,16 +1006,22 @@
     }
     .step {
       display: grid;
-      grid-template-columns: 80px 1fr;
+      grid-template-columns: 104px 1fr;
       gap: 18px;
       padding: 22px 22px 22px 0;
+      background: rgba(255, 255, 255, 0.02);
       border: 1px solid transparent;
       border-radius: var(--radius-lg);
       cursor: pointer;
-      transition: background 0.3s, border-color 0.3s;
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
       align-items: start;
+      overflow: visible;
     }
-    .step:hover { background: var(--bg-card); }
+    .step:hover {
+      background: var(--bg-card);
+      border-color: var(--border);
+      box-shadow: 0 20px 40px -30px rgba(0,0,0,0.7);
+    }
     .step.active {
       background: linear-gradient(135deg, rgba(22,163,74,0.06), transparent 80%);
       border-color: var(--border-green);
@@ -991,13 +1029,16 @@
     .step-num {
       font-family: var(--font-display);
       font-weight: 800;
-      font-size: 64px;
-      line-height: 0.9;
+      font-size: clamp(58px, 8vw, 72px);
+      line-height: 1;
       letter-spacing: -0.05em;
       color: var(--text-dim);
       transition: color 0.3s;
-      text-align: right;
-      padding-left: 10px;
+      text-align: center;
+      padding-left: 0;
+      min-width: 100px;
+      display: block;
+      white-space: nowrap;
     }
     .step.active .step-num {
       background: linear-gradient(180deg, var(--green-light), var(--green));
@@ -1011,8 +1052,14 @@
       font-weight: 700;
       letter-spacing: -0.02em;
       margin: 6px 0 6px;
+      color: var(--text);
     }
-    .step-body p { color: var(--text-mid); margin: 0; font-size: 14.5px; line-height: 1.6; }
+    .step-body p {
+      color: #9EC3A8;
+      margin: 0;
+      font-size: 14.5px;
+      line-height: 1.6;
+    }
 
     .how-visual {
       position: sticky;
@@ -1723,18 +1770,7 @@
   <header class="nav" id="nav">
     <div class="nav-inner">
       <a href="#top" class="brand" aria-label="Inicio PreciosYa">
-        <svg class="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="brandGreen" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#16A34A" />
-              <stop offset="100%" stop-color="#15803D" />
-            </linearGradient>
-          </defs>
-          <path d="M20.5 3 H35 a2 2 0 0 1 2 2 V19.5 a3 3 0 0 1 -0.88 2.12 L21.62 36.12 a3 3 0 0 1 -4.24 0 L3.88 22.62 a3 3 0 0 1 0 -4.24 L18.38 3.88 A3 3 0 0 1 20.5 3 Z" fill="url(#brandGreen)"/>
-          <circle cx="29" cy="11" r="2.7" fill="#0A5425"/>
-          <path d="M14 25 L20 19 L24 23 L29.5 17.5" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <path d="M27 16 L30.5 16 L30.5 19.5 Z" fill="#D97706"/>
-        </svg>
+        <img class="brand-mark" src="./assets/preciosya-logo.png" alt="Logo PreciosYa" loading="eager" />
         <span class="brand-name">Precios<span class="ya">Ya</span></span>
       </a>
       <nav aria-label="Principal">
@@ -1771,7 +1807,7 @@
       <div class="container">
         <div class="hero-inner">
           <div>
-            <span class="eyebrow reveal">🇦🇷 Hecho para Argentina</span>
+            <span class="eyebrow reveal"><span class="msr" aria-hidden="true">flag</span>Hecho para Argentina</span>
             <h1 class="hero-h1 reveal" data-delay="1">
               <span class="seg">Dejá de perder plata.</span>
               <span class="seg">Actualizá tus precios</span>
@@ -1806,7 +1842,7 @@
                 </div>
                 <div class="phone-header">
                   <div class="phone-title">Precios<span class="acc">Ya</span></div>
-                  <div class="phone-bell" aria-hidden="true">🔔</div>
+                  <div class="phone-bell" aria-hidden="true"><span class="msr">notifications</span></div>
                 </div>
                 <div class="phone-banner">
                   <span class="pill">+3.7%</span>
@@ -1860,22 +1896,22 @@
       <div class="marquee-label">Pensado para todo tipo de comercio</div>
       <div class="marquee">
         <div class="marquee-track">
-          <span class="marquee-item">🏪 Kioscos</span>
-          <span class="marquee-item">🛒 Almacenes</span>
-          <span class="marquee-item">🥖 Panaderías</span>
-          <span class="marquee-item">🥩 Carnicerías</span>
-          <span class="marquee-item">🥦 Verdulerías</span>
-          <span class="marquee-item">📦 Revendedores</span>
-          <span class="marquee-item">☕ Cafeterías</span>
-          <span class="marquee-item">🍰 Emprendedoras</span>
-          <span class="marquee-item">🏪 Kioscos</span>
-          <span class="marquee-item">🛒 Almacenes</span>
-          <span class="marquee-item">🥖 Panaderías</span>
-          <span class="marquee-item">🥩 Carnicerías</span>
-          <span class="marquee-item">🥦 Verdulerías</span>
-          <span class="marquee-item">📦 Revendedores</span>
-          <span class="marquee-item">☕ Cafeterías</span>
-          <span class="marquee-item">🍰 Emprendedoras</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">storefront</span>Kioscos</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">shopping_cart</span>Almacenes</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">bakery_dining</span>Panaderías</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">restaurant</span>Carnicerías</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">local_florist</span>Verdulerías</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">inventory_2</span>Revendedores</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">coffee</span>Cafeterías</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">cake</span>Emprendedoras</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">storefront</span>Kioscos</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">shopping_cart</span>Almacenes</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">bakery_dining</span>Panaderías</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">restaurant</span>Carnicerías</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">local_florist</span>Verdulerías</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">inventory_2</span>Revendedores</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">coffee</span>Cafeterías</span>
+          <span class="marquee-item"><span class="msr" aria-hidden="true">cake</span>Emprendedoras</span>
         </div>
       </div>
     </section>
@@ -1886,7 +1922,7 @@
     <section class="pain" id="problema">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow amber">😤 El problema real</span>
+          <span class="eyebrow amber"><span class="msr" aria-hidden="true">sentiment_dissatisfied</span>El problema real</span>
           <h2>Los comerciantes argentinos actualizan precios como hace 30 años.</h2>
           <p>Las góndolas suben en silencio cada semana. Pero la libreta y la memoria no escalan. Y nadie sabe, producto por producto, si está ganando plata o trabajando para el proveedor.</p>
         </div>
@@ -1930,15 +1966,15 @@
     <section class="solution" id="solucion">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow">✨ La solución</span>
+          <span class="eyebrow"><span class="msr" aria-hidden="true">auto_awesome</span>La solución</span>
           <h2>Todo lo que necesitás para manejar tus precios.</h2>
           <p>Una sola herramienta, en el celular, mobile-first, pensada para el ritmo real de un comercio argentino.</p>
         </div>
 
         <div class="features">
           <article class="feature feature-featured reveal">
-            <span class="exclusive">🏆 Exclusivo de PreciosYa</span>
-            <div class="ico" aria-hidden="true">📡</div>
+            <span class="exclusive"><span class="msr" aria-hidden="true">workspace_premium</span>Exclusivo de PreciosYa</span>
+            <div class="ico" aria-hidden="true"><span class="msr">sensors</span></div>
             <h3>IPC oficial del INDEC, sincronizado.</h3>
             <p>Conectado al endpoint público de datos.gob.ar. Cuando se publica el IPC del mes, te avisamos. Un toque y todos tus costos se actualizan con el porcentaje real, no con un número inventado.</p>
 
@@ -1956,44 +1992,44 @@
           </article>
 
           <article class="feature reveal" data-delay="1">
-            <div class="ico" aria-hidden="true">🧮</div>
+            <div class="ico" aria-hidden="true"><span class="msr">calculate</span></div>
             <h3>Cálculo automático</h3>
             <p>Cargás costo y margen, el precio aparece al instante. Sin fórmulas, sin Excel.</p>
             <div class="formula">precio = costo × (1 + margen / 100)</div>
           </article>
 
           <article class="feature reveal" data-delay="2">
-            <div class="ico" aria-hidden="true">🔔</div>
+            <div class="ico" aria-hidden="true"><span class="msr">notifications</span></div>
             <h3>Alertas de margen</h3>
             <p>Definís un margen mínimo por local. Los productos por debajo se marcan en rojo. Vendés más informado.</p>
           </article>
 
           <article class="feature reveal" data-delay="3">
-            <div class="ico" aria-hidden="true">⚡</div>
+            <div class="ico" aria-hidden="true"><span class="msr">bolt</span></div>
             <h3>Actualización masiva</h3>
             <p>¿Subió todo un proveedor? Aplicás el porcentaje a una categoría completa en segundos.</p>
           </article>
 
           <article class="feature reveal" data-delay="1">
-            <div class="ico" aria-hidden="true">📤</div>
+            <div class="ico" aria-hidden="true"><span class="msr">ios_share</span></div>
             <h3>Lista para WhatsApp</h3>
             <p>Generás un PNG limpio con tu logo y lo compartís con tus clientes en un toque, vía Web Share API.</p>
           </article>
 
           <article class="feature reveal" data-delay="2">
-            <div class="ico" aria-hidden="true">📊</div>
+            <div class="ico" aria-hidden="true"><span class="msr">monitoring</span></div>
             <h3>Historial de precios</h3>
             <p>Cada cambio queda registrado. Ves la evolución de cada producto en un gráfico de líneas.</p>
           </article>
 
           <article class="feature reveal" data-delay="3">
-            <div class="ico" aria-hidden="true">📶</div>
+            <div class="ico" aria-hidden="true"><span class="msr">signal_wifi_statusbar_4_bar</span></div>
             <h3>Funciona offline (PWA)</h3>
             <p>La instalás como app en cualquier Android. Si se cae internet en el barrio, igual seguís consultando.</p>
           </article>
 
           <article class="feature muted reveal" data-delay="1">
-            <div class="ico" aria-hidden="true">📷</div>
+            <div class="ico" aria-hidden="true"><span class="msr">qr_code_scanner</span></div>
             <h3>Escaneo de código de barras</h3>
             <p>Cargás productos apuntando con la cámara. Sin tipear, sin equivocarte.</p>
             <span class="v2-badge">V2 — próximamente</span>
@@ -2008,7 +2044,7 @@
     <section class="how" id="como">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow">⚙️ Cómo funciona</span>
+          <span class="eyebrow"><span class="msr" aria-hidden="true">settings</span>Cómo funciona</span>
           <h2>De la libreta a un sistema, sin curva de aprendizaje.</h2>
           <p>Cuatro pasos, tres minutos, cero capacitación. Pensado para el comerciante que ya tiene poco tiempo.</p>
         </div>
@@ -2067,7 +2103,7 @@
                 <div class="demo-bar"><span style="width:80%; background: linear-gradient(90deg, var(--amber), var(--amber-bright))"></span></div>
                 <div class="demo-row"><span class="demo-key">Tiempo estimado</span><span class="demo-val">3 segundos</span></div>
               </div>
-              <span class="demo-tag" style="background: rgba(217,119,6,0.10); color: var(--amber-bright); border-color: var(--border-amber);">⚡ Listo para aplicar</span>
+              <span class="demo-tag" style="background: rgba(217,119,6,0.10); color: var(--amber-bright); border-color: var(--border-amber);"><span class="msr" aria-hidden="true">bolt</span> Listo para aplicar</span>
             </div>
 
             <div class="how-panel" data-panel="3">
@@ -2079,7 +2115,7 @@
                 <div class="demo-bar"><span style="width:37%"></span></div>
                 <div class="demo-row"><span class="demo-key">Productos a actualizar</span><span class="demo-val">87 productos</span></div>
               </div>
-              <span class="demo-tag">📡 Sincronizado oficial</span>
+              <span class="demo-tag"><span class="msr" aria-hidden="true">sensors</span> Sincronizado oficial</span>
             </div>
 
             <div class="how-panel" data-panel="4">
@@ -2091,7 +2127,7 @@
                 <div class="demo-row"><span class="demo-key">Compartir</span><span class="demo-val">WhatsApp · Web Share API</span></div>
                 <div class="demo-bar"><span style="width:100%"></span></div>
               </div>
-              <span class="demo-tag">📤 Lista enviada</span>
+              <span class="demo-tag"><span class="msr" aria-hidden="true">ios_share</span> Lista enviada</span>
             </div>
           </div>
         </div>
@@ -2104,7 +2140,7 @@
     <section class="calc" id="calculadora">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow">🧪 Probalo ahora</span>
+          <span class="eyebrow"><span class="msr" aria-hidden="true">science</span>Probalo ahora</span>
           <h2>La calculadora que vive adentro de PreciosYa.</h2>
           <p>Cambiá los valores y mirá cómo se mueve todo en tiempo real. La misma lógica del PricingEngine que usa la app.</p>
         </div>
@@ -2165,7 +2201,7 @@
     <section class="competition">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow">⚔️ Por qué PreciosYa</span>
+          <span class="eyebrow"><span class="msr" aria-hidden="true">compare_arrows</span>Por qué PreciosYa</span>
           <h2>Lo que no tiene ningún competidor.</h2>
           <p>Comparado con el software de gestión más conocido del mercado argentino y con la planilla de Excel que la mayoría termina usando.</p>
         </div>
@@ -2247,7 +2283,7 @@
     <section class="pricing" id="precios">
       <div class="container">
         <div class="section-head reveal" style="margin-left:auto; margin-right:auto; text-align:center;">
-          <span class="eyebrow">💸 Planes</span>
+          <span class="eyebrow"><span class="msr" aria-hidden="true">payments</span>Planes</span>
           <h2>Empezá gratis. Pagá cuando valga la pena.</h2>
           <p>Sin tarjeta de crédito al registrarte. Sin contrato anual. El plan gratis es real, no un demo de 30 días.</p>
         </div>
@@ -2274,7 +2310,7 @@
           </article>
 
           <article class="price-card featured reveal" data-delay="1">
-            <span class="top-pill">⭐ Más elegido</span>
+            <span class="top-pill"><span class="msr" aria-hidden="true">stars</span> Más elegido</span>
             <h3>Pro</h3>
             <p class="desc">Para comercios que ya saben que se les va la plata en pisar precios viejos.</p>
             <div class="price">
@@ -2321,7 +2357,7 @@
     <section class="tech">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow">🔧 Cómo está construido</span>
+          <span class="eyebrow"><span class="msr" aria-hidden="true">build</span>Cómo está construido</span>
           <h2>Tecnología moderna, pensada para escalar.</h2>
           <p>No es un prototipo de aula. PreciosYa es una arquitectura de producción real, con monorepo, ORM tipado, scheduler y PWA instalable.</p>
         </div>
@@ -2411,7 +2447,7 @@
     <section class="faq" id="faq">
       <div class="container">
         <div class="section-head reveal" style="margin-left:auto; margin-right:auto; text-align:center;">
-          <span class="eyebrow">💬 Preguntas frecuentes</span>
+          <span class="eyebrow"><span class="msr" aria-hidden="true">forum</span>Preguntas frecuentes</span>
           <h2>Lo que todos preguntan antes de usarlo.</h2>
           <p>Si tu duda no está acá, escribinos: igual te respondemos por mail.</p>
         </div>
@@ -2522,18 +2558,7 @@
     <div class="footer-inner">
       <div>
         <a href="#top" class="brand" aria-label="Inicio PreciosYa">
-          <svg class="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-            <defs>
-              <linearGradient id="footerGreen" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#16A34A" />
-                <stop offset="100%" stop-color="#15803D" />
-              </linearGradient>
-            </defs>
-            <path d="M20.5 3 H35 a2 2 0 0 1 2 2 V19.5 a3 3 0 0 1 -0.88 2.12 L21.62 36.12 a3 3 0 0 1 -4.24 0 L3.88 22.62 a3 3 0 0 1 0 -4.24 L18.38 3.88 A3 3 0 0 1 20.5 3 Z" fill="url(#footerGreen)"/>
-            <circle cx="29" cy="11" r="2.7" fill="#0A5425"/>
-            <path d="M14 25 L20 19 L24 23 L29.5 17.5" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <path d="M27 16 L30.5 16 L30.5 19.5 Z" fill="#D97706"/>
-          </svg>
+          <img class="brand-mark" src="./assets/preciosya-logo.png" alt="Logo PreciosYa" loading="lazy" />
           <span class="brand-name">Precios<span class="ya">Ya</span></span>
         </a>
         <span class="footer-thesis">Proyecto de tesis · Analista de Sistemas · Escuela Multimedial Da Vinci</span>
@@ -2545,13 +2570,13 @@
         <li><a href="mailto:hola@preciosya.app">Contacto</a></li>
       </ul>
       <div class="footer-meta">
-        Hecho con yerba ☕ y código abierto.
-        <span class="copyright">© 2026 PreciosYa · Desarrollado en Argentina 🇦🇷</span>
+        Hecho con yerba y código abierto.
+        <span class="copyright">© 2026 PreciosYa · Desarrollado en Argentina</span>
       </div>
     </div>
   </footer>
 
-  <div class="toast" id="toast" role="status" aria-live="polite">🎉 ¡Ya estás en la lista! Revisá tu inbox.</div>
+  <div class="toast" id="toast" role="status" aria-live="polite">¡Ya estás en la lista! Revisá tu inbox.</div>
 
   <script>
     (function () {
@@ -2702,7 +2727,7 @@
 
         let status = 'ok', label = '✓ Margen saludable';
         if (effMargin < 0) { status = 'bad'; label = '▼ Vendiendo a pérdida'; }
-        else if (effMargin < 20) { status = 'warn'; label = '⚡ Margen bajo'; }
+        else if (effMargin < 20) { status = 'warn'; label = 'Margen bajo'; }
         $st.dataset.status = status;
         $st.textContent = label;
 
@@ -2756,14 +2781,14 @@
         if (!emailRegex.test(value)) {
           emailInput.style.borderColor = 'rgba(220,38,38,0.5)';
           emailInput.focus();
-          toast.textContent = '⚠️ Ingresá un email válido';
+          toast.textContent = 'Ingresá un email válido';
           toast.classList.add('show');
           setTimeout(() => toast.classList.remove('show'), 2500);
           return;
         }
         emailInput.style.borderColor = '';
         emailInput.value = '';
-        toast.textContent = '🎉 ¡Ya estás en la lista! Revisá tu inbox.';
+        toast.textContent = '¡Ya estás en la lista! Revisá tu inbox.';
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3500);
 
