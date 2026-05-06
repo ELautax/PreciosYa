@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  quality:
+    name: Typecheck, lint and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Shared package build (typecheck)
+        run: pnpm --filter shared build
+
+      - name: Shared package tests
+        run: pnpm --filter shared test
+
+      - name: API typecheck
+        run: pnpm --filter api typecheck
+
+      - name: API tests
+        run: pnpm --filter api test
+
+      - name: Web lint
+        run: pnpm --filter web lint
+
+      - name: Web build (typecheck + bundle)
+        run: pnpm --filter web build
+
+      - name: Web tests
+        run: pnpm --filter web test

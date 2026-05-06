@@ -1,4 +1,4 @@
-FROM node:20-alpine AS base
+FROM node:20-bookworm-slim AS base
 WORKDIR /app
 RUN corepack enable
 
@@ -6,7 +6,7 @@ FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/api/package.json apps/api/package.json
 COPY packages/shared/package.json packages/shared/package.json
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 FROM base AS runner
 ENV NODE_ENV=production
@@ -21,5 +21,7 @@ COPY apps/api ./apps/api
 COPY packages/shared ./packages/shared
 
 EXPOSE 3001
+
+RUN pnpm --filter api db:generate
 
 CMD ["pnpm", "--filter", "api", "start"]
