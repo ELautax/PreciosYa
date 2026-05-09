@@ -1,2834 +1,2165 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#080D0A" />
-
-  <title>PreciosYa — Actualizá tus precios en segundos, no en horas</title>
-  <meta name="description" content="La única herramienta que se conecta al IPC oficial del INDEC. Para kiosqueros, almaceneros y revendedores argentinos." />
-  <meta name="author" content="Lautaro Nahuel Villanueva — Escuela Multimedial Da Vinci" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PreciosYa — Del cuaderno al control total de precios</title>
+  <meta
+    name="description"
+    content="Landing oficial de PreciosYa: actualizá precios con IPC oficial, detectá alertas de margen y compartí listas por WhatsApp desde la PWA."
+  />
+  <meta name="keywords" content="preciosya, precios, ipc, indec, kiosco, almacen, margen, pwa, argentina, lista de precios" />
   <meta name="robots" content="index, follow" />
-
+  <link rel="canonical" href="https://preciosya-landing.vercel.app" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="PreciosYa — Gestioná tus márgenes con inflación" />
-  <meta property="og:description" content="Calculá precios, aplicá el IPC, generá tu lista para WhatsApp. Todo desde el celular." />
-  <meta property="og:locale" content="es_AR" />
-
+  <meta property="og:url" content="https://preciosya-landing.vercel.app" />
+  <meta property="og:title" content="PreciosYa — Del cuaderno al control total de precios" />
+  <meta property="og:description" content="Aplicá IPC oficial, detectá alertas de margen y compartí listas por WhatsApp desde tu celular." />
+  <meta property="og:image" content="https://preciosya-landing.vercel.app/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="PreciosYa — Actualizá tus precios en segundos" />
-  <meta name="twitter:description" content="Calculá precios con margen, aplicá el IPC oficial del INDEC y compartí tu lista por WhatsApp." />
-
+  <meta name="twitter:title" content="PreciosYa — Protegé tu margen de la inflación" />
+  <meta name="twitter:description" content="Actualizá precios con IPC oficial de INDEC, controlá márgenes y compartí listas por WhatsApp." />
+  <meta name="theme-color" content="#07110B" />
+  <link rel="icon" type="image/png" href="./assets/preciosya-logo.png" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./assets/preciosya-logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Lora:ital,wght@1,400;1,500&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:FILL@0..1" rel="stylesheet" />
-
-  <link rel="icon" type="image/png" href="./assets/preciosya-logo.png" />
-
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Material+Symbols+Rounded:FILL@0..1&display=swap" rel="stylesheet" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "PreciosYa",
+    "description": "PWA para comerciantes argentinos. Gestioná precios, aplicá IPC oficial de INDEC y generá listas de precios para compartir por WhatsApp.",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Android, iOS, Chrome OS",
+    "inLanguage": "es-AR",
+    "url": "https://preciosya.vercel.app",
+    "offers": [
+      { "@type": "Offer", "name": "Plan Free", "price": "0", "priceCurrency": "ARS" },
+      { "@type": "Offer", "name": "Plan Pro", "price": "4500", "priceCurrency": "ARS" }
+    ]
+  }
+  </script>
   <style>
-    /* =========================================================
-       1. ROOT TOKENS
-       ========================================================= */
     :root {
-      --green:          #16A34A;
-      --green-dark:     #0F7A35;
-      --green-deep:     #0A5425;
-      --green-light:    #DCFCE7;
-      --green-glow:     rgba(22, 163, 74, 0.15);
-      --green-line:     rgba(22, 163, 74, 0.55);
-
-      --amber:          #D97706;
-      --amber-light:    #FEF3C7;
-      --amber-bright:   #FBBF24;
-
-      --red:            #DC2626;
-      --red-glow:       rgba(220, 38, 38, 0.18);
-
-      --bg-primary:     #080D0A;
-      --bg-secondary:   #0D1410;
-      --bg-tertiary:    #111A14;
-      --bg-card:        rgba(255, 255, 255, 0.03);
-      --bg-card-strong: rgba(255, 255, 255, 0.05);
-
-      --border:         rgba(255, 255, 255, 0.07);
-      --border-strong:  rgba(255, 255, 255, 0.12);
-      --border-green:   rgba(22, 163, 74, 0.25);
-      --border-amber:   rgba(217, 119, 6, 0.25);
-
-      --text:           #E8F5EC;
-      --text-mid:       #8FAF97;
-      --text-dim:       #4A6652;
-      --white:          #FFFFFF;
-
-      --font-display:   'Sora', system-ui, sans-serif;
-      --font-body:      'Sora', system-ui, sans-serif;
-      --font-mono:      'DM Mono', 'JetBrains Mono', monospace;
-      --font-italic:    'Lora', Georgia, serif;
-
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 22px;
-      --radius-xl: 32px;
-      --radius-pill: 999px;
-
-      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-      --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
-
-      --shadow-card: 0 1px 0 rgba(255,255,255,0.04) inset, 0 30px 60px -30px rgba(0,0,0,0.6);
-      --shadow-elev: 0 1px 0 rgba(255,255,255,0.06) inset, 0 40px 80px -40px rgba(0,0,0,0.7);
-      --shadow-green: 0 0 0 1px rgba(22,163,74,0.35), 0 30px 70px -25px rgba(22,163,74,0.45);
-
-      --section-pad-y: clamp(80px, 10vw, 140px);
-      --container: 1180px;
+      --bg: oklch(0.13 0.03 155);
+      --fg: oklch(0.97 0.01 105);
+      --muted: oklch(0.8 0.02 102);
+      --surface: oklch(0.2 0.02 155 / 0.78);
+      --surface-2: oklch(0.24 0.02 155 / 0.8);
+      --line: oklch(0.98 0 0 / 0.13);
+      --green: oklch(0.66 0.18 148);
+      --green-2: oklch(0.58 0.15 148);
+      --amber: oklch(0.78 0.16 72);
+      --red: oklch(0.66 0.21 28);
+      --ok: oklch(0.75 0.2 151);
+      --ok-soft: oklch(0.75 0.2 151 / 0.22);
+      --warn-soft: oklch(0.66 0.21 28 / 0.2);
+      --shadow: oklch(0.05 0.02 160 / 0.6);
+      --mesh-a: oklch(0.42 0.13 148 / 0.32);
+      --mesh-b: oklch(0.52 0.11 72 / 0.24);
+      --mesh-c: oklch(0.33 0.08 190 / 0.2);
     }
 
-    /* =========================================================
-       2. RESET & BASE
-       ========================================================= */
-    *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      background: var(--bg-primary);
-      color: var(--text);
-      font-family: var(--font-body);
-      font-weight: 400;
-      font-size: 16px;
-      line-height: 1.6;
-      letter-spacing: -0.005em;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
       overflow-x: hidden;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Inter", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
-    img, svg { display: block; max-width: 100%; }
-    a { color: inherit; text-decoration: none; }
-    button {
-      font: inherit;
-      color: inherit;
-      cursor: pointer;
-      background: transparent;
-      border: 0;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-    input, textarea, select, button { font-family: inherit; }
-    ::selection { background: var(--green); color: var(--white); }
-
-    /* Background grain & ambient gradient */
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      background:
-        radial-gradient(circle at 20% 0%, rgba(22,163,74,0.08), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(217,119,6,0.05), transparent 50%);
-      pointer-events: none;
       z-index: 0;
-    }
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: 0.5;
       pointer-events: none;
-      z-index: 0;
-      mix-blend-mode: overlay;
+      opacity: 0.02;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
+    a { color: inherit; text-decoration: none; }
 
-    main, header, footer, section { position: relative; z-index: 1; }
-
-    /* =========================================================
-       3. TYPOGRAPHY UTILITIES
-       ========================================================= */
-    .display {
-      font-family: var(--font-display);
-      font-weight: 800;
-      letter-spacing: -0.035em;
-      line-height: 1.02;
-    }
-    .mono { font-family: var(--font-mono); letter-spacing: -0.01em; }
-    .italic { font-family: var(--font-italic); font-style: italic; }
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 14px;
-      border-radius: var(--radius-pill);
-      background: rgba(22,163,74,0.08);
-      border: 1px solid var(--border-green);
-      color: var(--green-light);
-      font-size: 12.5px;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
     .msr {
-      font-family: 'Material Symbols Rounded';
-      font-weight: normal;
-      font-style: normal;
-      font-size: 18px;
+      font-family: "Material Symbols Rounded";
+      font-size: 1.08rem;
       line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
-    }
-    .eyebrow .msr { font-size: 15px; }
-    .eyebrow.amber {
-      background: rgba(217,119,6,0.08);
-      border-color: var(--border-amber);
-      color: var(--amber-bright);
-    }
-    .text-mid { color: var(--text-mid); }
-    .text-dim { color: var(--text-dim); }
-    .gradient-text {
-      background: linear-gradient(120deg, var(--green) 0%, var(--amber-bright) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      vertical-align: -0.17em;
     }
 
-    /* =========================================================
-       4. CONTAINER & LAYOUT
-       ========================================================= */
-    .container {
+    .layout { width: 100%; display: flex; flex-direction: column; align-items: center; overflow-x: clip; }
+    .wrap { width: min(100% - 2rem, 1140px); margin-inline: auto; }
+    .hero-wrap { width: min(100% - 2rem, 900px); margin-inline: auto; }
+
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 600ms ease, transform 600ms ease; }
+    .reveal.show { opacity: 1; transform: translateY(0); }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 45;
       width: 100%;
-      max-width: var(--container);
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-    section { padding: var(--section-pad-y) 0; }
-    .section-head { max-width: 720px; margin-bottom: 60px; }
-    .section-head h2 {
-      margin: 18px 0 14px;
-      font-family: var(--font-display);
-      font-weight: 800;
-      letter-spacing: -0.035em;
-      line-height: 1.05;
-      font-size: clamp(34px, 5vw, 56px);
-      color: var(--text);
-    }
-    .section-head p {
-      color: var(--text-mid);
-      font-size: clamp(16px, 1.6vw, 18px);
-      max-width: 640px;
-      margin: 0;
-    }
-
-    /* =========================================================
-       5. BUTTONS
-       ========================================================= */
-    .btn {
-      display: inline-flex;
-      align-items: center;
+      display: flex;
       justify-content: center;
-      gap: 8px;
-      height: 46px;
-      padding: 0 22px;
-      border-radius: var(--radius-pill);
-      font-weight: 600;
-      font-size: 15px;
-      letter-spacing: -0.01em;
-      border: 1px solid transparent;
-      transition: transform 0.2s var(--ease-out), background 0.2s var(--ease-out), border-color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out), color 0.2s;
-      white-space: nowrap;
+      padding: 0.7rem 0;
+      transition: padding 220ms ease;
     }
-    .btn-primary {
-      background: var(--green);
-      color: var(--white);
-      border-color: var(--green);
-      box-shadow: 0 10px 30px -10px rgba(22,163,74,0.6);
-    }
-    .btn-primary:hover { background: var(--green-dark); transform: translateY(-2px); box-shadow: 0 16px 40px -10px rgba(22,163,74,0.7); }
-    .btn-ghost {
-      background: transparent;
-      color: var(--text);
-      border-color: var(--border-strong);
-    }
-    .btn-ghost:hover { border-color: var(--green-line); color: var(--green-light); transform: translateY(-2px); }
-    .btn-amber {
-      background: transparent;
-      color: var(--amber-bright);
-      border-color: var(--border-amber);
-    }
-    .btn-amber:hover { background: rgba(217,119,6,0.08); transform: translateY(-2px); }
-    .btn-lg { height: 54px; padding: 0 28px; font-size: 16px; }
-    .btn:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
-
-    /* =========================================================
-       6. NAVIGATION
-       ========================================================= */
-    .nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 50;
-      transition: background 0.3s var(--ease-out), border-color 0.3s var(--ease-out), backdrop-filter 0.3s;
-      border-bottom: 1px solid transparent;
-    }
-    .nav.scrolled {
-      background: rgba(8, 13, 10, 0.72);
-      backdrop-filter: blur(20px) saturate(140%);
-      -webkit-backdrop-filter: blur(20px) saturate(140%);
-      border-bottom-color: var(--border);
-    }
-    .nav-inner {
-      max-width: var(--container);
-      margin: 0 auto;
-      padding: 16px 24px;
+    .topbar-inner {
+      width: min(100% - 2rem, 1240px);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 24px;
+      gap: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.74rem 1.02rem;
+      backdrop-filter: blur(15px);
+      background: oklch(0.12 0.02 155 / 0.9);
+      transition: background-color 220ms ease, border-color 220ms ease, backdrop-filter 220ms ease, box-shadow 220ms ease;
     }
-    .brand { display: inline-flex; align-items: center; gap: 10px; }
-    .brand-mark {
-      width: 34px;
-      height: 34px;
-      object-fit: contain;
-      border-radius: 8px;
+    .topbar.scrolled { padding: 0.45rem 0; }
+    .topbar.scrolled .topbar-inner {
+      background: oklch(0.1 0.02 155 / 0.92);
+      border-color: color-mix(in oklch, var(--green) 18%, var(--line));
+      box-shadow: 0 18px 28px -24px color-mix(in oklch, var(--green) 32%, transparent);
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: "Sora", sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      font-size: 1.05rem;
       flex-shrink: 0;
     }
-    .brand-name {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: 19px;
-      letter-spacing: -0.03em;
+    .brand-ya { color: var(--amber); }
+    .brand img {
+      width: 1.45rem;
+      height: 1.45rem;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 12px color-mix(in oklch, var(--green) 38%, transparent));
     }
-    .brand-name .ya { color: var(--amber); }
-
-    .nav-links {
+    .nav {
       display: none;
-      gap: 28px;
       align-items: center;
-      list-style: none;
-      margin: 0;
-      padding: 0;
+      gap: 1.05rem;
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 500;
     }
-    .nav-links a {
-      font-size: 14.5px;
-      color: var(--text-mid);
-      transition: color 0.2s;
+    .nav a {
       position: relative;
+      transition: color 130ms ease;
     }
-    .nav-links a::after {
+    .nav a::after {
       content: "";
       position: absolute;
-      left: 0; right: 0; bottom: -6px;
-      height: 1px;
+      left: 0;
+      right: 0;
+      bottom: -0.32rem;
+      height: 2px;
+      border-radius: 999px;
       background: linear-gradient(90deg, var(--green), var(--amber));
       transform: scaleX(0);
       transform-origin: left;
-      transition: transform 0.3s var(--ease-out);
+      transition: transform 180ms ease;
     }
-    .nav-links a:hover { color: var(--text); }
-    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav a:hover { color: var(--fg); }
+    .nav a:hover::after { transform: scaleX(1); }
 
-    .nav-cta { display: none; }
-    .nav-toggle {
-      display: inline-flex;
-      width: 44px; height: 44px;
-      align-items: center;
-      justify-content: center;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-    }
-    .nav-toggle span {
-      width: 18px; height: 1.5px;
-      background: var(--text);
-      position: relative;
-    }
-    .nav-toggle span::before, .nav-toggle span::after {
-      content: ""; position: absolute; left: 0; width: 100%; height: 1.5px; background: var(--text);
-      transition: transform 0.3s var(--ease-out);
-    }
-    .nav-toggle span::before { top: -6px; }
-    .nav-toggle span::after { top: 6px; }
-    .nav-toggle[aria-expanded="true"] span { background: transparent; }
-    .nav-toggle[aria-expanded="true"] span::before { transform: rotate(45deg) translate(4px, 4px); }
-    .nav-toggle[aria-expanded="true"] span::after { transform: rotate(-45deg) translate(4px, -4px); }
-
-    .mobile-menu {
-      position: fixed;
-      top: 0; right: 0;
-      height: 100dvh;
-      width: 320px;
-      max-width: 90vw;
-      background: var(--bg-secondary);
-      border-left: 1px solid var(--border);
-      transform: translateX(100%);
-      transition: transform 0.4s var(--ease-out);
-      z-index: 49;
-      padding: 90px 28px 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-    .mobile-menu.open { transform: translateX(0); }
-    .mobile-menu a {
-      font-size: 18px;
-      color: var(--text);
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .mobile-menu .btn { margin-top: 12px; }
-
-    @media (min-width: 880px) {
-      .nav-links { display: flex; }
-      .nav-cta { display: inline-flex; }
-      .nav-toggle { display: none; }
-    }
-
-    /* =========================================================
-       7. HERO
-       ========================================================= */
-    .hero {
-      min-height: 100vh;
-      padding-top: clamp(120px, 14vw, 160px);
-      padding-bottom: clamp(80px, 10vw, 120px);
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 0.65rem 1.12rem;
+      font-family: "Sora", sans-serif;
+      font-weight: 700;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: transform 150ms ease, filter 150ms ease;
+      white-space: nowrap;
       position: relative;
       overflow: hidden;
     }
-    .aurora {
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.03); }
+    .btn::after {
+      content: "";
       position: absolute;
-      inset: -20%;
+      inset: 0;
+      background: rgba(255,255,255,0);
+      transition: background 180ms ease;
+      pointer-events: none;
+    }
+    .btn:hover::after { background: rgba(255,255,255,0.08); }
+    .btn-primary {
+      background: linear-gradient(120deg, var(--green-2), var(--green));
+      color: var(--fg);
+      box-shadow: 0 16px 34px -22px color-mix(in oklch, var(--green) 64%, transparent);
+      animation: ctaPulse 3s ease-in-out infinite;
+    }
+    @keyframes ctaPulse {
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--green) 40%, transparent); }
+      50% { box-shadow: 0 0 0 10px color-mix(in oklch, var(--green) 0%, transparent); }
+    }
+    .btn-mix {
+      background: linear-gradient(120deg, var(--green), var(--amber));
+      color: oklch(0.23 0.03 90);
+    }
+    .btn-ghost {
+      border: 1px solid var(--line);
+      background: oklch(0.98 0 0 / 0.06);
+      color: var(--fg);
+    }
+    .btn-ghost:hover {
+      border-color: color-mix(in oklch, var(--green) 44%, var(--line));
+      box-shadow: 0 12px 24px -22px color-mix(in oklch, var(--green) 40%, transparent);
+    }
+
+    /* === MULTI HOVER SYSTEM (UNICORN-STYLE VARIATIONS) === */
+    .ux-hover-box {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      --mx: 50%;
+      --my: 50%;
+      --glow-alpha: 0;
+      transition: border-color 220ms ease, box-shadow 220ms ease;
+    }
+    .ux-hover-layer {
+      position: absolute;
+      inset: -1px;
+      z-index: 0;
+      pointer-events: none;
+      opacity: var(--glow-alpha);
+      transition: opacity 220ms ease, transform 220ms ease;
+      background:
+        radial-gradient(
+          280px circle at var(--mx) var(--my),
+          color-mix(in oklch, var(--green) 44%, transparent) 0%,
+          color-mix(in oklch, var(--amber) 30%, transparent) 34%,
+          transparent 70%
+        );
+      mix-blend-mode: screen;
+      filter: blur(10px) saturate(1.02);
+    }
+    .ux-hover-box > :not(.ux-hover-layer) {
+      position: relative;
+      z-index: 1;
+    }
+    .ux-hover-box > .plan-badge {
+      position: absolute;
+      z-index: 3;
+    }
+    .ux-hover-box:hover {
+      border-color: color-mix(in oklch, var(--green) 50%, var(--line));
+      box-shadow: 0 20px 30px -26px color-mix(in oklch, var(--green) 40%, transparent);
+    }
+    .ux-hover-box[data-hover-style="orb"]:hover .ux-hover-layer { opacity: 1; }
+
+    .ux-hover-box[data-hover-style="sheen"]::before {
+      content: "";
+      position: absolute;
+      inset: -40% -10%;
       pointer-events: none;
       z-index: 0;
-      background:
-        radial-gradient(circle at 30% 30%, rgba(22,163,74,0.30), transparent 45%),
-        radial-gradient(circle at 75% 60%, rgba(217,119,6,0.18), transparent 45%),
-        radial-gradient(circle at 50% 90%, rgba(15,122,53,0.22), transparent 50%);
-      filter: blur(40px);
-      animation: aurora 18s ease-in-out infinite alternate;
+      opacity: 0;
+      transform: translateX(-58%) rotate(14deg);
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        color-mix(in oklch, var(--amber) 18%, transparent) 40%,
+        color-mix(in oklch, var(--green) 34%, transparent) 52%,
+        color-mix(in oklch, var(--amber) 18%, transparent) 64%,
+        transparent 100%
+      );
+      filter: blur(8px);
+      transition: opacity 220ms ease, transform 460ms ease;
     }
-    @keyframes aurora {
-      0%   { transform: translate3d(0, 0, 0) scale(1); }
-      50%  { transform: translate3d(-3%, 2%, 0) scale(1.05); }
-      100% { transform: translate3d(2%, -2%, 0) scale(1.02); }
+    .ux-hover-box[data-hover-style="sheen"]:hover::before {
+      opacity: 1;
+      transform: translateX(58%) rotate(14deg);
     }
-    .hero-grid {
+
+    .ux-hover-box[data-hover-style="edge"]::after {
+      content: "";
       position: absolute;
       inset: 0;
       pointer-events: none;
+      border-radius: inherit;
       z-index: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(circle at 50% 40%, #000 30%, transparent 75%);
-      -webkit-mask-image: radial-gradient(circle at 50% 40%, #000 30%, transparent 75%);
+      opacity: 0;
+      box-shadow:
+        inset 0 0 0 1px color-mix(in oklch, var(--green) 58%, transparent),
+        inset 0 0 28px color-mix(in oklch, var(--amber) 18%, transparent),
+        0 18px 24px -22px color-mix(in oklch, var(--green) 42%, transparent);
+      transition: opacity 220ms ease;
     }
-    .hero-inner {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      gap: 60px;
-      grid-template-columns: 1fr;
-      align-items: center;
+    .ux-hover-box[data-hover-style="edge"]:hover::after { opacity: 1; }
+
+    .ux-hover-box[data-hover-style="lift"] {
+      transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
     }
-    @media (min-width: 1024px) {
-      .hero-inner { grid-template-columns: 1.15fr 1fr; gap: 60px; }
-    }
-    .hero-h1 {
-      font-family: var(--font-display);
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      line-height: 1.0;
-      font-size: clamp(40px, 6.5vw, 72px);
-      margin: 18px 0 22px;
-    }
-    .hero-h1 .seg { display: block; }
-    .hero-sub {
-      max-width: 540px;
-      font-size: clamp(16px, 1.7vw, 19px);
-      color: var(--text-mid);
-      margin: 0 0 32px;
-      line-height: 1.55;
-    }
-    .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; }
-    .hero-trust {
-      margin-top: 36px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-    .hero-trust .dots {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .hero-trust .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 0 3px rgba(22,163,74,0.18);
-      animation: pulse 2.4s ease-in-out infinite;
-    }
-    .hero-trust .dot:nth-child(2) { background: var(--amber); box-shadow: 0 0 0 3px rgba(217,119,6,0.18); animation-delay: 0.4s; }
-    .hero-trust .dot:nth-child(3) { background: var(--green-light); box-shadow: 0 0 0 3px rgba(220,252,231,0.10); animation-delay: 0.8s; }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.15); opacity: 0.8; }
-    }
-    .hero-trust .badge-thesis {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-dim);
-      letter-spacing: 0.02em;
+    .ux-hover-box[data-hover-style="lift"]:hover {
+      transform: translateY(-2px) scale(1.003);
+      border-color: color-mix(in oklch, var(--amber) 38%, var(--line));
+      box-shadow: 0 16px 24px -22px color-mix(in oklch, var(--amber) 32%, transparent);
     }
 
-    /* Hero phone mockup */
-    .hero-mockup-wrap {
+    @media (prefers-reduced-motion: reduce) {
+      .ux-hover-box,
+      .ux-hover-box::before,
+      .ux-hover-box::after,
+      .ux-hover-layer { transition: none !important; }
+    }
+
+    .hero {
       position: relative;
+      width: 100%;
+      isolation: isolate;
+      padding-top: 2.6rem;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: -12rem 0 auto;
+      z-index: -2;
+      pointer-events: none;
       display: flex;
       justify-content: center;
-      align-items: center;
-      perspective: 1500px;
+      overflow: hidden;
     }
-    .phone {
-      width: min(340px, 100%);
-      aspect-ratio: 9 / 19.5;
-      background: linear-gradient(180deg, #0F1612, #060A08);
-      border-radius: 42px;
-      padding: 16px;
-      border: 1px solid var(--border-strong);
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,0.04) inset,
-        0 60px 120px -40px rgba(0,0,0,0.7),
-        0 0 80px -20px rgba(22,163,74,0.25);
-      animation: float 6s ease-in-out infinite;
+    .hero-bg::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: clamp(120px, 18vw, 240px);
+      background: linear-gradient(
+        180deg,
+        color-mix(in oklch, var(--bg) 0%, transparent) 0%,
+        color-mix(in oklch, var(--bg) 42%, transparent) 55%,
+        var(--bg) 100%
+      );
+    }
+    .hero-bg video {
+      width: min(1880px, 156vw);
+      height: min(980px, 114vh);
+      object-fit: cover;
+      opacity: 0.38;
+      mix-blend-mode: screen;
+      filter: blur(72px) saturate(0.65) hue-rotate(20deg);
+      transform: translateY(-3.8rem);
+      animation: heroDrift 28s ease-in-out infinite alternate;
+      will-change: transform;
+      -webkit-mask-image: linear-gradient(to bottom, black 0%, black 72%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 0%, black 72%, transparent 100%);
+    }
+    @keyframes heroDrift {
+      0% { transform: translateY(-3.8rem) translateX(-1.2%) scale(1.04); }
+      50% { transform: translateY(-3.2rem) translateX(0.6%) scale(1.07); }
+      100% { transform: translateY(-4rem) translateX(1.3%) scale(1.05); }
+    }
+    .hero-tint {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.8;
+      mix-blend-mode: color;
+      background:
+        radial-gradient(circle at 18% 28%, var(--mesh-a), transparent 52%),
+        radial-gradient(circle at 84% 23%, var(--mesh-b), transparent 54%),
+        radial-gradient(circle at 54% 80%, var(--mesh-c), transparent 56%);
+      -webkit-mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 100%);
+    }
+    .hero-fallback {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 220ms ease;
+      background:
+        radial-gradient(circle at 20% 35%, var(--mesh-a), transparent 50%),
+        radial-gradient(circle at 79% 25%, var(--mesh-b), transparent 54%),
+        radial-gradient(circle at 52% 75%, var(--mesh-c), transparent 56%);
+      -webkit-mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 100%);
+    }
+    .hero-fallback.visible { opacity: 1; }
+
+    .hero-head {
       position: relative;
       z-index: 2;
-      transform: rotate(-2deg);
+      text-align: left;
+      padding: 3.8rem 0 0;
     }
-    @keyframes float {
-      0%, 100% { transform: translateY(0) rotate(-2deg); }
-      50% { transform: translateY(-12px) rotate(-1.5deg); }
-    }
-    .phone-screen {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, #0B1410, #0A1009);
-      border-radius: 30px;
-      padding: 18px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      overflow: hidden;
-      position: relative;
-    }
-    .phone-notch {
-      position: absolute;
-      top: 10px; left: 50%;
-      transform: translateX(-50%);
-      width: 90px; height: 22px;
-      background: #000;
+    .kicker {
+      width: fit-content;
       border-radius: 999px;
-      z-index: 5;
-    }
-    .phone-status {
-      display: flex; justify-content: space-between;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-dim);
-      padding: 0 6px;
-      margin-bottom: 6px;
-    }
-    .phone-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 6px 4px 12px;
-      border-bottom: 1px solid var(--border);
-    }
-    .phone-title { font-weight: 700; font-size: 13px; letter-spacing: -0.02em; }
-    .phone-title .acc { color: var(--amber); }
-    .phone-bell {
-      width: 26px; height: 26px;
-      border-radius: 50%;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--text-mid);
-      font-size: 12px;
-      position: relative;
-    }
-    .phone-bell .msr { font-size: 14px; }
-    .phone-bell::after {
-      content: "";
-      position: absolute; top: 2px; right: 2px;
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--amber-bright);
-    }
-    .phone-banner {
-      background: linear-gradient(120deg, rgba(217,119,6,0.18), rgba(251,191,36,0.05));
-      border: 1px solid var(--border-amber);
-      border-radius: 12px;
-      padding: 8px 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11px;
-    }
-    .phone-banner .pill {
-      font-family: var(--font-mono);
-      font-size: 9.5px;
-      padding: 2px 6px;
-      border-radius: 6px;
-      background: rgba(217,119,6,0.20);
-      color: var(--amber-bright);
-    }
-    .phone-banner span { color: var(--text); flex: 1; }
-
-    .phone-list {
-      display: flex; flex-direction: column; gap: 8px;
-      margin-top: 4px;
-    }
-    .phone-prod {
-      background: var(--bg-card-strong);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 9px 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .phone-prod-info { flex: 1; min-width: 0; }
-    .phone-prod-name { font-size: 11.5px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .phone-prod-meta { font-family: var(--font-mono); font-size: 9.5px; color: var(--text-dim); margin-top: 1px; }
-    .phone-prod-price {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text);
-    }
-    .badge-pill {
-      font-size: 9.5px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-    }
-    .badge-ok { background: rgba(22,163,74,0.18); color: var(--green-light); border: 1px solid var(--border-green); }
-    .badge-warn { background: rgba(217,119,6,0.20); color: var(--amber-bright); border: 1px solid var(--border-amber); }
-    .badge-bad { background: rgba(220,38,38,0.18); color: #FCA5A5; border: 1px solid rgba(220,38,38,0.30); }
-
-    .phone-calc {
-      margin-top: 6px;
-      background: rgba(22,163,74,0.06);
-      border: 1px solid var(--border-green);
-      border-radius: 12px;
-      padding: 10px 12px;
-    }
-    .phone-calc-label { font-size: 10px; color: var(--text-mid); margin-bottom: 4px; }
-    .phone-calc-price { font-family: var(--font-mono); font-size: 22px; font-weight: 500; color: var(--green-light); letter-spacing: -0.03em; }
-    .phone-calc-formula { font-family: var(--font-mono); font-size: 9.5px; color: var(--text-dim); margin-top: 2px; }
-
-    /* Floating chips around phone */
-    .chip {
-      position: absolute;
-      background: rgba(13,20,16,0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-pill);
-      padding: 8px 14px;
-      font-size: 12.5px;
-      font-weight: 500;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 0.3rem 0.58rem;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
-      z-index: 3;
-    }
-    .chip .chip-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-    }
-    .chip-1 {
-      top: 8%;
-      left: -2%;
-      animation: floatA 7s ease-in-out infinite;
-      border-color: var(--border-amber);
-      color: var(--amber-bright);
-    }
-    .chip-1 .chip-dot { background: var(--amber-bright); box-shadow: 0 0 12px var(--amber-bright); }
-    .chip-2 {
-      bottom: 22%;
-      left: -8%;
-      animation: floatB 9s ease-in-out infinite;
-      border-color: rgba(220,38,38,0.30);
-      color: #FCA5A5;
-    }
-    .chip-2 .chip-dot { background: var(--red); box-shadow: 0 0 12px var(--red); }
-    .chip-3 {
-      top: 30%;
-      right: -6%;
-      animation: floatC 8s ease-in-out infinite;
-      border-color: var(--border-green);
-      color: var(--green-light);
-    }
-    .chip-3 .chip-dot { background: var(--green); box-shadow: 0 0 12px var(--green); }
-    @keyframes floatA { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-    @keyframes floatB { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-6px,-12px); } }
-    @keyframes floatC { 0%,100% { transform: translate(0,0); } 50% { transform: translate(8px,8px); } }
-
-    /* =========================================================
-       8. LOGO STRIP (MARQUEE)
-       ========================================================= */
-    .marquee-section {
-      padding: 70px 0 40px;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-secondary);
-    }
-    .marquee-label {
-      text-align: center;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-dim);
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      margin-bottom: 28px;
-    }
-    .marquee {
-      overflow: hidden;
-      mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
-      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
-    }
-    .marquee-track {
-      display: inline-flex;
-      gap: 64px;
-      animation: marquee 40s linear infinite;
-      white-space: nowrap;
-      padding: 8px 0;
-    }
-    .marquee-track:hover { animation-play-state: paused; }
-    .marquee-item {
-      font-family: var(--font-display);
-      font-size: 22px;
+      gap: 0.34rem;
+      font-size: 0.72rem;
       font-weight: 600;
-      color: var(--text-mid);
-      letter-spacing: -0.02em;
+      color: var(--muted);
+      margin-bottom: 0.95rem;
+    }
+    .kicker .msr { color: var(--amber); font-size: 0.9rem; }
+    h1 {
+      margin: 0;
+      max-width: 13ch;
+      font-family: "Sora", sans-serif;
+      font-size: clamp(2rem, 5vw, 4.15rem);
+      line-height: 1.02;
+      letter-spacing: -0.045em;
+      font-weight: 800;
+      text-wrap: balance;
+    }
+    .hero-copy {
+      margin: 0.9rem 0 0;
+      max-width: 56ch;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.58;
+    }
+    .hero-actions {
+      margin-top: 1.2rem;
+      display: flex;
+      gap: 0.62rem;
+      flex-wrap: wrap;
+    }
+
+    .impact-row {
+      margin-top: 1.4rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.72rem;
+    }
+    .impact {
+      border-radius: 0.95rem;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 0.85rem;
+      transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+    }
+    .impact:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in oklch, var(--amber) 44%, var(--line));
+      box-shadow: 0 20px 26px -24px color-mix(in oklch, var(--amber) 48%, transparent);
+    }
+    .impact strong {
+      font-family: "Sora", sans-serif;
+      font-size: clamp(1.82rem, 4vw, 3rem);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      display: block;
+    }
+    .impact strong.ok { color: var(--green); }
+    .impact strong.warn { color: var(--amber); }
+    .impact strong.bad { color: var(--red); }
+    .impact p {
+      margin: 0.5rem 0 0;
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+
+    .logo-strip {
+      margin-top: 1.35rem;
+      border: 1px solid color-mix(in oklch, var(--green) 18%, var(--line));
+      border-radius: 1rem;
+      background:
+        linear-gradient(
+          180deg,
+          oklch(0.19 0.03 155 / 0.22) 0%,
+          oklch(0.16 0.02 155 / 0.62) 34%,
+          oklch(0.14 0.02 155 / 0.8) 100%
+        );
+      backdrop-filter: blur(10px);
+      padding: 0.85rem 0;
+      overflow: hidden;
+      position: relative;
+      box-shadow:
+        inset 0 22px 28px -30px color-mix(in oklch, var(--green) 26%, transparent),
+        0 20px 34px -32px color-mix(in oklch, var(--green) 34%, transparent);
+    }
+    .logo-strip::before,
+    .logo-strip::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 84px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .logo-strip::before {
+      left: 0;
+      background: linear-gradient(
+        90deg,
+        color-mix(in oklch, var(--bg) 88%, transparent),
+        transparent
+      );
+    }
+    .logo-strip::after {
+      right: 0;
+      background: linear-gradient(
+        -90deg,
+        color-mix(in oklch, var(--bg) 88%, transparent),
+        transparent
+      );
+    }
+    .logo-caption {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.62rem;
+      font-family: "Sora", sans-serif;
+      font-weight: 600;
+    }
+    .logo-track {
+      display: flex;
+      width: max-content;
+      gap: 2rem;
+      align-items: center;
+      animation: logoScroll 24s linear infinite;
+      color: color-mix(in oklch, var(--fg) 72%, transparent);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+    .logo-track span {
+      white-space: nowrap;
       display: inline-flex;
       align-items: center;
-      gap: 12px;
+      gap: 0.32rem;
     }
-    .marquee-item .msr { font-size: 20px; color: var(--green-light); }
-    @keyframes marquee {
+    @keyframes logoScroll {
       from { transform: translateX(0); }
       to { transform: translateX(-50%); }
     }
 
-    /* =========================================================
-       9. PAIN SECTION
-       ========================================================= */
-    .pain { background: var(--bg-primary); }
-    .stats-row {
-      display: grid;
-      gap: 18px;
-      grid-template-columns: 1fr;
-      margin-bottom: 50px;
-    }
-    @media (min-width: 768px) { .stats-row { grid-template-columns: repeat(3, 1fr); } }
-    .stat-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 36px 28px;
-      transition: transform 0.3s var(--ease-out), border-color 0.3s, box-shadow 0.3s;
-    }
-    .stat-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--border-green);
-      box-shadow: 0 30px 60px -30px rgba(22,163,74,0.25);
-    }
-    .stat-num {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: clamp(64px, 8vw, 96px);
-      letter-spacing: -0.05em;
-      line-height: 1;
-      background: linear-gradient(180deg, var(--green-light), var(--green));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 12px;
-    }
-    .stat-card.amber .stat-num {
-      background: linear-gradient(180deg, var(--amber-bright), var(--amber));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .stat-card.red .stat-num {
-      background: linear-gradient(180deg, #FCA5A5, var(--red));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .stat-title { font-weight: 600; font-size: 17px; margin-bottom: 8px; letter-spacing: -0.02em; }
-    .stat-desc { color: var(--text-mid); font-size: 14.5px; line-height: 1.55; margin: 0; }
-
-    .pain-scene {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: clamp(28px, 4vw, 56px);
-      display: grid;
-      gap: 40px;
-      grid-template-columns: 1fr;
-    }
-    @media (min-width: 1000px) { .pain-scene { grid-template-columns: 1.1fr 1fr; gap: 60px; } }
-    .pain-scene h3 {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: clamp(26px, 3.5vw, 38px);
-      letter-spacing: -0.03em;
-      line-height: 1.15;
-      margin: 0 0 20px;
-    }
-    .pain-scene p { color: var(--text-mid); margin: 0 0 14px; line-height: 1.65; font-size: 15.5px; }
-    .pain-scene p strong { color: var(--text); font-weight: 500; }
-    .quote {
-      position: relative;
-      padding: 32px 28px 32px 40px;
-      border-left: 2px solid var(--amber);
-      background: linear-gradient(135deg, rgba(217,119,6,0.05), transparent 70%);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-    }
-    .quote::before {
-      content: "“";
-      position: absolute;
-      top: -10px; left: 12px;
-      font-family: var(--font-italic);
-      font-size: 80px;
-      color: var(--amber);
-      line-height: 1;
-    }
-    .quote p {
-      font-family: var(--font-italic);
-      font-style: italic;
-      font-size: clamp(18px, 2vw, 22px);
-      color: var(--amber-light);
-      line-height: 1.5;
-      margin: 0 0 14px;
-    }
-    .quote cite {
-      font-style: normal;
-      font-size: 13px;
-      color: var(--text-dim);
-      font-family: var(--font-mono);
-    }
-
-    /* =========================================================
-       10. SOLUTION
-       ========================================================= */
-    .solution { background: var(--bg-secondary); }
-    .features {
-      display: grid;
-      gap: 18px;
-      grid-template-columns: 1fr;
-    }
-    @media (min-width: 760px) { .features { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 1100px) { .features { grid-template-columns: repeat(3, 1fr); } }
-
-    .feature {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      transition: transform 0.3s var(--ease-out), border-color 0.3s, box-shadow 0.3s, background 0.3s;
+    .section {
+      margin-top: 1.05rem;
+      border: 1px solid var(--line);
+      border-radius: 1.22rem;
+      background: oklch(0.18 0.02 155 / 0.72);
+      backdrop-filter: blur(14px);
+      padding: 1.1rem;
       position: relative;
       overflow: hidden;
     }
-    .feature::before {
+    .section h2 {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      font-size: clamp(1.3rem, 3vw, 2.25rem);
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      max-width: 18ch;
+    }
+    .section p.lead {
+      margin: 0.55rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      max-width: 60ch;
+      line-height: 1.55;
+    }
+
+    .feature-grid {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.66rem;
+    }
+    .feature {
+      border-radius: 0.84rem;
+      border: 1px solid var(--line);
+      background: oklch(0.2 0.02 155 / 0.86);
+      padding: 0.72rem;
+      transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature::after {
       content: "";
       position: absolute;
-      inset: 0;
-      background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(22,163,74,0.07), transparent 40%);
+      inset: auto -25% -60% -25%;
+      height: 90%;
+      background: radial-gradient(circle at center, color-mix(in oklch, var(--green) 38%, transparent), transparent 72%);
       opacity: 0;
-      transition: opacity 0.3s;
+      transition: opacity 220ms ease;
       pointer-events: none;
     }
-    .feature:hover { transform: translateY(-4px); border-color: var(--border-green); box-shadow: 0 30px 70px -30px rgba(22,163,74,0.20); }
-    .feature:hover::before { opacity: 1; }
-    .feature .ico {
-      width: 44px; height: 44px;
-      border-radius: 12px;
-      background: rgba(22,163,74,0.10);
-      border: 1px solid var(--border-green);
+    .feature:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in oklch, var(--green) 52%, var(--line));
+      box-shadow: 0 20px 28px -24px color-mix(in oklch, var(--green) 52%, transparent);
+    }
+    .feature:hover::after { opacity: 1; }
+    .feature-head {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      margin-bottom: 18px;
-    }
-    .feature .ico .msr { font-size: 22px; color: var(--green-light); }
-    .feature h3 {
-      font-family: var(--font-display);
+      gap: 0.35rem;
+      font-family: "Sora", sans-serif;
+      font-size: 0.86rem;
       font-weight: 700;
-      font-size: 18px;
-      letter-spacing: -0.02em;
-      margin: 0 0 8px;
+      letter-spacing: -0.01em;
     }
-    .feature p { color: var(--text-mid); font-size: 14.5px; line-height: 1.55; margin: 0; }
-    .feature .formula {
-      margin-top: 12px;
-      font-family: var(--font-mono);
-      font-size: 12.5px;
-      padding: 8px 12px;
-      border-radius: 8px;
-      background: rgba(0,0,0,0.25);
-      border: 1px solid var(--border);
-      color: var(--green-light);
-    }
-    .feature.muted { opacity: 0.7; }
-    .feature .v2-badge {
-      display: inline-block;
-      margin-top: 10px;
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      letter-spacing: 0.05em;
-      color: var(--amber-bright);
-      background: rgba(217,119,6,0.10);
-      border: 1px solid var(--border-amber);
-      padding: 3px 8px;
-      border-radius: 6px;
-    }
+    .feature-head .msr { color: var(--amber); font-size: 0.95rem; }
+    .feature p { margin: 0.38rem 0 0; color: var(--muted); font-size: 0.76rem; line-height: 1.42; }
 
-    /* Featured INDEC card spans 2 cols */
-    .feature-featured {
-      grid-column: span 1;
-      background: linear-gradient(135deg, rgba(22,163,74,0.10), rgba(217,119,6,0.06));
-      border-color: var(--border-green);
-      padding: 32px;
-      box-shadow: var(--shadow-green);
-      position: relative;
-    }
-    @media (min-width: 1100px) { .feature-featured { grid-column: span 2; } }
-    .feature-featured .ico { background: rgba(22,163,74,0.18); width: 52px; height: 52px; font-size: 24px; }
-    .feature-featured h3 { font-size: clamp(22px, 2.5vw, 28px); margin-bottom: 10px; }
-    .feature-featured p { font-size: 15.5px; max-width: 480px; }
-    .feature-featured .exclusive {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--amber-bright);
-      background: rgba(217,119,6,0.10);
-      border: 1px solid var(--border-amber);
-      padding: 5px 10px;
-      border-radius: var(--radius-pill);
-      margin-bottom: 18px;
-    }
-    .ipc-widget {
-      margin-top: 22px;
-      background: rgba(8,13,10,0.6);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 18px 18px 16px;
+    .flow-grid {
+      margin-top: 1rem;
       display: grid;
-      gap: 14px;
-      grid-template-columns: 1fr;
-      max-width: 540px;
+      grid-template-columns: 1.1fr 0.95fr;
+      gap: 0.72rem;
     }
-    .ipc-widget .ipc-row {
-      display: flex; align-items: baseline;
-      justify-content: space-between;
-      gap: 14px;
-    }
-    .ipc-widget .ipc-label {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-dim);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .ipc-widget .ipc-value {
-      font-family: var(--font-mono);
-      font-weight: 500;
-      font-size: clamp(28px, 4vw, 38px);
-      letter-spacing: -0.03em;
-      color: var(--amber-bright);
-    }
-    .ipc-bar {
-      height: 6px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 4px;
-      overflow: hidden;
-      position: relative;
-    }
-    .ipc-bar::after {
-      content: "";
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 0%;
-      background: linear-gradient(90deg, var(--green), var(--amber-bright));
-      border-radius: 4px;
-      transition: width 1.5s var(--ease-out);
-    }
-    .ipc-widget.visible .ipc-bar::after { width: 74%; }
-    .ipc-cta {
-      margin-top: 4px;
-      align-self: start;
-      font-family: var(--font-display);
-      font-size: 13px;
-      color: var(--green-light);
-      background: rgba(22,163,74,0.10);
-      border: 1px solid var(--border-green);
-      padding: 9px 14px;
-      border-radius: var(--radius-pill);
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.2s, transform 0.2s;
-    }
-    .ipc-cta:hover { background: rgba(22,163,74,0.16); transform: translateX(4px); }
-
-    /* =========================================================
-       11. HOW IT WORKS
-       ========================================================= */
-    .how { background: var(--bg-primary); }
-    .how-grid {
-      display: grid;
-      gap: 40px;
-      grid-template-columns: 1fr;
-    }
-    @media (min-width: 1024px) { .how-grid { grid-template-columns: 1fr 1.05fr; gap: 70px; align-items: start; } }
     .steps {
-      display: flex; flex-direction: column;
-      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 0.92rem;
+      background: var(--surface-2);
+      padding: 0.72rem;
     }
     .step {
       display: grid;
-      grid-template-columns: 104px 1fr;
-      gap: 18px;
-      padding: 22px 22px 22px 0;
-      background: rgba(255, 255, 255, 0.02);
+      grid-template-columns: 64px 1fr;
+      gap: 0.65rem;
+      align-items: center;
+      border-radius: 0.72rem;
       border: 1px solid transparent;
-      border-radius: var(--radius-lg);
-      cursor: pointer;
-      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
-      align-items: start;
-      overflow: visible;
+      padding: 0.52rem;
+      transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
     }
+    .step + .step { margin-top: 0.46rem; }
     .step:hover {
-      background: var(--bg-card);
-      border-color: var(--border);
-      box-shadow: 0 20px 40px -30px rgba(0,0,0,0.7);
-    }
-    .step.active {
-      background: linear-gradient(135deg, rgba(22,163,74,0.06), transparent 80%);
-      border-color: var(--border-green);
+      border-color: color-mix(in oklch, var(--green) 44%, var(--line));
+      background: oklch(0.24 0.02 155 / 0.8);
+      transform: translateX(2px);
     }
     .step-num {
-      font-family: var(--font-display);
+      font-family: "Sora", sans-serif;
+      font-size: clamp(2.2rem, 6vw, 3.1rem);
       font-weight: 800;
-      font-size: clamp(58px, 8vw, 72px);
       line-height: 1;
-      letter-spacing: -0.05em;
-      color: var(--text-dim);
-      transition: color 0.3s;
-      text-align: center;
-      padding-left: 0;
-      min-width: 100px;
-      display: block;
-      white-space: nowrap;
-    }
-    .step.active .step-num {
-      background: linear-gradient(180deg, var(--green-light), var(--green));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .step-body h3 {
-      font-family: var(--font-display);
-      font-size: 19px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin: 6px 0 6px;
-      color: var(--text);
-    }
-    .step-body p {
-      color: #9EC3A8;
-      margin: 0;
-      font-size: 14.5px;
-      line-height: 1.6;
-    }
-
-    .how-visual {
-      position: sticky;
-      top: 100px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: 32px;
-      min-height: 420px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 18px;
-    }
-    .how-panel { display: none; opacity: 0; transition: opacity 0.4s var(--ease-out); }
-    .how-panel.active { display: flex; flex-direction: column; gap: 18px; opacity: 1; animation: fadeIn 0.5s var(--ease-out); }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    .how-panel h4 {
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin: 0;
-    }
-    .how-panel .demo-card {
-      background: rgba(0,0,0,0.25);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .demo-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13.5px; }
-    .demo-row .demo-key { color: var(--text-mid); }
-    .demo-row .demo-val { font-family: var(--font-mono); color: var(--text); }
-    .demo-bar {
-      height: 4px; background: rgba(255,255,255,0.05);
-      border-radius: 4px; overflow: hidden;
-    }
-    .demo-bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--green), var(--amber)); width: 60%; }
-    .demo-tag {
-      align-self: flex-start;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(22,163,74,0.10);
-      color: var(--green-light);
-      border: 1px solid var(--border-green);
-    }
-
-    /* =========================================================
-       12. LIVE CALCULATOR
-       ========================================================= */
-    .calc { background: var(--bg-secondary); }
-    .calc-card {
-      background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: clamp(28px, 4vw, 50px);
-      display: grid;
-      gap: 40px;
-      grid-template-columns: 1fr;
-      box-shadow: var(--shadow-elev);
-    }
-    @media (min-width: 1024px) { .calc-card { grid-template-columns: 1fr 1.05fr; gap: 50px; } }
-    .calc-left h3 {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: clamp(28px, 3.5vw, 40px);
       letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin: 14px 0 14px;
+      color: color-mix(in oklch, var(--green) 72%, var(--fg));
     }
-    .calc-left p { color: var(--text-mid); margin: 0 0 28px; font-size: 15.5px; max-width: 460px; }
-    .calc-inputs { display: grid; gap: 16px; }
-    .calc-input-group { display: flex; flex-direction: column; gap: 8px; }
-    .calc-input-group label {
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      color: var(--text-dim);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+    .step h3 {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      font-size: 0.84rem;
+      letter-spacing: -0.01em;
     }
-    .calc-input {
-      position: relative;
-      display: flex; align-items: center;
+    .step p {
+      margin: 0.22rem 0 0;
+      color: var(--muted);
+      font-size: 0.72rem;
+      line-height: 1.4;
     }
-    .calc-input .prefix, .calc-input .suffix {
-      position: absolute;
-      font-family: var(--font-mono);
-      color: var(--text-dim);
-      font-size: 16px;
-      pointer-events: none;
-    }
-    .calc-input .prefix { left: 18px; }
-    .calc-input .suffix { right: 18px; color: var(--text-mid); }
-    .calc-input input {
-      width: 100%;
-      background: rgba(0,0,0,0.30);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 18px 48px 18px 38px;
-      color: var(--text);
-      font-family: var(--font-mono);
-      font-size: 22px;
-      font-weight: 500;
-      letter-spacing: -0.02em;
-      transition: border-color 0.2s, background 0.2s;
-      outline: none;
-    }
-    .calc-input input:focus { border-color: var(--green); background: rgba(22,163,74,0.05); }
-    .calc-input input::-webkit-inner-spin-button,
-    .calc-input input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
-    .calc-right {
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: clamp(24px, 3vw, 36px);
-      display: flex;
-      flex-direction: column;
-      gap: 22px;
+    .mock {
+      border: 1px solid var(--line);
+      border-radius: 0.92rem;
+      background: var(--surface-2);
+      padding: 0.72rem;
       position: relative;
       overflow: hidden;
     }
-    .calc-right::after {
+    .mock::before {
       content: "";
       position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 80% 0%, rgba(22,163,74,0.10), transparent 50%);
+      inset: -20% -18% auto auto;
+      width: 72%;
+      height: 70%;
       pointer-events: none;
-    }
-    .calc-result-label {
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      color: var(--text-dim);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .calc-result-price {
-      font-family: var(--font-mono);
-      font-weight: 500;
-      font-size: clamp(48px, 8vw, 72px);
-      letter-spacing: -0.04em;
-      line-height: 1;
-      color: var(--green-light);
-      transition: transform 0.3s var(--ease-out), color 0.3s;
-      will-change: transform;
-    }
-    .calc-result-price.pulse { transform: scale(1.04); }
-    .calc-table {
-      display: grid;
-      gap: 10px;
-      border-top: 1px solid var(--border);
-      padding-top: 18px;
-    }
-    .calc-row {
-      display: flex; justify-content: space-between; align-items: center;
-      gap: 14px; font-size: 14px;
-    }
-    .calc-row .k { color: var(--text-mid); }
-    .calc-row .v { font-family: var(--font-mono); color: var(--text); }
-    .calc-status {
-      align-self: flex-start;
-      font-family: var(--font-mono);
-      font-size: 12.5px;
-      letter-spacing: 0.04em;
-      padding: 8px 14px;
-      border-radius: var(--radius-pill);
-      transition: background 0.3s, color 0.3s, border-color 0.3s;
-      border: 1px solid;
-    }
-    .calc-status[data-status="ok"] { background: rgba(22,163,74,0.12); color: var(--green-light); border-color: var(--border-green); }
-    .calc-status[data-status="warn"] { background: rgba(217,119,6,0.14); color: var(--amber-bright); border-color: var(--border-amber); }
-    .calc-status[data-status="bad"] { background: rgba(220,38,38,0.14); color: #FCA5A5; border-color: rgba(220,38,38,0.30); }
-    .calc-note {
-      font-size: 12.5px;
-      color: var(--text-dim);
-      font-style: italic;
-      margin: 8px 0 0;
-    }
-
-    /* =========================================================
-       13. COMPETITION
-       ========================================================= */
-    .competition { background: var(--bg-primary); }
-    .compare-wrap {
-      overflow-x: auto;
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--border);
-      background: var(--bg-secondary);
-    }
-    .compare {
-      width: 100%;
-      min-width: 720px;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    .compare thead th {
-      background: rgba(22,163,74,0.06);
-      color: var(--text);
-      padding: 22px 18px;
-      text-align: left;
-      font-weight: 600;
-      font-size: 13.5px;
-      letter-spacing: -0.01em;
-      border-bottom: 1px solid var(--border-strong);
-      position: sticky; top: 0;
-    }
-    .compare thead th.col-self {
-      color: var(--green-light);
-      background: rgba(22,163,74,0.14);
-      font-family: var(--font-display);
-      font-weight: 700;
-    }
-    .compare tbody td {
-      padding: 18px;
-      border-bottom: 1px solid var(--border);
-      color: var(--text-mid);
-    }
-    .compare tbody td:first-child { color: var(--text); font-weight: 500; }
-    .compare tbody td.col-self {
-      background: rgba(22,163,74,0.05);
-      color: var(--green-light);
-      text-align: center;
-    }
-    .compare tbody tr:last-child td { border-bottom: none; }
-    .compare .check {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 26px; height: 26px;
-      border-radius: 50%;
-      background: rgba(22,163,74,0.18);
-      color: var(--green);
-      font-weight: 700;
-      box-shadow: 0 0 0 2px rgba(22,163,74,0.10);
-    }
-    .compare .ex {
-      color: var(--text-dim);
-      font-family: var(--font-mono);
-      font-size: 16px;
-    }
-    .compare .partial {
-      color: var(--amber-bright);
-      font-family: var(--font-mono);
-      font-size: 12.5px;
-      letter-spacing: 0.02em;
-    }
-
-    .callout {
-      margin-top: 36px;
-      padding: 30px;
-      background: linear-gradient(135deg, rgba(22,163,74,0.07), transparent 80%);
-      border: 1px solid var(--border-green);
-      border-radius: var(--radius-lg);
-      font-size: 16px;
-      color: var(--text);
-      line-height: 1.55;
-    }
-    .callout strong { color: var(--green-light); font-weight: 600; }
-
-    /* =========================================================
-       14. PRICING
-       ========================================================= */
-    .pricing { background: var(--bg-secondary); }
-    .pricing-grid {
-      display: grid;
-      gap: 24px;
-      grid-template-columns: 1fr;
-      max-width: 880px;
-      margin: 0 auto;
-    }
-    @media (min-width: 760px) { .pricing-grid { grid-template-columns: 1fr 1fr; align-items: start; } }
-    .price-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: 36px 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      position: relative;
-      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-    }
-    .price-card:hover { transform: translateY(-4px); }
-    .price-card.featured {
-      border-color: var(--border-green);
-      background: linear-gradient(135deg, rgba(22,163,74,0.08), transparent 80%);
-      box-shadow: var(--shadow-green);
-    }
-    .price-card .top-pill {
-      position: absolute;
-      top: -14px; left: 50%;
-      transform: translateX(-50%);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 6px 14px;
-      border-radius: var(--radius-pill);
-      background: var(--green);
-      color: var(--white);
-      font-weight: 600;
-    }
-    .price-card h3 { font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: -0.02em; margin: 0; }
-    .price-card .desc { color: var(--text-mid); font-size: 14px; margin: 0; }
-    .price-card .price {
-      display: flex; align-items: baseline; gap: 6px;
-      font-family: var(--font-mono);
-      letter-spacing: -0.04em;
-    }
-    .price-card .price .num {
-      font-size: clamp(40px, 6vw, 60px);
-      font-weight: 500;
-      color: var(--text);
-      line-height: 1;
-    }
-    .price-card .price .unit { color: var(--text-dim); font-size: 14px; }
-    .price-card .price .usd { color: var(--text-mid); font-size: 13px; margin-left: 8px; }
-    .price-card ul {
-      list-style: none;
-      padding: 0; margin: 0;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .price-card li {
-      display: flex; align-items: flex-start; gap: 10px;
-      font-size: 14.5px;
-      color: var(--text);
-    }
-    .price-card li .ico {
-      flex-shrink: 0;
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      margin-top: 3px;
-    }
-    .price-card li.yes .ico { background: rgba(22,163,74,0.18); color: var(--green-light); }
-    .price-card li.no .ico { background: rgba(255,255,255,0.04); color: var(--text-dim); }
-    .price-card li.no { color: var(--text-dim); text-decoration: line-through; }
-
-    .roi-callout {
-      margin: 50px auto 0;
-      max-width: 880px;
-      display: grid;
-      gap: 18px;
-      grid-template-columns: 1fr;
-    }
-    @media (min-width: 760px) { .roi-callout { grid-template-columns: 1fr 60px 1fr 60px 1fr; align-items: center; } }
-    .roi-pill {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 22px 24px;
-      text-align: center;
-    }
-    .roi-pill.green { border-color: var(--border-green); background: rgba(22,163,74,0.06); }
-    .roi-num { font-family: var(--font-mono); font-size: 26px; font-weight: 500; letter-spacing: -0.02em; color: var(--text); margin-bottom: 4px; }
-    .roi-num.amber { color: var(--amber-bright); }
-    .roi-num.green { color: var(--green-light); }
-    .roi-lbl { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); letter-spacing: 0.05em; text-transform: uppercase; }
-    .roi-arrow { text-align: center; color: var(--text-dim); font-family: var(--font-mono); font-size: 22px; }
-
-    /* =========================================================
-       15. TECH CREDIBILITY
-       ========================================================= */
-    .tech { background: var(--bg-primary); }
-    .layers {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      max-width: 920px;
-      margin: 0 auto;
-    }
-    .layer {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 22px 26px;
-      display: grid;
-      gap: 14px;
-      grid-template-columns: 1fr;
-      align-items: center;
-      position: relative;
-      transition: border-color 0.3s, transform 0.3s, background 0.3s;
-    }
-    .layer:hover { border-color: var(--border-green); transform: translateX(4px); background: var(--bg-card-strong); }
-    @media (min-width: 760px) { .layer { grid-template-columns: 220px 1fr; gap: 32px; } }
-    .layer-label {
-      display: flex; align-items: center; gap: 12px;
-      font-family: var(--font-display);
-      font-weight: 600;
-      letter-spacing: -0.01em;
-    }
-    .layer-num {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-dim);
-      padding: 4px 8px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      letter-spacing: 0.05em;
-    }
-    .layer-label .name { font-size: 16px; }
-    .layer-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .chip-tech {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      padding: 6px 12px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-pill);
-      color: var(--text-mid);
-      transition: border-color 0.2s, color 0.2s;
-    }
-    .chip-tech:hover { border-color: var(--border-green); color: var(--green-light); }
-    .layer-arrow {
-      display: flex; justify-content: center;
-      color: var(--text-dim);
-      font-family: var(--font-mono);
-      font-size: 14px;
-      padding: 4px 0;
-    }
-
-    .tech-callouts {
-      margin-top: 50px;
-      display: grid;
-      gap: 18px;
-      grid-template-columns: 1fr;
-      max-width: 920px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    @media (min-width: 760px) { .tech-callouts { grid-template-columns: 1fr 1fr; } }
-    .tech-callout {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 26px 28px;
-    }
-    .tech-callout strong { color: var(--green-light); font-weight: 600; }
-    .tech-callout .tag {
-      display: inline-block;
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      margin-bottom: 12px;
-    }
-    .tech-callout p { margin: 0; color: var(--text-mid); font-size: 14.5px; line-height: 1.6; }
-    .tech-callout.green { border-color: var(--border-green); background: linear-gradient(135deg, rgba(22,163,74,0.06), transparent 80%); }
-    .tech-callout.amber { border-color: var(--border-amber); background: linear-gradient(135deg, rgba(217,119,6,0.06), transparent 80%); }
-    .tech-callout.amber strong { color: var(--amber-bright); }
-
-    /* =========================================================
-       16. FAQ
-       ========================================================= */
-    .faq { background: var(--bg-secondary); }
-    .faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
-    .faq-item {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      background: var(--bg-card);
-      transition: border-color 0.3s, background 0.3s;
-      overflow: hidden;
-    }
-    .faq-item[aria-expanded="true"] { border-color: var(--border-green); background: rgba(22,163,74,0.04); }
-    .faq-q {
-      width: 100%;
-      background: transparent;
-      border: none;
-      text-align: left;
-      padding: 22px 26px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 18px;
-      color: var(--text);
-      font-size: 16px;
-      font-weight: 500;
-      letter-spacing: -0.01em;
-    }
-    .faq-q .ico {
-      flex-shrink: 0;
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.04);
-      display: inline-flex; align-items: center; justify-content: center;
-      font-family: var(--font-mono);
-      font-size: 18px;
-      transition: transform 0.3s var(--ease-out), background 0.3s, color 0.3s;
-      color: var(--text-mid);
-    }
-    .faq-item[aria-expanded="true"] .faq-q .ico {
-      transform: rotate(45deg);
-      background: rgba(22,163,74,0.16);
-      color: var(--green-light);
-    }
-    .faq-a {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s var(--ease-out);
-    }
-    .faq-a-inner {
-      padding: 0 26px 24px;
-      color: var(--text-mid);
-      line-height: 1.65;
-      font-size: 14.5px;
-    }
-    .faq-a-inner strong { color: var(--text); font-weight: 500; }
-
-    /* =========================================================
-       17. WAITLIST FINAL CTA
-       ========================================================= */
-    .waitlist {
+      opacity: 0.28;
+      z-index: 0;
       background:
-        radial-gradient(circle at 30% 20%, rgba(22,163,74,0.30), transparent 50%),
-        radial-gradient(circle at 70% 80%, rgba(15,122,53,0.25), transparent 55%),
-        linear-gradient(180deg, var(--green-deep), #050805);
-      position: relative;
-      overflow: hidden;
+        radial-gradient(circle at 30% 35%, color-mix(in oklch, var(--green) 64%, transparent), transparent 60%),
+        radial-gradient(circle at 72% 58%, color-mix(in oklch, var(--amber) 44%, transparent), transparent 64%);
+      filter: blur(24px);
     }
-    .waitlist::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: radial-gradient(circle at 50% 50%, #000 30%, transparent 80%);
-      -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 30%, transparent 80%);
-      pointer-events: none;
-    }
-    .waitlist-inner {
-      max-width: 880px;
-      margin: 0 auto;
-      text-align: center;
+    .mock > * {
       position: relative;
       z-index: 1;
     }
-    .waitlist h2 {
-      font-family: var(--font-display);
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      line-height: 1.05;
-      font-size: clamp(32px, 5vw, 56px);
-      margin: 0 0 18px;
+    .mock-top {
+      color: var(--muted);
+      font-size: 0.68rem;
+      margin-bottom: 0.56rem;
+      font-family: "Sora", sans-serif;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
-    .waitlist h2 em {
-      font-family: var(--font-italic);
-      font-style: italic;
-      font-weight: 400;
-      color: var(--amber-light);
+    .kv { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.34rem 0; border-bottom: 1px solid var(--line); font-size: 0.74rem; }
+    .kv:last-child { border-bottom: 0; }
+    .kv span { color: var(--muted); }
+    .kv strong { font-weight: 700; }
+    .mock-foot {
+      margin-top: 0.58rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 0.3rem 0.54rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: var(--muted);
+      font-size: 0.68rem;
     }
-    .waitlist p { color: var(--green-light); font-size: clamp(15px, 1.6vw, 18px); max-width: 600px; margin: 0 auto 36px; line-height: 1.6; }
-    .waitlist-form {
+
+    .pricing {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.7rem;
+    }
+    .plan {
+      border: 1px solid var(--line);
+      border-radius: 0.96rem;
+      background: var(--surface);
+      padding: 0.9rem;
+      transition: transform 200ms ease, border-color 200ms ease;
+      position: relative;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      max-width: 560px;
-      margin: 0 auto;
+      min-height: 23.25rem;
     }
-    @media (min-width: 600px) { .waitlist-form { flex-direction: row; } }
-    .waitlist-form input {
-      flex: 1;
-      height: 56px;
-      padding: 0 24px;
-      border-radius: var(--radius-pill);
-      border: 1px solid var(--border-strong);
-      background: rgba(0,0,0,0.30);
-      color: var(--text);
-      font-size: 16px;
-      outline: none;
-      transition: border-color 0.2s, background 0.2s;
+    .plan:hover {
+      transform: translateY(-3px) rotate(-0.12deg);
+      border-color: color-mix(in oklch, var(--green) 52%, var(--line));
     }
-    .waitlist-form input::placeholder { color: var(--text-dim); }
-    .waitlist-form input:focus { border-color: var(--green-light); background: rgba(0,0,0,0.45); }
-    .waitlist-form button {
-      height: 56px;
-      padding: 0 28px;
-      border-radius: var(--radius-pill);
-      background: var(--white);
-      color: var(--green-deep);
-      border: none;
+    .plan h3 { margin: 0; font-family: "Sora", sans-serif; font-size: 0.95rem; }
+    .price {
+      margin-top: 0.54rem;
+      font-family: "Sora", sans-serif;
+      font-size: clamp(1.45rem, 3vw, 2.2rem);
+      letter-spacing: -0.03em;
+      font-weight: 800;
+    }
+    .price small { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+    .plan ul { margin: 0.62rem 0 0; padding-left: 1rem; color: var(--muted); font-size: 0.78rem; line-height: 1.5; }
+    .plan .btn {
+      margin-top: auto;
+      width: 100%;
+      min-height: 2.9rem;
+      padding: 0.82rem 1rem;
+      font-size: 0.92rem;
+    }
+    .plan.highlight {
+      border-color: color-mix(in oklch, var(--green) 58%, var(--line));
+      box-shadow: 0 24px 32px -28px color-mix(in oklch, var(--green) 58%, transparent);
+    }
+    .plan-badge {
+      position: absolute;
+      top: 0.36rem;
+      right: 0.62rem;
+      border-radius: 999px;
+      border: 1px solid color-mix(in oklch, var(--green) 60%, transparent);
+      background: var(--ok-soft);
+      color: var(--ok);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.14rem 0.42rem;
+    }
+
+    .dashboard {
+      margin-top: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 1.12rem;
+      background: var(--surface);
+      padding: 0.8rem;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 28px 60px -42px var(--shadow);
+    }
+    .db-top {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.66rem;
+    }
+    .db-card {
+      border: 1px solid var(--line);
+      border-radius: 0.86rem;
+      background: var(--surface-2);
+      padding: 0.72rem;
+      transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+    }
+    .db-card:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in oklch, var(--green) 52%, var(--line));
+      box-shadow: 0 20px 26px -24px color-mix(in oklch, var(--green) 50%, transparent);
+    }
+    .db-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.8rem;
       font-weight: 600;
-      font-size: 15px;
-      transition: transform 0.2s, background 0.2s;
     }
-    .waitlist-form button:hover { transform: translateY(-2px); background: var(--green-light); }
-    .waitlist-trust {
-      margin-top: 24px;
-      display: flex; flex-wrap: wrap; gap: 12px 28px;
+    .db-pill {
+      border-radius: 999px;
+      padding: 0.14rem 0.45rem;
+      font-size: 0.66rem;
+      font-weight: 700;
+      color: var(--ok);
+      background: var(--ok-soft);
+    }
+    .db-pill.bad { color: var(--red); background: var(--warn-soft); }
+    .db-val {
+      margin-top: 0.5rem;
+      font-family: "Sora", sans-serif;
+      font-size: clamp(1.36rem, 2.6vw, 2.2rem);
+      letter-spacing: -0.03em;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .db-main {
+      margin-top: 0.66rem;
+      display: grid;
+      grid-template-columns: 1fr 1.45fr 0.88fr;
+      gap: 0.66rem;
+    }
+    .db-panel {
+      border: 1px solid var(--line);
+      border-radius: 0.86rem;
+      background: var(--surface-2);
+      padding: 0.72rem;
+      transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+    }
+    .db-panel:hover {
+      border-color: color-mix(in oklch, var(--green) 42%, var(--line));
+      box-shadow: 0 16px 22px -22px color-mix(in oklch, var(--green) 50%, transparent);
+      transform: translateY(-1px);
+    }
+
+    .db-panel h3 {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      font-size: 0.9rem;
+      letter-spacing: -0.01em;
+    }
+    .massive {
+      margin-top: 0.38rem;
+      font-family: "Sora", sans-serif;
+      font-size: 2rem;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      font-weight: 800;
+    }
+    .db-divider { height: 1px; background: var(--line); margin: 0.72rem 0; }
+    .db-kv { display: flex; justify-content: space-between; align-items: baseline; gap: 0.45rem; color: var(--muted); font-size: 0.84rem; padding: 0.2rem 0; }
+    .db-kv strong { color: var(--fg); font-weight: 700; }
+
+    .chart-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.56rem;
+    }
+    .chart-tabs { display: flex; align-items: center; gap: 0.56rem; flex-wrap: wrap; }
+    .chart-tab {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 0;
+      transition: color 150ms ease, transform 150ms ease;
+    }
+    .chart-tab:hover { color: var(--fg); transform: translateY(-1px); }
+    .chart-tab.active { color: var(--fg); }
+    .chart-box {
+      border: 1px solid var(--line);
+      border-radius: 0.72rem;
+      background: oklch(0.98 0 0 / 0.03);
+      padding: 0.48rem;
+    }
+    .chart-svg { display: block; width: 100%; height: auto; }
+    .grid-line { stroke: var(--line); stroke-width: 1; }
+    .chart-path {
+      fill: none;
+      stroke: url(#dbGrad);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .dot-halo { fill: oklch(0.98 0 0 / 0.2); }
+    .dot-core { fill: var(--amber); }
+
+    .mix-row + .mix-row { margin-top: 0.94rem; }
+    .mix-row {
+      transition: transform 170ms ease;
+    }
+    .mix-row:hover { transform: translateX(2px); }
+    .mix-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-bottom: 0.32rem;
+    }
+    .mix-label .msr { color: var(--amber); font-size: 0.95rem; }
+    .mix-track {
+      width: 100%;
+      height: 0.34rem;
+      border-radius: 999px;
+      background: oklch(0.98 0 0 / 0.1);
+      overflow: hidden;
+    }
+    .mix-fill { height: 100%; border-radius: inherit; background: oklch(0.98 0 0 / 0.24); }
+    .mix-row:hover .mix-fill {
+      background: color-mix(in oklch, var(--green) 46%, oklch(0.98 0 0 / 0.24));
+    }
+
+    .faq-grid { margin-top: 0.9rem; display: grid; gap: 0.62rem; }
+    details {
+      border: 1px solid var(--line);
+      border-radius: 0.88rem;
+      background: var(--surface);
+      padding: 0.2rem 0.82rem;
+      transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
+    }
+    details:hover {
+      border-color: color-mix(in oklch, var(--green) 36%, var(--line));
+      background: oklch(0.22 0.02 155 / 0.84);
+      transform: translateX(2px);
+    }
+    summary {
+      list-style: none;
+      cursor: pointer;
+      font-family: "Sora", sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.36rem;
+      width: 100%;
+      padding: 0.62rem 0;
+      justify-content: space-between;
+    }
+    summary::-webkit-details-marker { display: none; }
+    .summary-left { display: inline-flex; align-items: center; gap: 0.36rem; }
+    .summary-plus {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
-      color: var(--text-mid);
-      font-size: 13px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      transition: transform 180ms ease, color 180ms ease, border-color 180ms ease;
     }
-    .waitlist-trust span { display: inline-flex; align-items: center; gap: 6px; }
-    .waitlist-trust span::before { content: "✓"; color: var(--green-light); font-weight: 700; }
+    details[open] .summary-plus {
+      transform: rotate(45deg);
+      color: var(--green);
+      border-color: color-mix(in oklch, var(--green) 42%, var(--line));
+    }
+    .faq-answer-wrap {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 260ms ease, opacity 220ms ease;
+      opacity: 0.6;
+    }
+    details[open] .faq-answer-wrap {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+    .faq-answer-inner {
+      overflow: hidden;
+    }
+    .faq-answer-inner p {
+      margin: 0 0 0.64rem;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
 
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 32px; left: 50%;
-      transform: translate(-50%, 60px);
-      background: var(--green-deep);
-      color: var(--green-light);
-      border: 1px solid var(--green);
-      padding: 14px 22px;
-      border-radius: var(--radius-pill);
-      font-size: 14.5px;
-      font-weight: 500;
-      box-shadow: 0 30px 60px -20px rgba(0,0,0,0.7);
+    .final-cta {
+      text-align: center;
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      background:
+        radial-gradient(circle at 16% 24%, var(--mesh-a), transparent 58%),
+        radial-gradient(circle at 84% 24%, var(--mesh-b), transparent 60%),
+        var(--surface);
+      padding: 1.22rem;
+      margin-top: 1rem;
+    }
+    .final-cta h3 {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      font-size: clamp(1.26rem, 2.8vw, 2rem);
+      letter-spacing: -0.02em;
+    }
+    .final-cta p {
+      margin: 0.52rem auto 0;
+      max-width: 64ch;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.52;
+    }
+    .final-actions {
+      margin-top: 0.92rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.62rem;
+      flex-wrap: wrap;
+    }
+
+    .install-tip {
+      margin: 1rem 0 0;
+      width: fit-content;
+      max-width: 34rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: oklch(0.98 0 0 / 0.05);
+      color: var(--muted);
+      padding: 0.4rem 0.72rem;
+      font-size: 0.76rem;
       opacity: 0;
-      transition: transform 0.4s var(--ease-out), opacity 0.4s;
-      z-index: 100;
+      transition: opacity 150ms ease;
     }
-    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+    .install-tip.show { opacity: 1; }
 
-    /* =========================================================
-       18. FOOTER
-       ========================================================= */
-    footer {
-      padding: 60px 0 40px;
-      border-top: 1px solid var(--border);
-      background: var(--bg-primary);
+    @media (min-width: 980px) {
+      .nav { display: inline-flex; }
+    }
+    @media (max-width: 980px) {
+      .flow-grid { grid-template-columns: 1fr; }
+      .pricing { grid-template-columns: 1fr; }
+      .db-main { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 860px) {
+      .impact-row, .feature-grid, .db-top { grid-template-columns: 1fr; }
+      .hero-head { padding-top: 3rem; }
+      .topbar-inner { border-radius: 1rem; }
+    }
+
+    /* === MINI LABEL (dashboard) === */
+    .mini-label {
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-family: "Sora", sans-serif;
+      font-weight: 600;
+      margin-bottom: 0.22rem;
+    }
+
+    /* === HAMBURGER BUTTON === */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      width: 2.2rem;
+      height: 2.2rem;
+      border: 1px solid var(--line);
+      border-radius: 0.5rem;
+      background: oklch(0.98 0 0 / 0.06);
+      cursor: pointer;
+      padding: 0.46rem;
+      transition: border-color 180ms ease, background 180ms ease;
+      flex-shrink: 0;
+    }
+    .hamburger:hover {
+      border-color: color-mix(in oklch, var(--green) 44%, var(--line));
+      background: oklch(0.98 0 0 / 0.12);
+    }
+    .hamburger span {
+      display: block;
+      height: 2px;
+      width: 100%;
+      background: var(--fg);
+      border-radius: 999px;
+      transition: transform 260ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease, width 200ms ease;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; width: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+    @media (max-width: 979px) { .hamburger { display: flex; } }
+
+    /* === MOBILE NAV DRAWER === */
+    .mobile-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 44;
+      display: flex;
+      flex-direction: column;
+      background: oklch(0.1 0.028 155 / 0.97);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      padding: 5.8rem 1.5rem 2rem;
+      gap: 0.1rem;
+      transform: translateY(-100%);
+      transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+    .mobile-nav.open {
+      transform: translateY(0);
+      pointer-events: all;
+    }
+    .mobile-nav > a {
+      font-family: "Sora", sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--muted);
+      padding: 0.74rem 0;
+      border-bottom: 1px solid var(--line);
+      letter-spacing: -0.01em;
+      transition: color 150ms ease, padding-left 180ms ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .mobile-nav > a:hover { color: var(--fg); padding-left: 0.4rem; }
+    .mobile-nav > a.btn {
+      margin-top: 1.2rem;
+      text-align: center;
+      justify-content: center;
+      border-radius: 999px;
+      border-bottom: 0;
+      padding: 0.75rem 1rem;
+    }
+
+    /* === COMPARISON TABLE === */
+    .compare-table {
+      margin-top: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 0.92rem;
+      overflow: hidden;
+    }
+    .compare-head {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      background: oklch(0.16 0.024 155 / 0.92);
+      border-bottom: 1px solid var(--line);
+    }
+    .compare-head-cell {
+      padding: 0.72rem 0.9rem;
+      font-family: "Sora", sans-serif;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.32rem;
+      border-right: 1px solid var(--line);
+    }
+    .compare-head-cell:last-child { border-right: 0; }
+    .compare-head-cell.old { color: var(--red); }
+    .compare-head-cell.new { color: var(--ok); }
+    .compare-head-cell .msr { font-size: 1rem; }
+    .compare-row {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      border-bottom: 1px solid var(--line);
+      transition: background 170ms ease;
+    }
+    .compare-row:last-child { border-bottom: 0; }
+    .compare-row:hover { background: oklch(0.18 0.02 155 / 0.6); }
+    .compare-cell {
+      padding: 0.72rem 0.9rem;
+      font-size: 0.8rem;
+      line-height: 1.4;
+      display: flex;
+      align-items: center;
+      gap: 0.36rem;
+      color: var(--muted);
+      border-right: 1px solid var(--line);
+    }
+    .compare-cell:last-child { border-right: 0; }
+    .compare-cell.feature { font-weight: 600; color: var(--fg); }
+    .compare-cell.bad { color: var(--red); }
+    .compare-cell.good { color: var(--ok); font-weight: 600; }
+    .compare-cell .msr { font-size: 0.95rem; flex-shrink: 0; }
+
+    /* === TESTIMONIALS === */
+    .testimonials-grid {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.72rem;
+    }
+    .testimonial {
+      border: 1px solid var(--line);
+      border-radius: 0.96rem;
+      background: var(--surface);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+    }
+    .testimonial:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in oklch, var(--green) 40%, var(--line));
+      box-shadow: 0 20px 28px -24px color-mix(in oklch, var(--green) 40%, transparent);
+    }
+    .testimonial-quote {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.58;
+      font-style: italic;
+      flex: 1;
+      margin: 0;
+    }
+    .testimonial-quote::before { content: '\201C'; }
+    .testimonial-quote::after { content: '\201D'; }
+    .testimonial-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.58rem;
+      border-top: 1px solid var(--line);
+      padding-top: 0.78rem;
+    }
+    .testimonial-avatar {
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green-2), var(--amber));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Sora", sans-serif;
+      font-weight: 800;
+      font-size: 0.76rem;
+      color: oklch(0.13 0.03 155);
+      flex-shrink: 0;
+    }
+    .testimonial-meta { flex: 1; }
+    .testimonial-meta strong {
+      display: block;
+      font-family: "Sora", sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .testimonial-meta span { font-size: 0.72rem; color: var(--muted); }
+    .stars { color: var(--amber); font-size: 0.72rem; letter-spacing: 0.06em; flex-shrink: 0; }
+
+    /* === PWA INSTALL SECTION === */
+    .install-section {
+      margin-top: 1rem;
+      border: 1px solid color-mix(in oklch, var(--green) 30%, var(--line));
+      border-radius: 1.22rem;
+      background:
+        radial-gradient(circle at 12% 22%, var(--mesh-a), transparent 52%),
+        radial-gradient(circle at 88% 78%, var(--mesh-c), transparent 56%),
+        oklch(0.17 0.025 155 / 0.82);
+      backdrop-filter: blur(14px);
+      padding: 1.4rem;
+      text-align: center;
+    }
+    .install-section h2 {
+      margin: 0.5rem 0 0;
+      max-width: none;
+      font-family: "Sora", sans-serif;
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+    }
+    .install-section .lead { margin: 0.52rem auto 0; max-width: 54ch; }
+    .install-os-grid {
+      margin-top: 1.2rem;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+      text-align: left;
+    }
+    .install-card {
+      border: 1px solid var(--line);
+      border-radius: 0.92rem;
+      background: oklch(0.14 0.025 155 / 0.9);
+      padding: 1rem;
+    }
+    .install-card-head {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: "Sora", sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 0.82rem;
+    }
+    .install-card-head .msr { font-size: 1.35rem; }
+    .install-step-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.52rem;
+    }
+    .install-step-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .install-step-num {
+      width: 1.3rem;
+      height: 1.3rem;
+      border-radius: 50%;
+      border: 1px solid color-mix(in oklch, var(--green) 40%, var(--line));
+      background: var(--ok-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Sora", sans-serif;
+      font-size: 0.64rem;
+      font-weight: 800;
+      color: var(--ok);
+      flex-shrink: 0;
+      margin-top: 0.08rem;
+    }
+    .install-cta-row {
+      margin-top: 1.3rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.62rem;
+      flex-wrap: wrap;
+    }
+
+    /* === FOOTER === */
+    .site-footer {
+      width: 100%;
+      border-top: 1px solid var(--line);
+      background: oklch(0.1 0.025 155 / 0.98);
+      padding: 2.4rem 0 1.4rem;
     }
     .footer-inner {
-      max-width: var(--container);
-      margin: 0 auto;
-      padding: 0 24px;
       display: grid;
-      gap: 24px;
-      grid-template-columns: 1fr;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    .footer-brand .brand { font-size: 1rem; }
+    .footer-brand p {
+      margin: 0.6rem 0 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.54;
+      max-width: 24ch;
+    }
+    .footer-col h4 {
+      margin: 0 0 0.78rem;
+      font-family: "Sora", sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: color-mix(in oklch, var(--muted) 70%, transparent);
+    }
+    .footer-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.46rem; }
+    .footer-col a {
+      font-size: 0.82rem;
+      color: oklch(0.68 0.015 140);
+      transition: color 130ms ease;
+      display: inline-flex;
       align-items: center;
+      gap: 0.32rem;
     }
-    @media (min-width: 768px) { .footer-inner { grid-template-columns: 1fr auto 1fr; } }
-    .footer-nav {
-      list-style: none; padding: 0; margin: 0;
-      display: flex; flex-wrap: wrap; gap: 22px;
+    .footer-col a .msr { font-size: 0.88rem; }
+    .footer-col a:hover { color: var(--fg); }
+    .footer-bottom {
+      margin-top: 2rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+    .footer-bottom p { margin: 0; font-size: 0.76rem; color: oklch(0.5 0.015 140); }
+    .footer-social { display: flex; align-items: center; gap: 0.5rem; }
+    .footer-social a {
+      width: 2rem;
+      height: 2rem;
+      border: 1px solid var(--line);
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
       justify-content: center;
+      color: var(--muted);
+      transition: color 130ms ease, border-color 130ms ease, background 130ms ease;
     }
-    .footer-nav a { color: var(--text-mid); font-size: 14px; transition: color 0.2s; }
-    .footer-nav a:hover { color: var(--green-light); }
-    .footer-meta { color: var(--text-dim); font-size: 13px; line-height: 1.6; }
-    .footer-meta .copyright { display: block; margin-top: 4px; }
-    @media (min-width: 768px) {
-      .footer-meta { text-align: right; }
+    .footer-social a:hover {
+      color: var(--fg);
+      border-color: color-mix(in oklch, var(--green) 44%, var(--line));
+      background: oklch(0.98 0 0 / 0.05);
     }
-    .footer-thesis {
-      display: block;
-      margin-top: 14px;
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      color: var(--text-dim);
-      letter-spacing: 0.02em;
-    }
+    .footer-social .msr { font-size: 1rem; }
 
-    /* =========================================================
-       19. REVEAL ANIMATIONS
-       ========================================================= */
-    .reveal {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
-      will-change: opacity, transform;
+    @media (max-width: 980px) {
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .install-os-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr 1fr; gap: 1.5rem 2rem; }
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .reveal[data-delay="1"].visible { transition-delay: 0.08s; }
-    .reveal[data-delay="2"].visible { transition-delay: 0.16s; }
-    .reveal[data-delay="3"].visible { transition-delay: 0.24s; }
-    .reveal[data-delay="4"].visible { transition-delay: 0.32s; }
-    .reveal[data-delay="5"].visible { transition-delay: 0.40s; }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-      .reveal { opacity: 1; transform: none; }
-    }
-
-    /* Focus styles globally */
-    a:focus-visible,
-    button:focus-visible,
-    input:focus-visible,
-    select:focus-visible,
-    textarea:focus-visible,
-    [role="button"]:focus-visible {
-      outline: 2px solid var(--green);
-      outline-offset: 3px;
-      border-radius: 6px;
+    @media (max-width: 620px) {
+      .footer-inner { grid-template-columns: 1fr; gap: 1.3rem; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+      .compare-head { grid-template-columns: 1.1fr 0.9fr 0.9fr; }
+      .compare-row { grid-template-columns: 1.1fr 0.9fr 0.9fr; }
+      .compare-cell { padding: 0.58rem 0.5rem; font-size: 0.72rem; }
+      .compare-head-cell { padding: 0.58rem 0.5rem; font-size: 0.66rem; }
     }
   </style>
 </head>
 <body>
-
-  <!-- =========================================================
-       NAV
-       ========================================================= -->
-  <header class="nav" id="nav">
-    <div class="nav-inner">
-      <a href="#top" class="brand" aria-label="Inicio PreciosYa">
-        <img class="brand-mark" src="./assets/preciosya-logo.png" alt="Logo PreciosYa" loading="eager" />
-        <span class="brand-name">Precios<span class="ya">Ya</span></span>
-      </a>
-      <nav aria-label="Principal">
-        <ul class="nav-links">
-          <li><a href="#solucion">Funcionalidades</a></li>
-          <li><a href="#como">Cómo funciona</a></li>
-          <li><a href="#precios">Precios</a></li>
-          <li><a href="#faq">FAQ</a></li>
-        </ul>
-      </nav>
-      <a href="#waitlist" class="btn btn-primary nav-cta">Empezar gratis</a>
-      <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-controls="mobileMenu" aria-expanded="false">
-        <span></span>
-      </button>
-    </div>
-  </header>
-
-  <aside class="mobile-menu" id="mobileMenu" aria-hidden="true">
-    <a href="#solucion">Funcionalidades</a>
-    <a href="#como">Cómo funciona</a>
-    <a href="#precios">Precios</a>
-    <a href="#faq">FAQ</a>
-    <a href="#waitlist" class="btn btn-primary">Empezar gratis</a>
-  </aside>
-
-  <main id="top">
-
-    <!-- =========================================================
-         HERO
-         ========================================================= -->
-    <section class="hero">
-      <div class="aurora" aria-hidden="true"></div>
-      <div class="hero-grid" aria-hidden="true"></div>
-      <div class="container">
-        <div class="hero-inner">
-          <div>
-            <span class="eyebrow reveal"><span class="msr" aria-hidden="true">flag</span>Hecho para Argentina</span>
-            <h1 class="hero-h1 reveal" data-delay="1">
-              <span class="seg">Dejá de perder plata.</span>
-              <span class="seg">Actualizá tus precios</span>
-              <span class="seg">en <span class="gradient-text">segundos</span>.</span>
-            </h1>
-            <p class="hero-sub reveal" data-delay="2">
-              La única herramienta que se conecta al IPC oficial del INDEC para que kiosqueros, almaceneros y revendedores apliquen la inflación con un toque — y sepan, producto por producto, si están ganando o perdiendo plata.
-            </p>
-            <div class="hero-ctas reveal" data-delay="3">
-              <a href="#waitlist" class="btn btn-primary btn-lg">Empezar gratis →</a>
-              <a href="#calculadora" class="btn btn-ghost btn-lg">Ver demo en vivo</a>
-            </div>
-            <div class="hero-trust reveal" data-delay="4">
-              <span class="dots" aria-hidden="true">
-                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-              </span>
-              <span class="badge-thesis">Proyecto de tesis · Da Vinci · Analista de Sistemas · 2026</span>
-            </div>
-          </div>
-
-          <div class="hero-mockup-wrap reveal" data-delay="2" aria-hidden="true">
-            <div class="chip chip-1"><span class="chip-dot"></span> +3.7% IPC disponible</div>
-            <div class="chip chip-2"><span class="chip-dot"></span> Margen bajo: Agua mineral</div>
-            <div class="chip chip-3"><span class="chip-dot"></span> Lista enviada ✓</div>
-
-            <div class="phone">
-              <div class="phone-notch"></div>
-              <div class="phone-screen">
-                <div class="phone-status">
-                  <span>9:41</span>
-                  <span>•••• 5G</span>
-                </div>
-                <div class="phone-header">
-                  <div class="phone-title">Precios<span class="acc">Ya</span></div>
-                  <div class="phone-bell" aria-hidden="true"><span class="msr">notifications</span></div>
-                </div>
-                <div class="phone-banner">
-                  <span class="pill">+3.7%</span>
-                  <span>IPC marzo disponible</span>
-                </div>
-
-                <div class="phone-list">
-                  <div class="phone-prod">
-                    <div class="phone-prod-info">
-                      <div class="phone-prod-name">Coca-Cola 2,25 L</div>
-                      <div class="phone-prod-meta">costo $1.850 · margen 32%</div>
-                    </div>
-                    <div class="phone-prod-price">$2.440</div>
-                    <span class="badge-pill badge-ok">OK</span>
-                  </div>
-                  <div class="phone-prod">
-                    <div class="phone-prod-info">
-                      <div class="phone-prod-name">Agua mineral 500 ml</div>
-                      <div class="phone-prod-meta">costo $620 · margen 14%</div>
-                    </div>
-                    <div class="phone-prod-price">$710</div>
-                    <span class="badge-pill badge-warn">Bajo</span>
-                  </div>
-                  <div class="phone-prod">
-                    <div class="phone-prod-info">
-                      <div class="phone-prod-name">Yerba Taragüí 1 kg</div>
-                      <div class="phone-prod-meta">costo $4.200 · margen 28%</div>
-                    </div>
-                    <div class="phone-prod-price">$5.380</div>
-                    <span class="badge-pill badge-ok">OK</span>
-                  </div>
-                </div>
-
-                <div class="phone-calc">
-                  <div class="phone-calc-label">Precio sugerido</div>
-                  <div class="phone-calc-price">$5.380</div>
-                  <div class="phone-calc-formula">$4.200 × (1 + 0,28) → redondeo a 10</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         LOGO STRIP / MARQUEE
-         ========================================================= -->
-    <section class="marquee-section" aria-label="Tipos de comercio">
-      <div class="marquee-label">Pensado para todo tipo de comercio</div>
-      <div class="marquee">
-        <div class="marquee-track">
-          <span class="marquee-item"><span class="msr" aria-hidden="true">storefront</span>Kioscos</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">shopping_cart</span>Almacenes</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">bakery_dining</span>Panaderías</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">restaurant</span>Carnicerías</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">local_florist</span>Verdulerías</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">inventory_2</span>Revendedores</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">coffee</span>Cafeterías</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">cake</span>Emprendedoras</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">storefront</span>Kioscos</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">shopping_cart</span>Almacenes</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">bakery_dining</span>Panaderías</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">restaurant</span>Carnicerías</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">local_florist</span>Verdulerías</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">inventory_2</span>Revendedores</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">coffee</span>Cafeterías</span>
-          <span class="marquee-item"><span class="msr" aria-hidden="true">cake</span>Emprendedoras</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         PAIN
-         ========================================================= -->
-    <section class="pain" id="problema">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="eyebrow amber"><span class="msr" aria-hidden="true">sentiment_dissatisfied</span>El problema real</span>
-          <h2>Los comerciantes argentinos actualizan precios como hace 30 años.</h2>
-          <p>Las góndolas suben en silencio cada semana. Pero la libreta y la memoria no escalan. Y nadie sabe, producto por producto, si está ganando plata o trabajando para el proveedor.</p>
-        </div>
-
-        <div class="stats-row">
-          <article class="stat-card reveal" data-delay="1">
-            <div class="stat-num"><span class="counter" data-target="94" data-suffix="%">0%</span></div>
-            <h3 class="stat-title">Actualiza precios a mano</h3>
-            <p class="stat-desc">Papel, lápiz, memoria, planilla de Excel. Todos los meses. Todos los productos.</p>
-          </article>
-          <article class="stat-card amber reveal" data-delay="2">
-            <div class="stat-num"><span class="counter" data-target="78" data-suffix="%">0%</span></div>
-            <h3 class="stat-title">Lo hace más de 2 veces por semana</h3>
-            <p class="stat-desc">2 a 4 horas cada vez, mirando facturas, comparando con el cartel y borrando precios viejos.</p>
-          </article>
-          <article class="stat-card red reveal" data-delay="3">
-            <div class="stat-num"><span class="counter" data-target="67" data-suffix="%">0%</span></div>
-            <h3 class="stat-title">No sabe si gana plata por producto</h3>
-            <p class="stat-desc">Trabajan a ojo. La rentabilidad real se descubre recién a fin de mes — o cuando ya es tarde.</p>
-          </article>
-        </div>
-
-        <div class="pain-scene reveal">
-          <div>
-            <h3>La escena que pasa todos los días</h3>
-            <p>Son las <strong>9 de la mañana</strong>. Llega el repartidor con la remisión: la coca subió un 8%, el azúcar un 12%, los chicles un 4%. La factura queda apoyada arriba del mostrador.</p>
-            <p>Mientras tanto, hay <strong>cinco clientes esperando</strong> que les cobres y un sexto preguntando si tenés agua tónica. La calculadora del celular se traba con los costos viejos. La libreta tiene tres precios distintos para el mismo producto.</p>
-            <p>Cuando finalmente cerrás la persiana, te sentás dos horas a actualizar el cartel. Un mes después llega el <strong>nuevo IPC del INDEC</strong> y arrancás de cero.</p>
-          </div>
-          <div class="quote">
-            <p>Necesito saber cuánto le cobro al agua mineral. Me subieron el costo y no sé si con el precio del cartel todavía me conviene venderla.</p>
-            <cite>— Marcela, kiosco en Caballito (entrevista de campo, marzo 2026)</cite>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         SOLUTION
-         ========================================================= -->
-    <section class="solution" id="solucion">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="eyebrow"><span class="msr" aria-hidden="true">auto_awesome</span>La solución</span>
-          <h2>Todo lo que necesitás para manejar tus precios.</h2>
-          <p>Una sola herramienta, en el celular, mobile-first, pensada para el ritmo real de un comercio argentino.</p>
-        </div>
-
-        <div class="features">
-          <article class="feature feature-featured reveal">
-            <span class="exclusive"><span class="msr" aria-hidden="true">workspace_premium</span>Exclusivo de PreciosYa</span>
-            <div class="ico" aria-hidden="true"><span class="msr">sensors</span></div>
-            <h3>IPC oficial del INDEC, sincronizado.</h3>
-            <p>Conectado al endpoint público de datos.gob.ar. Cuando se publica el IPC del mes, te avisamos. Un toque y todos tus costos se actualizan con el porcentaje real, no con un número inventado.</p>
-
-            <div class="ipc-widget" id="ipcWidget" aria-hidden="true">
-              <div class="ipc-row">
-                <span class="ipc-label">IPC nacional · Marzo 2026</span>
-                <span class="ipc-value mono">+3,7%</span>
-              </div>
-              <div class="ipc-bar"></div>
-              <div class="ipc-row">
-                <span class="ipc-label">87 productos afectados · 1 local</span>
-                <a href="#calculadora" class="ipc-cta">Aplicar IPC →</a>
-              </div>
-            </div>
-          </article>
-
-          <article class="feature reveal" data-delay="1">
-            <div class="ico" aria-hidden="true"><span class="msr">calculate</span></div>
-            <h3>Cálculo automático</h3>
-            <p>Cargás costo y margen, el precio aparece al instante. Sin fórmulas, sin Excel.</p>
-            <div class="formula">precio = costo × (1 + margen / 100)</div>
-          </article>
-
-          <article class="feature reveal" data-delay="2">
-            <div class="ico" aria-hidden="true"><span class="msr">notifications</span></div>
-            <h3>Alertas de margen</h3>
-            <p>Definís un margen mínimo por local. Los productos por debajo se marcan en rojo. Vendés más informado.</p>
-          </article>
-
-          <article class="feature reveal" data-delay="3">
-            <div class="ico" aria-hidden="true"><span class="msr">bolt</span></div>
-            <h3>Actualización masiva</h3>
-            <p>¿Subió todo un proveedor? Aplicás el porcentaje a una categoría completa en segundos.</p>
-          </article>
-
-          <article class="feature reveal" data-delay="1">
-            <div class="ico" aria-hidden="true"><span class="msr">ios_share</span></div>
-            <h3>Lista para WhatsApp</h3>
-            <p>Generás un PNG limpio con tu logo y lo compartís con tus clientes en un toque, vía Web Share API.</p>
-          </article>
-
-          <article class="feature reveal" data-delay="2">
-            <div class="ico" aria-hidden="true"><span class="msr">monitoring</span></div>
-            <h3>Historial de precios</h3>
-            <p>Cada cambio queda registrado. Ves la evolución de cada producto en un gráfico de líneas.</p>
-          </article>
-
-          <article class="feature reveal" data-delay="3">
-            <div class="ico" aria-hidden="true"><span class="msr">signal_wifi_statusbar_4_bar</span></div>
-            <h3>Funciona offline (PWA)</h3>
-            <p>La instalás como app en cualquier Android. Si se cae internet en el barrio, igual seguís consultando.</p>
-          </article>
-
-          <article class="feature muted reveal" data-delay="1">
-            <div class="ico" aria-hidden="true"><span class="msr">qr_code_scanner</span></div>
-            <h3>Escaneo de código de barras</h3>
-            <p>Cargás productos apuntando con la cámara. Sin tipear, sin equivocarte.</p>
-            <span class="v2-badge">V2 — próximamente</span>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         HOW IT WORKS
-         ========================================================= -->
-    <section class="how" id="como">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="eyebrow"><span class="msr" aria-hidden="true">settings</span>Cómo funciona</span>
-          <h2>De la libreta a un sistema, sin curva de aprendizaje.</h2>
-          <p>Cuatro pasos, tres minutos, cero capacitación. Pensado para el comerciante que ya tiene poco tiempo.</p>
-        </div>
-
-        <div class="how-grid">
-          <div class="steps" role="tablist" aria-label="Pasos">
-            <button class="step active" role="tab" aria-selected="true" data-step="1">
-              <span class="step-num">01</span>
-              <div class="step-body">
-                <h3>Cargás tus productos</h3>
-                <p>Nombre, costo y margen deseado. El precio de venta aparece al instante. Categorizás por rubro, color y prioridad.</p>
-              </div>
-            </button>
-            <button class="step" role="tab" aria-selected="false" data-step="2">
-              <span class="step-num">02</span>
-              <div class="step-body">
-                <h3>Llegó una remisión</h3>
-                <p>Seleccionás la categoría afectada, ingresás el porcentaje del proveedor, todos los precios se ajustan en bloque.</p>
-              </div>
-            </button>
-            <button class="step" role="tab" aria-selected="false" data-step="3">
-              <span class="step-num">03</span>
-              <div class="step-body">
-                <h3>Salió el IPC del mes</h3>
-                <p>Te llega una notificación con el dato oficial. Un toque y los 87 productos del local se actualizan con el índice real.</p>
-              </div>
-            </button>
-            <button class="step" role="tab" aria-selected="false" data-step="4">
-              <span class="step-num">04</span>
-              <div class="step-body">
-                <h3>Compartís tu lista</h3>
-                <p>Generamos un PNG con tu logo y los precios actualizados. Lo enviás por WhatsApp con un solo toque.</p>
-              </div>
-            </button>
-          </div>
-
-          <div class="how-visual" aria-live="polite">
-            <div class="how-panel active" data-panel="1">
-              <h4>Vista — Alta de producto</h4>
-              <div class="demo-card">
-                <div class="demo-row"><span class="demo-key">Producto</span><span class="demo-val">Yerba Taragüí 1 kg</span></div>
-                <div class="demo-row"><span class="demo-key">Costo</span><span class="demo-val">$ 4.200,00</span></div>
-                <div class="demo-row"><span class="demo-key">Margen deseado</span><span class="demo-val">28,00 %</span></div>
-                <div class="demo-bar"><span style="width:28%"></span></div>
-                <div class="demo-row"><span class="demo-key">Precio sugerido</span><span class="demo-val" style="color:var(--green-light)">$ 5.380</span></div>
-              </div>
-              <span class="demo-tag">✓ Margen saludable</span>
-            </div>
-
-            <div class="how-panel" data-panel="2">
-              <h4>Vista — Actualización masiva</h4>
-              <div class="demo-card">
-                <div class="demo-row"><span class="demo-key">Categoría</span><span class="demo-val">Bebidas sin alcohol</span></div>
-                <div class="demo-row"><span class="demo-key">Productos afectados</span><span class="demo-val">23 de 87</span></div>
-                <div class="demo-row"><span class="demo-key">% de aumento</span><span class="demo-val" style="color:var(--amber-bright)">+ 8,00 %</span></div>
-                <div class="demo-bar"><span style="width:80%; background: linear-gradient(90deg, var(--amber), var(--amber-bright))"></span></div>
-                <div class="demo-row"><span class="demo-key">Tiempo estimado</span><span class="demo-val">3 segundos</span></div>
-              </div>
-              <span class="demo-tag" style="background: rgba(217,119,6,0.10); color: var(--amber-bright); border-color: var(--border-amber);"><span class="msr" aria-hidden="true">bolt</span> Listo para aplicar</span>
-            </div>
-
-            <div class="how-panel" data-panel="3">
-              <h4>Vista — Notificación de IPC</h4>
-              <div class="demo-card">
-                <div class="demo-row"><span class="demo-key">Fuente</span><span class="demo-val">INDEC · datos.gob.ar</span></div>
-                <div class="demo-row"><span class="demo-key">Período</span><span class="demo-val">Marzo 2026</span></div>
-                <div class="demo-row"><span class="demo-key">Variación mensual</span><span class="demo-val" style="color:var(--green-light)">+ 3,70 %</span></div>
-                <div class="demo-bar"><span style="width:37%"></span></div>
-                <div class="demo-row"><span class="demo-key">Productos a actualizar</span><span class="demo-val">87 productos</span></div>
-              </div>
-              <span class="demo-tag"><span class="msr" aria-hidden="true">sensors</span> Sincronizado oficial</span>
-            </div>
-
-            <div class="how-panel" data-panel="4">
-              <h4>Vista — Lista para compartir</h4>
-              <div class="demo-card">
-                <div class="demo-row"><span class="demo-key">Formato</span><span class="demo-val">PNG · 1080 × 1920</span></div>
-                <div class="demo-row"><span class="demo-key">Productos incluidos</span><span class="demo-val">87 · ordenados por categoría</span></div>
-                <div class="demo-row"><span class="demo-key">Logo del comercio</span><span class="demo-val" style="color:var(--green-light)">✓ Incluido</span></div>
-                <div class="demo-row"><span class="demo-key">Compartir</span><span class="demo-val">WhatsApp · Web Share API</span></div>
-                <div class="demo-bar"><span style="width:100%"></span></div>
-              </div>
-              <span class="demo-tag"><span class="msr" aria-hidden="true">ios_share</span> Lista enviada</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         LIVE CALCULATOR
-         ========================================================= -->
-    <section class="calc" id="calculadora">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="eyebrow"><span class="msr" aria-hidden="true">science</span>Probalo ahora</span>
-          <h2>La calculadora que vive adentro de PreciosYa.</h2>
-          <p>Cambiá los valores y mirá cómo se mueve todo en tiempo real. La misma lógica del PricingEngine que usa la app.</p>
-        </div>
-
-        <div class="calc-card reveal">
-          <div class="calc-left">
-            <span class="eyebrow amber">en vivo</span>
-            <h3>Cargá un producto, aplicale inflación, mirá el resultado.</h3>
-            <p>Esta calculadora corre el mismo redondeo que la app: al múltiplo de 10 más cercano, para precios más limpios en el cartel.</p>
-
-            <div class="calc-inputs">
-              <div class="calc-input-group">
-                <label for="cost">Costo del producto</label>
-                <div class="calc-input">
-                  <span class="prefix">$</span>
-                  <input type="number" id="cost" min="0" step="10" value="4200" />
-                  <span class="suffix">ARS</span>
-                </div>
-              </div>
-              <div class="calc-input-group">
-                <label for="margin">Margen deseado</label>
-                <div class="calc-input">
-                  <input type="number" id="margin" min="0" step="1" value="28" style="padding-left: 18px;" />
-                  <span class="suffix">%</span>
-                </div>
-              </div>
-              <div class="calc-input-group">
-                <label for="ipc">IPC a aplicar</label>
-                <div class="calc-input">
-                  <input type="number" id="ipc" min="0" step="0.1" value="3.7" style="padding-left: 18px;" />
-                  <span class="suffix">%</span>
-                </div>
-              </div>
-            </div>
-            <p class="calc-note">* PreciosYa redondea al múltiplo de 10 más cercano para precios más limpios en el cartel.</p>
-          </div>
-
-          <div class="calc-right">
-            <span class="calc-result-label">Precio de venta</span>
-            <div class="calc-result-price mono" id="resultPrice">$ 5.380</div>
-
-            <div class="calc-table">
-              <div class="calc-row"><span class="k">Costo base</span><span class="v" id="rCostBase">$ 4.200</span></div>
-              <div class="calc-row"><span class="k">Costo tras IPC</span><span class="v" id="rCostAfter">$ 4.355</span></div>
-              <div class="calc-row"><span class="k">Ganancia por unidad</span><span class="v" id="rProfit">$ 1.025</span></div>
-              <div class="calc-row"><span class="k">Margen efectivo</span><span class="v" id="rEffMargin">23,53 %</span></div>
-            </div>
-
-            <span class="calc-status" data-status="ok" id="rStatus">✓ Margen saludable</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         COMPETITION
-         ========================================================= -->
-    <section class="competition">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="eyebrow"><span class="msr" aria-hidden="true">compare_arrows</span>Por qué PreciosYa</span>
-          <h2>Lo que no tiene ningún competidor.</h2>
-          <p>Comparado con el software de gestión más conocido del mercado argentino y con la planilla de Excel que la mayoría termina usando.</p>
-        </div>
-
-        <div class="compare-wrap reveal">
-          <table class="compare">
-            <thead>
-              <tr>
-                <th scope="col">Funcionalidad</th>
-                <th scope="col" class="col-self">PreciosYa</th>
-                <th scope="col">Gestión Comercio</th>
-                <th scope="col">Líder Gestión</th>
-                <th scope="col">SistemaStock</th>
-                <th scope="col">Excel</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>IPC INDEC automático</td>
-                <td class="col-self"><span class="check">✓</span></td>
-                <td class="ex">✗</td>
-                <td class="ex">✗</td>
-                <td class="ex">✗</td>
-                <td class="ex">✗</td>
-              </tr>
-              <tr>
-                <td>Alertas de margen en tiempo real</td>
-                <td class="col-self"><span class="check">✓</span></td>
-                <td class="ex">✗</td>
-                <td class="partial">Parcial</td>
-                <td class="ex">✗</td>
-                <td class="ex">✗</td>
-              </tr>
-              <tr>
-                <td>Mobile-first / sin PC</td>
-                <td class="col-self"><span class="check">✓</span></td>
-                <td class="ex">✗</td>
-                <td class="ex">✗</td>
-                <td class="partial">Parcial</td>
-                <td class="ex">✗</td>
-              </tr>
-              <tr>
-                <td>Compartir lista por WhatsApp</td>
-                <td class="col-self"><span class="check">✓</span></td>
-                <td class="ex">✗</td>
-                <td class="ex">✗</td>
-                <td class="ex">✗</td>
-                <td class="partial">Manual</td>
-              </tr>
-              <tr>
-                <td>Plan gratuito real</td>
-                <td class="col-self"><span class="check">✓</span></td>
-                <td class="ex">✗</td>
-                <td class="ex">✗</td>
-                <td class="partial">Demo 30 días</td>
-                <td class="col-self"><span class="check">✓</span></td>
-              </tr>
-              <tr>
-                <td>Funciona sin internet (PWA)</td>
-                <td class="col-self"><span class="check">✓</span></td>
-                <td class="ex">✗</td>
-                <td class="ex">✗</td>
-                <td class="ex">✗</td>
-                <td class="partial">Local</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="callout reveal">
-          <strong>PreciosYa no compite con los sistemas de caja.</strong> Ocupa un espacio que nadie más atiende: gestión de márgenes con inflación oficial para el comerciante argentino que vive en su celular y trabaja en horario corrido.
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         PRICING
-         ========================================================= -->
-    <section class="pricing" id="precios">
-      <div class="container">
-        <div class="section-head reveal" style="margin-left:auto; margin-right:auto; text-align:center;">
-          <span class="eyebrow"><span class="msr" aria-hidden="true">payments</span>Planes</span>
-          <h2>Empezá gratis. Pagá cuando valga la pena.</h2>
-          <p>Sin tarjeta de crédito al registrarte. Sin contrato anual. El plan gratis es real, no un demo de 30 días.</p>
-        </div>
-
-        <div class="pricing-grid">
-          <article class="price-card reveal">
-            <h3>Free</h3>
-            <p class="desc">Para arrancar y entender si te sirve. Sin fecha de vencimiento.</p>
-            <div class="price">
-              <span class="num">$0</span>
-              <span class="unit">/ para siempre</span>
-            </div>
-            <ul>
-              <li class="yes"><span class="ico">✓</span> Hasta 30 productos</li>
-              <li class="yes"><span class="ico">✓</span> 1 local</li>
-              <li class="yes"><span class="ico">✓</span> Cálculo automático de precios</li>
-              <li class="yes"><span class="ico">✓</span> Lista por WhatsApp (PNG)</li>
-              <li class="no"><span class="ico">✗</span> IPC oficial del INDEC</li>
-              <li class="no"><span class="ico">✗</span> Alertas de margen en tiempo real</li>
-              <li class="no"><span class="ico">✗</span> Historial de precios ilimitado</li>
-              <li class="no"><span class="ico">✗</span> Modo offline completo</li>
-            </ul>
-            <a href="#waitlist" class="btn btn-ghost">Empezar gratis</a>
-          </article>
-
-          <article class="price-card featured reveal" data-delay="1">
-            <span class="top-pill"><span class="msr" aria-hidden="true">stars</span> Más elegido</span>
-            <h3>Pro</h3>
-            <p class="desc">Para comercios que ya saben que se les va la plata en pisar precios viejos.</p>
-            <div class="price">
-              <span class="num">$4.500</span>
-              <span class="unit">/ mes</span>
-              <span class="usd">~ USD 4</span>
-            </div>
-            <ul>
-              <li class="yes"><span class="ico">✓</span> Productos ilimitados</li>
-              <li class="yes"><span class="ico">✓</span> Hasta 3 locales</li>
-              <li class="yes"><span class="ico">✓</span> IPC oficial del INDEC, automático</li>
-              <li class="yes"><span class="ico">✓</span> Alertas de margen en tiempo real</li>
-              <li class="yes"><span class="ico">✓</span> Actualización masiva por categoría</li>
-              <li class="yes"><span class="ico">✓</span> Historial completo + gráficos</li>
-              <li class="yes"><span class="ico">✓</span> Lista PNG con tu logo</li>
-              <li class="yes"><span class="ico">✓</span> Modo offline completo (PWA)</li>
-            </ul>
-            <a href="#waitlist" class="btn btn-primary">Probar Pro 3 meses gratis</a>
-          </article>
-        </div>
-
-        <div class="roi-callout reveal">
-          <div class="roi-pill">
-            <div class="roi-num amber">8 hs</div>
-            <div class="roi-lbl">perdidas / mes</div>
-          </div>
-          <div class="roi-arrow">→</div>
-          <div class="roi-pill green">
-            <div class="roi-num green">20 min</div>
-            <div class="roi-lbl">con PreciosYa</div>
-          </div>
-          <div class="roi-arrow">→</div>
-          <div class="roi-pill">
-            <div class="roi-num">7 h 40 min</div>
-            <div class="roi-lbl">liberadas / mes</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         TECH CREDIBILITY
-         ========================================================= -->
-    <section class="tech">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="eyebrow"><span class="msr" aria-hidden="true">build</span>Cómo está construido</span>
-          <h2>Tecnología moderna, pensada para escalar.</h2>
-          <p>No es un prototipo de aula. PreciosYa es una arquitectura de producción real, con monorepo, ORM tipado, scheduler y PWA instalable.</p>
-        </div>
-
-        <div class="layers">
-          <article class="layer reveal">
-            <div class="layer-label">
-              <span class="layer-num">L1</span>
-              <span class="name">Frontend</span>
-            </div>
-            <div class="layer-chips">
-              <span class="chip-tech">React 18</span>
-              <span class="chip-tech">Vite</span>
-              <span class="chip-tech">TypeScript strict</span>
-              <span class="chip-tech">Tailwind CSS</span>
-              <span class="chip-tech">PWA · Workbox</span>
-              <span class="chip-tech">TanStack Query</span>
-              <span class="chip-tech">Chart.js</span>
-            </div>
-          </article>
-          <div class="layer-arrow">↓</div>
-
-          <article class="layer reveal" data-delay="1">
-            <div class="layer-label">
-              <span class="layer-num">L2</span>
-              <span class="name">Backend</span>
-            </div>
-            <div class="layer-chips">
-              <span class="chip-tech">Node.js 20</span>
-              <span class="chip-tech">Express 4</span>
-              <span class="chip-tech">TypeScript strict</span>
-              <span class="chip-tech">Prisma 5</span>
-              <span class="chip-tech">Zod</span>
-              <span class="chip-tech">node-cron</span>
-              <span class="chip-tech">Resend</span>
-            </div>
-          </article>
-          <div class="layer-arrow">↓</div>
-
-          <article class="layer reveal" data-delay="2">
-            <div class="layer-label">
-              <span class="layer-num">L3</span>
-              <span class="name">Database</span>
-            </div>
-            <div class="layer-chips">
-              <span class="chip-tech">Supabase</span>
-              <span class="chip-tech">PostgreSQL 15</span>
-              <span class="chip-tech">Auth (Google OAuth)</span>
-              <span class="chip-tech">Storage</span>
-              <span class="chip-tech">Realtime</span>
-              <span class="chip-tech">Triggers SQL</span>
-            </div>
-          </article>
-          <div class="layer-arrow">↓</div>
-
-          <article class="layer reveal" data-delay="3">
-            <div class="layer-label">
-              <span class="layer-num">L4</span>
-              <span class="name">External APIs</span>
-            </div>
-            <div class="layer-chips">
-              <span class="chip-tech">INDEC · datos.gob.ar</span>
-              <span class="chip-tech">BCRA</span>
-              <span class="chip-tech">Google OAuth 2.0</span>
-              <span class="chip-tech">Resend (emails)</span>
-              <span class="chip-tech">Web Share API</span>
-            </div>
-          </article>
-        </div>
-
-        <div class="tech-callouts">
-          <div class="tech-callout amber reveal">
-            <span class="tag">Decisión de arquitectura</span>
-            <p><strong>Sin RLS.</strong> Toda la seguridad se maneja en el backend Express con middlewares (<span class="mono">authMiddleware</span>, <span class="mono">ownerGuard</span>, <span class="mono">planGuard</span>). Decisión deliberada para simplificar el alcance académico, manteniendo control granular y auditabilidad.</p>
-          </div>
-          <div class="tech-callout green reveal" data-delay="1">
-            <span class="tag">Diferenciador real</span>
-            <p>La integración con la <strong>API oficial del INDEC</strong> es el primer antecedente documentado en software de gestión para kioscos argentinos. La fuente es pública (datos.gob.ar) — la idea de aprovecharla para un caso de uso comercial es lo nuevo.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         FAQ
-         ========================================================= -->
-    <section class="faq" id="faq">
-      <div class="container">
-        <div class="section-head reveal" style="margin-left:auto; margin-right:auto; text-align:center;">
-          <span class="eyebrow"><span class="msr" aria-hidden="true">forum</span>Preguntas frecuentes</span>
-          <h2>Lo que todos preguntan antes de usarlo.</h2>
-          <p>Si tu duda no está acá, escribinos: igual te respondemos por mail.</p>
-        </div>
-
-        <div class="faq-list">
-          <div class="faq-item reveal">
-            <button class="faq-q" aria-expanded="false" aria-controls="faq-1" id="faq-h-1">
-              <span>¿Realmente se conecta a la API oficial del INDEC?</span>
-              <span class="ico" aria-hidden="true">+</span>
-            </button>
-            <div class="faq-a" id="faq-1" role="region" aria-labelledby="faq-h-1">
-              <div class="faq-a-inner">
-                Sí. PreciosYa consume el endpoint público <strong>apis.datos.gob.ar/series/api/series/?ids=148.3_INIVELNAL_DICI_M_26</strong>, que es la serie oficial del IPC nacional publicada por el INDEC. Un job de <span class="mono">node-cron</span> corre el primer día hábil de cada mes a las 9 AM y guarda el valor en la tabla <span class="mono">economic_indices</span>.
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item reveal" data-delay="1">
-            <button class="faq-q" aria-expanded="false" aria-controls="faq-2" id="faq-h-2">
-              <span>¿Necesito instalar algo?</span>
-              <span class="ico" aria-hidden="true">+</span>
-            </button>
-            <div class="faq-a" id="faq-2" role="region" aria-labelledby="faq-h-2">
-              <div class="faq-a-inner">
-                No hace falta App Store. PreciosYa es una <strong>Progressive Web App (PWA)</strong>: abrís el sitio en Chrome del celular, tocás "Agregar a pantalla de inicio" y queda como un ícono más, sin barra de navegador ni publicidad. Pesa menos de 2 MB.
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item reveal" data-delay="2">
-            <button class="faq-q" aria-expanded="false" aria-controls="faq-3" id="faq-h-3">
-              <span>¿Qué pasa si no tengo internet?</span>
-              <span class="ico" aria-hidden="true">+</span>
-            </button>
-            <div class="faq-a" id="faq-3" role="region" aria-labelledby="faq-h-3">
-              <div class="faq-a-inner">
-                Tu lista de productos queda <strong>cacheada localmente en IndexedDB</strong> con la librería <span class="mono">idb</span>. Podés consultar precios y márgenes sin conexión. Cuando vuelve internet, los cambios pendientes se sincronizan automáticamente con el backend.
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item reveal">
-            <button class="faq-q" aria-expanded="false" aria-controls="faq-4" id="faq-h-4">
-              <span>Ya tengo un Excel, ¿por qué cambiar?</span>
-              <span class="ico" aria-hidden="true">+</span>
-            </button>
-            <div class="faq-a" id="faq-4" role="region" aria-labelledby="faq-h-4">
-              <div class="faq-a-inner">
-                El Excel no se conecta al INDEC, no te avisa cuando un margen cae al rojo, no genera una imagen para WhatsApp y no funciona en el mostrador desde el celular. Y, sobre todo, no <strong>guarda historial</strong>: en el Excel pisás el precio viejo y queda solo el último — perdés toda la trazabilidad.
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item reveal" data-delay="1">
-            <button class="faq-q" aria-expanded="false" aria-controls="faq-5" id="faq-h-5">
-              <span>¿Mis datos están seguros? ¿Quién puede ver mis precios?</span>
-              <span class="ico" aria-hidden="true">+</span>
-            </button>
-            <div class="faq-a" id="faq-5" role="region" aria-labelledby="faq-h-5">
-              <div class="faq-a-inner">
-                Tus datos viven en <strong>Supabase (PostgreSQL gestionado)</strong>. La autenticación es por Google OAuth 2.0 — no manejamos contraseñas. Toda lectura/escritura pasa por el backend Express, que valida tu sesión con un middleware antes de devolver una sola fila. Solo vos y tus locales compartidos pueden ver tus productos.
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item reveal" data-delay="2">
-            <button class="faq-q" aria-expanded="false" aria-controls="faq-6" id="faq-h-6">
-              <span>¿Cuál es la diferencia real entre el plan gratuito y el Pro?</span>
-              <span class="ico" aria-hidden="true">+</span>
-            </button>
-            <div class="faq-a" id="faq-6" role="region" aria-labelledby="faq-h-6">
-              <div class="faq-a-inner">
-                <strong>Free</strong> es para que pruebes la herramienta hasta 30 productos: cargás, calculás, exportás. <strong>Pro</strong> agrega lo que mueve la aguja todos los meses: <span class="mono">IPC oficial automático</span>, alertas de margen en tiempo real, hasta 3 locales, productos ilimitados e historial completo con gráficos. Si ya pisás más de 30 SKUs, el Pro se paga solo en una semana de tiempo recuperado.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         WAITLIST
-         ========================================================= -->
-    <section class="waitlist" id="waitlist">
-      <div class="container">
-        <div class="waitlist-inner">
-          <h2 class="reveal">Dejá de perder horas. Empezá a saber que <em>realmente estás ganando</em>.</h2>
-          <p class="reveal" data-delay="1">Ingresá tu email y sé el primero en acceder. <strong>3 meses de Pro gratis</strong> para los primeros 100 usuarios.</p>
-          <form class="waitlist-form reveal" data-delay="2" id="waitForm" novalidate>
-            <input type="email" id="waitEmail" placeholder="tu@email.com" required aria-label="Tu email" />
-            <button type="submit" class="btn">Sumarme a la lista</button>
-          </form>
-          <div class="waitlist-trust reveal" data-delay="3">
-            <span>Sin tarjeta de crédito</span>
-            <span>Sin contrato</span>
-            <span>Cancelás cuando querés</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- =========================================================
-       FOOTER
-       ========================================================= -->
-  <footer>
-    <div class="footer-inner">
-      <div>
-        <a href="#top" class="brand" aria-label="Inicio PreciosYa">
-          <img class="brand-mark" src="./assets/preciosya-logo.png" alt="Logo PreciosYa" loading="lazy" />
-          <span class="brand-name">Precios<span class="ya">Ya</span></span>
+  <div class="layout">
+    <header class="topbar" id="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="#top" aria-label="Ir al inicio de PreciosYa">
+          <img src="./assets/preciosya-logo.png" alt="Logo PreciosYa" loading="eager" />
+          <span>Precios<span class="brand-ya">Ya</span></span>
         </a>
-        <span class="footer-thesis">Proyecto de tesis · Analista de Sistemas · Escuela Multimedial Da Vinci</span>
+        <nav class="nav" aria-label="Principal">
+          <a href="#beneficios">Funcionalidades</a>
+          <a href="#como-funciona">Cómo funciona</a>
+          <a href="#precios">Precios</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <a href="https://preciosya.vercel.app/login" class="btn btn-primary install-app-cta">Empezar gratis</a>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileNav">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
-      <ul class="footer-nav">
-        <li><a href="#solucion">Funcionalidades</a></li>
-        <li><a href="#precios">Precios</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="mailto:hola@preciosya.app">Contacto</a></li>
-      </ul>
-      <div class="footer-meta">
-        Hecho con yerba y código abierto.
-        <span class="copyright">© 2026 PreciosYa · Desarrollado en Argentina</span>
+    </header>
+
+    <nav class="mobile-nav" id="mobileNav" aria-label="Navegación móvil" role="dialog" aria-modal="true">
+      <a href="#beneficios"><span class="msr">bolt</span>Funcionalidades</a>
+      <a href="#como-funciona"><span class="msr">route</span>Cómo funciona</a>
+      <a href="#precios"><span class="msr">payments</span>Precios</a>
+      <a href="#instalar"><span class="msr">smartphone</span>Instalar app</a>
+      <a href="#faq"><span class="msr">help</span>FAQ</a>
+      <a href="https://preciosya.vercel.app/login" class="btn btn-primary install-app-cta">Empezar gratis</a>
+    </nav>
+
+    <main id="top" class="hero">
+      <div class="hero-bg" aria-hidden="true">
+        <video id="heroVideo" autoplay muted loop playsinline preload="metadata">
+          <source src="./assets/hero-gradient.mp4" type="video/mp4" />
+        </video>
+        <div class="hero-tint"></div>
+        <div id="heroFallback" class="hero-fallback"></div>
+      </div>
+      <section class="hero-wrap hero-head reveal">
+        <span class="kicker"><span class="msr">error</span>El problema real</span>
+        <h1>Los comerciantes argentinos actualizan precios como hace 30 años.</h1>
+        <p class="hero-copy">Libreta, memoria y planilla. PreciosYa reemplaza ese caos con una PWA que aplica IPC, alerta márgenes y genera listas para clientes en minutos.</p>
+        <div class="hero-actions">
+          <a href="https://preciosya.vercel.app/login" class="btn btn-primary install-app-cta">Instalar app</a>
+          <a href="#precios" class="btn btn-ghost">Ver planes</a>
+        </div>
+        <div id="installTip" class="install-tip" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="hero-wrap impact-row reveal">
+        <article class="impact">
+          <strong class="ok">94%</strong>
+          <p>Actualiza precios a mano. Resultado: demoras y decisiones sin datos.</p>
+        </article>
+        <article class="impact">
+          <strong class="warn">78%</strong>
+          <p>Lo hace más de 2 veces por semana por aumentos de proveedores.</p>
+        </article>
+        <article class="impact">
+          <strong class="bad">67%</strong>
+          <p>No sabe si gana por producto porque no sigue su margen real.</p>
+        </article>
+      </section>
+
+      <section class="hero-wrap logo-strip reveal" aria-label="Tipos de comercios">
+        <div class="logo-caption">Hecho para negocios reales en Argentina</div>
+        <div class="logo-track" aria-hidden="true">
+          <span><span class="msr">storefront</span>Kioscos</span>
+          <span><span class="msr">shopping_cart</span>Almacenes</span>
+          <span><span class="msr">bakery_dining</span>Panaderías</span>
+          <span><span class="msr">set_meal</span>Carnicerías</span>
+          <span><span class="msr">nutrition</span>Verdulerías</span>
+          <span><span class="msr">inventory_2</span>Revendedores</span>
+          <span><span class="msr">local_cafe</span>Cafés</span>
+          <span><span class="msr">storefront</span>Kioscos</span>
+          <span><span class="msr">shopping_cart</span>Almacenes</span>
+          <span><span class="msr">bakery_dining</span>Panaderías</span>
+          <span><span class="msr">set_meal</span>Carnicerías</span>
+          <span><span class="msr">nutrition</span>Verdulerías</span>
+          <span><span class="msr">inventory_2</span>Revendedores</span>
+          <span><span class="msr">local_cafe</span>Cafés</span>
+        </div>
+      </section>
+
+      <section id="beneficios" class="wrap section reveal">
+        <h2>PreciosYa te da control real del negocio.</h2>
+        <p class="lead">Funcionalidades pensadas para el día a día de kioscos, almacenes y revendedores. Sin curva de aprendizaje.</p>
+        <div class="feature-grid">
+          <article class="feature"><div class="feature-head"><span class="msr">notifications_active</span>Alertas de margen</div><p>Definí tu umbral mínimo y recibí avisos cuando un producto entra en riesgo.</p></article>
+          <article class="feature"><div class="feature-head"><span class="msr">bolt</span>Actualización masiva</div><p>Aplicá IPC o porcentajes por categoría y actualizá todo sin tocar producto por producto.</p></article>
+          <article class="feature"><div class="feature-head"><span class="msr">ios_share</span>Lista para WhatsApp</div><p>Generá una imagen de precios y compartila en segundos con clientes y grupos.</p></article>
+          <article class="feature"><div class="feature-head"><span class="msr">history</span>Historial de precios</div><p>Consultá cambios, fechas y motivos para entender qué pasó con cada producto.</p></article>
+          <article class="feature"><div class="feature-head"><span class="msr">cloud_done</span>Nube + backup</div><p>Tus datos quedan guardados aunque cambies de celular o cierres el local.</p></article>
+          <article class="feature"><div class="feature-head"><span class="msr">security</span>Privacidad de márgenes</div><p>Tu rentabilidad es privada: solo vos ves costos, márgenes y alertas.</p></article>
+        </div>
+      </section>
+
+      <section id="como-funciona" class="wrap section reveal">
+        <h2>De la libreta a un sistema, sin fricción.</h2>
+        <p class="lead">Cuatro pasos simples para pasar de “reaccionar tarde” a “decidir con números”.</p>
+        <div class="flow-grid">
+          <div class="steps">
+            <article class="step">
+              <div class="step-num">01</div>
+              <div><h3>Cargás productos</h3><p>Nombre, costo y margen deseado. El sistema calcula el precio sugerido.</p></div>
+            </article>
+            <article class="step">
+              <div class="step-num">02</div>
+              <div><h3>Llega un aumento</h3><p>Ingresás IPC o % del proveedor y aplicás el ajuste masivo.</p></div>
+            </article>
+            <article class="step">
+              <div class="step-num">03</div>
+              <div><h3>El sistema alerta riesgos</h3><p>Si el margen cae bajo tu mínimo, queda marcado en rojo al instante.</p></div>
+            </article>
+            <article class="step">
+              <div class="step-num">04</div>
+              <div><h3>Compartís lista</h3><p>Exportás una lista clara y la enviás por WhatsApp en segundos.</p></div>
+            </article>
+          </div>
+          <aside class="mock">
+            <div class="mock-top">vista — actualización ipc</div>
+            <div class="kv"><span>Producto</span><strong>Yerba 1kg</strong></div>
+            <div class="kv"><span>Costo anterior</span><strong>$ 4.200</strong></div>
+            <div class="kv"><span>IPC aplicado</span><strong>3,7%</strong></div>
+            <div class="kv"><span>Margen objetivo</span><strong>30%</strong></div>
+            <div class="kv"><span>Precio sugerido</span><strong>$ 5.650</strong></div>
+            <div class="mock-foot"><span class="msr">check_circle</span>Actualización validada</div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="wrap section reveal">
+        <h2>¿Por qué cambiar? Mirá los números.</h2>
+        <p class="lead">La diferencia entre cómo lo hacías antes y cómo lo podés hacer ahora no tiene vuelta atrás.</p>
+        <div class="compare-table">
+          <div class="compare-head">
+            <div class="compare-head-cell">Tarea</div>
+            <div class="compare-head-cell old"><span class="msr">close</span>Libreta / Excel</div>
+            <div class="compare-head-cell new"><span class="msr">check</span>PreciosYa</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell feature">Actualizar 80 productos</div>
+            <div class="compare-cell bad"><span class="msr">schedule</span>2 horas o más</div>
+            <div class="compare-cell good"><span class="msr">bolt</span>1 tap, al instante</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell feature">Aplicar inflación (IPC)</div>
+            <div class="compare-cell bad"><span class="msr">calculate</span>45 min + errores</div>
+            <div class="compare-cell good"><span class="msr">trending_up</span>IPC oficial, automático</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell feature">Seguir márgenes reales</div>
+            <div class="compare-cell bad"><span class="msr">block</span>Imposible</div>
+            <div class="compare-cell good"><span class="msr">analytics</span>Alertas en tiempo real</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell feature">Compartir lista de precios</div>
+            <div class="compare-cell bad"><span class="msr">photo_camera</span>Foto borrosa por WA</div>
+            <div class="compare-cell good"><span class="msr">ios_share</span>Imagen lista en segundos</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell feature">Recuperar historial</div>
+            <div class="compare-cell bad"><span class="msr">block</span>No existe</div>
+            <div class="compare-cell good"><span class="msr">history</span>Cualquier fecha, siempre</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="wrap section reveal">
+        <h2>Estado general del negocio</h2>
+        <p class="lead">Primero lo clave: qué está pasando hoy con productos, alertas e IPC.</p>
+        <div class="dashboard">
+          <div class="db-top">
+            <article class="db-card">
+              <div class="db-head"><span><span class="msr">inventory_2</span> Productos activos</span><span class="db-pill">+18%</span></div>
+              <div class="db-val">87</div>
+            </article>
+            <article class="db-card">
+              <div class="db-head"><span><span class="msr">warning</span> Alertas de margen</span><span class="db-pill bad">9 críticas</span></div>
+              <div class="db-val">9</div>
+            </article>
+            <article class="db-card">
+              <div class="db-head"><span><span class="msr">monitoring</span> IPC INDEC</span><span class="db-pill">Mayo 2026</span></div>
+              <div class="db-val">3,7 %</div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="wrap section reveal">
+        <h2>Detalle operativo y evolución</h2>
+        <p class="lead">Después profundizás: actualización masiva, curva de margen y mezcla por categoría.</p>
+        <div class="dashboard">
+          <div class="db-main">
+            <article class="db-panel">
+              <div class="mini-label">Actualización masiva</div>
+              <div class="massive">87 productos</div>
+              <button class="btn btn-mix" type="button" style="margin-top:.88rem;width:100%;">Aplicar IPC</button>
+              <div class="db-divider"></div>
+              <div class="db-kv"><span>Margen saludable &gt; 20%</span><strong>78%</strong></div>
+              <div class="db-kv"><span>En alerta</span><strong>9 productos</strong></div>
+            </article>
+
+            <article class="db-panel">
+              <div class="chart-head">
+                <h3>Evolución de margen promedio</h3>
+                <div class="chart-tabs">
+                  <button class="chart-tab" data-range="7">7 días</button>
+                  <button class="chart-tab active" data-range="30">30 días</button>
+                  <button class="chart-tab" data-range="90">90 días</button>
+                  <button class="chart-tab" data-range="365">12 meses</button>
+                </div>
+              </div>
+              <div class="chart-box">
+                <svg class="chart-svg" viewBox="0 0 600 200" aria-label="Gráfico interactivo de margen">
+                  <defs>
+                    <linearGradient id="dbGrad" x1="0" x2="1" y1="0" y2="0">
+                      <stop offset="0%" stop-color="oklch(0.72 0.17 149)" />
+                      <stop offset="100%" stop-color="oklch(0.74 0.16 72)" />
+                    </linearGradient>
+                  </defs>
+                  <line class="grid-line" x1="0" x2="600" y1="36" y2="36"></line>
+                  <line class="grid-line" x1="0" x2="600" y1="76" y2="76"></line>
+                  <line class="grid-line" x1="0" x2="600" y1="116" y2="116"></line>
+                  <line class="grid-line" x1="0" x2="600" y1="156" y2="156"></line>
+                  <path id="chartPath" class="chart-path" d=""></path>
+                  <circle id="dotHalo" class="dot-halo" cx="300" cy="100" r="15"></circle>
+                  <circle id="dotCore" class="dot-core" cx="300" cy="100" r="5"></circle>
+                </svg>
+              </div>
+            </article>
+
+            <article class="db-panel">
+              <div class="mix-row">
+                <div class="mix-label"><span class="msr">local_drink</span>Bebidas</div>
+                <div class="mix-track"><div class="mix-fill" style="width: 88%;"></div></div>
+              </div>
+              <div class="mix-row">
+                <div class="mix-label"><span class="msr">storefront</span>Almacén</div>
+                <div class="mix-track"><div class="mix-fill" style="width: 72%;"></div></div>
+              </div>
+              <div class="mix-row">
+                <div class="mix-label"><span class="msr">cleaning_services</span>Limpieza</div>
+                <div class="mix-track"><div class="mix-fill" style="width: 54%;"></div></div>
+              </div>
+              <div class="mix-row">
+                <div class="mix-label"><span class="msr">cake</span>Golosinas</div>
+                <div class="mix-track"><div class="mix-fill" style="width: 67%;"></div></div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="precios" class="wrap section reveal">
+        <h2>Empezá gratis. Pagá cuando valga la pena.</h2>
+        <p class="lead">Sin tarjeta. Sin vueltas. Si no te ordena el negocio, no te sirve.</p>
+        <div class="pricing">
+          <article class="plan">
+            <h3>Free</h3>
+            <div class="price">$0 <small>/ siempre</small></div>
+            <ul>
+              <li>Hasta 30 productos</li>
+              <li>1 local</li>
+              <li>Cálculo automático de precios</li>
+              <li>Exportación WhatsApp básica</li>
+            </ul>
+            <a href="https://preciosya.vercel.app/login" class="btn btn-ghost install-app-cta">Empezar gratis</a>
+          </article>
+          <article class="plan highlight">
+            <span class="plan-badge">Más elegido</span>
+            <h3>Pro</h3>
+            <div class="price">$4.500 <small>/ mes</small></div>
+            <ul>
+              <li>Productos ilimitados</li>
+              <li>Hasta 3 locales</li>
+              <li>IPC + alertas de margen</li>
+              <li>Historial completo + reportes</li>
+            </ul>
+            <a href="https://preciosya.vercel.app/login" class="btn btn-primary install-app-cta">Probar Pro</a>
+          </article>
+          <article class="plan">
+            <h3>Agency</h3>
+            <div class="price">$9.900 <small>/ mes</small></div>
+            <ul>
+              <li>Locales ilimitados</li>
+              <li>Gestión multi-negocio</li>
+              <li>Soporte prioritario</li>
+              <li>Configuración asistida</li>
+            </ul>
+            <a href="https://preciosya.vercel.app/login" class="btn btn-mix install-app-cta">Hablar con ventas</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="wrap section reveal">
+        <h2>Lo que dicen los comerciantes.</h2>
+        <p class="lead">Más de 200 kioscos, almacenes y revendedores ya gestionan sus precios con PreciosYa.</p>
+        <div class="testimonials-grid">
+          <article class="testimonial">
+            <p class="testimonial-quote">Tardaba 2 horas cada lunes actualizando todo. Ahora son 5 minutos. El IPC ya viene cargado y lo aplico de una sola vez. No puedo creer que antes lo hacía a mano.</p>
+            <div class="testimonial-footer">
+              <div class="testimonial-avatar">MR</div>
+              <div class="testimonial-meta">
+                <strong>Martina R.</strong>
+                <span>Kiosco · Buenos Aires</span>
+              </div>
+              <span class="stars">★★★★★</span>
+            </div>
+          </article>
+          <article class="testimonial">
+            <p class="testimonial-quote">Lo que más me sirve son las alertas de margen. Ya no vendo a pérdida sin darme cuenta. El sistema me avisa antes de que el problema se haga grande.</p>
+            <div class="testimonial-footer">
+              <div class="testimonial-avatar">CD</div>
+              <div class="testimonial-meta">
+                <strong>Carlos D.</strong>
+                <span>Almacén · Córdoba</span>
+              </div>
+              <span class="stars">★★★★★</span>
+            </div>
+          </article>
+          <article class="testimonial">
+            <p class="testimonial-quote">Mis clientes me preguntan los precios por WhatsApp todos los días. Antes les mandaba una foto con el celular. Ahora genero la lista en dos toques y queda profesional.</p>
+            <div class="testimonial-footer">
+              <div class="testimonial-avatar">VS</div>
+              <div class="testimonial-meta">
+                <strong>Valeria S.</strong>
+                <span>Panadería · Rosario</span>
+              </div>
+              <span class="stars">★★★★★</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="faq" class="wrap section reveal">
+        <h2>Preguntas frecuentes</h2>
+        <p class="lead">Las dudas típicas antes de pasar del Excel a un sistema.</p>
+        <div class="faq-grid">
+          <details>
+            <summary>
+              <span class="summary-left"><span class="msr">help</span>¿Necesito saber de sistemas?</span>
+              <span class="summary-plus">+</span>
+            </summary>
+            <div class="faq-answer-wrap">
+              <div class="faq-answer-inner">
+                <p>No. Está pensado para que lo use cualquier comerciante: cargás costo y margen, y PreciosYa hace el resto.</p>
+              </div>
+            </div>
+          </details>
+          <details>
+            <summary>
+              <span class="summary-left"><span class="msr">help</span>¿Puedo instalarlo en el celular?</span>
+              <span class="summary-plus">+</span>
+            </summary>
+            <div class="faq-answer-wrap">
+              <div class="faq-answer-inner">
+                <p>Sí. Es una PWA. En Android se instala directo; en iPhone se agrega desde Compartir &gt; Agregar a pantalla de inicio.</p>
+              </div>
+            </div>
+          </details>
+          <details>
+            <summary>
+              <span class="summary-left"><span class="msr">help</span>¿El IPC es oficial?</span>
+              <span class="summary-plus">+</span>
+            </summary>
+            <div class="faq-answer-wrap">
+              <div class="faq-answer-inner">
+                <p>Sí. Usamos la referencia oficial para que tu actualización masiva tenga una base consistente.</p>
+              </div>
+            </div>
+          </details>
+          <details>
+            <summary>
+              <span class="summary-left"><span class="msr">help</span>¿Qué pasa si cambio de teléfono?</span>
+              <span class="summary-plus">+</span>
+            </summary>
+            <div class="faq-answer-wrap">
+              <div class="faq-answer-inner">
+                <p>Tus datos siguen en la nube. Iniciás sesión en el nuevo dispositivo y recuperás todo.</p>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section id="instalar" class="wrap install-section reveal">
+        <span class="kicker"><span class="msr">smartphone</span>Disponible en tu celular</span>
+        <h2>Llevá PreciosYa en tu celular</h2>
+        <p class="lead">Es una PWA: se instala como una app nativa sin pasar por el Play Store ni el App Store. Sin actualizaciones manuales, siempre al día.</p>
+        <div class="install-os-grid">
+          <div class="install-card">
+            <div class="install-card-head">
+              <span class="msr" style="color:var(--green)">android</span>
+              Android — Chrome
+            </div>
+            <ol class="install-step-list">
+              <li><span class="install-step-num">1</span>Abrí <strong style="color:var(--fg)">preciosya.vercel.app</strong> en Chrome</li>
+              <li><span class="install-step-num">2</span>Tocá el menú <strong style="color:var(--fg)">⋮</strong> (tres puntos) arriba a la derecha</li>
+              <li><span class="install-step-num">3</span>Seleccioná <strong style="color:var(--fg)">"Agregar a pantalla de inicio"</strong></li>
+              <li><span class="install-step-num">4</span>Confirmá — ya aparece como app nativa</li>
+            </ol>
+          </div>
+          <div class="install-card">
+            <div class="install-card-head">
+              <span class="msr" style="color:var(--amber)">phone_iphone</span>
+              iPhone — Safari
+            </div>
+            <ol class="install-step-list">
+              <li><span class="install-step-num">1</span>Abrí <strong style="color:var(--fg)">preciosya.vercel.app</strong> en Safari</li>
+              <li><span class="install-step-num">2</span>Tocá el botón <strong style="color:var(--fg)">Compartir</strong> (cuadrado con flecha ↑)</li>
+              <li><span class="install-step-num">3</span>Seleccioná <strong style="color:var(--fg)">"Agregar a pantalla de inicio"</strong></li>
+              <li><span class="install-step-num">4</span>Tocá "Agregar" arriba a la derecha</li>
+            </ol>
+          </div>
+        </div>
+        <div class="install-cta-row">
+          <a href="https://preciosya.vercel.app/login" class="btn btn-primary install-app-cta" style="padding:0.82rem 1.6rem;font-size:0.95rem;">
+            <span class="msr" style="font-size:1rem;vertical-align:-0.2em;margin-right:0.22rem;">download</span>Instalar PreciosYa
+          </a>
+          <a href="#precios" class="btn btn-ghost">Ver planes</a>
+        </div>
+      </section>
+
+      <section class="wrap final-cta reveal" style="margin:1.8rem auto 2.8rem;">
+        <h3>Pasá de actualizar “a ojo” a decidir con datos</h3>
+        <p>Instalá PreciosYa y empezá a controlar márgenes, aplicar IPC y compartir precios con una operación simple y profesional.</p>
+        <div class="final-actions">
+          <a href="https://preciosya.vercel.app/login" class="btn btn-primary install-app-cta">Instalar app</a>
+          <a href="#precios" class="btn btn-ghost">Ver planes</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a class="brand" href="#top" aria-label="PreciosYa inicio">
+            <img src="./assets/preciosya-logo.png" alt="Logo PreciosYa" width="22" height="22" loading="lazy" />
+            <span>Precios<span class="brand-ya">Ya</span></span>
+          </a>
+          <p>Gestioná precios, aplicá inflación y compartí listas desde tu celular. Hecho para el comerciante argentino.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Producto</h4>
+          <ul>
+            <li><a href="#beneficios"><span class="msr">bolt</span>Funcionalidades</a></li>
+            <li><a href="#como-funciona"><span class="msr">route</span>Cómo funciona</a></li>
+            <li><a href="#precios"><span class="msr">payments</span>Precios</a></li>
+            <li><a href="https://preciosya.vercel.app/login" class="install-app-cta"><span class="msr">open_in_new</span>Abrir app</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#"><span class="msr">article</span>Términos de uso</a></li>
+            <li><a href="#"><span class="msr">lock</span>Privacidad</a></li>
+            <li><a href="#faq"><span class="msr">help</span>Preguntas frecuentes</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Conectate</h4>
+          <ul>
+            <li><a href="https://wa.me/"><span class="msr">chat</span>WhatsApp</a></li>
+            <li><a href="https://instagram.com/"><span class="msr">photo_camera</span>Instagram</a></li>
+            <li><a href="mailto:hola@preciosya.app"><span class="msr">mail</span>hola@preciosya.app</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 PreciosYa · Hecho en Argentina 🇦🇷 · Da Vinci Escuela Multimedial</p>
+        <div class="footer-social">
+          <a href="https://wa.me/" aria-label="WhatsApp de PreciosYa"><span class="msr">chat</span></a>
+          <a href="https://instagram.com/" aria-label="Instagram de PreciosYa"><span class="msr">photo_camera</span></a>
+          <a href="mailto:hola@preciosya.app" aria-label="Email de PreciosYa"><span class="msr">mail</span></a>
+        </div>
       </div>
     </div>
   </footer>
 
-  <div class="toast" id="toast" role="status" aria-live="polite">¡Ya estás en la lista! Revisá tu inbox.</div>
-
   <script>
     (function () {
-      'use strict';
+      "use strict";
 
-      // ============================================================
-      // 1. NAV — scroll-aware + mobile menu
-      // ============================================================
-      const nav = document.getElementById('nav');
-      const navToggle = document.getElementById('navToggle');
-      const mobileMenu = document.getElementById('mobileMenu');
+      const appLoginUrl = "https://preciosya.vercel.app/login";
+      const installButtons = document.querySelectorAll(".install-app-cta");
+      const installTip = document.getElementById("installTip");
+      const heroVideo = document.getElementById("heroVideo");
+      const heroFallback = document.getElementById("heroFallback");
+      const topbar = document.getElementById("topbar");
+      const revealEls = document.querySelectorAll(".reveal");
 
-      function onScroll() {
-        if (window.scrollY > 60) nav.classList.add('scrolled');
-        else nav.classList.remove('scrolled');
+      const chartPath = document.getElementById("chartPath");
+      const dotCore = document.getElementById("dotCore");
+      const dotHalo = document.getElementById("dotHalo");
+      const chartTabs = document.querySelectorAll(".chart-tab");
+
+      let deferredInstallPrompt = null;
+
+      const chartSeries = {
+        "7": [48, 56, 53, 58, 60, 57, 59],
+        "30": [44, 57, 56, 49, 53, 60, 55, 56],
+        "90": [39, 46, 52, 59, 57, 52, 55, 60, 58],
+        "365": [34, 38, 42, 46, 49, 54, 58, 56, 60, 63, 61, 64]
+      };
+
+      function showTip(message, duration) {
+        if (!installTip) return;
+        installTip.textContent = message;
+        installTip.classList.add("show");
+        window.setTimeout(function () {
+          installTip.classList.remove("show");
+        }, duration || 2600);
       }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
 
-      navToggle.addEventListener('click', () => {
-        const open = mobileMenu.classList.toggle('open');
-        navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        mobileMenu.setAttribute('aria-hidden', open ? 'false' : 'true');
-        document.body.style.overflow = open ? 'hidden' : '';
-      });
-      mobileMenu.querySelectorAll('a').forEach(a => {
-        a.addEventListener('click', () => {
-          mobileMenu.classList.remove('open');
-          navToggle.setAttribute('aria-expanded', 'false');
-          mobileMenu.setAttribute('aria-hidden', 'true');
-          document.body.style.overflow = '';
+      function activateFallback() {
+        if (heroFallback) heroFallback.classList.add("visible");
+      }
+
+      function toPoint(value, index, total) {
+        const padX = 14;
+        const width = 572;
+        const minVal = 30;
+        const maxVal = 66;
+        const x = padX + (width / Math.max(total - 1, 1)) * index;
+        const y = 168 - ((value - minVal) / (maxVal - minVal)) * 128;
+        return { x, y };
+      }
+
+      function buildSmoothPath(points) {
+        if (points.length < 2) return "";
+        let d = "M " + points[0].x.toFixed(2) + " " + points[0].y.toFixed(2);
+        for (let i = 1; i < points.length; i += 1) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          const cp1x = prev.x + (curr.x - prev.x) * 0.35;
+          const cp1y = prev.y;
+          const cp2x = prev.x + (curr.x - prev.x) * 0.65;
+          const cp2y = curr.y;
+          d += " C " + cp1x.toFixed(2) + " " + cp1y.toFixed(2) + ", " + cp2x.toFixed(2) + " " + cp2y.toFixed(2) + ", " + curr.x.toFixed(2) + " " + curr.y.toFixed(2);
+        }
+        return d;
+      }
+
+      function animatePathDraw() {
+        if (!chartPath) return;
+        const length = chartPath.getTotalLength();
+        chartPath.style.strokeDasharray = String(length);
+        chartPath.style.strokeDashoffset = String(length);
+        chartPath.getBoundingClientRect();
+        chartPath.style.transition = "stroke-dashoffset 620ms ease";
+        chartPath.style.strokeDashoffset = "0";
+      }
+
+      function setChart(range) {
+        const series = chartSeries[range] || chartSeries["30"];
+        const points = series.map(function (v, i) {
+          return toPoint(v, i, series.length);
+        });
+        const d = buildSmoothPath(points);
+        chartPath.setAttribute("d", d);
+
+        const activePoint = points[Math.floor(points.length * 0.58)];
+        if (activePoint) {
+          dotCore.setAttribute("cx", activePoint.x.toFixed(2));
+          dotCore.setAttribute("cy", activePoint.y.toFixed(2));
+          dotHalo.setAttribute("cx", activePoint.x.toFixed(2));
+          dotHalo.setAttribute("cy", activePoint.y.toFixed(2));
+        }
+
+        animatePathDraw();
+      }
+
+      chartTabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          chartTabs.forEach(function (btn) {
+            btn.classList.toggle("active", btn === tab);
+          });
+          setChart(tab.getAttribute("data-range") || "30");
         });
       });
 
-      // ============================================================
-      // 2. REVEAL ON SCROLL
-      // ============================================================
-      const revealEls = document.querySelectorAll('.reveal');
-      const revealIO = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
+      // Menú hamburguesa (mobile)
+      var hamburgerBtn = document.getElementById("hamburgerBtn");
+      var mobileNavEl = document.getElementById("mobileNav");
+
+      if (hamburgerBtn && mobileNavEl) {
+        var mobileNavLinks = mobileNavEl.querySelectorAll("a");
+
+        function toggleMobileNav() {
+          var isOpen = mobileNavEl.classList.toggle("open");
+          hamburgerBtn.classList.toggle("open", isOpen);
+          hamburgerBtn.setAttribute("aria-expanded", String(isOpen));
+          document.body.style.overflow = isOpen ? "hidden" : "";
+        }
+
+        hamburgerBtn.addEventListener("click", toggleMobileNav);
+
+        mobileNavLinks.forEach(function (link) {
+          link.addEventListener("click", function () {
+            mobileNavEl.classList.remove("open");
+            hamburgerBtn.classList.remove("open");
+            hamburgerBtn.setAttribute("aria-expanded", "false");
+            document.body.style.overflow = "";
+          });
+        });
+      }
+
+      function onScroll() {
+        if (!topbar) return;
+        topbar.classList.toggle("scrolled", window.scrollY > 42);
+      }
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+
+      var glowTargets = document.querySelectorAll(
+        ".impact, .feature, .step, .mock, .compare-row, .db-card, .db-panel, .plan, .testimonial, .install-card, .final-cta"
+      );
+      glowTargets.forEach(function (el) {
+        var style = "orb";
+        if (el.matches(".feature, .step, .install-card")) {
+          style = "sheen";
+        } else if (el.matches(".mock, .db-panel")) {
+          style = "edge";
+        } else if (el.matches(".plan, .testimonial, .final-cta")) {
+          style = "edge";
+        } else if (el.matches(".compare-row")) {
+          style = "lift";
+        }
+
+        el.classList.add("ux-hover-box");
+        el.setAttribute("data-hover-style", style);
+
+        if (style === "orb") {
+          if (!el.querySelector(":scope > .ux-hover-layer")) {
+            var glowLayer = document.createElement("span");
+            glowLayer.className = "ux-hover-layer";
+            glowLayer.setAttribute("aria-hidden", "true");
+            el.insertBefore(glowLayer, el.firstChild);
+          }
+          el.addEventListener("pointermove", function (event) {
+            var rect = el.getBoundingClientRect();
+            var x = ((event.clientX - rect.left) / rect.width) * 100;
+            var y = ((event.clientY - rect.top) / rect.height) * 100;
+            el.style.setProperty("--mx", x.toFixed(2) + "%");
+            el.style.setProperty("--my", y.toFixed(2) + "%");
+            el.style.setProperty("--glow-alpha", "1");
+          });
+          el.addEventListener("pointerleave", function () {
+            el.style.setProperty("--glow-alpha", "0");
+          });
+        }
+      });
+
+      window.addEventListener("beforeinstallprompt", function (event) {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+      });
+
+      installButtons.forEach(function (button) {
+        button.addEventListener("click", async function (event) {
+          event.preventDefault();
+          const fallbackUrl = button.getAttribute("href") || appLoginUrl;
+
+          if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+            const choiceResult = await deferredInstallPrompt.userChoice;
+            deferredInstallPrompt = null;
+            if (choiceResult.outcome === "accepted") {
+              showTip("Instalando PreciosYa en tu dispositivo...", 2200);
+              return;
+            }
+          }
+
+          const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+          if (isIOS) {
+            showTip("En iPhone: Compartir -> Agregar a pantalla de inicio", 3200);
+            window.setTimeout(function () {
+              window.location.href = fallbackUrl;
+            }, 1200);
+            return;
+          }
+
+          window.location.href = fallbackUrl;
+        });
+      });
+
+      if (heroVideo) {
+        heroVideo.addEventListener("error", activateFallback);
+        heroVideo.addEventListener("loadedmetadata", function () {
+          try {
+            heroVideo.playbackRate = 0.45;
+          } catch (error) {
+            // Algunos navegadores restringen playbackRate en autoplay.
+          }
+        });
+        try {
+          heroVideo.playbackRate = 0.45;
+        } catch (error) {
+          // Fallback silencioso.
+        }
+        const playAttempt = heroVideo.play();
+        if (playAttempt && typeof playAttempt.catch === "function") {
+          playAttempt.catch(activateFallback);
+        }
+      } else {
+        activateFallback();
+      }
+
+      const revealIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
           if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
+            entry.target.classList.add("show");
             revealIO.unobserve(entry.target);
           }
         });
-      }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
-      revealEls.forEach(el => revealIO.observe(el));
+      }, { threshold: 0.12, rootMargin: "0px 0px -60px 0px" });
 
-      // ============================================================
-      // 3. NUMBER COUNTERS — easeOutQuart 1.5s
-      // ============================================================
-      const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4);
-      function animateCounter(el) {
-        const target = parseFloat(el.dataset.target);
-        const suffix = el.dataset.suffix || '';
-        const duration = 1500;
-        const start = performance.now();
-        function tick(now) {
-          const p = Math.min(1, (now - start) / duration);
-          const v = easeOutQuart(p) * target;
-          const display = (target % 1 === 0)
-            ? Math.round(v).toLocaleString('es-AR')
-            : v.toFixed(1).replace('.', ',');
-          el.textContent = display + suffix;
-          if (p < 1) requestAnimationFrame(tick);
-        }
-        requestAnimationFrame(tick);
-      }
-      const counters = document.querySelectorAll('.counter');
-      const counterIO = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            animateCounter(entry.target);
-            counterIO.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.4 });
-      counters.forEach(el => counterIO.observe(el));
-
-      // IPC widget bar fill
-      const ipcWidget = document.getElementById('ipcWidget');
-      if (ipcWidget) {
-        const widgetIO = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              ipcWidget.classList.add('visible');
-              widgetIO.unobserve(ipcWidget);
-            }
-          });
-        }, { threshold: 0.4 });
-        widgetIO.observe(ipcWidget);
-      }
-
-      // ============================================================
-      // 4. HOW IT WORKS — interactive steps
-      // ============================================================
-      const steps = document.querySelectorAll('.step');
-      const panels = document.querySelectorAll('.how-panel');
-      steps.forEach(step => {
-        step.addEventListener('click', () => {
-          const id = step.dataset.step;
-          steps.forEach(s => {
-            s.classList.toggle('active', s === step);
-            s.setAttribute('aria-selected', s === step ? 'true' : 'false');
-          });
-          panels.forEach(p => p.classList.toggle('active', p.dataset.panel === id));
-        });
+      revealEls.forEach(function (el) {
+        revealIO.observe(el);
       });
 
-      // ============================================================
-      // 5. LIVE CALCULATOR
-      // ============================================================
-      const $cost = document.getElementById('cost');
-      const $margin = document.getElementById('margin');
-      const $ipc = document.getElementById('ipc');
-      const $price = document.getElementById('resultPrice');
-      const $cb = document.getElementById('rCostBase');
-      const $ca = document.getElementById('rCostAfter');
-      const $pf = document.getElementById('rProfit');
-      const $em = document.getElementById('rEffMargin');
-      const $st = document.getElementById('rStatus');
-
-      const fmtAR = (n) => '$ ' + Math.round(n).toLocaleString('es-AR');
-      const fmtPct = (n) => n.toFixed(2).replace('.', ',') + ' %';
-
-      function calcPrice(cost, margin, ipc) {
-        const adjusted = cost * (1 + ipc / 100);
-        const raw = adjusted * (1 + margin / 100);
-        return Math.round(raw / 10) * 10;
-      }
-
-      let pulseTimer;
-      function update() {
-        const cost = Math.max(0, parseFloat($cost.value) || 0);
-        const margin = Math.max(0, parseFloat($margin.value) || 0);
-        const ipc = Math.max(0, parseFloat($ipc.value) || 0);
-
-        const adjustedCost = cost * (1 + ipc / 100);
-        const sale = calcPrice(cost, margin, ipc);
-        const profit = sale - adjustedCost;
-        const effMargin = adjustedCost > 0 ? (profit / adjustedCost) * 100 : 0;
-
-        $price.textContent = fmtAR(sale);
-        $cb.textContent = fmtAR(cost);
-        $ca.textContent = fmtAR(adjustedCost);
-        $pf.textContent = fmtAR(profit);
-        $em.textContent = fmtPct(effMargin);
-
-        let status = 'ok', label = '✓ Margen saludable';
-        if (effMargin < 0) { status = 'bad'; label = '▼ Vendiendo a pérdida'; }
-        else if (effMargin < 20) { status = 'warn'; label = 'Margen bajo'; }
-        $st.dataset.status = status;
-        $st.textContent = label;
-
-        $price.classList.add('pulse');
-        clearTimeout(pulseTimer);
-        pulseTimer = setTimeout(() => $price.classList.remove('pulse'), 250);
-      }
-      [$cost, $margin, $ipc].forEach(input => {
-        input.addEventListener('input', update);
-      });
-      update();
-
-      // ============================================================
-      // 6. FAQ ACCORDION
-      // ============================================================
-      document.querySelectorAll('.faq-item').forEach(item => {
-        const btn = item.querySelector('.faq-q');
-        const panel = item.querySelector('.faq-a');
-        btn.addEventListener('click', () => {
-          const open = item.getAttribute('aria-expanded') === 'true';
-          // close siblings
-          document.querySelectorAll('.faq-item[aria-expanded="true"]').forEach(other => {
-            if (other !== item) {
-              other.setAttribute('aria-expanded', 'false');
-              other.querySelector('.faq-q').setAttribute('aria-expanded', 'false');
-              other.querySelector('.faq-a').style.maxHeight = '0';
-            }
-          });
-          if (open) {
-            item.setAttribute('aria-expanded', 'false');
-            btn.setAttribute('aria-expanded', 'false');
-            panel.style.maxHeight = '0';
-          } else {
-            item.setAttribute('aria-expanded', 'true');
-            btn.setAttribute('aria-expanded', 'true');
-            panel.style.maxHeight = panel.scrollHeight + 'px';
-          }
-        });
-      });
-
-      // ============================================================
-      // 7. WAITLIST FORM
-      // ============================================================
-      const form = document.getElementById('waitForm');
-      const emailInput = document.getElementById('waitEmail');
-      const toast = document.getElementById('toast');
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const value = emailInput.value.trim();
-        if (!emailRegex.test(value)) {
-          emailInput.style.borderColor = 'rgba(220,38,38,0.5)';
-          emailInput.focus();
-          toast.textContent = 'Ingresá un email válido';
-          toast.classList.add('show');
-          setTimeout(() => toast.classList.remove('show'), 2500);
-          return;
-        }
-        emailInput.style.borderColor = '';
-        emailInput.value = '';
-        toast.textContent = '¡Ya estás en la lista! Revisá tu inbox.';
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3500);
-
-        // Analytics hook (ready to activate)
-        // if (typeof gtag === 'function') {
-        //   gtag('event', 'waitlist_signup', { method: 'landing' });
-        // }
-      });
-      emailInput.addEventListener('input', () => {
-        if (emailInput.style.borderColor) emailInput.style.borderColor = '';
-      });
-
-      // ============================================================
-      // 8. FEATURE CARD MOUSE GLOW
-      // ============================================================
-      document.querySelectorAll('.feature').forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-          const r = card.getBoundingClientRect();
-          card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-          card.style.setProperty('--my', (e.clientY - r.top) + 'px');
-        });
-      });
-
-      // ============================================================
-      // 9. SMOOTH ANCHOR SCROLL FOR CTA OFFSET
-      // ============================================================
-      document.querySelectorAll('a[href^="#"]').forEach(link => {
-        link.addEventListener('click', (e) => {
-          const targetId = link.getAttribute('href');
-          if (targetId === '#' || targetId.length < 2) return;
-          const el = document.querySelector(targetId);
-          if (!el) return;
-          e.preventDefault();
-          const y = el.getBoundingClientRect().top + window.scrollY - 80;
-          window.scrollTo({ top: y, behavior: 'smooth' });
-        });
-      });
-
+      setChart("30");
     })();
   </script>
-
 </body>
 </html>

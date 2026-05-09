@@ -1,0 +1,28 @@
+{
+  "name": "PreciosYa",
+  "short_name": "PreciosYa",
+  "description": "Controlá precios, aplicá IPC oficial de INDEC y compartí listas por WhatsApp. Para kioscos, almacenes y revendedores argentinos.",
+  "start_url": "https://preciosya.vercel.app/",
+  "scope": "https://preciosya.vercel.app/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#07110B",
+  "theme_color": "#07110B",
+  "lang": "es-AR",
+  "dir": "ltr",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    {
+      "src": "./assets/preciosya-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/preciosya-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
