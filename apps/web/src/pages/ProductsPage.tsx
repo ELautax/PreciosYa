@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 
 import { ExportModal } from '@/components/exports/ExportModal'
 import { LocalSelector } from '@/components/locals/LocalSelector'
@@ -31,9 +31,15 @@ function CategoryFilterSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        disabled={q.isLoading}
         className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
       >
         <option value="">Todas</option>
+        {q.isLoading ? (
+          <option value="" disabled>
+            Cargando categorías…
+          </option>
+        ) : null}
         {q.data?.map((c) => (
           <option key={c.id} value={c.id}>
             {c.name}
@@ -45,6 +51,7 @@ function CategoryFilterSelect({
 }
 
 function ProductsMain({ locals }: { locals: LocalDto[] }) {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [localId, setLocalId] = useSelectedLocal(locals)
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
@@ -60,6 +67,33 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   })
   const deleteMut = useDeleteProduct(localId)
   const selectedLocal = locals.find((l) => l.id === localId) ?? locals[0]
+
+  useEffect(() => {
+    if (searchParams.get('new') === '1') {
+      setEditing(null)
+      setFormOpen(true)
+      const next = new URLSearchParams(searchParams)
+      next.delete('new')
+      setSearchParams(next, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
+
+  useEffect(() => {
+    const canUseKeyboardShortcuts =
+      window.matchMedia('(pointer: fine) and (hover: hover)').matches &&
+      navigator.maxTouchPoints === 0
+    if (!canUseKeyboardShortcuts) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      const wantsNew = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'n'
+      if (!wantsNew) return
+      event.preventDefault()
+      setEditing(null)
+      setFormOpen(true)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
 
   function handleDelete(p: ProductDto): void {
     if (
@@ -146,10 +180,13 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
 
         <div className="mt-8">
           {productsQuery.isLoading ? (
-            <p className="text-sm text-stone-600">Cargando productos…</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="h-44 animate-pulse rounded-xl bg-stone-200" />
+              <div className="h-44 animate-pulse rounded-xl bg-stone-200" />
+            </div>
           ) : productsQuery.data ? (
             <>
-              <p className="mb-4 text-xs text-stone-500">
+              <p className="mono mb-4 text-sm text-stone-500">
                 {productsQuery.data.total} producto
                 {productsQuery.data.total !== 1 ? 's' : ''}
               </p>
@@ -210,8 +247,15 @@ export default function ProductsPage() {
 
   if (loadingLocals) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-50 text-stone-600">
-        Cargando…
+      <div className="page-shell">
+        <div className="page-wrap max-w-4xl space-y-4">
+          <div className="h-10 w-44 animate-pulse rounded bg-stone-200" />
+          <div className="h-24 animate-pulse rounded-xl bg-stone-200" />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="h-40 animate-pulse rounded-xl bg-stone-200" />
+            <div className="h-40 animate-pulse rounded-xl bg-stone-200" />
+          </div>
+        </div>
       </div>
     )
   }

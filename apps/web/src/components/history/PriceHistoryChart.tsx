@@ -54,7 +54,33 @@ export function PriceHistoryChart({ rows }: PriceHistoryChartProps) {
           options={{
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom' as const } },
+            plugins: {
+              legend: {
+                position: 'bottom' as const,
+                labels: {
+                  font: {
+                    family: "'DM Mono', monospace",
+                  },
+                },
+              },
+              tooltip: {
+                bodyFont: {
+                  family: "'DM Mono', monospace",
+                },
+                titleFont: {
+                  family: "'DM Mono', monospace",
+                },
+              },
+            },
+            scales: {
+              y: {
+                ticks: {
+                  font: {
+                    family: "'DM Mono', monospace",
+                  },
+                },
+              },
+            },
           }}
         />
       </div>

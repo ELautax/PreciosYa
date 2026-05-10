@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { OfflineBanner } from '@/components/OfflineBanner'
+import { ToastViewport } from '@/components/feedback/ToastViewport'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { useAuth } from '@/contexts/AuthContext'
@@ -20,8 +21,12 @@ function RootRedirect() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-50 text-stone-600">
-        Cargando…
+      <div className="page-shell">
+        <div className="page-wrap max-w-3xl space-y-4">
+          <div className="h-12 w-44 animate-pulse rounded bg-stone-200" />
+          <div className="h-24 animate-pulse rounded-xl bg-stone-200" />
+          <div className="h-64 animate-pulse rounded-xl bg-stone-200" />
+        </div>
       </div>
     )
   }
@@ -33,10 +38,15 @@ export default function App() {
   return (
     <>
       <OfflineBanner />
+      <ToastViewport />
       <Suspense
         fallback={
-          <div className="flex min-h-screen items-center justify-center bg-stone-50 text-stone-600">
-            Cargando…
+          <div className="page-shell">
+            <div className="page-wrap max-w-3xl space-y-4">
+              <div className="h-12 w-44 animate-pulse rounded bg-stone-200" />
+              <div className="h-24 animate-pulse rounded-xl bg-stone-200" />
+              <div className="h-64 animate-pulse rounded-xl bg-stone-200" />
+            </div>
           </div>
         }
       >

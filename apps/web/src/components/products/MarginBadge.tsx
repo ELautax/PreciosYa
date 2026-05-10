@@ -10,7 +10,7 @@ export function MarginBadge({ marginPct, isAlert }: MarginBadgeProps) {
 
   return (
     <span
-      className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${cls}`}
+      className={`mono inline-flex rounded-full border px-2 py-1 text-sm font-medium ${cls}`}
     >
       {marginPct.toFixed(1)}%
     </span>

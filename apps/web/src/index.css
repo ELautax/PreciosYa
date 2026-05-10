@@ -69,6 +69,11 @@ body {
   color: var(--text-primary);
 }
 
+.text-xs {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
 #root {
   min-height: 100%;
 }
@@ -216,6 +221,8 @@ textarea {
   color: var(--text-primary);
   background-color: var(--surface);
   border-color: var(--border);
+  min-height: 44px;
+  font-size: 0.875rem;
 }
 
 input:focus,
@@ -272,9 +279,13 @@ textarea:focus {
   background: var(--btn-soft-bg);
   color: var(--btn-soft-text);
   border-radius: 10px;
-  padding: 0.5rem 0.8rem;
-  font-size: 0.84rem;
+  min-height: 44px;
+  padding: 0.625rem 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-soft:hover {
@@ -290,11 +301,15 @@ textarea:focus {
 }
 
 .kpi-label {
-  font-size: 0.74rem;
+  font-size: 0.875rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   color: var(--text-light);
   font-weight: 700;
+}
+
+button {
+  min-height: 44px;
 }
 
 .kpi-value {
@@ -308,6 +323,25 @@ textarea:focus {
 .app-topbar {
   background: var(--header-bg) !important;
   border-color: var(--header-border) !important;
+}
+
+.wco-active {
+  padding-top: env(titlebar-area-height, 0px);
+}
+
+.wco-drag-region {
+  position: absolute;
+  inset: 0;
+  -webkit-app-region: drag;
+  app-region: drag;
+  pointer-events: none;
+}
+
+.wco-no-drag {
+  position: relative;
+  z-index: 1;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
 }
 
 .app-sidebar {

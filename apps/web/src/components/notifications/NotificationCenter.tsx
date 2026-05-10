@@ -34,7 +34,7 @@ export function NotificationCenter() {
       >
         Notificaciones
         {unread > 0 ? (
-          <span className="ml-2 inline-flex min-w-5 justify-center rounded-full bg-red-600 px-1.5 py-0.5 text-xs text-white">
+          <span className="ml-2 inline-flex min-w-6 justify-center rounded-full bg-red-600 px-1.5 py-1 text-sm text-white">
             {unread}
           </span>
         ) : null}
@@ -48,7 +48,7 @@ export function NotificationCenter() {
               type="button"
               onClick={() => void markAll.mutateAsync()}
               disabled={markAll.isPending || items.length === 0}
-              className="text-xs text-green-700 hover:underline disabled:text-stone-400"
+              className="text-sm text-green-700 hover:underline disabled:text-stone-400"
             >
               Marcar todas
             </button>
@@ -56,7 +56,10 @@ export function NotificationCenter() {
 
           <div className="max-h-96 space-y-2 overflow-y-auto pr-1">
             {listQ.isLoading ? (
-              <p className="text-sm text-stone-600">Cargando…</p>
+              <div className="space-y-2">
+                <div className="h-16 animate-pulse rounded-lg bg-stone-200" />
+                <div className="h-16 animate-pulse rounded-lg bg-stone-200" />
+              </div>
             ) : items.length === 0 ? (
               <p className="text-sm text-stone-500">No hay notificaciones.</p>
             ) : (
@@ -70,8 +73,8 @@ export function NotificationCenter() {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="text-sm font-medium text-stone-900">{n.title}</p>
-                      <p className="text-xs text-stone-700">{n.body}</p>
-                      <p className="mt-1 text-[11px] text-stone-500">
+                      <p className="text-sm text-stone-700">{n.body}</p>
+                      <p className="mt-1 text-sm text-stone-500">
                         {formatDate(n.createdAt)}
                       </p>
                     </div>
@@ -79,7 +82,7 @@ export function NotificationCenter() {
                       <button
                         type="button"
                         onClick={() => void markOne.mutateAsync(n.id)}
-                        className="shrink-0 text-[11px] text-green-700 hover:underline"
+                        className="shrink-0 text-sm text-green-700 hover:underline"
                       >
                         Marcar
                       </button>

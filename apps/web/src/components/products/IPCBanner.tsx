@@ -11,16 +11,16 @@ export function IPCBanner({ ipcPct, onOpenBulk }: IPCBannerProps) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-amber-900">
-            IPC disponible: {ipcPct.toFixed(2)}%
+            IPC disponible: <span className="mono">{ipcPct.toFixed(2)}%</span>
           </p>
-          <p className="text-xs text-amber-800">
+          <p className="text-sm text-amber-800">
             Podés aplicarlo a todos los productos del local actual.
           </p>
         </div>
         <button
           type="button"
           onClick={onOpenBulk}
-          className="rounded-lg bg-amber-600 px-3 py-2 text-xs font-medium text-white hover:bg-amber-700"
+          className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700"
         >
           Actualizar costos
         </button>

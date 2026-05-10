@@ -1,7 +1,8 @@
-import { type ReactNode } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
+import { InstallPromptButton } from '@/components/pwa/InstallPromptButton'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useMe } from '@/hooks/useMe'
@@ -47,6 +48,30 @@ export function AppLayout() {
   const navItems: NavItem[] = me?.isAdmin
     ? [...baseNavItems, { to: '/admin', label: 'Admin' }]
     : baseNavItems
+  const [wcoActive, setWcoActive] = useState(false)
+
+  useEffect(() => {
+    const nav = navigator as Navigator & {
+      windowControlsOverlay?: {
+        visible: boolean
+        addEventListener?: (type: 'geometrychange', cb: () => void) => void
+        removeEventListener?: (type: 'geometrychange', cb: () => void) => void
+      }
+    }
+    const standaloneQuery = window.matchMedia('(display-mode: standalone)')
+    const recalc = () => {
+      const standalone = standaloneQuery.matches
+      const hasWco = Boolean(nav.windowControlsOverlay?.visible)
+      setWcoActive(standalone && hasWco)
+    }
+    recalc()
+    standaloneQuery.addEventListener('change', recalc)
+    nav.windowControlsOverlay?.addEventListener?.('geometrychange', recalc)
+    return () => {
+      standaloneQuery.removeEventListener('change', recalc)
+      nav.windowControlsOverlay?.removeEventListener?.('geometrychange', recalc)
+    }
+  }, [])
 
   return (
     <div className="app-shell min-h-screen text-stone-900">
@@ -62,7 +87,7 @@ export function AppLayout() {
               <p className="font-extrabold text-stone-900">
                 Precios<span className="text-amber-700">Ya</span>
               </p>
-              <p className="text-xs text-stone-500">Gestión confiable diaria</p>
+              <p className="text-sm text-stone-500">Gestión confiable diaria</p>
             </div>
           </div>
 
@@ -72,7 +97,7 @@ export function AppLayout() {
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `block rounded-lg px-3 py-2 text-sm ${
+                  `flex min-h-11 items-center rounded-lg px-3 py-2 text-sm ${
                     isActive
                       ? 'bg-green-100 font-medium text-green-900'
                       : 'text-stone-700 hover:bg-stone-100/80'
@@ -86,9 +111,10 @@ export function AppLayout() {
         </aside>
 
         <div className="pb-16 md:pb-0">
-          <header className="app-topbar sticky top-0 z-30 border-b border-stone-200 bg-white/95 backdrop-blur">
+          <header className={`app-topbar sticky top-0 z-30 border-b border-stone-200 bg-white/95 backdrop-blur ${wcoActive ? 'wco-active' : ''}`}>
             <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-              <div className="flex items-center gap-2">
+              {wcoActive ? <div className="wco-drag-region" aria-hidden /> : null}
+              <div className="flex items-center gap-2 wco-no-drag">
                 <img
                   src={preciosYaLogo}
                   alt="Logo de PreciosYa"
@@ -98,12 +124,13 @@ export function AppLayout() {
                   Precios<span className="text-amber-700">Ya</span>
                 </p>
                 {me?.isAdmin ? (
-                  <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                  <span className="rounded bg-amber-100 px-2 py-1 text-sm font-medium text-amber-800">
                     Admin
                   </span>
                 ) : null}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 wco-no-drag">
+                <InstallPromptButton />
                 <button
                   type="button"
                   onClick={toggleTheme}
@@ -132,7 +159,7 @@ export function AppLayout() {
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-              `rounded-lg px-2 py-2 text-center text-xs ${
+              `flex min-h-11 items-center justify-center rounded-lg px-2 py-2 text-center text-sm ${
                 isActive
                   ? 'bg-green-100 font-medium text-green-900'
                   : 'text-stone-600 hover:bg-stone-100'

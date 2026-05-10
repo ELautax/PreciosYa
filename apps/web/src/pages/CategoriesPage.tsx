@@ -17,9 +17,11 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
   const [localId, setLocalId] = useSelectedLocal(locals)
   const [newName, setNewName] = useState('')
   const [newColor, setNewColor] = useState('#16A34A')
+  const [newPreferredIndex, setNewPreferredIndex] = useState<'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'>('IPC_INDEC')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editName, setEditName] = useState('')
   const [editColor, setEditColor] = useState('#16A34A')
+  const [editPreferredIndex, setEditPreferredIndex] = useState<'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'>('IPC_INDEC')
 
   const listQuery = useCategories(localId)
   const createMut = useCreateCategory(localId)
@@ -32,24 +34,38 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
     await createMut.mutateAsync({
       name: newName.trim(),
       colorHex: newColor,
+      preferredIndex: newPreferredIndex,
     })
     setNewName('')
     setNewColor('#16A34A')
+    setNewPreferredIndex('IPC_INDEC')
   }
 
   function startEdit(c: CategoryDto): void {
     setEditingId(c.id)
     setEditName(c.name)
     setEditColor(c.colorHex)
+    setEditPreferredIndex(c.preferredIndex)
+  }
+
+  function cancelEdit(): void {
+    setEditingId(null)
+    setEditName('')
+    setEditColor('#16A34A')
+    setEditPreferredIndex('IPC_INDEC')
   }
 
   async function saveEdit(): Promise<void> {
     if (!editingId || !editName.trim()) return
     await updateMut.mutateAsync({
       id: editingId,
-      body: { name: editName.trim(), colorHex: editColor },
+      body: {
+        name: editName.trim(),
+        colorHex: editColor,
+        preferredIndex: editPreferredIndex,
+      },
     })
-    setEditingId(null)
+    cancelEdit()
   }
 
   function handleDelete(c: CategoryDto): void {
@@ -124,6 +140,19 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
                 className="h-10 w-14 cursor-pointer rounded border border-stone-300 bg-white"
               />
             </label>
+            <label className="min-w-[180px] text-sm text-stone-700">
+              IPC por defecto
+              <select
+                value={newPreferredIndex}
+                onChange={(e) =>
+                  setNewPreferredIndex(e.target.value as 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS')
+                }
+                className="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+              >
+                <option value="IPC_INDEC">IPC General</option>
+                <option value="IPC_INDEC_ALIMENTOS">IPC Alimentos</option>
+              </select>
+            </label>
             <button
               type="submit"
               disabled={createMut.isPending}
@@ -136,7 +165,11 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
 
         <div className="mt-8">
           {listQuery.isLoading ? (
-            <p className="text-sm text-stone-600">Cargando…</p>
+            <div className="space-y-2">
+              <div className="h-16 animate-pulse rounded-xl bg-stone-200" />
+              <div className="h-16 animate-pulse rounded-xl bg-stone-200" />
+              <div className="h-16 animate-pulse rounded-xl bg-stone-200" />
+            </div>
           ) : listQuery.data ? (
             <ul className="surface-card divide-y divide-stone-200">
               {listQuery.data.length === 0 ? (
@@ -156,6 +189,12 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
                         <input
                           value={editName}
                           onChange={(e) => setEditName(e.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Escape') {
+                              event.preventDefault()
+                              cancelEdit()
+                            }
+                          }}
                           className="min-w-[120px] flex-1 rounded-lg border border-stone-300 px-2 py-1 text-sm"
                         />
                         <input
@@ -164,18 +203,30 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
                           onChange={(e) => setEditColor(e.target.value)}
                           className="h-9 w-12 cursor-pointer rounded border border-stone-300"
                         />
+                        <select
+                          value={editPreferredIndex}
+                          onChange={(e) =>
+                            setEditPreferredIndex(
+                              e.target.value as 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS',
+                            )
+                          }
+                          className="rounded-lg border border-stone-300 px-3 py-2 text-sm"
+                        >
+                          <option value="IPC_INDEC">IPC General</option>
+                          <option value="IPC_INDEC_ALIMENTOS">IPC Alimentos</option>
+                        </select>
                         <button
                           type="button"
                           onClick={() => void saveEdit()}
                           disabled={updateMut.isPending}
-                          className="rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-60"
+                          className="rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-60"
                         >
                           Guardar
                         </button>
                         <button
                           type="button"
-                          onClick={() => setEditingId(null)}
-                          className="rounded-lg border border-stone-300 px-3 py-1.5 text-xs text-stone-800 hover:bg-stone-50"
+                          onClick={cancelEdit}
+                          className="rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-800 hover:bg-stone-50"
                         >
                           Cancelar
                         </button>
@@ -183,17 +234,22 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
                     ) : (
                       <>
                         <span className="flex-1 font-medium text-stone-900">{c.name}</span>
+                        <span className="rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-700">
+                          {c.preferredIndex === 'IPC_INDEC_ALIMENTOS'
+                            ? 'IPC Alimentos'
+                            : 'IPC General'}
+                        </span>
                         <button
                           type="button"
                           onClick={() => startEdit(c)}
-                          className="rounded-lg border border-stone-300 px-3 py-1.5 text-xs text-stone-800 hover:bg-stone-50"
+                          className="rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-800 hover:bg-stone-50"
                         >
                           Editar
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDelete(c)}
-                          className="rounded-lg border border-red-200 px-3 py-1.5 text-xs text-red-700 hover:bg-red-50"
+                          className="rounded-lg border border-red-200 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
                         >
                           Eliminar
                         </button>
@@ -217,8 +273,12 @@ export default function CategoriesPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-50 text-stone-600">
-        Cargando…
+      <div className="page-shell">
+        <div className="page-wrap max-w-2xl space-y-4">
+          <div className="h-10 w-44 animate-pulse rounded bg-stone-200" />
+          <div className="h-20 animate-pulse rounded-xl bg-stone-200" />
+          <div className="h-64 animate-pulse rounded-xl bg-stone-200" />
+        </div>
       </div>
     )
   }

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 import { z } from 'zod'
 
-import { applyIPCToLocal } from '../services/economic-index.service.js'
+import { applyIPCToLocal, getIpcBreakdownForLocal } from '../services/economic-index.service.js'
 import {
   createLocal,
   getLocalsForUser,
@@ -91,5 +91,22 @@ export async function applyIpcToLocalHandler(req: Request, res: Response): Promi
   }
   const id = z.string().uuid().parse(req.params.id)
   const result = await applyIPCToLocal(user.id, id)
+  sendSuccess(res, result)
+}
+
+export async function getIpcBreakdownForLocalHandler(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const user = req.user
+  if (!user) {
+    throw new AppError({
+      statusCode: 401,
+      message: 'No autenticado',
+      code: 'UNAUTHORIZED',
+    })
+  }
+  const id = z.string().uuid().parse(req.params.id)
+  const result = await getIpcBreakdownForLocal(user.id, id)
   sendSuccess(res, result)
 }

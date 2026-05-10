@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ApiSuccess } from 'shared'
 
 import { useApiClient } from '@/hooks/useApiClient'
+import { appToast } from '@/lib/toast'
 
 type AdminUser = {
   id: string
@@ -78,6 +79,10 @@ export function useAdminUpdatePlan() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['admin-users'] })
       void qc.invalidateQueries({ queryKey: ['admin-stats'] })
+      appToast.success('Plan actualizado')
+    },
+    onError: () => {
+      appToast.error('No se pudo actualizar el plan')
     },
   })
 }

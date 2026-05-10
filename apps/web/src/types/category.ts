@@ -3,5 +3,6 @@ export type CategoryDto = {
   localId: string
   name: string
   colorHex: string
+  preferredIndex: 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'
   createdAt: string
 }

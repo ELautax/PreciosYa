@@ -18,12 +18,14 @@ const createBodySchema = z.object({
   localId: z.string().uuid(),
   name: z.string().min(1),
   colorHex: z.union([z.string(), z.null()]).optional(),
+  preferredIndex: z.enum(['IPC_INDEC', 'IPC_INDEC_ALIMENTOS']).optional(),
 })
 
 const updateBodySchema = z
   .object({
     name: z.string().min(1).optional(),
     colorHex: z.union([z.string(), z.null()]).optional(),
+    preferredIndex: z.enum(['IPC_INDEC', 'IPC_INDEC_ALIMENTOS']).optional(),
   })
   .strict()
 
@@ -55,6 +57,9 @@ export async function createCategoryHandler(req: Request, res: Response): Promis
     localId: body.localId,
     name: body.name,
     ...(body.colorHex !== undefined ? { colorHex: body.colorHex } : {}),
+    ...(body.preferredIndex !== undefined
+      ? { preferredIndex: body.preferredIndex }
+      : {}),
   })
   sendSuccess(res, { category }, 201)
 }
@@ -70,9 +75,14 @@ export async function updateCategoryHandler(req: Request, res: Response): Promis
   }
   const id = z.string().uuid().parse(req.params.id)
   const body = updateBodySchema.parse(req.body)
-  const patch: { name?: string; colorHex?: string | null } = {}
+  const patch: {
+    name?: string
+    colorHex?: string | null
+    preferredIndex?: 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'
+  } = {}
   if (body.name !== undefined) patch.name = body.name
   if (body.colorHex !== undefined) patch.colorHex = body.colorHex
+  if (body.preferredIndex !== undefined) patch.preferredIndex = body.preferredIndex
   const category = await updateCategory(user.id, id, patch)
   sendSuccess(res, { category })
 }

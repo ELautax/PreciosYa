@@ -86,11 +86,12 @@ model Local {
 }
 
 model Category {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  localId   String   @map("local_id") @db.Uuid
-  name      String
-  colorHex  String?  @default("#16A34A") @map("color_hex")
-  createdAt DateTime @default(now()) @map("created_at")
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  localId        String    @map("local_id") @db.Uuid
+  name           String
+  colorHex       String?   @default("#16A34A") @map("color_hex")
+  preferredIndex IndexType @default(IPC_INDEC) @map("preferred_index")
+  createdAt      DateTime  @default(now()) @map("created_at")
 
   local    Local     @relation(fields: [localId], references: [id], onDelete: Cascade)
   products Product[]

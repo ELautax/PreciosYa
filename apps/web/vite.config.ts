@@ -21,7 +21,22 @@ export default defineConfig({
         theme_color: '#16A34A',
         background_color: '#F5F5F4',
         display: 'standalone',
+        display_override: ['window-controls-overlay', 'standalone'],
         start_url: '/',
+        shortcuts: [
+          {
+            name: 'Nuevo producto',
+            short_name: 'Nuevo producto',
+            description: 'Crear un producto nuevo',
+            url: '/products?new=1',
+          },
+          {
+            name: 'Historial',
+            short_name: 'Historial',
+            description: 'Abrir historial de precios',
+            url: '/history',
+          },
+        ],
         icons: [
           {
             src: 'pwa-192x192.png',

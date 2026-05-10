@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ApiSuccess } from 'shared'
 
 import { useApiClient } from '@/hooks/useApiClient'
+import { appToast } from '@/lib/toast'
 import type { CategoryDto } from '@/types/category'
 
 export function useCategories(localId: string | undefined) {
@@ -23,7 +24,11 @@ export function useCreateCategory(localId: string) {
   const api = useApiClient()
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (input: { name: string; colorHex?: string | null }) => {
+    mutationFn: async (input: {
+      name: string
+      colorHex?: string | null
+      preferredIndex?: 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'
+    }) => {
       const res = await api.post<ApiSuccess<{ category: CategoryDto }>>(
         '/api/categories',
         { localId, ...input },
@@ -32,6 +37,10 @@ export function useCreateCategory(localId: string) {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['categories', localId] })
+      appToast.success('Categoría guardada')
+    },
+    onError: () => {
+      appToast.error('No se pudo guardar la categoría')
     },
   })
 }
@@ -42,7 +51,11 @@ export function useUpdateCategory(localId: string) {
   return useMutation({
     mutationFn: async (input: {
       id: string
-      body: { name?: string; colorHex?: string | null }
+      body: {
+        name?: string
+        colorHex?: string | null
+        preferredIndex?: 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'
+      }
     }) => {
       const res = await api.put<ApiSuccess<{ category: CategoryDto }>>(
         `/api/categories/${input.id}`,
@@ -52,6 +65,10 @@ export function useUpdateCategory(localId: string) {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['categories', localId] })
+      appToast.success('Categoría actualizada')
+    },
+    onError: () => {
+      appToast.error('No se pudo actualizar la categoría')
     },
   })
 }
@@ -66,6 +83,10 @@ export function useDeleteCategory(localId: string) {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['categories', localId] })
       void qc.invalidateQueries({ queryKey: ['products', localId] })
+      appToast.success('Categoría eliminada')
+    },
+    onError: () => {
+      appToast.error('No se pudo eliminar la categoría')
     },
   })
 }

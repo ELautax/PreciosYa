@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { useCategories } from '@/hooks/useCategories'
-import { useApplyIpcToLocal } from '@/hooks/useLocals'
+import { useApplyIpcToLocal, useIpcBreakdownForLocal } from '@/hooks/useLocals'
 import { useBulkUpdate } from '@/hooks/useProducts'
 
 type BulkUpdateModalProps = {
@@ -19,6 +19,7 @@ export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalPro
   const [resultMsg, setResultMsg] = useState<string | null>(null)
 
   const categoriesQuery = useCategories(localId)
+  const ipcBreakdownQ = useIpcBreakdownForLocal(localId)
   const bulkMut = useBulkUpdate(localId)
   const applyIpcMut = useApplyIpcToLocal(localId)
 
@@ -54,7 +55,7 @@ export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalPro
           <button
             type="button"
             onClick={() => setTab('percentage')}
-            className={`rounded-lg px-3 py-1.5 text-sm ${
+            className={`rounded-lg px-3 py-2 text-sm ${
               tab === 'percentage'
                 ? 'bg-green-600 text-white'
                 : 'btn-soft'
@@ -65,7 +66,7 @@ export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalPro
           <button
             type="button"
             onClick={() => setTab('ipc')}
-            className={`rounded-lg px-3 py-1.5 text-sm ${
+            className={`rounded-lg px-3 py-2 text-sm ${
               tab === 'ipc'
                 ? 'bg-green-600 text-white'
                 : 'btn-soft'
@@ -114,18 +115,52 @@ export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalPro
           </div>
         ) : (
           <div className="mt-4 space-y-3">
-            <p className="text-sm text-stone-700">
-              {ipcPct !== null
-                ? `Se aplicará el último IPC disponible (${ipcPct.toFixed(2)}%).`
-                : 'No hay IPC disponible en este momento.'}
-            </p>
+            {ipcBreakdownQ.isLoading ? (
+              <div className="space-y-2">
+                <div className="h-12 animate-pulse rounded-lg bg-stone-200" />
+                <div className="h-12 animate-pulse rounded-lg bg-stone-200" />
+              </div>
+            ) : (
+              <>
+                <p className="text-sm text-stone-700">
+                  {ipcPct !== null
+                    ? `Se aplicará IPC por categoría. Referencia general actual: ${ipcPct.toFixed(2)}%.`
+                    : 'No hay IPC disponible en este momento.'}
+                </p>
+                <div className="max-h-52 overflow-y-auto rounded-lg border border-stone-200">
+                  <table className="w-full text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-stone-200 bg-stone-50 text-stone-600">
+                        <th className="px-3 py-2">Categoría</th>
+                        <th className="px-3 py-2">Índice</th>
+                        <th className="px-3 py-2">IPC</th>
+                        <th className="px-3 py-2">Productos</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ipcBreakdownQ.data?.breakdown.map((row) => (
+                        <tr key={`${row.categoryId ?? 'none'}-${row.requestedIndexType}`} className="border-b border-stone-100 last:border-0">
+                          <td className="px-3 py-2">{row.categoryName}</td>
+                          <td className="px-3 py-2">
+                            {row.appliedIndexType === 'IPC_INDEC_ALIMENTOS' ? 'IPC Alimentos' : 'IPC General'}
+                            {row.requestedIndexType !== row.appliedIndexType ? ' (fallback)' : ''}
+                          </td>
+                          <td className="mono px-3 py-2">{row.ipcPct.toFixed(2)}%</td>
+                          <td className="mono px-3 py-2">{row.productCount}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
             <button
               type="button"
               onClick={() => void handleApplyIpc()}
-              disabled={pending || ipcPct === null}
+              disabled={pending || ipcPct === null || ipcBreakdownQ.isLoading}
               className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-60"
             >
-              Aplicar IPC
+              Confirmar y aplicar IPC
             </button>
           </div>
         )}

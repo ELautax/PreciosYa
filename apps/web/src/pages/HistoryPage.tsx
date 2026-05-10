@@ -23,6 +23,17 @@ export default function HistoryPage() {
     () => products.find((p) => p.id === productId) ?? null,
     [products, productId],
   )
+  const historyRows = historyQ.data ?? []
+  const marginTrendMonths = useMemo(() => {
+    const months = new Set<string>()
+    historyRows.forEach((row) => {
+      const d = new Date(row.recordedAt)
+      if (!Number.isNaN(d.getTime())) {
+        months.add(`${d.getFullYear()}-${d.getMonth() + 1}`)
+      }
+    })
+    return months.size
+  }, [historyRows])
 
   useEffect(() => {
     if (!products.length) {
@@ -36,8 +47,12 @@ export default function HistoryPage() {
 
   if (loadingLocals) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-50 text-stone-600">
-        Cargando…
+      <div className="page-shell">
+        <div className="page-wrap max-w-5xl space-y-4">
+          <div className="h-10 w-56 animate-pulse rounded bg-stone-200" />
+          <div className="h-14 animate-pulse rounded-xl bg-stone-200" />
+          <div className="h-72 animate-pulse rounded-xl bg-stone-200" />
+        </div>
       </div>
     )
   }
@@ -106,12 +121,30 @@ export default function HistoryPage() {
           </p>
         ) : null}
 
-        {historyQ.isLoading ? (
-          <p className="text-sm text-stone-600">Cargando historial…</p>
-        ) : historyQ.data && historyQ.data.length > 0 ? (
+        {productsQ.isLoading ? (
+          <div className="space-y-4">
+            <div className="h-72 animate-pulse rounded-xl bg-stone-200" />
+            <div className="h-64 animate-pulse rounded-xl bg-stone-200" />
+          </div>
+        ) : products.length === 0 ? (
+          <div className="surface-card p-5 text-sm text-stone-600">
+            No hay productos en este local todavía. Creá uno para empezar a registrar historial.
+          </div>
+        ) : historyQ.isLoading ? (
+          <div className="space-y-4">
+            <div className="h-72 animate-pulse rounded-xl bg-stone-200" />
+            <div className="h-64 animate-pulse rounded-xl bg-stone-200" />
+          </div>
+        ) : historyRows.length > 0 ? (
           <>
-            <PriceHistoryChart rows={historyQ.data} />
-            <PriceHistoryTable rows={historyQ.data} />
+            {marginTrendMonths < 2 ? (
+              <div className="surface-card p-5 text-sm text-stone-600">
+                Necesitás más historial para ver la tendencia.
+              </div>
+            ) : (
+              <PriceHistoryChart rows={historyRows} />
+            )}
+            <PriceHistoryTable rows={historyRows} />
           </>
         ) : (
           <div className="surface-card p-5 text-sm text-stone-600">
@@ -127,7 +160,7 @@ export default function HistoryPage() {
                 <p className="text-xs text-stone-500">
                   {new Date(row.period).toLocaleDateString('es-AR')}
                 </p>
-                <p className="text-sm font-medium text-stone-900">{row.valuePct.toFixed(2)}%</p>
+                <p className="mono text-sm font-medium text-stone-900">{row.valuePct.toFixed(2)}%</p>
               </div>
             ))}
           </div>

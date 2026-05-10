@@ -1,8 +1,12 @@
+import { IndexType } from '@prisma/client'
+
 import { env } from '../config/env.js'
 import { AppError } from '../utils/AppError.js'
 
 /** Serie IPC nivel general mensual (INDEC vía datos.gob.ar). */
 const IPC_SERIES_ID = '148.3_INIVELNAL_DICI_M_26'
+/** Serie IPC alimentos (puede variar según catálogo de datos.gob.ar). */
+const IPC_ALIMENTOS_SERIES_ID = '148.3_INIVELNAL_DICI_M_34'
 
 function startOfUtcMonth(d: Date): Date {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
@@ -69,13 +73,27 @@ export function parseIndecSeriesResponse(json: unknown): {
   throw parseError()
 }
 
-export async function fetchLatestIPCFromApi(): Promise<{
+function getSeriesIdForIndexType(indexType: IndexType): string {
+  switch (indexType) {
+    case IndexType.IPC_INDEC:
+      return IPC_SERIES_ID
+    case IndexType.IPC_INDEC_ALIMENTOS:
+      return IPC_ALIMENTOS_SERIES_ID
+    default:
+      return IPC_SERIES_ID
+  }
+}
+
+export async function fetchLatestIPCFromApi(
+  indexType: IndexType = IndexType.IPC_INDEC,
+): Promise<{
   period: Date
   valuePct: number
   sourceUrl: string
 }> {
   const base = env.INDEC_API_BASE_URL.replace(/\/$/, '')
-  const url = `${base}/series/?ids=${IPC_SERIES_ID}&limit=1&format=json`
+  const seriesId = getSeriesIdForIndexType(indexType)
+  const url = `${base}/series/?ids=${seriesId}&limit=1&format=json`
 
   let res: Response
   try {

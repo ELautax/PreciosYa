@@ -3,6 +3,7 @@ import type { ApiSuccess } from 'shared'
 
 import { useApiClient } from '@/hooks/useApiClient'
 import { readOfflineSnapshot, saveOfflineSnapshot } from '@/lib/offline'
+import { appToast } from '@/lib/toast'
 import type { ProductDto, ProductHistoryEntryDto } from '@/types/product'
 
 export type ProductListResult = {
@@ -73,6 +74,10 @@ export function useCreateProduct() {
     },
     onSuccess: (_, variables) => {
       void qc.invalidateQueries({ queryKey: ['products', variables.localId] })
+      appToast.success('Producto guardado')
+    },
+    onError: () => {
+      appToast.error('No se pudo guardar el producto')
     },
   })
 }
@@ -101,6 +106,10 @@ export function useUpdateProduct(localId: string) {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['products', localId] })
+      appToast.success('Producto actualizado')
+    },
+    onError: () => {
+      appToast.error('No se pudo actualizar el producto')
     },
   })
 }
@@ -114,6 +123,10 @@ export function useDeleteProduct(localId: string) {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['products', localId] })
+      appToast.success('Producto dado de baja')
+    },
+    onError: () => {
+      appToast.error('No se pudo dar de baja el producto')
     },
   })
 }
@@ -149,6 +162,10 @@ export function useBulkUpdate(localId: string) {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['products', localId] })
+      appToast.success('Actualización masiva aplicada')
+    },
+    onError: () => {
+      appToast.error('No se pudo aplicar la actualización masiva')
     },
   })
 }

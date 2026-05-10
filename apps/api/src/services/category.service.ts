@@ -19,6 +19,7 @@ export function serializeCategory(c: Category) {
     localId: c.localId,
     name: c.name,
     colorHex: c.colorHex ?? '#16A34A',
+    preferredIndex: c.preferredIndex,
     createdAt: c.createdAt.toISOString(),
   }
 }
@@ -34,7 +35,12 @@ export async function getCategories(userId: string, localId: string) {
 
 export async function createCategory(
   userId: string,
-  input: { localId: string; name: string; colorHex?: string | null },
+  input: {
+    localId: string
+    name: string
+    colorHex?: string | null
+    preferredIndex?: 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'
+  },
 ) {
   await assertLocalOwnership(userId, input.localId)
   try {
@@ -43,6 +49,7 @@ export async function createCategory(
         localId: input.localId,
         name: input.name.trim(),
         colorHex: input.colorHex ?? '#16A34A',
+        preferredIndex: input.preferredIndex ?? 'IPC_INDEC',
       },
     })
     return serializeCategory(c)
@@ -61,7 +68,11 @@ export async function createCategory(
 export async function updateCategory(
   userId: string,
   categoryId: string,
-  input: { name?: string; colorHex?: string | null },
+  input: {
+    name?: string
+    colorHex?: string | null
+    preferredIndex?: 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'
+  },
 ) {
   const cat = await prisma.category.findFirst({
     where: { id: categoryId },
@@ -81,6 +92,9 @@ export async function updateCategory(
       data: {
         ...(input.name !== undefined ? { name: input.name.trim() } : {}),
         ...(input.colorHex !== undefined ? { colorHex: input.colorHex } : {}),
+        ...(input.preferredIndex !== undefined
+          ? { preferredIndex: input.preferredIndex }
+          : {}),
       },
     })
     return serializeCategory(updated)

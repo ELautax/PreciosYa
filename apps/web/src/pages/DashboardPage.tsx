@@ -73,27 +73,41 @@ export default function DashboardPage() {
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div className="kpi-card">
             <p className="kpi-label">Productos activos</p>
-            <p className="kpi-value">
-              {productsQ.data?.total ?? 0}
-            </p>
+            {productsQ.isLoading ? (
+              <div className="mt-3 h-8 w-20 animate-pulse rounded bg-stone-200" />
+            ) : (
+              <p className="kpi-value mono">{productsQ.data?.total ?? 0}</p>
+            )}
           </div>
           <div className="kpi-card">
             <p className="kpi-label">Alertas de margen</p>
-            <p className="kpi-value text-red-700">{alertsQ.data?.total ?? 0}</p>
+            {alertsQ.isLoading ? (
+              <div className="mt-3 h-8 w-20 animate-pulse rounded bg-stone-200" />
+            ) : (
+              <p className="kpi-value mono text-red-700">{alertsQ.data?.total ?? 0}</p>
+            )}
           </div>
           <div className="kpi-card">
             <p className="kpi-label">Último IPC</p>
-            <p className="kpi-value text-amber-700">
-              {ipcQ.data?.ipc ? `${ipcQ.data.ipc.valuePct.toFixed(2)}%` : '—'}
-            </p>
+            {ipcQ.isLoading ? (
+              <div className="mt-3 h-8 w-24 animate-pulse rounded bg-stone-200" />
+            ) : (
+              <p className="kpi-value mono text-amber-700">
+                {ipcQ.data?.ipc ? `${ipcQ.data.ipc.valuePct.toFixed(2)}%` : '—'}
+              </p>
+            )}
           </div>
           <div className="kpi-card">
             <p className="kpi-label">Última exportación</p>
-            <p className="mt-1 text-sm font-semibold text-stone-900">
-              {latestExportQ.data?.priceList
-                ? new Date(latestExportQ.data.priceList.createdAt).toLocaleDateString('es-AR')
-                : 'Sin exportaciones'}
-            </p>
+            {latestExportQ.isLoading ? (
+              <div className="mt-3 h-6 w-32 animate-pulse rounded bg-stone-200" />
+            ) : (
+              <p className="mt-1 text-sm font-semibold text-stone-900">
+                {latestExportQ.data?.priceList
+                  ? new Date(latestExportQ.data.priceList.createdAt).toLocaleDateString('es-AR')
+                  : 'Sin exportaciones'}
+              </p>
+            )}
           </div>
         </div>
 

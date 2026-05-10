@@ -120,7 +120,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
               {...register('name')}
             />
             {errors.name ? (
-              <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>
+              <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
             ) : null}
           </div>
           <div>
@@ -149,7 +149,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
                 {...register('cost', { valueAsNumber: true })}
               />
               {errors.cost ? (
-                <p className="mt-1 text-xs text-red-600">{errors.cost.message}</p>
+                <p className="mt-1 text-sm text-red-600">{errors.cost.message}</p>
               ) : null}
             </div>
             <div>
@@ -163,7 +163,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
                 {...register('marginPct', { valueAsNumber: true })}
               />
               {errors.marginPct ? (
-                <p className="mt-1 text-xs text-red-600">{errors.marginPct.message}</p>
+                <p className="mt-1 text-sm text-red-600">{errors.marginPct.message}</p>
               ) : null}
             </div>
           </div>
