@@ -2,6 +2,12 @@
   "mcpServers": {
     "supabase": {
       "url": "https://mcp.supabase.com/mcp?project_ref=ubyegvbrvyknitjkzrsh"
+    },
+    "vercel": {
+      "url": "https://mcp.vercel.com"
+    },
+    "railway": {
+      "url": "https://mcp.railway.com"
     }
   }
 }

@@ -18,6 +18,7 @@ app.use(
 )
 
 // En desarrollo Vite puede cambiar de puerto (5173, 5174…); origin fijo rompe fetch desde el browser.
+// En producción: FRONTEND_URL en .env es lista comma-separated (ej. https://app.vercel.app,https://www.midominio.com).
 app.use(
   cors({
     origin:

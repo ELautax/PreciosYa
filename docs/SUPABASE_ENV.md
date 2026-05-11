@@ -56,8 +56,8 @@ Menú lateral: **Project Settings** (ícono de engranaje) → **API**.
 
 | Qué necesitás | Variable | Dónde |
 |---------------|----------|--------|
-| Cadena de conexión Postgres | `DATABASE_URL` → **solo** `apps/api/.env` | **Connection string** — pestaña **URI** (o **Connection pooling** si usás pooler). Sustituí `[YOUR-PASSWORD]` por la contraseña de base que definiste al crear el proyecto. |
-| Conexión “directa” (opcional) | `DIRECT_URL` → **solo** `apps/api/.env` | Misma sección; a veces hay string **direct** sin pooler (puerto **5432**). Si no estás seguro, podés usar la misma URI que `DATABASE_URL` hasta que configures pooler migraciones. |
+| Cadena de conexión Postgres | `DATABASE_URL` → **solo** `apps/api/.env` | **Connection pooling** (Supabase pooler, puerto **6543**) para la app en producción. La URI debe incluir **`pgbouncer=true`** en el query string (Prisma + PgBouncer en modo transacción; si falta, aparecen errores intermitentes `prepared statement "sN" does not exist`). El código del API también añade `pgbouncer=true` si detecta pooler y falta el parámetro. |
+| Conexión “directa” (migraciones) | `DIRECT_URL` → **solo** `apps/api/.env` | **Database** → URI **directa** al Postgres (puerto **5432**, host `db.<ref>.supabase.co`). Prisma usa `directUrl` para `migrate`; no uses el pooler aquí. Obligatorio en producción (`NODE_ENV=production`). |
 
 Si la contraseña tiene caracteres especiales (`@`, `#`, `$`, etc.), tenés que **URL-encodarlos** dentro de la URI (por ejemplo `@` → `%40`).
 
@@ -75,7 +75,12 @@ Si la contraseña tiene caracteres especiales (`@`, `#`, `$`, etc.), tenés que 
 | `SUPABASE_SERVICE_ROLE_KEY` | API → service_role |
 | `SUPABASE_ANON_KEY` | API → anon (opcional) |
 | `JWT_SECRET` | Generá un string aleatorio ≥ 32 caracteres (local puede ser el placeholder hasta producción) |
-| `FRONTEND_URL` | `http://localhost:5173` en desarrollo |
+| `FRONTEND_URL` | En local: `http://localhost:5173`. En **Railway (API)**: lista separada por coma de URLs **HTTPS** del front en Vercel (ej. `https://preciosya.vercel.app,https://web-tu-proyecto.vercel.app`) para CORS. |
+
+### Producción: Vercel (web) + Railway (API)
+
+- En **Vercel** → Variables del proyecto web: `VITE_API_URL` = URL pública del servicio API en **Railway** (pestaña *Networking* del servicio, formato `https://….up.railway.app` o dominio propio), **sin** `/` al final. Tiene que coincidir con lo que el navegador usa para llamar al backend.
+- En **Railway** → Variables del servicio API: `FRONTEND_URL` como arriba (todas las URLs desde las que se abre la app).
 
 ### `apps/web/.env`
 

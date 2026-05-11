@@ -67,6 +67,20 @@ preciosya/
 ### No RLS
 Supabase Row Level Security is **disabled**. All data access control happens in the Express backend via `authMiddleware` and `ownerGuard`. The frontend uses the Supabase `anon` key only for auth and Realtime. All business data goes through the REST API.
 
+### Deployed stack (troubleshooting default)
+
+- **Web:** Vercel — URL(s) HTTPS públicas (ej. `https://preciosya.vercel.app`, previews `*.vercel.app`).
+- **API:** Railway — URL HTTPS pública del servicio Node; el build del front debe usar esa base en `VITE_API_URL`.
+
+### Policy for AI assistants (read before suggesting URLs)
+
+- **No asumir localhost** cuando el usuario reporta fallos en producción, CORS, login, o “no carga”: el modelo operativo por defecto es **Vercel (web) + Railway (API)**.
+- **No** indicar como paso principal “abrí `http://localhost:3001`” ni “probá en `http://localhost:5173`” salvo que el usuario diga explícitamente que desarrolla en local o pida `pnpm dev`.
+- **Railway MCP:** remoto en `https://mcp.railway.com` (config en `.cursor/mcp.json`). Usarlo para **logs de deploy, runtime, y errores del servicio** en lugar de inferir desde máquina local. Documentación: [Railway Remote MCP](https://docs.railway.com/ai/remote-mcp-server).
+- **Vercel MCP:** ya configurado para proyectos front cuando haga falta.
+
+**Localhost** aplica solo a desarrollo local (`pnpm dev`); los valores de ejemplo están en `apps/*/.env.example`, no son el default mental para soporte en producción.
+
 ---
 
 ## 3. Naming Conventions
@@ -390,12 +404,15 @@ All routes under `/dashboard` and below are wrapped in `ProtectedRoute`.
 
 ## 9. Environment Variables
 
-### `apps/api/.env`
+### Local development (`apps/api/.env` — solo tu máquina)
+
+Valores de referencia también en `apps/api/.env.example`.
+
 ```
 PORT=3001
 NODE_ENV=development
-DATABASE_URL=postgresql://postgres:[image.png]@[host]:5432/postgres
-DIRECT_URL=postgresql://postgres:[password]@[host]:5432/postgres
+DATABASE_URL=postgresql://...
+DIRECT_URL=postgresql://...
 SUPABASE_URL=https://[project-ref].supabase.co
 SUPABASE_SERVICE_ROLE_KEY=eyJ...
 SUPABASE_ANON_KEY=eyJ...
@@ -406,12 +423,18 @@ INDEC_API_BASE_URL=https://apis.datos.gob.ar/series/api
 BCRA_API_BASE_URL=https://api.bcra.gob.ar
 ```
 
-### `apps/web/.env`
+### Local development (`apps/web/.env` — solo tu máquina)
+
 ```
 VITE_API_URL=http://localhost:3001
 VITE_SUPABASE_URL=https://[project-ref].supabase.co
 VITE_SUPABASE_ANON_KEY=eyJ...
 ```
+
+### Production (Railway API + Vercel web) — sin localhost
+
+- **`apps/api` (Railway):** `NODE_ENV=production`; `FRONTEND_URL` = **lista comma-separated** de orígenes HTTPS del front (cada URL de Vercel que use el usuario, ej. `https://preciosya.vercel.app,https://web-xxx.vercel.app`). Sin esto, CORS rompe el cliente.
+- **`apps/web` (Vercel build):** `VITE_API_URL` = **URL pública del API en Railway** (`https://…`), **sin** barra final. No uses `localhost` en variables de entorno de Vercel salvo un caso de prueba muy explícito.
 
 ---
 

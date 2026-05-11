@@ -19,6 +19,7 @@ export default function SettingsPage() {
   const [tab, setTab] = useState<TabId>('business')
   const api = useApiClient()
   const [user, setUser] = useState<AppUser | null>(null)
+  const [meError, setMeError] = useState(false)
   const { data: locals } = useLocals()
   const [localId, setLocalId] = useSelectedLocal(locals)
   const selectedLocal = useMemo(
@@ -29,13 +30,20 @@ export default function SettingsPage() {
 
   useEffect(() => {
     let cancelled = false
+    setMeError(false)
     void api
       .get<ApiSuccess<{ user: AppUser }>>('/api/auth/me')
       .then((res) => {
-        if (!cancelled) setUser(res.data.data.user)
+        if (!cancelled) {
+          setUser(res.data.data.user)
+          setMeError(false)
+        }
       })
       .catch(() => {
-        if (!cancelled) setUser(null)
+        if (!cancelled) {
+          setUser(null)
+          setMeError(true)
+        }
       })
     return () => {
       cancelled = true
@@ -131,7 +139,19 @@ export default function SettingsPage() {
         {tab === 'account' ? (
           <section className="surface-card mt-4 p-5">
             <h2 className="text-sm font-medium text-stone-800">Datos de la cuenta</h2>
-            {user ? (
+            {meError ? (
+              <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-900">
+                <p className="font-medium">No pudimos cargar tu cuenta</p>
+                <p className="mt-2 text-red-800">
+                  Suele deberse a que el navegador bloquea la API (CORS) o a una URL de API mal
+                  configurada. En el hosting del backend, configurá{' '}
+                  <span className="mono text-xs">FRONTEND_URL</span> con la URL exacta de esta web
+                  (incluido <span className="mono text-xs">https://</span>). Podés poner varias
+                  separadas por coma. En el build del front, <span className="mono text-xs">VITE_API_URL</span>{' '}
+                  debe ser la URL pública del backend.
+                </p>
+              </div>
+            ) : user ? (
               <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
                 <div>
                   <dt className="text-xs text-stone-500">Nombre</dt>
