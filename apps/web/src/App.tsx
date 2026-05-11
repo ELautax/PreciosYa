@@ -1,12 +1,18 @@
 import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
-import { OfflineBanner } from '@/components/OfflineBanner'
 import { ToastViewport } from '@/components/feedback/ToastViewport'
 import { AppLayout } from '@/components/layout/AppLayout'
+import { OfflineBanner } from '@/components/OfflineBanner'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { useAuth } from '@/contexts/AuthContext'
+import { useOfflineOutboxDrain } from '@/hooks/useOfflineOutboxDrain'
 import LoginPage from '@/pages/auth/LoginPage'
+
+function OfflineOutboxDrainBootstrap() {
+  useOfflineOutboxDrain()
+  return null
+}
 
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const ProductsPage = lazy(() => import('@/pages/ProductsPage'))
@@ -37,6 +43,7 @@ function RootRedirect() {
 export default function App() {
   return (
     <>
+      <OfflineOutboxDrainBootstrap />
       <OfflineBanner />
       <ToastViewport />
       <Suspense

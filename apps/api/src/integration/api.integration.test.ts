@@ -9,6 +9,7 @@ const {
   bulkUpdateByPercentageMock,
   applyIPCToLocalMock,
   uploadPriceListPngMock,
+  importProductsFromCsvMock,
 } = vi.hoisted(() => ({
   getProductsMock: vi.fn(),
   createProductMock: vi.fn(),
@@ -17,6 +18,7 @@ const {
   bulkUpdateByPercentageMock: vi.fn(),
   applyIPCToLocalMock: vi.fn(),
   uploadPriceListPngMock: vi.fn(),
+  importProductsFromCsvMock: vi.fn(),
 }))
 
 const fakeUser = {
@@ -54,6 +56,10 @@ vi.mock('../services/economic-index.service.js', () => ({
   getIpcHistory: vi.fn(),
   getLatestIndicesSnapshot: vi.fn(),
   serializeEconomicIndex: vi.fn(),
+}))
+
+vi.mock('../services/productCsvImport.service.js', () => ({
+  importProductsFromCsv: importProductsFromCsvMock,
 }))
 
 vi.mock('../services/export.service.js', () => ({
@@ -145,6 +151,30 @@ describe('API integration contracts', () => {
       success: true,
       data: { ok: true },
     })
+  })
+
+  it('products import-csv devuelve resumen importados y errores por línea', async () => {
+    importProductsFromCsvMock.mockResolvedValue({
+      imported: 2,
+      errors: [{ line: 4, message: 'Datos incompletos' }],
+    })
+
+    const res = await request(app)
+      .post('/api/products/import-csv')
+      .send({
+        localId: UUID_1,
+        csv: 'nombre,costo,margen\nA,10,15\n',
+      })
+
+    expect(res.status).toBe(200)
+    expect(res.body).toMatchObject({
+      success: true,
+      data: {
+        imported: 2,
+        errors: [{ line: 4, message: 'Datos incompletos' }],
+      },
+    })
+    expect(importProductsFromCsvMock).toHaveBeenCalled()
   })
 
   it('apply-ipc endpoint aplica IPC y devuelve resumen', async () => {

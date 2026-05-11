@@ -10,6 +10,7 @@ import {
   getProducts,
   updateProduct,
 } from '../services/product.service.js'
+import { importProductsFromCsv } from '../services/productCsvImport.service.js'
 import { sendSuccess } from '../utils/response.js'
 import { AppError } from '../utils/AppError.js'
 
@@ -49,6 +50,11 @@ const bulkBodySchema = z.object({
   localId: z.string().uuid(),
   categoryId: z.string().uuid().optional(),
   increasePct: z.number(),
+})
+
+const importCsvBodySchema = z.object({
+  localId: z.string().uuid(),
+  csv: z.string().min(1).max(512_000),
 })
 
 export async function listProducts(req: Request, res: Response): Promise<void> {
@@ -127,6 +133,20 @@ export async function removeProduct(req: Request, res: Response): Promise<void> 
   const id = z.string().uuid().parse(req.params.id)
   await deleteProduct(user.id, id)
   sendSuccess(res, { ok: true })
+}
+
+export async function importCsvProducts(req: Request, res: Response): Promise<void> {
+  const user = req.user
+  if (!user) {
+    throw new AppError({
+      statusCode: 401,
+      message: 'No autenticado',
+      code: 'UNAUTHORIZED',
+    })
+  }
+  const body = importCsvBodySchema.parse(req.body)
+  const result = await importProductsFromCsv(user, body.localId, body.csv)
+  sendSuccess(res, result)
 }
 
 export async function bulkUpdate(req: Request, res: Response): Promise<void> {

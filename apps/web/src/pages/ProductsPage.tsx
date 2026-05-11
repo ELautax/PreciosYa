@@ -6,12 +6,18 @@ import { LocalSelector } from '@/components/locals/LocalSelector'
 import { BulkUpdateModal } from '@/components/products/BulkUpdateModal'
 import { IPCBanner } from '@/components/products/IPCBanner'
 import { ProductForm } from '@/components/products/ProductForm'
+import { ProductImportModal } from '@/components/products/ProductImportModal'
 import { ProductList } from '@/components/products/ProductList'
 import { useCategories } from '@/hooks/useCategories'
 import { useIpcLatest } from '@/hooks/useIpc'
 import { useCreateLocal, useLocals } from '@/hooks/useLocals'
 import { useSelectedLocal } from '@/hooks/useSelectedLocal'
-import { useDeleteProduct, useProducts } from '@/hooks/useProducts'
+import {
+  useDeleteProduct,
+  useImportProductsCsv,
+  useProducts,
+  type CsvImportResult,
+} from '@/hooks/useProducts'
 import type { LocalDto } from '@/types/local'
 import type { ProductDto } from '@/types/product'
 
@@ -57,6 +63,8 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   const [categoryFilter, setCategoryFilter] = useState('')
   const [formOpen, setFormOpen] = useState(false)
   const [bulkOpen, setBulkOpen] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
+  const [importResult, setImportResult] = useState<CsvImportResult | null>(null)
   const [exportOpen, setExportOpen] = useState(false)
   const [editing, setEditing] = useState<ProductDto | null>(null)
 
@@ -66,6 +74,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
     ...(categoryFilter ? { categoryId: categoryFilter } : {}),
   })
   const deleteMut = useDeleteProduct(localId)
+  const importMut = useImportProductsCsv(localId)
   const selectedLocal = locals.find((l) => l.id === localId) ?? locals[0]
 
   useEffect(() => {
@@ -139,6 +148,16 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
               className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-800 hover:bg-amber-100"
             >
               Actualización masiva
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setImportResult(null)
+                setImportOpen(true)
+              }}
+              className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-800 hover:bg-stone-50"
+            >
+              Importar CSV
             </button>
             <button
               type="button"
@@ -220,6 +239,22 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
           localId={localId}
           ipcPct={ipcQuery.data?.ipc?.valuePct ?? null}
           onClose={() => setBulkOpen(false)}
+        />
+      ) : null}
+      {importOpen ? (
+        <ProductImportModal
+          isImporting={importMut.isPending}
+          lastResult={importResult}
+          onDismissResult={() => setImportResult(null)}
+          onImport={(csv) => {
+            importMut.mutate(csv, {
+              onSuccess: (data) => setImportResult(data),
+            })
+          }}
+          onClose={() => {
+            setImportOpen(false)
+            setImportResult(null)
+          }}
         />
       ) : null}
       {exportOpen && selectedLocal && productsQuery.data ? (

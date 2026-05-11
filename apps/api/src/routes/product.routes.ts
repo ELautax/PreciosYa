@@ -2,6 +2,7 @@ import { Router, type IRouter } from 'express'
 
 import {
   bulkUpdate,
+  importCsvProducts,
   getProduct,
   listProducts,
   postProduct,
@@ -15,6 +16,7 @@ import { asyncHandler } from '../utils/asyncHandler.js'
 export const productRoutes: IRouter = Router()
 
 productRoutes.get('/', authMiddleware, asyncHandler(listProducts))
+productRoutes.post('/import-csv', authMiddleware, asyncHandler(importCsvProducts))
 productRoutes.post('/', authMiddleware, asyncHandler(postProduct))
 productRoutes.put('/bulk-update', authMiddleware, asyncHandler(bulkUpdate))
 productRoutes.get('/:id/history', authMiddleware, asyncHandler(productHistory))

@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client'
-import type { Product, User } from '@prisma/client'
+import type { PriceHistory, Product, User } from '@prisma/client'
 import type { ProductUpdateResult } from 'shared'
 import {
   bulkUpdateCosts,
@@ -359,7 +359,7 @@ export async function bulkUpdateByPercentage(
     return { updated: 0 }
   }
 
-  const pricingInputs = products.map((p) => ({
+  const pricingInputs = products.map((p: Product) => ({
     id: p.id,
     cost: toNum(p.cost),
     marginPct: toNum(p.marginPct),
@@ -370,7 +370,7 @@ export async function bulkUpdateByPercentage(
 
   await prisma.$transaction(
     results.map((r: ProductUpdateResult) => {
-      const orig = products.find((x) => x.id === r.id)
+      const orig = products.find((x: Product) => x.id === r.id)
       if (!orig) throw new Error('bulk mismatch')
       const alert = isMarginAlert(toNum(orig.marginPct), minM)
       return prisma.product.update({
@@ -412,7 +412,7 @@ export async function getProductHistory(
     take,
   })
 
-  return rows.map((h) => ({
+  return rows.map((h: PriceHistory) => ({
     id: h.id,
     cost: toNum(h.cost),
     marginPct: toNum(h.marginPct),

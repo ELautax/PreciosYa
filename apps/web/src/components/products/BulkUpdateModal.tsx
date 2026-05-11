@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useCategories } from '@/hooks/useCategories'
 import { useApplyIpcToLocal, useIpcBreakdownForLocal } from '@/hooks/useLocals'
 import { useBulkUpdate } from '@/hooks/useProducts'
+import { isOfflineQueued } from '@/lib/offline'
 
 type BulkUpdateModalProps = {
   localId: string
@@ -31,6 +32,12 @@ export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalPro
       increasePct: pct,
       ...(categoryId ? { categoryId } : {}),
     })
+    if (isOfflineQueued(res)) {
+      setResultMsg(
+        'Sin conexión: la actualización quedó en cola y se aplicará en orden al reconectar.',
+      )
+      return
+    }
     setResultMsg(`Se actualizaron ${res.updated} producto(s).`)
   }
 

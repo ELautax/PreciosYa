@@ -21,7 +21,8 @@ export function requirePlan(minPlan: PlanType): RequestHandler {
         code: 'UNAUTHORIZED',
       })
     }
-    if (rank[user.plan] < rank[minPlan]) {
+    const plan = user.plan as PlanType
+    if (rank[plan] < rank[minPlan]) {
       throw new AppError({
         statusCode: 403,
         message: 'Tu plan no permite esta acción',

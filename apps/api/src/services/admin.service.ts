@@ -1,3 +1,4 @@
+import type { EconomicIndex, User } from '@prisma/client'
 import { PlanType } from '@prisma/client'
 
 import { prisma } from '../lib/prisma.js'
@@ -27,7 +28,7 @@ export async function listUsersForAdmin(input: { page?: number; search?: string 
   ])
 
   return {
-    items: rows.map((u) => ({
+    items: rows.map((u: User) => ({
       id: u.id,
       email: u.email,
       name: u.name,
@@ -77,7 +78,7 @@ export async function getAdminIndices(limit = 20) {
     orderBy: { period: 'desc' },
     take: limit,
   })
-  return rows.map((x) => ({
+  return rows.map((x: EconomicIndex) => ({
     id: x.id,
     type: x.type,
     period: x.period.toISOString(),

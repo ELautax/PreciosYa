@@ -132,7 +132,7 @@ export async function createNewIpcNotificationsForActiveUsers(input: {
   if (users.length === 0) return 0
 
   return createBulkNotifications(
-    users.map((u) => ({
+    users.map((u: { id: string }) => ({
       userId: u.id,
       type: 'NEW_IPC' as const,
       title: 'Nuevo IPC disponible',

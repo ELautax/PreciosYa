@@ -1,4 +1,4 @@
-import type { EconomicIndex } from '@prisma/client'
+import type { EconomicIndex, PrismaClient } from '@prisma/client'
 import { IndexType } from '@prisma/client'
 import { applyIPC, calculateSalePrice, isMarginAlert } from 'shared'
 
@@ -216,13 +216,19 @@ export type IpcCategoryBreakdown = {
   productCount: number
 }
 
+type CategoryBreakdownRow = {
+  id: string
+  name: string
+  preferredIndex: IndexType
+}
+
 export async function getIpcBreakdownForLocal(
   userId: string,
   localId: string,
 ) {
   await assertLocalOwnership(userId, localId)
 
-  const categories = await prisma.category.findMany({
+  const categories: CategoryBreakdownRow[] = await prisma.category.findMany({
     where: { localId },
     orderBy: { name: 'asc' },
     select: { id: true, name: true, preferredIndex: true },
@@ -234,14 +240,17 @@ export async function getIpcBreakdownForLocal(
   })
   const countByCategory = new Map<string, number>()
   let uncategorizedCount = 0
-  for (const c of counts) {
+  for (const c of counts as Array<{
+    categoryId: string | null
+    _count: { _all: number }
+  }>) {
     if (c.categoryId) countByCategory.set(c.categoryId, c._count._all)
     else uncategorizedCount = c._count._all
   }
 
   const requestedTypes = new Set<IndexType>([
     IndexType.IPC_INDEC,
-    ...categories.map((c) => c.preferredIndex),
+    ...categories.map((c: CategoryBreakdownRow) => c.preferredIndex),
   ])
   const resolvedByType = new Map<
     IndexType,
@@ -257,7 +266,7 @@ export async function getIpcBreakdownForLocal(
     resolvedByType.set(requestedType, resolved)
   }
 
-  const breakdown: IpcCategoryBreakdown[] = categories.map((category) => {
+  const breakdown: IpcCategoryBreakdown[] = categories.map((category: CategoryBreakdownRow) => {
     const resolved = resolvedByType.get(category.preferredIndex)
     if (!resolved) {
       throw new Error('IPC breakdown missing for category')
@@ -330,6 +339,7 @@ export async function applyIPCToLocal(
   const minMarginPct = Number(local.minMarginPct)
   const now = new Date()
   await prisma.$transaction(async (tx) => {
+    const db = tx as PrismaClient
     for (const product of products) {
       const key = product.categoryId ?? 'none'
       const cfg = breakdownMap.get(key) ?? {
@@ -342,7 +352,7 @@ export async function applyIPCToLocal(
       const salePrice = calculateSalePrice(ipc.newCost, marginPct)
       const isAlert = isMarginAlert(marginPct, minMarginPct)
 
-      await tx.product.update({
+      await db.product.update({
         where: { id: product.id },
         data: {
           cost: ipc.newCost,
@@ -350,7 +360,7 @@ export async function applyIPCToLocal(
           isMarginAlert: isAlert,
         },
       })
-      await tx.priceHistory.create({
+      await db.priceHistory.create({
         data: {
           productId: product.id,
           cost: ipc.newCost,

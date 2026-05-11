@@ -64,7 +64,7 @@ async function runIpcJob(): Promise<void> {
         select: { email: true, name: true },
       })
       await Promise.all(
-        proUsers.map((u) =>
+        proUsers.map((u: { email: string; name: string }) =>
           sendNewIPCEmail({
             toEmail: u.email,
             displayName: u.name,

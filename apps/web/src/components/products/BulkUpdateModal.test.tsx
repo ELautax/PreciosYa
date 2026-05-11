@@ -24,6 +24,10 @@ vi.mock('@/hooks/useLocals', () => ({
     mutateAsync: applyIpcMutateAsyncMock,
     isPending: false,
   }),
+  useIpcBreakdownForLocal: () => ({
+    data: { breakdown: [], totalProducts: 0 },
+    isLoading: false,
+  }),
 }))
 
 import { BulkUpdateModal } from './BulkUpdateModal'
@@ -39,13 +43,10 @@ describe('BulkUpdateModal', () => {
       />,
     )
 
-    const ipcButtons = screen.getAllByRole('button', { name: 'Aplicar IPC' })
-    await user.click(ipcButtons[0]!)
-    const disabledAction = screen
-      .getAllByRole('button', { name: 'Aplicar IPC' })
-      .find((btn) => btn.hasAttribute('disabled'))
-    expect(disabledAction).toBeDefined()
-    expect(disabledAction).toBeDisabled()
+    const ipcTab = screen.getByRole('button', { name: 'Aplicar IPC' })
+    await user.click(ipcTab)
+    const confirmIpc = screen.getByRole('button', { name: 'Confirmar y aplicar IPC' })
+    expect(confirmIpc).toBeDisabled()
   })
 
   it('aplica aumento por porcentaje y muestra resultado', async () => {

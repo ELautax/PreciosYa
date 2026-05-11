@@ -110,7 +110,7 @@ export async function updateLocal(
     })
     if (products.length > 0) {
       await prisma.$transaction(
-        products.map((p) =>
+        products.map((p: { id: string; marginPct: unknown }) =>
           prisma.product.update({
             where: { id: p.id },
             data: {

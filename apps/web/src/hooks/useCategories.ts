@@ -2,6 +2,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ApiSuccess } from 'shared'
 
 import { useApiClient } from '@/hooks/useApiClient'
+import {
+  enqueueOfflineOperation,
+  isOfflineQueued,
+  markOfflineQueued,
+} from '@/lib/offline'
 import { appToast } from '@/lib/toast'
 import type { CategoryDto } from '@/types/category'
 
@@ -29,13 +34,26 @@ export function useCreateCategory(localId: string) {
       colorHex?: string | null
       preferredIndex?: 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'
     }) => {
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        await enqueueOfflineOperation({
+          kind: 'category:create',
+          payload: { localId, ...input },
+        })
+        return markOfflineQueued()
+      }
       const res = await api.post<ApiSuccess<{ category: CategoryDto }>>(
         '/api/categories',
         { localId, ...input },
       )
       return res.data.data.category
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (isOfflineQueued(data)) {
+        appToast.info(
+          'Sin conexión: la categoría se creará cuando vuelva la conexión (en orden).',
+        )
+        return
+      }
       void qc.invalidateQueries({ queryKey: ['categories', localId] })
       appToast.success('Categoría guardada')
     },
@@ -57,13 +75,30 @@ export function useUpdateCategory(localId: string) {
         preferredIndex?: 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'
       }
     }) => {
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        await enqueueOfflineOperation({
+          kind: 'category:update',
+          payload: {
+            localId,
+            categoryId: input.id,
+            body: input.body,
+          },
+        })
+        return markOfflineQueued()
+      }
       const res = await api.put<ApiSuccess<{ category: CategoryDto }>>(
         `/api/categories/${input.id}`,
         input.body,
       )
       return res.data.data.category
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (isOfflineQueued(data)) {
+        appToast.info(
+          'Sin conexión: el cambio de categoría se enviará al reconectar (en orden).',
+        )
+        return
+      }
       void qc.invalidateQueries({ queryKey: ['categories', localId] })
       appToast.success('Categoría actualizada')
     },
@@ -78,9 +113,22 @@ export function useDeleteCategory(localId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        await enqueueOfflineOperation({
+          kind: 'category:delete',
+          payload: { localId, categoryId: id },
+        })
+        return markOfflineQueued()
+      }
       await api.delete<ApiSuccess<{ ok: boolean }>>(`/api/categories/${id}`)
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (isOfflineQueued(data)) {
+        appToast.info(
+          'Sin conexión: la eliminación se enviará al reconectar (en orden).',
+        )
+        return
+      }
       void qc.invalidateQueries({ queryKey: ['categories', localId] })
       void qc.invalidateQueries({ queryKey: ['products', localId] })
       appToast.success('Categoría eliminada')
