@@ -10,11 +10,22 @@ async function shutdown(signal: string): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  await prisma.$connect()
+  const shouldConnectDb =
+    env.NODE_ENV !== 'test' && env.DATABASE_URL !== undefined && env.DATABASE_URL !== ''
+
+  if (shouldConnectDb) {
+    await prisma.$connect()
+  } else if (env.NODE_ENV === 'development') {
+    console.warn(
+      '[api] DATABASE_URL no configurada: iniciando API sin conexión a DB (rutas que usen Prisma fallarán)',
+    )
+  }
 
   app.listen(env.PORT, () => {
     console.log(`API listening on http://localhost:${env.PORT}`)
-    initScheduler()
+    if (shouldConnectDb) {
+      initScheduler()
+    }
   })
 
   process.on('SIGINT', () => {
