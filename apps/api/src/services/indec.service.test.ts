@@ -1,6 +1,7 @@
 import { AppError } from '../utils/AppError.js'
 import {
   fetchLatestIPCFromApi,
+  normalizeIndecPercentValue,
   parseIndecSeriesResponse,
 } from './indec.service.js'
 
@@ -26,25 +27,41 @@ describe('indec.service', () => {
     expect(parsed.period.toISOString()).toBe('2026-04-01T00:00:00.000Z')
   })
 
+  it('parsea formato data como lista de tuplas (datos.gob.ar)', () => {
+    const parsed = parseIndecSeriesResponse({
+      data: [
+        ['2026-01-01', 0.02881619353661713],
+        ['2026-02-01', 0.02896319072672693],
+      ],
+    })
+    expect(parsed.valuePct).toBeCloseTo(0.02896319072672693, 10)
+    expect(parsed.period.toISOString()).toBe('2026-02-01T00:00:00.000Z')
+  })
+
+  it('normaliza fracción percent_change a puntos porcentuales', () => {
+    expect(normalizeIndecPercentValue(0.0289)).toBe(2.89)
+    expect(normalizeIndecPercentValue(4.1)).toBe(4.1)
+  })
+
   it('lanza parse error para payload inválido', () => {
     expect(() => parseIndecSeriesResponse({ nope: true })).toThrow(AppError)
   })
 
-  it('fetchLatestIPCFromApi usa endpoint y parsea respuesta', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({
-          data: [{ series: [{ fecha: '2026-03-01', valor: 4.1 }] }],
-        }),
+  it('fetchLatestIPCFromApi usa last=1 y percent_change', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: [['2026-02-01', 0.02896319072672693]],
       }),
-    )
+    })
+    vi.stubGlobal('fetch', fetchMock)
 
     const result = await fetchLatestIPCFromApi()
-    expect(result.valuePct).toBe(4.1)
-    expect(result.period.toISOString()).toBe('2026-03-01T00:00:00.000Z')
-    expect(result.sourceUrl).toContain('/series/?ids=')
+    expect(result.valuePct).toBeCloseTo(2.896, 2)
+    expect(result.period.toISOString()).toBe('2026-02-01T00:00:00.000Z')
+    const calledUrl = String(fetchMock.mock.calls[0]?.[0])
+    expect(calledUrl).toContain('percent_change')
+    expect(calledUrl).toContain('last=1')
   })
 })

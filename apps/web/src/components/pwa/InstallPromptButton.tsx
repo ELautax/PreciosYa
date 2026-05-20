@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-
+import { DownloadCloud } from 'lucide-react'
 import { appToast } from '@/lib/toast'
 
 type BeforeInstallPromptEvent = Event & {
@@ -28,25 +28,28 @@ export function InstallPromptButton() {
 
   if (!deferredPrompt && !isIos) return null
 
+  const handleInstall = async () => {
+    if (deferredPrompt) {
+      await deferredPrompt.prompt()
+      const choice = await deferredPrompt.userChoice
+      if (choice.outcome === 'accepted') {
+        appToast.success('Instalación iniciada')
+      }
+      setDeferredPrompt(null)
+      return
+    }
+    appToast.info('En iPhone/iPad: Compartir -> Agregar a inicio')
+  }
+
   return (
     <button
       type="button"
-      onClick={async () => {
-        if (deferredPrompt) {
-          await deferredPrompt.prompt()
-          const choice = await deferredPrompt.userChoice
-          if (choice.outcome === 'accepted') {
-            appToast.success('Instalación iniciada')
-          }
-          setDeferredPrompt(null)
-          return
-        }
-        appToast.info('En iPhone/iPad: Compartir -> Agregar a pantalla de inicio')
-      }}
-      className="btn-soft w-full sm:w-auto"
+      onClick={() => void handleInstall()}
+      className="btn-secondary h-10 px-4 group flex items-center"
+      aria-label="Instalar aplicación"
     >
-      Instalar app
+      <DownloadCloud size={18} className="text-primary-600 transition-transform group-hover:-translate-y-0.5" />
+      <span className="hidden sm:inline ml-2 text-[10px] font-black uppercase tracking-widest leading-none">Instalar App</span>
     </button>
   )
 }
-

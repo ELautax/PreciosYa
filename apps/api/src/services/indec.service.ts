@@ -8,6 +8,9 @@ const IPC_SERIES_ID = '148.3_INIVELNAL_DICI_M_26'
 /** Serie IPC alimentos (puede variar según catálogo de datos.gob.ar). */
 const IPC_ALIMENTOS_SERIES_ID = '148.3_INIVELNAL_DICI_M_34'
 
+/** Variación % mensual respecto al mes anterior (no el nivel del índice). */
+const PERCENT_CHANGE_SUFFIX = ':percent_change'
+
 function startOfUtcMonth(d: Date): Date {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
 }
@@ -43,6 +46,13 @@ export function parseIndecSeriesResponse(json: unknown): {
 
   const dataArr = root.data
   if (Array.isArray(dataArr) && dataArr.length > 0) {
+    // datos.gob.ar: { data: [["2026-02-01", 0.029], ...] }
+    if (Array.isArray(dataArr[0])) {
+      const last = dataArr[dataArr.length - 1]
+      const tuple = tryTupleRow(last)
+      if (tuple) return tuple
+    }
+
     const block = dataArr[0] as Record<string, unknown>
     const series = block.series
     if (Array.isArray(series) && series.length > 0) {
@@ -73,6 +83,18 @@ export function parseIndecSeriesResponse(json: unknown): {
   throw parseError()
 }
 
+/**
+ * Con `:percent_change`, datos.gob.ar devuelve fracción (0.0289 = 2,89 %).
+ * Valores ya en puntos porcentuales (p. ej. 4.1) no se escalan.
+ */
+export function normalizeIndecPercentValue(raw: number): number {
+  if (!Number.isFinite(raw)) throw parseError()
+  if (Math.abs(raw) < 1.5) {
+    return Math.round(raw * 100 * 1000) / 1000
+  }
+  return Math.round(raw * 1000) / 1000
+}
+
 function getSeriesIdForIndexType(indexType: IndexType): string {
   switch (indexType) {
     case IndexType.IPC_INDEC:
@@ -93,7 +115,7 @@ export async function fetchLatestIPCFromApi(
 }> {
   const base = env.INDEC_API_BASE_URL.replace(/\/$/, '')
   const seriesId = getSeriesIdForIndexType(indexType)
-  const url = `${base}/series/?ids=${seriesId}&limit=1&format=json`
+  const url = `${base}/series/?ids=${seriesId}${PERCENT_CHANGE_SUFFIX}&last=1&format=json`
 
   let res: Response
   try {
@@ -116,6 +138,7 @@ export async function fetchLatestIPCFromApi(
 
   const json: unknown = await res.json()
   const parsed = parseIndecSeriesResponse(json)
+  const valuePct = normalizeIndecPercentValue(parsed.valuePct)
   const sourceUrl = url.length > 2048 ? url.slice(0, 2048) : url
-  return { ...parsed, sourceUrl }
+  return { period: parsed.period, valuePct, sourceUrl }
 }

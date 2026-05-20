@@ -60,7 +60,7 @@ preciosya/
 - **Validation:** Zod on every incoming request body
 
 ### External APIs
-- **INDEC IPC:** `https://apis.datos.gob.ar/series/api/series/?ids=148.3_INIVELNAL_DICI_M_26&limit=1&format=json`
+- **INDEC IPC:** `https://apis.datos.gob.ar/series/api/series/?ids=148.3_INIVELNAL_DICI_M_26:percent_change&last=1&format=json` (variación % mensual; `last=1` = último mes publicado)
 - **BCRA rate:** `https://api.bcra.gob.ar/estadisticas/v3.0/monetarias/reservas`
 - **Google OAuth:** managed entirely by Supabase Auth
 

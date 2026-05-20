@@ -122,10 +122,31 @@ export async function markAllAsRead(userId: string): Promise<number> {
   return result.count
 }
 
+export async function hasIpcNotificationForPeriod(period: Date): Promise<boolean> {
+  const periodKey = period.toISOString().slice(0, 7)
+  const recent = await prisma.notification.findMany({
+    where: { type: 'NEW_IPC' },
+    orderBy: { createdAt: 'desc' },
+    take: 100,
+    select: { metadata: true },
+  })
+  return recent.some((row) => {
+    if (!row.metadata || typeof row.metadata !== 'object' || Array.isArray(row.metadata)) {
+      return false
+    }
+    const meta = row.metadata as { period?: string }
+    return typeof meta.period === 'string' && meta.period.startsWith(periodKey)
+  })
+}
+
 export async function createNewIpcNotificationsForActiveUsers(input: {
   valuePct: number
   period: Date
 }): Promise<number> {
+  if (await hasIpcNotificationForPeriod(input.period)) {
+    return 0
+  }
+
   const users = await prisma.user.findMany({
     select: { id: true },
   })
