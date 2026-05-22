@@ -1,6 +1,7 @@
+import { Edit3, Trash2, Package2, DollarSign, Percent } from 'lucide-react'
 import type { ProductDto } from '@/types/product'
-
 import { ProductCard } from './ProductCard'
+import { MarginBadge } from './MarginBadge'
 
 type ProductListProps = {
   products: ProductDto[]
@@ -10,49 +11,85 @@ type ProductListProps = {
 
 export function ProductList({ products, onEdit, onDelete }: ProductListProps) {
   if (products.length === 0) {
-    return (
-      <p className="surface-card border-dashed p-8 text-center text-sm text-stone-600">
-        No hay productos. Creá el primero con &quot;Nuevo producto&quot;.
-      </p>
-    )
+    return null
   }
 
   return (
-    <>
+    <div className="space-y-6 animate-fade-in">
+      {/* Desktop Table View */}
       <div className="hidden xl:block">
-        <div className="surface-card overflow-hidden">
-          <table className="w-full text-left text-sm">
+        <div className="surface-card overflow-hidden border-border/50">
+          <table className="w-full text-left text-sm border-collapse">
             <thead>
-              <tr className="border-b border-stone-200 bg-stone-50 text-stone-600">
-                <th className="px-4 py-3">Producto</th>
-                <th className="px-4 py-3">Unidad</th>
-                <th className="px-4 py-3">Costo</th>
-                <th className="px-4 py-3">Venta</th>
-                <th className="px-4 py-3">Margen</th>
-                <th className="px-4 py-3 text-right">Acciones</th>
+              <tr className="border-b border-border bg-surface-soft/40">
+                <th className="px-6 py-4">
+                   <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-subtle">
+                      <Package2 size={14} className="text-primary-600" />
+                      Producto
+                   </div>
+                </th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-text-subtle">Unidad</th>
+                <th className="px-6 py-4">
+                   <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-text-subtle">
+                      <DollarSign size={14} className="text-primary-600" />
+                      Costo
+                   </div>
+                </th>
+                <th className="px-6 py-4">
+                   <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-text-subtle">
+                      <DollarSign size={14} className="text-primary-600" />
+                      Venta
+                   </div>
+                </th>
+                <th className="px-6 py-4">
+                   <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-text-subtle">
+                      <Percent size={14} className="text-primary-600" />
+                      Margen
+                   </div>
+                </th>
+                <th className="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-text-subtle">Acciones</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-border/50">
               {products.map((p) => (
-                <tr key={p.id} className="border-b border-stone-100 last:border-0">
-                  <td className="px-4 py-3 font-medium text-stone-900">{p.name}</td>
-                  <td className="px-4 py-3 text-stone-600">{p.unit}</td>
-                  <td className="mono px-4 py-3 text-stone-800">${p.cost.toFixed(2)}</td>
-                  <td className="mono px-4 py-3 font-medium text-stone-900">${p.salePrice.toFixed(2)}</td>
-                  <td className="px-4 py-3">
-                    <MarginCell marginPct={p.marginPct} isAlert={p.isMarginAlert} />
+                <tr key={p.id} className="group hover:bg-primary-50/10 transition-colors">
+                  <td className="px-6 py-5">
+                    <div>
+                      <p className="font-extrabold text-text-main group-hover:text-primary-600 transition-colors">{p.name}</p>
+                      {p.barcode && <p className="mt-1 font-mono text-[10px] font-bold text-text-subtle tracking-tighter opacity-70">{p.barcode}</p>}
+                    </div>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-5">
+                     <span className="inline-flex rounded-lg bg-surface-soft px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-text-muted border border-border/30">
+                        {p.unit}
+                     </span>
+                  </td>
+                  <td className="px-6 py-5 font-mono font-bold text-text-muted">
+                    ${p.cost.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-5 font-mono font-black text-text-main">
+                    ${p.salePrice.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-5">
+                    <MarginBadge marginPct={p.marginPct} isAlert={p.isMarginAlert} />
+                  </td>
+                  <td className="px-6 py-5">
                     <div className="flex justify-end gap-2">
-                      <button type="button" onClick={() => onEdit(p)} className="btn-soft">
-                        Editar
+                      <button 
+                        type="button" 
+                        onClick={() => onEdit(p)} 
+                        className="btn-secondary h-10 px-3 gap-2 border-none bg-surface-soft hover:bg-primary-600 hover:text-white shadow-none transition-all"
+                      >
+                        <Edit3 size={14} strokeWidth={2.5} />
+                        <span className="text-[10px] font-black uppercase tracking-widest">Gestionar</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => onDelete(p)}
-                        className="rounded-lg border border-red-200 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
+                        className="flex h-10 w-10 items-center justify-center rounded-xl text-danger-600 bg-danger-50/50 hover:bg-danger-600 hover:text-white transition-all active:scale-90"
+                        title="Dar de baja"
                       >
-                        Dar de baja
+                        <Trash2 size={18} strokeWidth={2} />
                       </button>
                     </div>
                   </td>
@@ -63,24 +100,14 @@ export function ProductList({ products, onEdit, onDelete }: ProductListProps) {
         </div>
       </div>
 
-      <ul className="grid gap-4 sm:grid-cols-2 xl:hidden">
+      {/* Mobile/Tablet Card Grid View */}
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:hidden">
         {products.map((p) => (
-          <li key={p.id}>
+          <li key={p.id} className="h-full">
             <ProductCard product={p} onEdit={onEdit} onDelete={onDelete} />
           </li>
         ))}
       </ul>
-    </>
-  )
-}
-
-function MarginCell({ marginPct, isAlert }: { marginPct: number; isAlert: boolean }) {
-  const tone = isAlert
-    ? 'border-red-200 bg-red-50 text-red-800'
-    : 'border-green-300 bg-green-50 text-green-900'
-  return (
-    <span className={`mono inline-flex rounded-full border px-2 py-1 text-sm font-medium ${tone}`}>
-      {marginPct.toFixed(1)}%
-    </span>
+    </div>
   )
 }

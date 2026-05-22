@@ -1,5 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { 
+  Plus, 
+  Search, 
+  Filter, 
+  Download, 
+  Upload, 
+  History, 
+  Tags, 
+  Store,
+  ChevronLeft,
+  Package,
+  Zap,
+  AlertTriangle,
+  ArrowRight
+} from 'lucide-react'
 
 import { ExportModal } from '@/components/exports/ExportModal'
 import { LocalSelector } from '@/components/locals/LocalSelector'
@@ -20,6 +35,7 @@ import {
 } from '@/hooks/useProducts'
 import type { LocalDto } from '@/types/local'
 import type { ProductDto } from '@/types/product'
+import { EmptyState } from '@/components/feedback/EmptyState'
 
 function CategoryFilterSelect({
   localId,
@@ -32,27 +48,24 @@ function CategoryFilterSelect({
 }) {
   const q = useCategories(localId)
   return (
-    <label className="flex items-center gap-2 text-sm text-stone-700">
-      Categoría
+    <div className="relative group">
+      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-subtle group-focus-within:text-primary-600 transition-colors">
+        <Filter size={16} />
+      </div>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={q.isLoading}
-        className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+        className="w-full min-w-[160px] pl-10 pr-4"
       >
-        <option value="">Todas</option>
-        {q.isLoading ? (
-          <option value="" disabled>
-            Cargando categorías…
-          </option>
-        ) : null}
+        <option value="">Todas las categorías</option>
         {q.data?.map((c) => (
           <option key={c.id} value={c.id}>
             {c.name}
           </option>
         ))}
       </select>
-    </label>
+    </div>
   )
 }
 
@@ -115,100 +128,140 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
 
   return (
     <main className="page-shell">
-      <div className="page-wrap max-w-4xl">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <Link to="/dashboard" className="text-sm text-green-700 hover:underline">
-              ← Panel
+      <div className="page-wrap space-y-8 animate-fade-in">
+        <header className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <Link to="/dashboard" className="group inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-primary-600 hover:text-primary-700 transition-all">
+              <ChevronLeft size={14} strokeWidth={3} className="transition-transform group-hover:-translate-x-0.5" />
+              Volver al Panel
             </Link>
-            <h1 className="mt-2 page-heading">Productos</h1>
+            <h1 className="heading-xl">Catálogo de Productos</h1>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Link
-              to="/locals"
-              className="btn-soft"
-            >
-              Locales
-            </Link>
-            <Link
-              to="/history"
-              className="btn-soft"
-            >
-              Historial
-            </Link>
-            <Link
-              to="/categories"
-              className="btn-soft"
-            >
-              Categorías
-            </Link>
-            <button
-              type="button"
-              onClick={() => setBulkOpen(true)}
-              className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-800 hover:bg-amber-100"
-            >
-              Actualización masiva
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setImportResult(null)
-                setImportOpen(true)
-              }}
-              className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-800 hover:bg-stone-50"
-            >
-              Importar CSV
-            </button>
-            <button
-              type="button"
-              onClick={() => setExportOpen(true)}
-              className="rounded-lg border border-green-300 bg-green-50 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-100"
-            >
-              Exportar lista
-            </button>
+          
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => {
                 setEditing(null)
                 setFormOpen(true)
               }}
-              className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+              className="btn-primary"
             >
-              Nuevo producto
+              <Plus size={18} strokeWidth={3} />
+              <span>Nuevo Producto</span>
             </button>
           </div>
-        </div>
+        </header>
 
-        <div className="mt-6 flex flex-wrap gap-3">
-          <LocalSelector locals={locals} value={localId} onChange={setLocalId} />
-          <label className="flex flex-1 items-center gap-2 text-sm text-stone-700 sm:min-w-[200px]">
-            Buscar
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Nombre…"
-              className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
-            />
-          </label>
-          <CategoryFilterSelect localId={localId} value={categoryFilter} onChange={setCategoryFilter} />
-        </div>
+        <section className="grid gap-4">
+           {/* Contextual Action Bar */}
+           <div className="surface-card p-4 flex flex-col gap-4 lg:flex-row lg:items-center">
+              <div className="flex flex-1 flex-wrap items-center gap-3">
+                 <LocalSelector locals={locals} value={localId} onChange={setLocalId} />
+                 
+                 <div className="relative flex-1 min-w-[200px] group">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-subtle group-focus-within:text-primary-600 transition-colors">
+                       <Search size={18} />
+                    </div>
+                    <input
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Buscar por nombre o código..."
+                      className="w-full pl-10 pr-4"
+                    />
+                 </div>
+
+                 <CategoryFilterSelect localId={localId} value={categoryFilter} onChange={setCategoryFilter} />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4 lg:border-t-0 lg:pt-0 lg:pl-4 lg:border-l">
+                 <button
+                   type="button"
+                   onClick={() => setBulkOpen(true)}
+                   className="btn-secondary flex-1 sm:flex-none h-11 px-4"
+                   title="Actualización Masiva"
+                 >
+                    <Zap size={18} className="text-accent-600" />
+                    <span className="sm:hidden xl:inline">Actualizar</span>
+                 </button>
+                 <button
+                   type="button"
+                   onClick={() => setImportOpen(true)}
+                   className="btn-secondary flex-1 sm:flex-none h-11 px-4"
+                   title="Importar CSV"
+                 >
+                    <Upload size={18} className="text-primary-600" />
+                    <span className="sm:hidden xl:inline">Importar</span>
+                 </button>
+                 <button
+                   type="button"
+                   onClick={() => setExportOpen(true)}
+                   className="btn-secondary flex-1 sm:flex-none h-11 px-4"
+                   disabled={!productsQuery.data?.items?.length}
+                   title="Exportar PNG"
+                 >
+                    <Download size={18} className="text-primary-600" />
+                    <span className="sm:hidden xl:inline">Exportar</span>
+                 </button>
+              </div>
+           </div>
+
+           {/* Links Bar */}
+           <div className="flex flex-wrap gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              <Link to="/categories" className="btn-ghost h-9 px-3 gap-1.5 whitespace-nowrap">
+                <Tags size={16} />
+                Categorías
+              </Link>
+              <Link to="/history" className="btn-ghost h-9 px-3 gap-1.5 whitespace-nowrap">
+                <History size={16} />
+                Historial
+              </Link>
+              <Link to="/locals" className="btn-ghost h-9 px-3 gap-1.5 whitespace-nowrap">
+                <Store size={16} />
+                Gestionar Locales
+              </Link>
+           </div>
+        </section>
+
         <IPCBanner
           ipcPct={ipcQuery.data?.ipc?.valuePct ?? null}
           onOpenBulk={() => setBulkOpen(true)}
         />
 
-        <div className="mt-8">
+        <div className="min-h-[400px]">
           {productsQuery.isLoading ? (
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="h-44 animate-pulse rounded-xl bg-stone-200" />
-              <div className="h-44 animate-pulse rounded-xl bg-stone-200" />
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="skeleton h-48 w-full" />)}
             </div>
+          ) : productsQuery.data?.items.length === 0 ? (
+             <div className="py-12">
+                <EmptyState 
+                  icon={Package}
+                  title={search || categoryFilter ? "Sin coincidencias" : "No hay productos"}
+                  description={search || categoryFilter 
+                    ? "Probá con otros términos o limpiá los filtros para ver más resultados." 
+                    : "Empezá a cargar tus artículos para automatizar tus precios y márgenes."}
+                  action={!(search || categoryFilter) ? (
+                    <button onClick={() => setFormOpen(true)} className="btn-primary">
+                       Crear mi primer producto
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => { setSearch(''); setCategoryFilter(''); }}
+                      className="btn-secondary"
+                    >
+                       Limpiar Filtros
+                    </button>
+                  )}
+                />
+             </div>
           ) : productsQuery.data ? (
-            <>
-              <p className="mono mb-4 text-sm text-stone-500">
-                {productsQuery.data.total} producto
-                {productsQuery.data.total !== 1 ? 's' : ''}
-              </p>
+            <div className="space-y-6 animate-fade-in">
+              <div className="flex items-center justify-between border-b border-border pb-4">
+                 <p className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
+                    {productsQuery.data.total} {productsQuery.data.total === 1 ? 'PRODUCTO ENCONTRADO' : 'PRODUCTOS ENCONTRADOS'}
+                 </p>
+              </div>
               <ProductList
                 products={productsQuery.data.items}
                 onEdit={(p) => {
@@ -217,9 +270,20 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                 }}
                 onDelete={handleDelete}
               />
-            </>
+            </div>
           ) : (
-            <p className="text-sm text-red-700">No se pudieron cargar los productos.</p>
+             <div className="py-12">
+                <EmptyState 
+                  icon={AlertTriangle}
+                  title="Error de conexión"
+                  description="No pudimos cargar el listado de productos. Por favor, reintentá en unos momentos."
+                  action={
+                    <button onClick={() => window.location.reload()} className="btn-secondary">
+                       Reintentar
+                    </button>
+                  }
+                />
+             </div>
           )}
         </div>
       </div>
@@ -283,13 +347,12 @@ export default function ProductsPage() {
   if (loadingLocals) {
     return (
       <div className="page-shell">
-        <div className="page-wrap max-w-4xl space-y-4">
-          <div className="h-10 w-44 animate-pulse rounded bg-stone-200" />
-          <div className="h-24 animate-pulse rounded-xl bg-stone-200" />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="h-40 animate-pulse rounded-xl bg-stone-200" />
-            <div className="h-40 animate-pulse rounded-xl bg-stone-200" />
-          </div>
+        <div className="page-wrap space-y-8">
+           <div className="skeleton h-12 w-64" />
+           <div className="skeleton h-24 w-full" />
+           <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
+              {[1, 2, 3].map(i => <div key={i} className="skeleton h-48 w-full" />)}
+           </div>
         </div>
       </div>
     )
@@ -298,35 +361,34 @@ export default function ProductsPage() {
   if (!locals?.length) {
     return (
       <main className="page-shell">
-        <div className="mx-auto max-w-md">
-          <Link to="/dashboard" className="text-sm text-green-700 hover:underline">
-            ← Volver al panel
-          </Link>
-          <h1 className="mt-4 text-2xl font-semibold text-stone-900">Productos</h1>
-          <p className="mt-2 text-sm text-stone-600">
-            Creá un local para empezar a cargar productos.
-          </p>
-          <form
-            onSubmit={(e) => void handleCreateLocal(e)}
-            className="mt-6 space-y-3 rounded-xl border border-stone-200 bg-white p-5"
-          >
-            <label className="block text-sm font-medium text-stone-700">
-              Nombre del negocio
-              <input
-                value={newLocalName}
-                onChange={(e) => setNewLocalName(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
-                placeholder="Ej. Kiosco Central"
-              />
-            </label>
-            <button
-              type="submit"
-              disabled={createLocal.isPending}
-              className="w-full rounded-lg bg-green-600 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-60"
-            >
-              {createLocal.isPending ? 'Creando…' : 'Crear local'}
-            </button>
-          </form>
+        <div className="mx-auto max-w-md py-12">
+           <EmptyState 
+              icon={Store}
+              title="Creá un local"
+              description="Para empezar a cargar productos, primero necesitás registrar tu negocio."
+              action={
+                <form
+                  onSubmit={(e) => void handleCreateLocal(e)}
+                  className="mt-2 flex flex-col gap-3 w-full"
+                >
+                  <input
+                    value={newLocalName}
+                    onChange={(e) => setNewLocalName(e.target.value)}
+                    placeholder="Ej. Kiosco Central"
+                    className="w-full text-center"
+                    autoFocus
+                  />
+                  <button
+                    type="submit"
+                    disabled={createLocal.isPending}
+                    className="btn-primary w-full"
+                  >
+                    {createLocal.isPending ? 'Creando...' : 'Registrar Local'}
+                    <ArrowRight size={18} className="ml-2" />
+                  </button>
+                </form>
+              }
+           />
         </div>
       </main>
     )

@@ -153,11 +153,7 @@
     @apply border border-white/20 bg-white/80 shadow-lg backdrop-blur-md dark:border-white/10 dark:bg-black/60;
   }
 
-  /* Button System */
-  .btn-base {
-    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40;
-  }
-
+  /* Button System — btn-base is a @utility so other components can @apply it (Tailwind v4) */
   .btn-primary {
     @apply btn-base bg-primary-600 text-white shadow-lg shadow-primary-600/20 hover:bg-primary-700 hover:shadow-primary-600/30;
   }
@@ -199,6 +195,10 @@
   .empty-state-icon {
     @apply mb-4 rounded-3xl bg-primary-50 p-4 text-primary-600 dark:bg-primary-900/30;
   }
+}
+
+@utility btn-base {
+  @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40;
 }
 
 @utility text-xs {
