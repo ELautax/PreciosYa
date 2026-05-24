@@ -22,6 +22,7 @@ import {
   useAdminStats,
   useAdminUpdatePlan,
   useAdminUsers,
+  useApiHealth,
 } from '@/hooks/useAdmin'
 import { useMe } from '@/hooks/useMe'
 import { EmptyState } from '@/components/feedback/EmptyState'
@@ -34,8 +35,10 @@ export default function AdminPage() {
   const statsQ = useAdminStats()
   const indicesQ = useAdminIndices()
   const updatePlanMut = useAdminUpdatePlan()
+  const healthQ = useApiHealth()
   const forceIpcMut = useAdminForceFetchIpc()
   const manualIpcMut = useAdminManualIpc()
+  const apiOutdated = healthQ.isSuccess && healthQ.data?.ipcManualRoute !== true
   const [manualOpen, setManualOpen] = useState(false)
   const [manualPeriod, setManualPeriod] = useState(() => {
     const d = new Date()
@@ -132,6 +135,21 @@ export default function AdminPage() {
             <span className="text-xs font-black uppercase tracking-widest">Sincronizar IPC Manual</span>
           </button>
         </header>
+
+        {apiOutdated && (
+          <div
+            role="alert"
+            className="rounded-2xl border border-danger-200 bg-danger-50 dark:bg-danger-900/20 px-5 py-4 text-sm text-danger-800 dark:text-danger-200"
+          >
+            <p className="font-bold">API en Railway desactualizada</p>
+            <p className="mt-1 text-danger-700 dark:text-danger-300">
+              La carga manual IPC y Alphacast requieren redeploy en rama <strong>Trincheras</strong>.
+              En <code className="text-xs">/health</code> debe aparecer{' '}
+              <code className="text-xs">ipcManualRoute: true</code> (ahora: versión{' '}
+              {healthQ.data?.version ?? '?'}).
+            </p>
+          </div>
+        )}
 
         {/* Global Stats Grid */}
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">

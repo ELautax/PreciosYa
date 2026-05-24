@@ -2,6 +2,22 @@
 
 Proyecto: servicio **api** en Railway (`https://api-production-3626.up.railway.app` o similar).
 
+## Rama de deploy (importante)
+
+El código nuevo (IPC manual, sin datos.gob.ar) está en **`Trincheras`**.
+
+En Railway → servicio **api** → **Settings** → **Source** → **Branch** debe ser **`Trincheras`**, no `main`.
+
+Después de cada push: **Deployments** → último deploy **Success**, o **Redeploy**.
+
+Comprobar versión en producción:
+
+```bash
+curl https://api-production-3626.up.railway.app/health
+```
+
+Debe incluir `"ipcManualRoute":true` y `"version":"0.2.0"`. Si falta, el servicio sigue con build viejo (por eso `POST /api/admin/ipc/manual` da **404**).
+
 ## Obligatorias (producción)
 
 | Variable | Uso |

@@ -30,7 +30,11 @@ root.get(
     sendSuccess(res, {
       status: 'ok',
       timestamp: new Date().toISOString(),
-      version: '0.1.0',
+      version: '0.2.0',
+      gitCommit: process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) ?? null,
+      /** Si es true, POST /api/admin/ipc/manual existe (deploy ≥ mayo 2026). */
+      ipcManualRoute: true,
+      ipcSource: 'alphacast',
     })
   }),
 )
