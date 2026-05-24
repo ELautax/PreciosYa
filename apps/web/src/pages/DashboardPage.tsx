@@ -37,8 +37,11 @@ export default function DashboardPage() {
     [locals, localId],
   )
 
+  const waitingForLocal = Boolean(locals?.length && !localId)
   const productsQ = useProducts(localId || undefined, { page: 1, limit: 1 })
   const alertsQ = useProducts(localId || undefined, { page: 1, limit: 1, isAlert: true })
+  const productsLoading = waitingForLocal || productsQ.isLoading
+  const alertsLoading = waitingForLocal || alertsQ.isLoading
   const ipcQ = useIpcLatest()
   const latestExportQ = useLatestExport()
 
@@ -122,7 +125,7 @@ export default function DashboardPage() {
           <KPICard 
             label="Productos" 
             value={productsQ.data?.total} 
-            loading={productsQ.isLoading}
+            loading={productsLoading}
             icon={Package}
             color="text-primary-600"
             bg="bg-primary-50 dark:bg-primary-900/20"
@@ -130,7 +133,7 @@ export default function DashboardPage() {
           <KPICard 
             label="Alertas Margen" 
             value={alertsQ.data?.total} 
-            loading={alertsQ.isLoading}
+            loading={alertsLoading}
             icon={AlertTriangle}
             color="text-danger-600"
             bg="bg-danger-50 dark:bg-danger-900/20"

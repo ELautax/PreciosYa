@@ -80,8 +80,10 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   const [importResult, setImportResult] = useState<CsvImportResult | null>(null)
   const [exportOpen, setExportOpen] = useState(false)
   const [editing, setEditing] = useState<ProductDto | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<ProductDto | null>(null)
 
   const ipcQuery = useIpcLatest()
+  const waitingForLocal = locals.length > 0 && !localId
   const filterParam = searchParams.get('filter')
   const productsQuery = useProducts(localId, {
     search: search.trim() || undefined,
@@ -120,11 +122,16 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   }, [])
 
   function handleDelete(p: ProductDto): void {
-    if (
-      typeof window !== 'undefined' &&
-      window.confirm(`¿Dar de baja "${p.name}"?`)
-    ) {
-      void deleteMut.mutateAsync(p.id)
+    setDeleteTarget(p)
+  }
+
+  async function confirmDelete(): Promise<void> {
+    if (!deleteTarget) return
+    try {
+      await deleteMut.mutateAsync(deleteTarget.id)
+      setDeleteTarget(null)
+    } catch {
+      // toast handled in useDeleteProduct.onError
     }
   }
 
@@ -231,7 +238,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
         />
 
         <div className="min-h-[400px]">
-          {productsQuery.isLoading ? (
+          {waitingForLocal || productsQuery.isLoading ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="skeleton h-48 w-full" />)}
             </div>
@@ -257,6 +264,23 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                   )}
                 />
              </div>
+          ) : productsQuery.isError ? (
+             <div className="py-12">
+                <EmptyState 
+                  icon={AlertTriangle}
+                  title="Error al cargar productos"
+                  description="No pudimos obtener el listado. Revisá tu conexión o probá de nuevo en unos momentos."
+                  action={
+                    <button
+                      type="button"
+                      onClick={() => void productsQuery.refetch()}
+                      className="btn-secondary"
+                    >
+                       Reintentar
+                    </button>
+                  }
+                />
+             </div>
           ) : productsQuery.data ? (
             <div className="space-y-6 animate-fade-in">
               <div className="flex items-center justify-between border-b border-border pb-4">
@@ -273,20 +297,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                 onDelete={handleDelete}
               />
             </div>
-          ) : (
-             <div className="py-12">
-                <EmptyState 
-                  icon={AlertTriangle}
-                  title="Error de conexión"
-                  description="No pudimos cargar el listado de productos. Por favor, reintentá en unos momentos."
-                  action={
-                    <button onClick={() => window.location.reload()} className="btn-secondary">
-                       Reintentar
-                    </button>
-                  }
-                />
-             </div>
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -329,6 +340,41 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
           products={productsQuery.data.items}
           onClose={() => setExportOpen(false)}
         />
+      ) : null}
+      {deleteTarget ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center animate-fade-in backdrop-blur-sm">
+          <div
+            className="surface-card w-full max-w-md p-6 shadow-warm-lg animate-slide-up"
+            role="dialog"
+            aria-labelledby="delete-product-title"
+          >
+            <h2 id="delete-product-title" className="text-lg font-black text-text-main">
+              Dar de baja producto
+            </h2>
+            <p className="mt-2 text-sm text-text-muted">
+              ¿Querés dar de baja <span className="font-bold text-text-main">{deleteTarget.name}</span>?
+              Podés volver a cargarlo más tarde como producto nuevo.
+            </p>
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                className="btn-secondary flex-1 sm:flex-none"
+                disabled={deleteMut.isPending}
+                onClick={() => setDeleteTarget(null)}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="btn-danger flex-1 sm:flex-none"
+                disabled={deleteMut.isPending}
+                onClick={() => void confirmDelete()}
+              >
+                {deleteMut.isPending ? 'Dando de baja…' : 'Dar de baja'}
+              </button>
+            </div>
+          </div>
+        </div>
       ) : null}
     </main>
   )

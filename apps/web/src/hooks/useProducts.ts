@@ -36,20 +36,25 @@ export function useProducts(
   },
 ) {
   const api = useApiClient()
-  const snapshotKey = `products:${localId ?? 'none'}:${opts?.categoryId ?? ''}:${opts?.search ?? ''}`
+  const search = opts?.search ?? ''
+  const categoryId = opts?.categoryId ?? ''
+  const isAlert = opts?.isAlert ?? false
+  const page = opts?.page ?? 1
+  const limit = opts?.limit ?? 20
+  const snapshotKey = `products:${localId ?? 'none'}:${categoryId}:${search}`
   return useQuery({
-    queryKey: ['products', localId, opts],
+    queryKey: ['products', localId, search, categoryId, isAlert, page, limit],
     enabled: Boolean(localId),
     queryFn: async () => {
       try {
         const res = await api.get<ApiSuccess<ProductListResult>>('/api/products', {
           params: {
             localId,
-            search: opts?.search || undefined,
-            page: opts?.page,
-            limit: opts?.limit ?? 20,
-            ...(opts?.isAlert ? { isAlert: 'true' as const } : {}),
-            ...(opts?.categoryId ? { categoryId: opts.categoryId } : {}),
+            search: search || undefined,
+            page,
+            limit,
+            ...(isAlert ? { isAlert: 'true' as const } : {}),
+            ...(categoryId ? { categoryId } : {}),
           },
         })
         const data = res.data.data
@@ -173,8 +178,12 @@ export function useDeleteProduct(localId: string) {
       void qc.invalidateQueries({ queryKey: ['products', localId] })
       appToast.success('Producto dado de baja')
     },
-    onError: () => {
-      appToast.error('No se pudo dar de baja el producto')
+    onError: (err: AxiosError<{ message?: string }>) => {
+      const msg =
+        axios.isAxiosError(err) && err.response?.data?.message
+          ? err.response.data.message
+          : 'No se pudo dar de baja el producto'
+      appToast.error(msg)
     },
   })
 }
