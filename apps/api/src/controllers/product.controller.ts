@@ -2,6 +2,7 @@ import type { Request, Response } from 'express'
 import { isProductUnit } from 'shared'
 import { z } from 'zod'
 
+import { lookupBarcodeForLocal } from '../services/barcode-lookup.service.js'
 import {
   bulkUpdateByPercentage,
   createProduct,
@@ -63,6 +64,25 @@ const importCsvBodySchema = z.object({
   localId: z.string().uuid(),
   csv: z.string().min(1).max(512_000),
 })
+
+const barcodeLookupQuerySchema = z.object({
+  localId: z.string().uuid(),
+  barcode: z.string().min(4).max(32),
+})
+
+export async function lookupProductBarcode(req: Request, res: Response): Promise<void> {
+  const user = req.user
+  if (!user) {
+    throw new AppError({
+      statusCode: 401,
+      message: 'No autenticado',
+      code: 'UNAUTHORIZED',
+    })
+  }
+  const q = barcodeLookupQuerySchema.parse(req.query)
+  const result = await lookupBarcodeForLocal(user.id, q.localId, q.barcode)
+  sendSuccess(res, { lookup: result })
+}
 
 export async function listProducts(req: Request, res: Response): Promise<void> {
   const user = req.user

@@ -5,6 +5,7 @@ import {
   importCsvProducts,
   getProduct,
   listProducts,
+  lookupProductBarcode,
   postProduct,
   productHistory,
   putProduct,
@@ -16,6 +17,7 @@ import { asyncHandler } from '../utils/asyncHandler.js'
 export const productRoutes: IRouter = Router()
 
 productRoutes.get('/', authMiddleware, asyncHandler(listProducts))
+productRoutes.get('/barcode-lookup', authMiddleware, asyncHandler(lookupProductBarcode))
 productRoutes.post('/import-csv', authMiddleware, asyncHandler(importCsvProducts))
 productRoutes.post('/', authMiddleware, asyncHandler(postProduct))
 productRoutes.put('/bulk-update', authMiddleware, asyncHandler(bulkUpdate))

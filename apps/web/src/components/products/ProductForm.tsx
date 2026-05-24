@@ -20,9 +20,11 @@ import { PRODUCT_UNITS, getMarginStatus } from 'shared'
 
 import { BarcodeScanner } from '@/components/products/BarcodeScanner'
 import { MarginBadge } from '@/components/products/MarginBadge'
+import { useBarcodeLookup } from '@/hooks/useBarcodeLookup'
 import { useCategories } from '@/hooks/useCategories'
 import { useLocals } from '@/hooks/useLocals'
 import { useCreateProduct, useUpdateProduct } from '@/hooks/useProducts'
+import { appToast } from '@/lib/toast'
 import type { ProductDto } from '@/types/product'
 
 const schema = z.object({
@@ -51,6 +53,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
   const minMarginPct = local?.minMarginPct ?? 20
   const createMut = useCreateProduct()
   const updateMut = useUpdateProduct(localId)
+  const barcodeLookupMut = useBarcodeLookup(localId)
 
   const {
     register,
@@ -133,14 +136,51 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
 
   const pending = createMut.isPending || updateMut.isPending
 
+  async function handleBarcodeDetected(code: string): Promise<void> {
+    setScannerOpen(false)
+    setValue('barcode', code, { shouldDirty: true })
+
+    try {
+      const lookup = await barcodeLookupMut.mutateAsync(code)
+      if (lookup.name) setValue('name', lookup.name, { shouldDirty: true })
+      if (lookup.unit) setValue('unit', lookup.unit, { shouldDirty: true })
+      if (lookup.cost != null && lookup.cost > 0) {
+        setValue('cost', lookup.cost, { shouldDirty: true })
+      }
+      if (lookup.marginPct != null && lookup.marginPct >= 0) {
+        setValue('marginPct', lookup.marginPct, { shouldDirty: true })
+      }
+      if (lookup.categoryId) {
+        setValue('categoryId', lookup.categoryId, { shouldDirty: true })
+      }
+      if (lookup.notes) {
+        const current = watch('notes')?.trim() ?? ''
+        if (!current) setValue('notes', lookup.notes, { shouldDirty: true })
+      }
+
+      if (lookup.source === 'local') {
+        appToast.success('Producto existente en tu inventario — datos cargados')
+      } else if (lookup.source === 'openfoodfacts') {
+        appToast.success(
+          lookup.brand
+            ? `Datos desde catálogo (${lookup.brand})`
+            : 'Nombre cargado desde catálogo de productos',
+        )
+      } else {
+        appToast.info('Código guardado. Completá nombre y costo manualmente.')
+      }
+    } catch {
+      /* toast en hook */
+    }
+  }
+
   return (
     <>
     <BarcodeScanner
       open={scannerOpen}
       onClose={() => setScannerOpen(false)}
       onDetected={(code) => {
-        setValue('barcode', code)
-        setScannerOpen(false)
+        void handleBarcodeDetected(code)
       }}
     />
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center animate-fade-in backdrop-blur-sm">
