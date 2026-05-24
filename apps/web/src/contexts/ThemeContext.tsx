@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react'
 
 type Theme = 'light' | 'dark'
 
@@ -19,12 +26,18 @@ function getInitialTheme(): Theme {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
+function applyThemeToDocument(theme: Theme): void {
+  const root = document.documentElement
+  root.setAttribute('data-theme', theme)
+  root.classList.toggle('dark', theme === 'dark')
+  window.localStorage.setItem(STORAGE_KEY, theme)
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(getInitialTheme)
 
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    window.localStorage.setItem(STORAGE_KEY, theme)
+  useLayoutEffect(() => {
+    applyThemeToDocument(theme)
   }, [theme])
 
   const value = useMemo<ThemeContextValue>(

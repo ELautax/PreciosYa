@@ -1,4 +1,4 @@
-import { PlanType } from '@prisma/client'
+import { IndexType, PlanType } from '@prisma/client'
 import type { Request, Response } from 'express'
 import { z } from 'zod'
 
@@ -8,6 +8,7 @@ import {
   getAdminStats,
   listUsersForAdmin,
   updateUserPlanForAdmin,
+  upsertManualIpcFromAdmin,
 } from '../services/admin.service.js'
 import { sendSuccess } from '../utils/response.js'
 
@@ -51,11 +52,30 @@ export async function adminGetStats(_req: Request, res: Response): Promise<void>
 }
 
 export async function adminGetIndices(_req: Request, res: Response): Promise<void> {
-  const indices = await getAdminIndices(20)
+  const indices = await getAdminIndices()
   sendSuccess(res, { indices })
 }
 
 export async function adminForceFetchIpc(_req: Request, res: Response): Promise<void> {
   const result = await forceFetchIpcFromAdmin()
   sendSuccess(res, { ipc: result })
+}
+
+const manualIpcBody = z.object({
+  period: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
+  indices: z
+    .array(
+      z.object({
+        type: z.nativeEnum(IndexType),
+        valuePct: z.number().finite(),
+      }),
+    )
+    .min(1)
+    .max(20),
+})
+
+export async function adminManualIpc(req: Request, res: Response): Promise<void> {
+  const body = manualIpcBody.parse(req.body)
+  const result = await upsertManualIpcFromAdmin(body)
+  sendSuccess(res, result)
 }

@@ -1,27 +1,31 @@
-import { useState } from 'react'
-import { 
-  ShieldCheck, 
-  Users, 
-  Store, 
-  Package, 
-  AlertTriangle, 
-  Search, 
-  TrendingUp, 
-  Zap, 
-  Mail, 
+import { useEffect, useMemo, useState } from 'react'
+import {
+  ShieldCheck,
+  Users,
+  Store,
+  Package,
+  AlertTriangle,
+  Search,
+  TrendingUp,
+  Zap,
+  Mail,
   ArrowUpRight,
-  RefreshCw
+  RefreshCw,
+  ChevronDown,
+  Save,
 } from 'lucide-react'
 
 import {
   useAdminForceFetchIpc,
   useAdminIndices,
+  useAdminManualIpc,
   useAdminStats,
   useAdminUpdatePlan,
   useAdminUsers,
 } from '@/hooks/useAdmin'
 import { useMe } from '@/hooks/useMe'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { IPC_INDEX_LABELS, IPC_INDEX_TYPES } from '@/lib/ipcLabels'
 
 export default function AdminPage() {
   const { data: me, isLoading: loadingMe } = useMe()
@@ -31,6 +35,41 @@ export default function AdminPage() {
   const indicesQ = useAdminIndices()
   const updatePlanMut = useAdminUpdatePlan()
   const forceIpcMut = useAdminForceFetchIpc()
+  const manualIpcMut = useAdminManualIpc()
+  const [manualOpen, setManualOpen] = useState(false)
+  const [manualPeriod, setManualPeriod] = useState(() => {
+    const d = new Date()
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`
+  })
+  const [manualValues, setManualValues] = useState<Record<string, string>>({})
+
+  const indicesByType = useMemo(() => {
+    const map: Record<string, number> = {}
+    for (const idx of indicesQ.data ?? []) {
+      map[idx.type] = idx.valuePct
+    }
+    return map
+  }, [indicesQ.data])
+
+  useEffect(() => {
+    if (!manualOpen || indicesQ.isLoading) return
+    setManualValues((prev) => {
+      const next = { ...prev }
+      for (const type of IPC_INDEX_TYPES) {
+        if (next[type] === undefined && indicesByType[type] !== undefined) {
+          next[type] = String(indicesByType[type])
+        }
+      }
+      return next
+    })
+  }, [manualOpen, indicesQ.isLoading, indicesByType])
+
+  const latestPeriodLabel = indicesQ.data?.[0]?.period
+    ? new Date(indicesQ.data[0].period).toLocaleDateString('es-AR', {
+        month: 'long',
+        year: 'numeric',
+      })
+    : null
 
   if (loadingMe) {
     return (
@@ -215,35 +254,115 @@ export default function AdminPage() {
            {/* Economic Indices Section */}
            <aside className="space-y-6">
               <div className="flex items-center gap-3">
-                 <h2 className="heading-lg">Índices INDEC</h2>
+                 <h2 className="heading-lg">Índices IPC</h2>
                  <div className="h-px flex-1 bg-border" />
               </div>
 
-              <div className="grid gap-4">
-                 {indicesQ.data?.map((idx) => (
-                    <div key={idx.id} className="surface-card p-5 group hover:border-primary-600/30 transition-all duration-300 relative overflow-hidden">
-                       <div className="absolute right-0 top-0 p-4 opacity-5 text-primary-600 group-hover:scale-110 transition-transform">
-                          <TrendingUp size={48} />
-                       </div>
-                       <div className="flex items-center justify-between mb-3 relative">
-                          <span className={`inline-flex rounded-lg px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${
-                             idx.type === 'IPC_INDEC_ALIMENTOS' ? 'bg-primary-50 text-primary-700' : 'bg-accent-50 text-accent-700'
-                          }`}>
-                             {idx.type === 'IPC_INDEC_ALIMENTOS' ? 'Alimentos' : 'General'}
+              {latestPeriodLabel && (
+                <p className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
+                  Último mes cargado: {latestPeriodLabel}
+                </p>
+              )}
+
+              <div className="surface-card overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setManualOpen((o) => !o)}
+                  className="flex w-full items-center justify-between gap-2 px-5 py-4 text-left hover:bg-surface-soft/50 transition-colors"
+                >
+                  <span className="text-xs font-black uppercase tracking-widest text-text-main">
+                    Carga manual IPC
+                  </span>
+                  <ChevronDown
+                    size={18}
+                    className={`text-text-subtle transition-transform ${manualOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {manualOpen && (
+                  <form
+                    className="space-y-4 border-t border-border px-5 pb-5 pt-4"
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      const indices = IPC_INDEX_TYPES.map((type) => ({
+                        type,
+                        valuePct: Number.parseFloat(manualValues[type] ?? ''),
+                      })).filter((row) => Number.isFinite(row.valuePct))
+                      if (indices.length === 0) return
+                      void manualIpcMut.mutateAsync({ period: manualPeriod, indices })
+                    }}
+                  >
+                    <label className="block space-y-1">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
+                        Período (YYYY-MM)
+                      </span>
+                      <input
+                        type="month"
+                        value={manualPeriod}
+                        onChange={(e) => setManualPeriod(e.target.value)}
+                        className="w-full h-10"
+                      />
+                    </label>
+                    <div className="max-h-64 overflow-y-auto space-y-2 pr-1 scrollbar-hide">
+                      {IPC_INDEX_TYPES.map((type) => (
+                        <label key={type} className="flex items-center gap-2 text-xs">
+                          <span className="flex-1 font-bold text-text-muted truncate">
+                            {IPC_INDEX_LABELS[type] ?? type}
                           </span>
-                          <span className="font-mono text-base font-black text-text-main tracking-tighter">+{idx.valuePct.toFixed(2)}%</span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            inputMode="decimal"
+                            placeholder="0.00"
+                            value={manualValues[type] ?? ''}
+                            onChange={(ev) =>
+                              setManualValues((prev) => ({
+                                ...prev,
+                                [type]: ev.target.value,
+                              }))
+                            }
+                            className="w-20 h-9 text-right font-mono text-sm"
+                          />
+                          <span className="text-[10px] font-black text-text-subtle">%</span>
+                        </label>
+                      ))}
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={manualIpcMut.isPending}
+                      className="btn-primary w-full h-11"
+                    >
+                      {manualIpcMut.isPending ? (
+                        <RefreshCw size={16} className="animate-spin mr-2" />
+                      ) : (
+                        <Save size={16} className="mr-2" />
+                      )}
+                      Guardar IPC manual
+                    </button>
+                  </form>
+                )}
+              </div>
+
+              <div className="grid gap-3 max-h-[32rem] overflow-y-auto pr-1 scrollbar-hide">
+                 {indicesQ.data?.map((idx) => (
+                    <div key={idx.id} className="surface-card p-4 group hover:border-primary-600/30 transition-all relative overflow-hidden">
+                       <div className="flex items-center justify-between gap-2 relative">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle leading-tight">
+                             {IPC_INDEX_LABELS[idx.type] ?? idx.type}
+                          </span>
+                          <span className="font-mono text-sm font-black text-text-main tracking-tighter shrink-0">
+                            +{idx.valuePct.toFixed(2)}%
+                          </span>
                        </div>
-                       <div className="flex items-center gap-2 relative">
-                          <div className="h-1 w-1 rounded-full bg-border-strong" />
-                          <p className="text-[10px] font-black text-text-subtle uppercase tracking-widest">
-                             {new Date(idx.period).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })}
-                          </p>
-                       </div>
+                       {idx.sourceUrl?.startsWith('manual:') && (
+                         <p className="text-[9px] font-bold text-accent-600 uppercase mt-1">Manual</p>
+                       )}
                     </div>
                  ))}
                  {!indicesQ.isLoading && indicesQ.data?.length === 0 && (
                    <div className="surface-card p-8 text-center border-dashed border-border opacity-50">
-                      <p className="text-xs font-bold text-text-subtle uppercase">Sin datos registrados</p>
+                      <TrendingUp size={32} className="mx-auto mb-2 text-text-subtle opacity-40" />
+                      <p className="text-xs font-bold text-text-subtle uppercase">Sin datos IPC</p>
+                      <p className="text-[10px] text-text-subtle mt-2">Sincronizá desde Alphacast o cargá manualmente.</p>
                    </div>
                  )}
               </div>

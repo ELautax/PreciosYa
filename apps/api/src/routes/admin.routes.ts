@@ -5,6 +5,7 @@ import {
   adminGetIndices,
   adminGetStats,
   adminListUsers,
+  adminManualIpc,
   adminUpdateUserPlan,
 } from '../controllers/admin.controller.js'
 import { adminMiddleware } from '../middlewares/admin.middleware.js'
@@ -27,4 +28,10 @@ adminRoutes.post(
   authMiddleware,
   adminMiddleware,
   asyncHandler(adminForceFetchIpc),
+)
+adminRoutes.post(
+  '/ipc/manual',
+  authMiddleware,
+  adminMiddleware,
+  asyncHandler(adminManualIpc),
 )

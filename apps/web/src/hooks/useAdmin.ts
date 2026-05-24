@@ -87,19 +87,66 @@ export function useAdminUpdatePlan() {
   })
 }
 
+type ForceFetchIpcResult = {
+  ipc: {
+    period: string
+    valuePct: number
+    seriesUpdated: number
+    indices: Array<{ type: string; period: string; valuePct: number }>
+  }
+}
+
 export function useAdminForceFetchIpc() {
   const api = useApiClient()
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async () => {
-      const res = await api.post<ApiSuccess<{ ipc: { period: string; valuePct: number } }>>(
-        '/api/admin/ipc/force-fetch',
-      )
-      return res.data.data
+      const res = await api.post<ApiSuccess<ForceFetchIpcResult>>('/api/admin/ipc/force-fetch')
+      return res.data.data.ipc
     },
-    onSuccess: () => {
+    onSuccess: (ipc) => {
       void qc.invalidateQueries({ queryKey: ['admin-indices'] })
       void qc.invalidateQueries({ queryKey: ['ipc-latest'] })
+      void qc.invalidateQueries({ queryKey: ['ipc-history'] })
+      const month = new Date(ipc.period).toLocaleDateString('es-AR', {
+        month: 'long',
+        year: 'numeric',
+      })
+      appToast.success(
+        `IPC sincronizado: ${ipc.valuePct.toFixed(2)}% (${month}, ${ipc.seriesUpdated} series)`,
+      )
+    },
+    onError: () => {
+      appToast.error('No se pudo sincronizar IPC. Revisá la API key o usá carga manual.')
+    },
+  })
+}
+
+export function useAdminManualIpc() {
+  const api = useApiClient()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (input: {
+      period: string
+      indices: Array<{ type: string; valuePct: number }>
+    }) => {
+      const res = await api.post<
+        ApiSuccess<{ period: string; count: number; indices: unknown[] }>
+      >('/api/admin/ipc/manual', input)
+      return res.data.data
+    },
+    onSuccess: (data) => {
+      void qc.invalidateQueries({ queryKey: ['admin-indices'] })
+      void qc.invalidateQueries({ queryKey: ['ipc-latest'] })
+      void qc.invalidateQueries({ queryKey: ['ipc-history'] })
+      const month = new Date(data.period).toLocaleDateString('es-AR', {
+        month: 'long',
+        year: 'numeric',
+      })
+      appToast.success(`IPC manual guardado (${month}, ${data.count} series)`)
+    },
+    onError: () => {
+      appToast.error('No se pudo guardar el IPC manual')
     },
   })
 }
