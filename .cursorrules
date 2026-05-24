@@ -35,9 +35,9 @@ preciosya/
 ```
 
 ### Frontend (`apps/web`)
-- **Framework:** React 18 with TypeScript (strict mode)
-- **Build:** Vite 5
-- **Styles:** Tailwind CSS
+- **Framework:** React 19 with TypeScript (strict mode)
+- **Build:** Vite 8
+- **Styles:** Tailwind CSS v4 (`@import "tailwindcss"`, `@utility` en `index.css`) — UI base diseñada con **Kombai**; mantener tokens y componentes existentes
 - **PWA:** vite-plugin-pwa + Workbox (offline support via IndexedDB)
 - **Routing:** React Router v6
 - **State:** TanStack Query (server state) + React Context (auth)
@@ -60,7 +60,7 @@ preciosya/
 - **Validation:** Zod on every incoming request body
 
 ### External APIs
-- **INDEC IPC:** `https://apis.datos.gob.ar/series/api/series/?ids=148.3_INIVELNAL_DICI_M_26:percent_change&last=1&format=json` (variación % mensual; `last=1` = último mes publicado)
+- **INDEC IPC (multi-serie):** ver [`docs/IPC_SOURCES.md`](docs/IPC_SOURCES.md) y `apps/api/src/services/ipc-fetch/`
 - **BCRA rate:** `https://api.bcra.gob.ar/estadisticas/v3.0/monetarias/reservas`
 - **Google OAuth:** managed entirely by Supabase Auth
 
@@ -69,8 +69,9 @@ Supabase Row Level Security is **disabled**. All data access control happens in 
 
 ### Deployed stack (troubleshooting default)
 
-- **Web:** Vercel — URL(s) HTTPS públicas (ej. `https://preciosya.vercel.app`, previews `*.vercel.app`).
-- **API:** Railway — URL HTTPS pública del servicio Node; el build del front debe usar esa base en `VITE_API_URL`.
+- **Web (app):** Vercel proyecto `web` — producción **`https://preciosya.vercel.app`** (alias principal); preview `web-rho-ten-99.vercel.app`.
+- **Landing:** Vercel `preciosya-landing` — **`https://preciosya-landing.vercel.app`** → enlaces a la app en `preciosya.vercel.app`.
+- **API:** Railway — `https://api-production-3626.up.railway.app`; `FRONTEND_URL` debe incluir `https://preciosya.vercel.app`.
 
 ### Policy for AI assistants (read before suggesting URLs)
 
@@ -478,22 +479,22 @@ VITE_SUPABASE_ANON_KEY=eyJ...
 
 ---
 
-## 12. TODO — Ordered Build List
+## 12. MVP v1 — Build List (completado)
 
-The tasks are ordered by dependency. Do not start a task until its prerequisites are complete.
+Todas las tareas TASK-001 … TASK-044 están implementadas en el monorepo (mayo 2026). No reabrir salvo bugfix.
 
 ---
 
 ### PHASE 1 — Project Skeleton
 
-- [ ] **TASK-001** Initialize monorepo with pnpm workspaces
+- [x] **TASK-001** Initialize monorepo with pnpm workspaces
   - Root `package.json` with workspaces: `["apps/*", "packages/*"]`
   - `pnpm-workspace.yaml`
   - Root `.gitignore` (node_modules, dist, .env, .DS_Store)
   - Root `.cursorrules` with project context
   - Root `README.md`
 
-- [ ] **TASK-002** Initialize `apps/web` (React + Vite + TypeScript + Tailwind + PWA)
+- [x] **TASK-002** Initialize `apps/web` (React + Vite + TypeScript + Tailwind + PWA)
   - `pnpm create vite@latest web --template react-ts`
   - Install: `tailwindcss postcss autoprefixer vite-plugin-pwa workbox-window`
   - Configure `tailwind.config.js` with custom color tokens from section 11
@@ -501,16 +502,16 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
   - Configure `tsconfig.json` strict mode + paths
   - Create folder structure: `src/components/ src/pages/ src/hooks/ src/utils/ src/lib/ src/contexts/ src/types/ src/assets/`
 
-- [ ] **TASK-003** Initialize `apps/api` (Node.js + Express + TypeScript)
+- [x] **TASK-003** Initialize `apps/api` (Node.js + Express + TypeScript)
   - `npm init -y` + install dependencies
   - Configure `tsconfig.json` strict mode, `outDir: ./dist`, `rootDir: ./src`
   - Create folder structure: `src/controllers/ src/middlewares/ src/routes/ src/services/ src/lib/ src/jobs/ src/types/ src/config/ src/utils/`
 
-- [ ] **TASK-004** Initialize `packages/shared`
+- [x] **TASK-004** Initialize `packages/shared`
   - TypeScript package with `src/types/` and `src/pricing.ts`
   - Export types used by both `web` and `api`
 
-- [ ] **TASK-005** Environment variable validation with Zod
+- [x] **TASK-005** Environment variable validation with Zod
   - `apps/api/src/config/env.ts` — validate all required vars at startup, throw descriptive error if missing
   - `apps/web/src/config/env.ts` — same for VITE_ vars
   - Create `.env.example` files for both apps
@@ -519,18 +520,18 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 2 — Database
 
-- [ ] **TASK-006** Write Prisma schema
+- [x] **TASK-006** Write Prisma schema
   - `apps/api/prisma/schema.prisma` with all 9 tables from section 4
   - All enums: `PlanType`, `ChangeReason`, `IndexType`, `ExportFormat`, `NotifType`, `SubStatus`
   - First migration: `npx prisma migrate dev --name init`
 
-- [ ] **TASK-007** PostgreSQL triggers
+- [x] **TASK-007** PostgreSQL triggers
   - File: `apps/api/prisma/migrations/manual/triggers.sql`
   - Triggers: `record_price_change`, `set_updated_at` (for users, locals, products)
   - Indexes: `price_history(product_id, recorded_at DESC)`, `products(local_id, is_active)`, `products(barcode)`, `economic_indices(type, period DESC)`
   - Instructions: must be run manually in Supabase SQL Editor
 
-- [ ] **TASK-008** Database clients
+- [x] **TASK-008** Database clients
   - `apps/api/src/lib/prisma.ts` — singleton PrismaClient with slow query logging
   - `apps/api/src/lib/supabase.ts` — supabaseAdmin (service_role), `verifyToken(token)` function
   - `apps/web/src/lib/supabase.ts` — anon client for auth and Realtime only
@@ -539,18 +540,18 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 3 — Backend Foundation
 
-- [ ] **TASK-009** Express app setup
+- [x] **TASK-009** Express app setup
   - `apps/api/src/app.ts` — cors, express.json, helmet, morgan, rate-limiter, router mount
   - `apps/api/src/server.ts` — listen on PORT, connect Prisma, graceful shutdown
   - `GET /health` endpoint
 
-- [ ] **TASK-010** Error handling utilities
+- [x] **TASK-010** Error handling utilities
   - `src/utils/AppError.ts` — custom error class with `statusCode`, `message`, `code`, `isOperational`
   - `src/utils/asyncHandler.ts` — wrap async controllers
   - `src/utils/response.ts` — `sendSuccess(res, data)` and `sendError(res, error)`
   - Global error handler middleware (catches AppError + unexpected errors)
 
-- [ ] **TASK-011** Auth middleware
+- [x] **TASK-011** Auth middleware
   - `src/middlewares/auth.middleware.ts` — extract Bearer token, call `verifyToken()`, find/create user in DB, attach `req.user`
   - `src/middlewares/planGuard.middleware.ts` — factory `requirePlan(minPlan)` for plan enforcement
   - `src/middlewares/ownerGuard.middleware.ts` — verify resource belongs to authenticated user
@@ -560,12 +561,12 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 4 — PricingEngine
 
-- [ ] **TASK-012** PricingEngine core functions
+- [x] **TASK-012** PricingEngine core functions
   - File: `packages/shared/src/pricing.ts`
   - All functions from section 5
   - TypeScript strict, no dependencies
 
-- [ ] **TASK-013** PricingEngine unit tests
+- [x] **TASK-013** PricingEngine unit tests
   - File: `packages/shared/src/__tests__/pricing.test.ts` with Vitest
   - Cover: normal cases, edge cases (cost = 0, margin = 0, IPC = 0, negative IPC), bulk update with empty array
   - Run: `pnpm --filter shared test`
@@ -574,12 +575,12 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 5 — Authentication
 
-- [ ] **TASK-014** Auth service + controller + routes
+- [x] **TASK-014** Auth service + controller + routes
   - `src/services/auth.service.ts` — `findOrCreateUser(supabaseUser)`, send welcome email on first login
   - `src/controllers/auth.controller.ts` — `googleLogin`, `getMe`, `logout`
   - `src/routes/auth.routes.ts`
 
-- [ ] **TASK-015** Frontend auth context
+- [x] **TASK-015** Frontend auth context
   - `apps/web/src/contexts/AuthContext.tsx` — session state, `signInWithGoogle()`, `signOut()`, `onAuthStateChange` listener
   - `apps/web/src/hooks/useApiClient.ts` — Axios instance with JWT interceptor, auto-logout on 401
   - `apps/web/src/pages/auth/LoginPage.tsx` — Google OAuth button, redirect if already logged in
@@ -589,20 +590,20 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 6 — Products CRUD
 
-- [ ] **TASK-016** Product service (backend)
+- [x] **TASK-016** Product service (backend)
   - `src/services/product.service.ts`
   - All methods: `getProducts` (paginated + filtered), `getProductById`, `createProduct` (with plan limit check), `updateProduct` (recalculate price + alert), `deleteProduct` (soft), `bulkUpdateByPercentage`
   - Use PricingEngine for all calculations
 
-- [ ] **TASK-017** Product controller + routes (backend)
+- [x] **TASK-017** Product controller + routes (backend)
   - `src/controllers/product.controller.ts`
   - `src/routes/product.routes.ts` — all endpoints from section 6
   - Zod validation for all request bodies
 
-- [ ] **TASK-018** Product hooks (frontend)
+- [x] **TASK-018** Product hooks (frontend)
   - `apps/web/src/hooks/useProducts.ts` — TanStack Query hooks: `useProducts`, `useCreateProduct`, `useUpdateProduct`, `useDeleteProduct`, `useBulkUpdate`
 
-- [ ] **TASK-019** Product UI components (frontend)
+- [x] **TASK-019** Product UI components (frontend)
   - `ProductList.tsx` — list with search, filter by category/alert, infinite scroll or pagination
   - `ProductCard.tsx` — mobile card view
   - `ProductForm.tsx` — React Hook Form + Zod, real-time price preview as user types
@@ -612,13 +613,13 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 7 — Categories & Locals
 
-- [ ] **TASK-020** Local service + controller + routes (backend)
+- [x] **TASK-020** Local service + controller + routes (backend)
   - `getLocals`, `createLocal` (plan limit), `updateLocal`
 
-- [ ] **TASK-021** Category service + controller + routes (backend)
+- [x] **TASK-021** Category service + controller + routes (backend)
   - `getCategories`, `createCategory`, `updateCategory`, `deleteCategory`
 
-- [ ] **TASK-022** Frontend pages
+- [x] **TASK-022** Frontend pages
   - `LocalsPage.tsx` — list + form, plan limit modal on upgrade needed
   - `CategoriesPage.tsx` — list + color picker
   - `LocalSelector.tsx` component in header
@@ -627,19 +628,19 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 8 — IPC & Economic Indices
 
-- [ ] **TASK-023** INDEC + BCRA fetcher services (backend)
+- [x] **TASK-023** INDEC + BCRA fetcher services (backend)
   - `src/services/indec.service.ts` — `fetchLatestIPC()` with retry logic
   - `src/services/economic-index.service.ts` — `saveEconomicIndex()` (upsert), `getLatestIndex()`, `applyIPCToLocal()`
 
-- [ ] **TASK-024** IPC routes (backend)
+- [x] **TASK-024** IPC routes (backend)
   - `GET /api/ipc/latest`, `GET /api/ipc/history`, `PUT /api/locals/:id/apply-ipc`
 
-- [ ] **TASK-025** Scheduler setup (backend)
+- [x] **TASK-025** Scheduler setup (backend)
   - `src/jobs/ipc-scheduler.ts` — both cron jobs (monthly IPC, daily BCRA)
   - Call `initScheduler()` from `server.ts` after server starts
   - Idempotency check before each fetch
 
-- [ ] **TASK-026** Frontend: IPC banner + bulk update modal
+- [x] **TASK-026** Frontend: IPC banner + bulk update modal
   - `IPCBanner.tsx` — dismissible banner when new IPC is available
   - `BulkUpdateModal.tsx` — two tabs: "By percentage" and "Apply IPC", with preview of affected products
 
@@ -647,15 +648,15 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 9 — Notifications
 
-- [ ] **TASK-027** Notification service + routes (backend)
+- [x] **TASK-027** Notification service + routes (backend)
   - `src/services/notification.service.ts` — `createNotification`, `createBulkNotifications`, `markAsRead`, `getUserNotifications`, `getUnreadCount`
   - `src/routes/notification.routes.ts`
 
-- [ ] **TASK-028** Email service (backend)
+- [x] **TASK-028** Email service (backend)
   - `src/services/email.service.ts` — `sendWelcomeEmail`, `sendNewIPCEmail`, `sendMarginAlertEmail`
   - In development: log to console instead of sending
 
-- [ ] **TASK-029** Frontend: notification center
+- [x] **TASK-029** Frontend: notification center
   - `NotificationCenter.tsx` — bell icon + dropdown, real-time via Supabase Realtime subscriptions
   - `useNotifications.ts` hook
 
@@ -663,11 +664,11 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 10 — Price History
 
-- [ ] **TASK-030** Price history endpoint (backend)
+- [x] **TASK-030** Price history endpoint (backend)
   - `GET /api/products/:id/history` already defined in routes
   - Service method `getProductHistory(productId, userId, options?)` with pagination
 
-- [ ] **TASK-031** Frontend: history components
+- [x] **TASK-031** Frontend: history components
   - `PriceHistoryChart.tsx` — Chart.js line chart, color-coded by change reason
   - `PriceHistoryTable.tsx` — tabular view with badges
 
@@ -675,12 +676,12 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 11 — PNG Export & WhatsApp Share
 
-- [ ] **TASK-032** Export backend
+- [x] **TASK-032** Export backend
   - `src/controllers/export.controller.ts`
   - `src/services/export.service.ts` — receive PNG blob, upload to Supabase Storage, create `price_lists` record, return signed URL
   - Storage path convention: `{userId}/{localId}/{timestamp}.png`
 
-- [ ] **TASK-033** Frontend: export module
+- [x] **TASK-033** Frontend: export module
   - `PriceListTemplate.tsx` — hidden DOM element captured by html2canvas
   - `ExportModal.tsx` — preview + share/download buttons
   - `useExport.ts` hook — orchestrates html2canvas → upload → Web Share API
@@ -689,7 +690,7 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 12 — PWA & Offline
 
-- [ ] **TASK-034** PWA configuration
+- [x] **TASK-034** PWA configuration
   - `vite.config.ts` — VitePWA plugin with manifest and Workbox runtime caching
   - `src/lib/offline.ts` — IndexedDB operations via `idb` library (read-only in V1)
   - `useOfflineSync.ts` hook — detect online/offline, sync on reconnect
@@ -699,7 +700,7 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 13 — Dashboard & Layout
 
-- [ ] **TASK-035** App layout
+- [x] **TASK-035** App layout
   - `AppLayout.tsx` — sidebar (desktop) + bottom nav (mobile), header with notifications
   - React Router v6 setup with lazy-loaded pages
   - `DashboardPage.tsx` — summary cards: products count, active alerts, last IPC, last export
@@ -708,12 +709,12 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 14 — Settings & Admin
 
-- [ ] **TASK-036** Settings page (frontend)
+- [x] **TASK-036** Settings page (frontend)
   - `SettingsPage.tsx` — tabs: My Business, My Account, My Plan
   - Plan usage bar (Free: 18/30 products)
   - Notification preferences stored in `users.metadata`
 
-- [ ] **TASK-037** Admin panel (backend + frontend)
+- [x] **TASK-037** Admin panel (backend + frontend)
   - Backend: admin routes with `is_admin` check
   - Frontend: `AdminPage.tsx` — user table, global stats, manual IPC trigger
 
@@ -721,16 +722,16 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 15 — Testing
 
-- [ ] **TASK-038** Backend unit tests
+- [x] **TASK-038** Backend unit tests
   - Setup: Vitest + vitest-mock-extended (Prisma mock)
   - Tests: `pricing.test.ts`, `product.service.test.ts`, `indec.service.test.ts`, `auth.middleware.test.ts`
   - Coverage threshold: 70% for `services/` and `utils/`
 
-- [ ] **TASK-039** Backend integration tests
+- [x] **TASK-039** Backend integration tests
   - Setup: supertest + test Supabase project (or in-memory SQLite via Prisma)
   - Tests: products CRUD, bulk update, IPC apply, export upload
 
-- [ ] **TASK-040** Frontend component tests
+- [x] **TASK-040** Frontend component tests
   - Setup: Vitest + @testing-library/react + MSW (mock API)
   - Tests: `ProductForm`, `BulkUpdateModal`, `useProducts` hook
 
@@ -738,42 +739,73 @@ The tasks are ordered by dependency. Do not start a task until its prerequisites
 
 ### PHASE 16 — Deploy
 
-- [ ] **TASK-041** Backend Dockerfile + Railway config
+- [x] **TASK-041** Backend Dockerfile + Railway config
   - Multi-stage Dockerfile in `apps/api/`
   - `railway.json` with health check path `/health`
   - All env vars configured in Railway dashboard
 
-- [ ] **TASK-042** Frontend Vercel config
+- [x] **TASK-042** Frontend Vercel config
   - `vercel.json` with build command, output dir, SPA rewrite rule
   - All `VITE_` env vars configured in Vercel dashboard
 
-- [ ] **TASK-043** Supabase Storage setup
+- [x] **TASK-043** Supabase Storage setup
   - Create bucket `price-lists` (public)
   - SQL for storage policies (backend service_role can INSERT, public can SELECT)
   - Run `triggers.sql` in Supabase SQL Editor
 
-- [ ] **TASK-044** CI/CD with GitHub Actions
+- [x] **TASK-044** CI/CD with GitHub Actions
   - `ci.yml` — typecheck + lint + test on every PR
   - `deploy.yml` — auto-deploy to Railway + Vercel on push to `main`
 
 ---
 
-## 13. What is NOT in scope (V1)
+## 13. Workflow del agente
 
-These are explicitly out of scope for the first version. Document them as future work, do not implement them:
-
-- Mercado Pago integration (subscriptions are manually managed in V1)
-- Android APK / React Native app
-- Barcode scanning
-- Multi-user / team accounts
-- PDF export (PNG only in V1)
-- Full bidirectional offline sync (read-only offline in V1)
-- WhatsApp Business API (Web Share API is sufficient for V1)
-- AI-powered price recommendation
+1. **Preguntar antes de codear** cambios que toquen schema, API pública, deploy o más de ~3 archivos no triviales.
+2. Ante ambigüedad (umbrales, lista de rubros, fuente IPC), hacer preguntas concretas; no asumir.
+3. El backlog activo es **ROADMAP v2** (sección 15). El MVP v1 está cerrado.
 
 ---
 
-## 14. Key Rules for Codex
+## 14. Diseño Frontend (Kombai)
+
+- Mantener look & feel actual: `index.css` (`@theme`, `btn-primary`, `surface-card`, `page-shell`, `min-h-[48px]`).
+- Mobile-first: modales `items-end` en móvil, bottom nav en `AppLayout`, safe-area en `body`.
+- Nuevos botones/pantallas: reutilizar utilidades existentes; no volver a CSS de template Vite (`App.css` eliminado).
+- Probar cambios UI en viewport ~375px antes de cerrar tarea.
+
+---
+
+## 15. ROADMAP v2 — Pendiente / en curso
+
+| ID | Tarea | Estado |
+|----|--------|--------|
+| TASK-101 | Informe fuente IPC + mapeo series INDEC | Hecho → `docs/IPC_SOURCES.md` |
+| TASK-102 | Fetcher IPC multi-serie (`ipc-fetch/`) | Hecho |
+| TASK-103 | `category_templates` + seed divisiones COICOP | Hecho → migración `20260520120000_v2_categories_ipc_margin` |
+| TASK-104 | API/UI categorías: solo activar, sin crear nombre | Hecho |
+| TASK-105 | Unidades enum + margen LOW/WARNING/OK | Hecho |
+| TASK-106 | Lector código de barras móvil | Hecho → `BarcodeScanner` + html5-qrcode |
+| TASK-107 | Cron 03:00 AR + tests scheduler | Hecho |
+| TASK-108 | Dominio `preciosya.vercel.app` + landing + CORS docs | Hecho → `docs/DEPLOY_VERCEL.md` |
+
+---
+
+## 16. What is NOT in scope
+
+- Mercado Pago automático (suscripciones manuales)
+- APK nativa / React Native
+- Multi-usuario por negocio
+- PDF export (solo PNG)
+- Sync offline bidireccional completo
+- WhatsApp Business API
+- Recomendación de precios con IA
+
+**Ya no está fuera de alcance (v2):** escaneo de código de barras; IPC multi-división; categorías predefinidas INDEC.
+
+---
+
+## 17. Key Rules for Codex
 
 1. **Never write `any` in TypeScript.** If you don't know the type, use `unknown` and narrow it.
 2. **Never hardcode env variables in code.** Always import from `src/config/env.ts`.
@@ -785,8 +817,9 @@ These are explicitly out of scope for the first version. Document them as future
 8. **No RLS.** Do not add Supabase RLS policies. Authorization is done in Express middlewares only.
 9. **The Supabase `anon` key is only used in the frontend** for auth (login/logout) and Realtime. All business data goes through `apps/api`.
 10. **Comments in Spanish, commits in English.**
+11. **Preguntar antes de codear** cambios grandes; seguir ROADMAP v2 y diseño Kombai (sección 14).
 
 ---
 
-*Last updated: May 2026 — PreciosYa v1.0 build scope*
+*Last updated: May 2026 — PreciosYa v2 roadmap*
 *Author: Lautaro Nahuel Villanueva — Escuela Multimedial Da Vinci*

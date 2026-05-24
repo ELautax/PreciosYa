@@ -2,10 +2,9 @@ import type { Request, Response } from 'express'
 import { z } from 'zod'
 
 import {
-  createCategory,
-  deleteCategory,
   getCategories,
-  updateCategory,
+  listCategoryTemplates,
+  setCategoryActive,
 } from '../services/category.service.js'
 import { sendSuccess } from '../utils/response.js'
 import { AppError } from '../utils/AppError.js'
@@ -14,20 +13,9 @@ const listQuerySchema = z.object({
   localId: z.string().uuid(),
 })
 
-const createBodySchema = z.object({
-  localId: z.string().uuid(),
-  name: z.string().min(1),
-  colorHex: z.union([z.string(), z.null()]).optional(),
-  preferredIndex: z.enum(['IPC_INDEC', 'IPC_INDEC_ALIMENTOS']).optional(),
+const patchBodySchema = z.object({
+  isActive: z.boolean(),
 })
-
-const updateBodySchema = z
-  .object({
-    name: z.string().min(1).optional(),
-    colorHex: z.union([z.string(), z.null()]).optional(),
-    preferredIndex: z.enum(['IPC_INDEC', 'IPC_INDEC_ALIMENTOS']).optional(),
-  })
-  .strict()
 
 export async function listCategories(req: Request, res: Response): Promise<void> {
   const user = req.user
@@ -43,7 +31,10 @@ export async function listCategories(req: Request, res: Response): Promise<void>
   sendSuccess(res, { categories })
 }
 
-export async function createCategoryHandler(req: Request, res: Response): Promise<void> {
+export async function listCategoryTemplatesHandler(
+  req: Request,
+  res: Response,
+): Promise<void> {
   const user = req.user
   if (!user) {
     throw new AppError({
@@ -52,19 +43,14 @@ export async function createCategoryHandler(req: Request, res: Response): Promis
       code: 'UNAUTHORIZED',
     })
   }
-  const body = createBodySchema.parse(req.body)
-  const category = await createCategory(user.id, {
-    localId: body.localId,
-    name: body.name,
-    ...(body.colorHex !== undefined ? { colorHex: body.colorHex } : {}),
-    ...(body.preferredIndex !== undefined
-      ? { preferredIndex: body.preferredIndex }
-      : {}),
-  })
-  sendSuccess(res, { category }, 201)
+  const templates = await listCategoryTemplates()
+  sendSuccess(res, { templates })
 }
 
-export async function updateCategoryHandler(req: Request, res: Response): Promise<void> {
+export async function patchCategoryActiveHandler(
+  req: Request,
+  res: Response,
+): Promise<void> {
   const user = req.user
   if (!user) {
     throw new AppError({
@@ -74,29 +60,7 @@ export async function updateCategoryHandler(req: Request, res: Response): Promis
     })
   }
   const id = z.string().uuid().parse(req.params.id)
-  const body = updateBodySchema.parse(req.body)
-  const patch: {
-    name?: string
-    colorHex?: string | null
-    preferredIndex?: 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'
-  } = {}
-  if (body.name !== undefined) patch.name = body.name
-  if (body.colorHex !== undefined) patch.colorHex = body.colorHex
-  if (body.preferredIndex !== undefined) patch.preferredIndex = body.preferredIndex
-  const category = await updateCategory(user.id, id, patch)
+  const body = patchBodySchema.parse(req.body)
+  const category = await setCategoryActive(user.id, id, body.isActive)
   sendSuccess(res, { category })
-}
-
-export async function deleteCategoryHandler(req: Request, res: Response): Promise<void> {
-  const user = req.user
-  if (!user) {
-    throw new AppError({
-      statusCode: 401,
-      message: 'No autenticado',
-      code: 'UNAUTHORIZED',
-    })
-  }
-  const id = z.string().uuid().parse(req.params.id)
-  await deleteCategory(user.id, id)
-  sendSuccess(res, { ok: true })
 }

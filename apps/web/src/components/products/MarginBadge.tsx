@@ -1,32 +1,29 @@
-import { AlertTriangle, CheckCircle2, TrendingDown } from 'lucide-react'
+import { AlertTriangle, CheckCircle2 } from 'lucide-react'
+
+import type { MarginStatusLevel } from '@/types/product'
 
 type MarginBadgeProps = {
   marginPct: number
-  isAlert: boolean
+  marginStatus?: MarginStatusLevel
+  isAlert?: boolean
 }
 
-export function MarginBadge({ marginPct, isAlert }: MarginBadgeProps) {
-  const isNegative = marginPct < 0
-  const isVeryLow = marginPct < 10 && !isNegative
+export function MarginBadge({ marginPct, marginStatus, isAlert }: MarginBadgeProps) {
+  const status: MarginStatusLevel =
+    marginStatus ?? (isAlert ? 'LOW' : 'OK')
 
-  if (isAlert || isNegative) {
+  if (status === 'LOW') {
     return (
-      <span 
-        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-black font-mono shadow-xs transition-all ${
-          isNegative 
-            ? 'border-danger-300 bg-danger-100 text-danger-800 animate-pulse' 
-            : 'border-danger-200 bg-danger-50 text-danger-700 dark:bg-danger-900/20 dark:border-danger-800/30'
-        }`}
-      >
-        {isNegative ? <TrendingDown size={12} strokeWidth={3} /> : <AlertTriangle size={12} strokeWidth={3} />}
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-danger-200 bg-danger-50 px-2.5 py-1 text-xs font-black font-mono text-danger-700 shadow-xs dark:border-danger-800/30 dark:bg-danger-900/20">
+        <AlertTriangle size={12} strokeWidth={3} />
         {marginPct.toFixed(1)}%
       </span>
     )
   }
 
-  if (isVeryLow) {
+  if (status === 'WARNING') {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-accent-200 bg-accent-50 px-2.5 py-1 text-xs font-black font-mono text-accent-700 shadow-xs dark:bg-accent-900/20 dark:border-accent-800/30">
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-accent-200 bg-accent-50 px-2.5 py-1 text-xs font-black font-mono text-accent-700 shadow-xs dark:border-accent-800/30 dark:bg-accent-900/20">
         <AlertTriangle size={12} strokeWidth={3} className="text-accent-600" />
         {marginPct.toFixed(1)}%
       </span>
@@ -34,7 +31,7 @@ export function MarginBadge({ marginPct, isAlert }: MarginBadgeProps) {
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-200 bg-primary-50 px-2.5 py-1 text-xs font-black font-mono text-primary-700 shadow-xs dark:bg-primary-900/20 dark:border-primary-800/30">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-200 bg-primary-50 px-2.5 py-1 text-xs font-black font-mono text-primary-700 shadow-xs dark:border-primary-800/30 dark:bg-primary-900/20">
       <CheckCircle2 size={12} strokeWidth={3} className="text-primary-600" />
       {marginPct.toFixed(1)}%
     </span>

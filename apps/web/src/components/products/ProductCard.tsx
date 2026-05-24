@@ -33,7 +33,11 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
              )}
           </div>
         </div>
-        <MarginBadge marginPct={product.marginPct} isAlert={product.isMarginAlert} />
+        <MarginBadge
+          marginPct={product.marginPct}
+          marginStatus={product.marginStatus}
+          isAlert={product.isMarginAlert}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-6 mt-auto">

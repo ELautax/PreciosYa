@@ -71,7 +71,11 @@ export function ProductList({ products, onEdit, onDelete }: ProductListProps) {
                     ${p.salePrice.toFixed(2)}
                   </td>
                   <td className="px-6 py-5">
-                    <MarginBadge marginPct={p.marginPct} isAlert={p.isMarginAlert} />
+                    <MarginBadge
+                      marginPct={p.marginPct}
+                      marginStatus={p.marginStatus}
+                      isAlert={p.isMarginAlert}
+                    />
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex justify-end gap-2">

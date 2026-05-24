@@ -125,9 +125,9 @@ export async function catchUpIpcIfMissing(): Promise<void> {
 }
 
 export function initScheduler(): void {
-  // Lunes a viernes 09:00 — reintenta hasta que INDEC publique un mes nuevo.
+  // Diario 03:00 AR — sincroniza todas las series IPC (divisiones COICOP).
   cron.schedule(
-    '0 9 * * 1-5',
+    '0 3 * * *',
     () => {
       void runIpcJob()
     },
@@ -135,7 +135,7 @@ export function initScheduler(): void {
   )
 
   cron.schedule(
-    '0 10 * * 1-5',
+    '30 3 * * *',
     () => {
       void runBcraJob()
     },

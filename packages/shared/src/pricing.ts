@@ -51,8 +51,23 @@ export function applyIPC(cost: number, ipcPct: number): IPCResult {
   }
 }
 
+export type MarginStatusLevel = 'LOW' | 'WARNING' | 'OK'
+
+export const DEFAULT_MARGIN_WARNING_BUFFER_PCT = 5
+
+export function getMarginStatus(
+  marginPct: number,
+  minMarginPct: number,
+  bufferPct: number = DEFAULT_MARGIN_WARNING_BUFFER_PCT,
+): MarginStatusLevel {
+  if (marginPct < minMarginPct) return 'LOW'
+  if (marginPct < minMarginPct + bufferPct) return 'WARNING'
+  return 'OK'
+}
+
+/** Alerta crítica: margen por debajo del mínimo del local. */
 export function isMarginAlert(marginPct: number, minMarginPct: number): boolean {
-  return marginPct < minMarginPct
+  return getMarginStatus(marginPct, minMarginPct) === 'LOW'
 }
 
 export function bulkUpdateCosts(

@@ -4,6 +4,7 @@ import { isMarginAlert } from 'shared'
 import { isWithinLimit, maxLocalsForPlan } from '../lib/planLimits.js'
 import { prisma } from '../lib/prisma.js'
 import { AppError } from '../utils/AppError.js'
+import { seedCategoriesFromTemplates } from './category.service.js'
 
 export function serializeLocal(l: Local) {
   return {
@@ -59,7 +60,7 @@ export async function createLocal(
     })
   }
 
-  return prisma.local.create({
+  const local = await prisma.local.create({
     data: {
       userId: user.id,
       name: input.name.trim(),
@@ -69,6 +70,8 @@ export async function createLocal(
           : input.address.trim(),
     },
   })
+  await seedCategoriesFromTemplates(local.id)
+  return local
 }
 
 export async function updateLocal(

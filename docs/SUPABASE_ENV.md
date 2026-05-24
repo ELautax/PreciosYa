@@ -75,7 +75,11 @@ Si la contraseña tiene caracteres especiales (`@`, `#`, `$`, etc.), tenés que 
 | `SUPABASE_SERVICE_ROLE_KEY` | API → service_role |
 | `SUPABASE_ANON_KEY` | API → anon (opcional) |
 | `JWT_SECRET` | Generá un string aleatorio ≥ 32 caracteres (local puede ser el placeholder hasta producción) |
-| `FRONTEND_URL` | En local: `http://localhost:5173`. En **Railway (API)**: lista separada por coma de URLs **HTTPS** del front en Vercel (ej. `https://preciosya.vercel.app,https://web-tu-proyecto.vercel.app`) para CORS. |
+| `FRONTEND_URL` | En local: `http://localhost:5173`. En **Railway (API)**: lista separada por coma de URLs **HTTPS** del front en Vercel (ej. `https://preciosya.vercel.app,https://web-rho-ten-99.vercel.app`) para CORS. Ver también `docs/DEPLOY_VERCEL.md`. |
+
+### Migración v2 (mayo 2026)
+
+Aplicada en remoto: `category_templates`, `categories.is_active` / `template_id`, `products.margin_status`, `ProductUnit`, valores extra de `IndexType`. En local: `pnpm --filter api exec prisma migrate deploy`. Si falla el enum en una sola transacción, aplicar primero los `ADD VALUE` del enum y luego el resto (como en Supabase MCP).
 
 ### Producción: Vercel (web) + Railway (API)
 

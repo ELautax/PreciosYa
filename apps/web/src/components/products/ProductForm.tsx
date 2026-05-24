@@ -1,10 +1,26 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { X, Save, Box, Tag, FileText, Layout, DollarSign, Percent, BadgeDollarSign, Info } from 'lucide-react'
+import {
+  X,
+  Save,
+  Box,
+  Tag,
+  FileText,
+  Layout,
+  DollarSign,
+  Percent,
+  BadgeDollarSign,
+  Info,
+  ScanLine,
+} from 'lucide-react'
+import { PRODUCT_UNITS, getMarginStatus } from 'shared'
 
+import { BarcodeScanner } from '@/components/products/BarcodeScanner'
+import { MarginBadge } from '@/components/products/MarginBadge'
 import { useCategories } from '@/hooks/useCategories'
+import { useLocals } from '@/hooks/useLocals'
 import { useCreateProduct, useUpdateProduct } from '@/hooks/useProducts'
 import type { ProductDto } from '@/types/product'
 
@@ -13,7 +29,7 @@ const schema = z.object({
   cost: z.number().positive('Costo debe ser mayor que 0'),
   marginPct: z.number().min(0, 'Margen no puede ser negativo'),
   categoryId: z.string().optional(),
-  unit: z.string().optional(),
+  unit: z.enum(PRODUCT_UNITS).optional(),
   barcode: z.string().optional(),
   notes: z.string().optional(),
 })
@@ -27,7 +43,11 @@ type ProductFormProps = {
 }
 
 export function ProductForm({ localId, product, onClose }: ProductFormProps) {
-  const categoriesQuery = useCategories(localId)
+  const [scannerOpen, setScannerOpen] = useState(false)
+  const categoriesQuery = useCategories(localId, true)
+  const { data: locals } = useLocals()
+  const local = locals?.find((l) => l.id === localId)
+  const minMarginPct = local?.minMarginPct ?? 20
   const createMut = useCreateProduct()
   const updateMut = useUpdateProduct(localId)
 
@@ -36,6 +56,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -53,6 +74,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
   const watchedCost = watch('cost') || 0
   const watchedMargin = watch('marginPct') || 0
   const salePricePreview = watchedCost * (1 + watchedMargin / 100)
+  const marginStatus = getMarginStatus(watchedMargin, minMarginPct)
 
   useEffect(() => {
     if (product) {
@@ -61,7 +83,9 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
         cost: product.cost,
         marginPct: product.marginPct,
         categoryId: product.categoryId ?? '',
-        unit: product.unit,
+        unit: (PRODUCT_UNITS as readonly string[]).includes(product.unit)
+          ? (product.unit as FormValues['unit'])
+          : 'unidad',
         barcode: product.barcode ?? '',
         notes: product.notes ?? '',
       })
@@ -109,6 +133,15 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
   const pending = createMut.isPending || updateMut.isPending
 
   return (
+    <>
+    <BarcodeScanner
+      open={scannerOpen}
+      onClose={() => setScannerOpen(false)}
+      onDetected={(code) => {
+        setValue('barcode', code)
+        setScannerOpen(false)
+      }}
+    />
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center animate-fade-in backdrop-blur-sm">
       <div
         className="surface-card flex flex-col max-h-[90vh] w-full max-w-lg overflow-hidden animate-slide-up shadow-2xl"
@@ -152,7 +185,8 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
                       ${salePricePreview.toFixed(2)}
                    </p>
                 </div>
-                <div className="flex flex-col items-end gap-1">
+                <div className="flex flex-col items-end gap-2">
+                   <MarginBadge marginPct={watchedMargin} marginStatus={marginStatus} />
                    <span className="inline-flex rounded-lg bg-white/50 px-2 py-1 text-[10px] font-black text-primary-700 dark:bg-black/20">
                       CALCULADO
                    </span>
@@ -230,22 +264,34 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
                    <Box size={14} className="text-primary-600" />
                    Unidad
                 </label>
-                <input 
-                  className="w-full" 
-                  placeholder="Ej. unidad, kg, litro"
-                  {...register('unit')} 
-                />
+                <select className="w-full" {...register('unit')}>
+                  {PRODUCT_UNITS.map((u) => (
+                    <option key={u} value={u}>
+                      {u}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-muted">
                    <Tag size={14} className="text-primary-600" />
                    Código de Barras
                 </label>
-                <input 
-                  className="w-full font-mono" 
-                  placeholder="Opcional"
-                  {...register('barcode')} 
-                />
+                <div className="flex gap-2">
+                  <input
+                    className="min-w-0 flex-1 font-mono"
+                    placeholder="Opcional"
+                    {...register('barcode')}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setScannerOpen(true)}
+                    className="btn-secondary shrink-0 px-3"
+                    title="Escanear con cámara"
+                  >
+                    <ScanLine size={18} />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -294,5 +340,6 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
         </div>
       </div>
     </div>
+    </>
   )
 }

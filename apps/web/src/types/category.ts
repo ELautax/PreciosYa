@@ -1,8 +1,11 @@
 export type CategoryDto = {
   id: string
   localId: string
+  templateId: string | null
+  templateSlug: string | null
   name: string
   colorHex: string
-  preferredIndex: 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'
+  preferredIndex: string
+  isActive: boolean
   createdAt: string
 }

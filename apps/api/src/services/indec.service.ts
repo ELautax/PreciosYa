@@ -3,10 +3,7 @@ import { IndexType } from '@prisma/client'
 import { env } from '../config/env.js'
 import { AppError } from '../utils/AppError.js'
 
-/** Serie IPC nivel general mensual (INDEC vía datos.gob.ar). */
-const IPC_SERIES_ID = '148.3_INIVELNAL_DICI_M_26'
-/** Serie IPC alimentos (puede variar según catálogo de datos.gob.ar). */
-const IPC_ALIMENTOS_SERIES_ID = '148.3_INIVELNAL_DICI_M_34'
+import { getSeriesIdForIndexType } from './ipc-fetch/ipc-series.config.js'
 
 /** Variación % mensual respecto al mes anterior (no el nivel del índice). */
 const PERCENT_CHANGE_SUFFIX = ':percent_change'
@@ -93,17 +90,6 @@ export function normalizeIndecPercentValue(raw: number): number {
     return Math.round(raw * 100 * 1000) / 1000
   }
   return Math.round(raw * 1000) / 1000
-}
-
-function getSeriesIdForIndexType(indexType: IndexType): string {
-  switch (indexType) {
-    case IndexType.IPC_INDEC:
-      return IPC_SERIES_ID
-    case IndexType.IPC_INDEC_ALIMENTOS:
-      return IPC_ALIMENTOS_SERIES_ID
-    default:
-      return IPC_SERIES_ID
-  }
 }
 
 export async function fetchLatestIPCFromApi(

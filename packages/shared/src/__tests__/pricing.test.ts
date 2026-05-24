@@ -6,6 +6,7 @@ import {
   bulkUpdateCosts,
   calculateMarginPct,
   calculateSalePrice,
+  getMarginStatus,
   isMarginAlert,
 } from '../pricing'
 
@@ -98,5 +99,18 @@ describe('bulkUpdateCosts', () => {
       salePrice: 130,
     })
     expect(out[1].newCost).toBe(220)
+  })
+})
+
+describe('getMarginStatus', () => {
+  it('clasifica rojo, amarillo y verde', () => {
+    expect(getMarginStatus(15, 20)).toBe('LOW')
+    expect(getMarginStatus(22, 20)).toBe('WARNING')
+    expect(getMarginStatus(26, 20)).toBe('OK')
+  })
+
+  it('isMarginAlert solo en LOW', () => {
+    expect(isMarginAlert(15, 20)).toBe(true)
+    expect(isMarginAlert(22, 20)).toBe(false)
   })
 })

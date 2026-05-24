@@ -4,6 +4,7 @@ import { applyIPC, calculateSalePrice, isMarginAlert } from 'shared'
 
 import { prisma } from '../lib/prisma.js'
 import { fetchLatestBcraReserveFromApi } from './bcra.service.js'
+import { fetchAndPersistAllIpcSeries } from './ipc-fetch/ipc-fetch.service.js'
 import { fetchLatestIPCFromApi } from './indec.service.js'
 import { assertLocalOwnership } from './local.service.js'
 
@@ -51,6 +52,10 @@ export async function fetchPersistAndReturnLatestIpc(): Promise<{
   period: Date
   valuePct: number
 }> {
+  const { general } = await fetchAndPersistAllIpcSeries()
+  if (general) {
+    return { period: general.period, valuePct: general.valuePct }
+  }
   const fetched = await fetchLatestIPCFromApi(IndexType.IPC_INDEC)
   await upsertIpcIndec({
     type: IndexType.IPC_INDEC,
@@ -229,7 +234,7 @@ export async function getIpcBreakdownForLocal(
   await assertLocalOwnership(userId, localId)
 
   const categories: CategoryBreakdownRow[] = await prisma.category.findMany({
-    where: { localId },
+    where: { localId, isActive: true },
     orderBy: { name: 'asc' },
     select: { id: true, name: true, preferredIndex: true },
   })

@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express'
+import { isProductUnit } from 'shared'
 import { z } from 'zod'
 
 import {
@@ -26,7 +27,10 @@ const listQuerySchema = z.object({
 const createBodySchema = z.object({
   localId: z.string().uuid(),
   name: z.string().min(1),
-  unit: z.string().optional(),
+  unit: z
+    .string()
+    .optional()
+    .refine((v) => v === undefined || isProductUnit(v), 'Unidad inválida'),
   barcode: z.union([z.string(), z.null()]).optional(),
   cost: z.number().positive(),
   marginPct: z.number().min(0),
@@ -37,7 +41,10 @@ const createBodySchema = z.object({
 const updateBodySchema = z
   .object({
     name: z.string().min(1).optional(),
-    unit: z.string().optional(),
+    unit: z
+    .string()
+    .optional()
+    .refine((v) => v === undefined || isProductUnit(v), 'Unidad inválida'),
     barcode: z.union([z.string(), z.null()]).optional(),
     cost: z.number().positive().optional(),
     marginPct: z.number().min(0).optional(),

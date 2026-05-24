@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { LogIn, ShieldAlert, ChevronRight, CheckCircle2 } from 'lucide-react'
+import { ShieldAlert, ChevronRight, CheckCircle2 } from 'lucide-react'
 
 import { useAuth } from '@/contexts/AuthContext'
 import preciosYaLogo from '@/assets/preciosya-logo.png'

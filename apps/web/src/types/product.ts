@@ -1,3 +1,5 @@
+export type MarginStatusLevel = 'LOW' | 'WARNING' | 'OK'
+
 export type ProductDto = {
   id: string
   localId: string
@@ -9,6 +11,7 @@ export type ProductDto = {
   marginPct: number
   salePrice: number
   isMarginAlert: boolean
+  marginStatus: MarginStatusLevel
   notes: string | null
   isActive: boolean
   createdAt: string

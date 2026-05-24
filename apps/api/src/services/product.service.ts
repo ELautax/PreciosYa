@@ -1,10 +1,11 @@
-import { Prisma } from '@prisma/client'
+import { Prisma, ProductUnit } from '@prisma/client'
 import type { PriceHistory, Product, User } from '@prisma/client'
+import { isProductUnit } from 'shared'
 import type { ProductUpdateResult } from 'shared'
 import {
   bulkUpdateCosts,
   calculateSalePrice,
-  isMarginAlert,
+  getMarginStatus,
 } from 'shared'
 
 import { isWithinLimit, maxActiveProductsForPlan } from '../lib/planLimits.js'
@@ -14,6 +15,19 @@ import { AppError } from '../utils/AppError.js'
 
 function toNum(d: Prisma.Decimal | number): number {
   return typeof d === 'number' ? d : d.toNumber()
+}
+
+function normalizeUnit(unit?: string): ProductUnit {
+  if (unit && isProductUnit(unit)) return unit as ProductUnit
+  return ProductUnit.unidad
+}
+
+function marginFields(marginPct: number, minMarginPct: number) {
+  const marginStatus = getMarginStatus(marginPct, minMarginPct)
+  return {
+    marginStatus,
+    isMarginAlert: marginStatus === 'LOW',
+  }
 }
 
 export function serializeProduct(p: Product) {
@@ -28,6 +42,7 @@ export function serializeProduct(p: Product) {
     marginPct: toNum(p.marginPct),
     salePrice: toNum(p.salePrice),
     isMarginAlert: p.isMarginAlert,
+    marginStatus: p.marginStatus,
     notes: p.notes,
     isActive: p.isActive,
     createdAt: p.createdAt.toISOString(),
@@ -172,10 +187,7 @@ export async function createProduct(
     })
   }
 
-  const alert = isMarginAlert(
-    input.marginPct,
-    Number(local.minMarginPct),
-  )
+  const margins = marginFields(input.marginPct, Number(local.minMarginPct))
 
   const barcode =
     input.barcode === undefined || input.barcode === null || input.barcode.trim() === ''
@@ -188,12 +200,13 @@ export async function createProduct(
         localId: input.localId,
         categoryId: input.categoryId ?? null,
         name: input.name.trim(),
-        unit: input.unit?.trim() || 'unidad',
+        unit: normalizeUnit(input.unit),
         barcode,
         cost: input.cost,
         marginPct: input.marginPct,
         salePrice,
-        isMarginAlert: alert,
+        isMarginAlert: margins.isMarginAlert,
+        marginStatus: margins.marginStatus,
         notes:
           input.notes === undefined || input.notes === null || input.notes === ''
             ? null
@@ -269,7 +282,7 @@ export async function updateProduct(
     })
   }
 
-  const alert = isMarginAlert(marginPct, Number(existing.local.minMarginPct))
+  const margins = marginFields(marginPct, Number(existing.local.minMarginPct))
 
   const barcode =
     input.barcode === undefined
@@ -283,7 +296,7 @@ export async function updateProduct(
       where: { id: productId },
       data: {
         ...(input.name !== undefined ? { name: input.name.trim() } : {}),
-        ...(input.unit !== undefined ? { unit: input.unit.trim() || 'unidad' } : {}),
+        ...(input.unit !== undefined ? { unit: normalizeUnit(input.unit) } : {}),
         ...(input.barcode !== undefined ? { barcode } : {}),
         ...(input.categoryId !== undefined ? { categoryId: input.categoryId } : {}),
         ...(input.notes !== undefined
@@ -297,7 +310,8 @@ export async function updateProduct(
         cost,
         marginPct,
         salePrice,
-        isMarginAlert: alert,
+        isMarginAlert: margins.isMarginAlert,
+        marginStatus: margins.marginStatus,
       },
     })
     return serializeProduct(product)
@@ -372,13 +386,14 @@ export async function bulkUpdateByPercentage(
     results.map((r: ProductUpdateResult) => {
       const orig = products.find((x: Product) => x.id === r.id)
       if (!orig) throw new Error('bulk mismatch')
-      const alert = isMarginAlert(toNum(orig.marginPct), minM)
+      const m = marginFields(toNum(orig.marginPct), minM)
       return prisma.product.update({
         where: { id: r.id },
         data: {
           cost: r.newCost,
           salePrice: r.salePrice,
-          isMarginAlert: alert,
+          isMarginAlert: m.isMarginAlert,
+          marginStatus: m.marginStatus,
         },
       })
     }),

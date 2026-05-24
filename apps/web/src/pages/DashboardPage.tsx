@@ -9,7 +9,6 @@ import {
   Zap, 
   History,
   Store,
-  ChevronRight,
   ArrowUpRight,
   Activity,
   CheckCircle2
