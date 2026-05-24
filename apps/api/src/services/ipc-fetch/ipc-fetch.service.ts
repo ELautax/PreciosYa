@@ -7,16 +7,13 @@ import {
 } from '../indec.service.js'
 import { upsertIpcIndec } from '../economic-index.service.js'
 import { AppError } from '../../utils/AppError.js'
+import { fetchLatestIpcFromAlphacast } from './alphacast.service.js'
+import type { FetchedIpcRow } from './ipc-fetch.types.js'
 import { IPC_SERIES_CONFIG, getSeriesIdForIndexType } from './ipc-series.config.js'
 
-const PERCENT_CHANGE_SUFFIX = ':percent_change'
+export type { FetchedIpcRow } from './ipc-fetch.types.js'
 
-export type FetchedIpcRow = {
-  indexType: IndexType
-  period: Date
-  valuePct: number
-  sourceUrl: string
-}
+const PERCENT_CHANGE_SUFFIX = ':percent_change'
 
 async function fetchSeriesById(seriesId: string): Promise<{
   period: Date
@@ -70,7 +67,7 @@ export async function fetchLatestIpcForType(
   }
 }
 
-export async function fetchAndPersistAllIpcSeries(): Promise<{
+async function fetchAndPersistFromDatosGob(): Promise<{
   results: FetchedIpcRow[]
   general: FetchedIpcRow | null
 }> {
@@ -94,4 +91,51 @@ export async function fetchAndPersistAllIpcSeries(): Promise<{
   }
 
   return { results, general }
+}
+
+async function fetchAndPersistFromAlphacast(): Promise<{
+  results: FetchedIpcRow[]
+  general: FetchedIpcRow | null
+}> {
+  const rows = await fetchLatestIpcFromAlphacast()
+  const results: FetchedIpcRow[] = []
+  let general: FetchedIpcRow | null = null
+
+  for (const row of rows) {
+    await upsertIpcIndec({
+      type: row.indexType,
+      period: row.period,
+      valuePct: row.valuePct,
+      sourceUrl: row.sourceUrl,
+    })
+    results.push(row)
+    if (row.indexType === IndexType.IPC_INDEC) general = row
+  }
+
+  return { results, general }
+}
+
+export async function fetchAndPersistAllIpcSeries(): Promise<{
+  results: FetchedIpcRow[]
+  general: FetchedIpcRow | null
+}> {
+  if (env.ALPHACAST_API_KEY) {
+    try {
+      const fromAlphacast = await fetchAndPersistFromAlphacast()
+      if (fromAlphacast.results.length > 0) {
+        console.info(
+          `[ipc-fetch] IPC desde Alphacast (${fromAlphacast.results.length} series, mes ${fromAlphacast.general?.period.toISOString().slice(0, 7) ?? '?'})`,
+        )
+        return fromAlphacast
+      }
+    } catch (e) {
+      console.error('[ipc-fetch] Alphacast falló; intentando datos.gob.ar', e)
+    }
+  } else {
+    console.warn(
+      '[ipc-fetch] ALPHACAST_API_KEY no configurada; usando respaldo datos.gob.ar',
+    )
+  }
+
+  return fetchAndPersistFromDatosGob()
 }

@@ -8,11 +8,13 @@ La API de [datos.gob.ar](https://datos.gob.ar) (`apis.datos.gob.ar/series`) suel
 
 | Prioridad | Fuente | Uso |
 |-----------|--------|-----|
-| 1 | **API Series Tiempo AR** (`apis.datos.gob.ar`) | Fetch automático diario 03:00 AR; múltiples `ids` con `:percent_change&last=1` |
-| 2 | **INDEC informes PDF** | Referencia humana / validación cuando la API no publicó el mes |
-| 3 | **Admin `POST /api/admin/ipc/force-fetch`** | Reintento manual + entrada futura de override |
+| 1 | **Alphacast** ([dataset 5515](https://www.alphacast.io/datasets/consumer-price-index-grouped-5515)) | CSV vía `ALPHACAST_API_KEY`; general + 12 divisiones (`… - current_prices_mom`). Ver **`docs/ALPHACAST_SETUP.md`**. |
+| 2 | **API Series Tiempo AR** (`apis.datos.gob.ar`) | Solo **respaldo** si Alphacast falla o no hay key |
+| 3 | **INDEC informes PDF / CSV FTP** | Referencia humana / validación |
+| 4 | **Admin `POST /api/admin/ipc/force-fetch`** | Reintento manual + entrada futura de override |
 
-Configuración de series: [`apps/api/src/services/ipc-fetch/ipc-series.config.ts`](../apps/api/src/services/ipc-fetch/ipc-series.config.ts).
+Configuración Alphacast: [`apps/api/src/services/ipc-fetch/alphacast.config.ts`](../apps/api/src/services/ipc-fetch/alphacast.config.ts).  
+Respaldo datos.gob.ar: [`ipc-series.config.ts`](../apps/api/src/services/ipc-fetch/ipc-series.config.ts).
 
 ## Divisiones COICOP (12) → `IndexType`
 

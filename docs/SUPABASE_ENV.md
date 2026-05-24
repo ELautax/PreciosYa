@@ -76,6 +76,9 @@ Si la contraseña tiene caracteres especiales (`@`, `#`, `$`, etc.), tenés que 
 | `SUPABASE_ANON_KEY` | API → anon (opcional) |
 | `JWT_SECRET` | Generá un string aleatorio ≥ 32 caracteres (local puede ser el placeholder hasta producción) |
 | `FRONTEND_URL` | En local: `http://localhost:5173`. En **Railway (API)**: lista separada por coma de URLs **HTTPS** del front en Vercel (ej. `https://preciosya.vercel.app,https://web-rho-ten-99.vercel.app`) para CORS. Ver también `docs/DEPLOY_VERCEL.md`. |
+| `ALPHACAST_API_KEY` | Clave `ak_…` de [Alphacast](https://www.alphacast.io/) — **IPC mensual** (general + 12 divisiones). Ver **`docs/ALPHACAST_SETUP.md`**. |
+| `ALPHACAST_IPC_DATASET_ID` | Opcional, default `5515` (dataset INDEC agrupado). |
+| `ALPHACAST_API_BASE_URL` | Opcional, default `https://api.alphacast.io`. |
 
 ### Migración v2 (mayo 2026)
 
@@ -84,7 +87,7 @@ Aplicada en remoto: `category_templates`, `categories.is_active` / `template_id`
 ### Producción: Vercel (web) + Railway (API)
 
 - En **Vercel** → Variables del proyecto web: `VITE_API_URL` = URL pública del servicio API en **Railway** (pestaña *Networking* del servicio, formato `https://….up.railway.app` o dominio propio), **sin** `/` al final. Tiene que coincidir con lo que el navegador usa para llamar al backend.
-- En **Railway** → Variables del servicio API: `FRONTEND_URL` como arriba (todas las URLs desde las que se abre la app).
+- En **Railway** → Variables del servicio API: `FRONTEND_URL` como arriba (todas las URLs desde las que se abre la app) y **`ALPHACAST_API_KEY`** (ver `docs/ALPHACAST_SETUP.md`).
 
 ### `apps/web/.env`
 
