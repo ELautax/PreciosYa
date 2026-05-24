@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import {
@@ -44,7 +45,7 @@ type ProductFormProps = {
 
 export function ProductForm({ localId, product, onClose }: ProductFormProps) {
   const [scannerOpen, setScannerOpen] = useState(false)
-  const categoriesQuery = useCategories(localId, true)
+  const categoriesQuery = useCategories(localId, true, { refetchOnMount: true })
   const { data: locals } = useLocals()
   const local = locals?.find((l) => l.id === localId)
   const minMarginPct = local?.minMarginPct ?? 20
@@ -215,7 +216,11 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
                  <Layout size={14} className="text-primary-600" />
                  Categoría
               </label>
-              <select className="w-full" {...register('categoryId')}>
+              <select
+                className="w-full"
+                disabled={categoriesQuery.isLoading}
+                {...register('categoryId')}
+              >
                 <option value="">Sin categoría asignada</option>
                 {categoriesQuery.data?.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -223,6 +228,14 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
                   </option>
                 ))}
               </select>
+              {!categoriesQuery.isLoading && (categoriesQuery.data?.length ?? 0) === 0 && (
+                <p className="text-[10px] font-bold text-text-subtle leading-tight">
+                  No hay rubros activos.{' '}
+                  <Link to="/categories" className="text-primary-600 underline" onClick={onClose}>
+                    Activá rubros en Categorías
+                  </Link>
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">

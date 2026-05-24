@@ -11,7 +11,13 @@
         var dark = stored === 'dark' || (!stored && prefersDark)
         var root = document.documentElement
         root.setAttribute('data-theme', dark ? 'dark' : 'light')
-        if (dark) root.classList.add('dark')
+        if (dark) {
+          root.classList.add('dark')
+          root.style.colorScheme = 'dark'
+        } else {
+          root.classList.remove('dark')
+          root.style.colorScheme = 'light'
+        }
       })()
     </script>
     <link rel="icon" type="image/png" href="/favicon.png" />

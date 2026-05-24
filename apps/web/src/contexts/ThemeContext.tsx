@@ -29,7 +29,13 @@ function getInitialTheme(): Theme {
 function applyThemeToDocument(theme: Theme): void {
   const root = document.documentElement
   root.setAttribute('data-theme', theme)
-  root.classList.toggle('dark', theme === 'dark')
+  if (theme === 'dark') {
+    root.classList.add('dark')
+    root.style.colorScheme = 'dark'
+  } else {
+    root.classList.remove('dark')
+    root.style.colorScheme = 'light'
+  }
   window.localStorage.setItem(STORAGE_KEY, theme)
 }
 

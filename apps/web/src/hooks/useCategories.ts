@@ -5,11 +5,22 @@ import { useApiClient } from '@/hooks/useApiClient'
 import { appToast } from '@/lib/toast'
 import type { CategoryDto } from '@/types/category'
 
-export function useCategories(localId: string | undefined, activeOnly = false) {
+type UseCategoriesOptions = {
+  /** Si true, refetch al montar (p. ej. modal Nuevo producto tras activar rubros). */
+  refetchOnMount?: boolean
+}
+
+export function useCategories(
+  localId: string | undefined,
+  activeOnly = false,
+  options?: UseCategoriesOptions,
+) {
   const api = useApiClient()
   return useQuery({
     queryKey: ['categories', localId, activeOnly],
     enabled: Boolean(localId),
+    staleTime: options?.refetchOnMount ? 0 : 30_000,
+    refetchOnMount: options?.refetchOnMount ? 'always' : true,
     queryFn: async () => {
       const res = await api.get<ApiSuccess<{ categories: CategoryDto[] }>>(
         '/api/categories',

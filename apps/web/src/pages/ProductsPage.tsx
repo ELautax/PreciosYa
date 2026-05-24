@@ -46,7 +46,7 @@ function CategoryFilterSelect({
   value: string
   onChange: (v: string) => void
 }) {
-  const q = useCategories(localId)
+  const q = useCategories(localId, true, { refetchOnMount: true })
   return (
     <div className="relative group">
       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-subtle group-focus-within:text-primary-600 transition-colors">

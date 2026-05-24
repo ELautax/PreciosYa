@@ -29,9 +29,9 @@ function RootRedirect() {
     return (
       <div className="page-shell">
         <div className="page-wrap max-w-3xl space-y-4">
-          <div className="h-12 w-44 animate-pulse rounded bg-stone-200" />
-          <div className="h-24 animate-pulse rounded-xl bg-stone-200" />
-          <div className="h-64 animate-pulse rounded-xl bg-stone-200" />
+          <div className="skeleton h-12 w-44" />
+          <div className="skeleton h-24 w-full rounded-xl" />
+          <div className="skeleton h-64 w-full rounded-xl" />
         </div>
       </div>
     )
@@ -50,9 +50,9 @@ export default function App() {
         fallback={
           <div className="page-shell">
             <div className="page-wrap max-w-3xl space-y-4">
-              <div className="h-12 w-44 animate-pulse rounded bg-stone-200" />
-              <div className="h-24 animate-pulse rounded-xl bg-stone-200" />
-              <div className="h-64 animate-pulse rounded-xl bg-stone-200" />
+              <div className="skeleton h-12 w-44" />
+              <div className="skeleton h-24 w-full rounded-xl" />
+              <div className="skeleton h-64 w-full rounded-xl" />
             </div>
           </div>
         }

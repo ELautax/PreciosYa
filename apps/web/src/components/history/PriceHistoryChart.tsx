@@ -47,7 +47,7 @@ export function PriceHistoryChart({ rows }: PriceHistoryChartProps) {
 
   return (
     <div className="surface-card p-4">
-      <h3 className="text-sm font-medium text-stone-800">Evolución de precios</h3>
+      <h3 className="text-sm font-extrabold text-text-main">Evolución de precios</h3>
       <div className="mt-3 h-72">
         <Line
           data={data}

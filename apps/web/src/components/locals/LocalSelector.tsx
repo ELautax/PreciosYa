@@ -16,12 +16,14 @@ export function LocalSelector({
   if (locals.length <= 1) return null
 
   return (
-    <label className="flex items-center gap-2 text-sm text-stone-700">
-      {label}
+    <label className="flex flex-col gap-2 text-sm font-bold text-text-muted sm:flex-row sm:items-center">
+      <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
+        {label}
+      </span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="btn-soft"
+        className="min-h-[48px] flex-1"
       >
         {locals.map((l) => (
           <option key={l.id} value={l.id}>
