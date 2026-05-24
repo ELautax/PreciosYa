@@ -61,6 +61,8 @@ const schema = z
     RESEND_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
     /** IPC principal: Alphacast dataset INDEC agrupado (ver docs/ALPHACAST_SETUP.md). */
     ALPHACAST_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    /** URL completa de descarga CSV (copiar desde Alphacast → Download) si la key sola da 401. */
+    ALPHACAST_DOWNLOAD_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
     ALPHACAST_IPC_DATASET_ID: z.coerce.number().int().positive().default(5515),
     ALPHACAST_API_BASE_URL: z.string().url().default('https://api.alphacast.io'),
     /** Respaldo IPC (datos.gob.ar); opcional si Alphacast está configurado. */

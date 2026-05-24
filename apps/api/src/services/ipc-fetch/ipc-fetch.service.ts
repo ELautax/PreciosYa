@@ -7,6 +7,7 @@ import {
 } from '../indec.service.js'
 import { upsertIpcIndec } from '../economic-index.service.js'
 import { AppError } from '../../utils/AppError.js'
+import { fetchGeneralIpcFromArgly } from './argly.service.js'
 import { fetchLatestIpcFromAlphacast } from './alphacast.service.js'
 import type { FetchedIpcRow } from './ipc-fetch.types.js'
 import { IPC_SERIES_CONFIG, getSeriesIdForIndexType } from './ipc-series.config.js'
@@ -129,13 +130,33 @@ export async function fetchAndPersistAllIpcSeries(): Promise<{
         return fromAlphacast
       }
     } catch (e) {
-      console.error('[ipc-fetch] Alphacast falló; intentando datos.gob.ar', e)
+      console.error('[ipc-fetch] Alphacast falló; probando Argly (IPC general)', e)
     }
   } else {
     console.warn(
-      '[ipc-fetch] ALPHACAST_API_KEY no configurada; usando respaldo datos.gob.ar',
+      '[ipc-fetch] ALPHACAST_API_KEY no configurada; probando Argly o datos.gob.ar',
     )
   }
 
-  return fetchAndPersistFromDatosGob()
+  const fromDatosGob = await fetchAndPersistFromDatosGob()
+
+  try {
+    const general = await fetchGeneralIpcFromArgly()
+    await upsertIpcIndec({
+      type: general.indexType,
+      period: general.period,
+      valuePct: general.valuePct,
+      sourceUrl: general.sourceUrl,
+    })
+    const results = fromDatosGob.results.map((r) =>
+      r.indexType === IndexType.IPC_INDEC ? general : r,
+    )
+    console.info(
+      `[ipc-fetch] IPC general actualizado desde Argly (${general.valuePct}%, ${general.period.toISOString().slice(0, 7)})`,
+    )
+    return { results, general }
+  } catch (arglyErr) {
+    console.error('[ipc-fetch] Argly falló; quedan datos de datos.gob.ar', arglyErr)
+    return fromDatosGob
+  }
 }

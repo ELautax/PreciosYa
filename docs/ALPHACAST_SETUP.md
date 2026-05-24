@@ -61,7 +61,13 @@ En logs deberías ver algo como:
 
 `[ipc-fetch] IPC desde Alphacast (13 series, mes 2026-04)`
 
-Si falta `ALPHACAST_API_KEY`, el backend intenta el respaldo `datos.gob.ar` (puede ir atrasado).
+Si Alphacast devuelve **401**, probá en [dataset 5515](https://www.alphacast.io/datasets/consumer-price-index-grouped-5515) → **Download** → copiar enlace y pegarlo en:
+
+```env
+ALPHACAST_DOWNLOAD_URL=https://api.alphacast.io/datasets/5515/data?apiKey=...&format=csv
+```
+
+Si Alphacast no responde, el backend usa **Argly** para el IPC general (mes actual) y `datos.gob.ar` para divisiones.
 
 ---
 

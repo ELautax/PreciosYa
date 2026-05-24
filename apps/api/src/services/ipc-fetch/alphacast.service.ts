@@ -134,8 +134,13 @@ export function parseAlphacastIpcCsv(csvText: string): FetchedIpcRow[] {
   return rows
 }
 
-export async function fetchLatestIpcFromAlphacast(): Promise<FetchedIpcRow[]> {
-  if (!env.ALPHACAST_API_KEY) {
+function basicAuthHeader(apiKey: string): string {
+  return `Basic ${Buffer.from(`${apiKey}:`, 'utf8').toString('base64')}`
+}
+
+async function downloadAlphacastCsv(): Promise<string> {
+  const key = env.ALPHACAST_API_KEY?.trim()
+  if (!key && !env.ALPHACAST_DOWNLOAD_URL) {
     throw new AppError({
       statusCode: 503,
       message: 'ALPHACAST_API_KEY no configurada',
@@ -143,26 +148,50 @@ export async function fetchLatestIpcFromAlphacast(): Promise<FetchedIpcRow[]> {
     })
   }
 
-  const url = buildAlphacastIpcDownloadUrl()
-  let res: Response
-  try {
-    res = await fetch(url, { signal: AbortSignal.timeout(60_000) })
-  } catch {
-    throw new AppError({
-      statusCode: 502,
-      message: 'No se pudo contactar Alphacast',
-      code: 'ALPHACAST_UNAVAILABLE',
+  const base = env.ALPHACAST_API_BASE_URL.replace(/\/$/, '')
+  const id = env.ALPHACAST_IPC_DATASET_ID
+  const attempts: { url: string; headers?: HeadersInit }[] = []
+
+  if (env.ALPHACAST_DOWNLOAD_URL) {
+    attempts.push({ url: env.ALPHACAST_DOWNLOAD_URL })
+  }
+  if (key) {
+    attempts.push({ url: buildAlphacastIpcDownloadUrl() })
+    attempts.push({
+      url: `${base}/datasets/${id}/data?format=csv`,
+      headers: { Authorization: basicAuthHeader(key) },
+    })
+    attempts.push({
+      url: `https://charts.alphacast.io/api/datasets/${id}.csv`,
+      headers: { Authorization: basicAuthHeader(key) },
     })
   }
 
-  if (!res.ok) {
-    throw new AppError({
-      statusCode: 502,
-      message: `Alphacast respondió ${res.status}`,
-      code: 'ALPHACAST_BAD_RESPONSE',
-    })
+  let lastStatus = 0
+  for (const attempt of attempts) {
+    try {
+      const res = await fetch(attempt.url, {
+        headers: attempt.headers,
+        signal: AbortSignal.timeout(60_000),
+      })
+      if (res.ok) return await res.text()
+      lastStatus = res.status
+    } catch {
+      // siguiente intento
+    }
   }
 
-  const csvText = await res.text()
+  throw new AppError({
+    statusCode: 502,
+    message:
+      lastStatus === 401
+        ? 'Alphacast rechazó la API key (401). Verificá la key en alphacast.io o pegá ALPHACAST_DOWNLOAD_URL desde Download → copiar enlace.'
+        : `Alphacast no respondió (último status ${lastStatus || 'sin respuesta'})`,
+    code: 'ALPHACAST_BAD_RESPONSE',
+  })
+}
+
+export async function fetchLatestIpcFromAlphacast(): Promise<FetchedIpcRow[]> {
+  const csvText = await downloadAlphacastCsv()
   return parseAlphacastIpcCsv(csvText)
 }
