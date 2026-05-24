@@ -11,7 +11,8 @@ import {
   Store,
   ChevronRight,
   ArrowUpRight,
-  Activity
+  Activity,
+  CheckCircle2
 } from 'lucide-react'
 
 import type { ApiSuccess } from 'shared'
@@ -254,7 +255,7 @@ export default function DashboardPage() {
                   <p className="text-xs font-bold text-danger-900/80 mb-5 leading-relaxed">
                      Tenés <span className="text-danger-600 font-black">{alertsQ.data.total} productos</span> con margen negativo o por debajo del mínimo.
                   </p>
-                  <Link to="/products?filter=alerts" className="btn-danger w-full h-11 text-[10px] font-black uppercase tracking-widest">
+                  <Link to="/products?filter=alert" className="btn-danger w-full h-11 text-[10px] font-black uppercase tracking-widest">
                      Corregir márgenes
                   </Link>
                </div>
@@ -274,24 +275,6 @@ export default function DashboardPage() {
       </div>
     </main>
   )
-}
-
-function CheckCircle2({ size, strokeWidth }: any) {
-   return (
-      <svg 
-         width={size} 
-         height={size} 
-         viewBox="0 0 24 24" 
-         fill="none" 
-         stroke="currentColor" 
-         strokeWidth={strokeWidth} 
-         strokeLinecap="round" 
-         strokeLinejoin="round"
-      >
-         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-         <polyline points="22 4 12 14.01 9 11.01" />
-      </svg>
-   )
 }
 
 function KPICard({ label, value, loading, icon: Icon, color, bg, alert }: any) {

@@ -82,9 +82,11 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   const [editing, setEditing] = useState<ProductDto | null>(null)
 
   const ipcQuery = useIpcLatest()
+  const filterParam = searchParams.get('filter')
   const productsQuery = useProducts(localId, {
     search: search.trim() || undefined,
     ...(categoryFilter ? { categoryId: categoryFilter } : {}),
+    ...(filterParam === 'alert' ? { isAlert: true } : {}),
   })
   const deleteMut = useDeleteProduct(localId)
   const importMut = useImportProductsCsv(localId)

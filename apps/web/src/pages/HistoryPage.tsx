@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { History, Package, Store, ChevronLeft, TrendingUp, Calendar, Info, LineChart } from 'lucide-react'
 
 import { LocalSelector } from '@/components/locals/LocalSelector'
 import { PriceHistoryChart } from '@/components/history/PriceHistoryChart'
@@ -8,6 +9,7 @@ import { useIpcHistory } from '@/hooks/useIpc'
 import { useLocals } from '@/hooks/useLocals'
 import { useSelectedLocal } from '@/hooks/useSelectedLocal'
 import { useProductHistory, useProducts } from '@/hooks/useProducts'
+import { EmptyState } from '@/components/feedback/EmptyState'
 
 export default function HistoryPage() {
   const { data: locals, isLoading: loadingLocals } = useLocals()
@@ -48,10 +50,13 @@ export default function HistoryPage() {
   if (loadingLocals) {
     return (
       <div className="page-shell">
-        <div className="page-wrap max-w-5xl space-y-4">
-          <div className="h-10 w-56 animate-pulse rounded bg-stone-200" />
-          <div className="h-14 animate-pulse rounded-xl bg-stone-200" />
-          <div className="h-72 animate-pulse rounded-xl bg-stone-200" />
+        <div className="page-wrap space-y-10 animate-fade-in">
+           <div className="flex flex-col gap-4">
+              <div className="skeleton h-10 w-48" />
+              <div className="skeleton h-4 w-64" />
+           </div>
+           <div className="skeleton h-24 w-full" />
+           <div className="skeleton h-[400px] w-full" />
         </div>
       </div>
     )
@@ -60,12 +65,17 @@ export default function HistoryPage() {
   if (!locals?.length) {
     return (
       <main className="page-shell">
-        <div className="mx-auto max-w-lg">
-          <Link to="/dashboard" className="text-sm text-green-700 hover:underline">
-            ← Panel
-          </Link>
-            <h1 className="mt-2 page-heading">Historial</h1>
-          <p className="mt-2 text-sm text-stone-600">Primero creá un local y productos.</p>
+        <div className="page-wrap max-w-2xl py-12 animate-fade-in">
+           <EmptyState 
+              icon={Store}
+              title="No hay locales registrados"
+              description="Para ver el historial de precios, primero debés registrar un local y cargar productos."
+              action={
+                <Link to="/locals" className="btn-primary">
+                   Registrar mi primer local
+                </Link>
+              }
+           />
         </div>
       </main>
     )
@@ -73,98 +83,173 @@ export default function HistoryPage() {
 
   return (
     <main className="page-shell">
-      <div className="page-wrap max-w-5xl space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <Link to="/dashboard" className="text-sm text-green-700 hover:underline">
-              ← Panel
+      <div className="page-wrap space-y-10 animate-fade-in">
+        <header className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <Link to="/dashboard" className="group inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-primary-600 hover:text-primary-700 transition-all leading-none mb-1">
+              <ChevronLeft size={14} strokeWidth={3} className="transition-transform group-hover:-translate-x-0.5" />
+              Volver al Panel
             </Link>
-            <h1 className="mt-2 page-heading">Historial de precios</h1>
+            <h1 className="heading-xl">Historial de Precios</h1>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Link
-              to="/products"
-              className="btn-soft"
-            >
-              Productos
-            </Link>
-            <Link
-              to="/locals"
-              className="btn-soft"
-            >
-              Locales
-            </Link>
+          <div className="flex items-center gap-2">
+             <Link to="/products" className="btn-secondary h-11 px-4 gap-2">
+                <Package size={18} strokeWidth={2.5} />
+                <span className="text-xs font-black uppercase tracking-widest">Catálogo</span>
+             </Link>
           </div>
-        </div>
+        </header>
 
-        <div className="flex flex-wrap gap-3">
-          <LocalSelector locals={locals} value={localId} onChange={setLocalId} />
-          <label className="flex items-center gap-2 text-sm text-stone-700">
-            Producto
-            <select
-              value={productId}
-              onChange={(e) => setProductId(e.target.value)}
-              className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
-            >
-              {products.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-
-        {selectedProduct ? (
-          <p className="text-sm text-stone-600">
-            Mostrando historial de <span className="font-medium text-stone-800">{selectedProduct.name}</span>
-          </p>
-        ) : null}
-
-        {productsQ.isLoading ? (
-          <div className="space-y-4">
-            <div className="h-72 animate-pulse rounded-xl bg-stone-200" />
-            <div className="h-64 animate-pulse rounded-xl bg-stone-200" />
-          </div>
-        ) : products.length === 0 ? (
-          <div className="surface-card p-5 text-sm text-stone-600">
-            No hay productos en este local todavía. Creá uno para empezar a registrar historial.
-          </div>
-        ) : historyQ.isLoading ? (
-          <div className="space-y-4">
-            <div className="h-72 animate-pulse rounded-xl bg-stone-200" />
-            <div className="h-64 animate-pulse rounded-xl bg-stone-200" />
-          </div>
-        ) : historyRows.length > 0 ? (
-          <>
-            {marginTrendMonths < 2 ? (
-              <div className="surface-card p-5 text-sm text-stone-600">
-                Necesitás más historial para ver la tendencia.
+        <section className="grid gap-6">
+           <div className="surface-card p-6 flex flex-col gap-6 lg:flex-row lg:items-center">
+              <div className="flex-1 flex flex-col gap-2">
+                 <label className="text-[10px] font-black uppercase tracking-widest text-text-subtle px-1">Local Activo</label>
+                 <LocalSelector locals={locals} value={localId} onChange={setLocalId} />
               </div>
-            ) : (
-              <PriceHistoryChart rows={historyRows} />
-            )}
-            <PriceHistoryTable rows={historyRows} />
-          </>
-        ) : (
-          <div className="surface-card p-5 text-sm text-stone-600">
-            No hay historial para este producto todavía.
-          </div>
-        )}
+              
+              <div className="h-px w-full bg-border lg:h-12 lg:w-px" />
 
-        <section className="surface-card p-4">
-          <h3 className="text-sm font-medium text-stone-800">Últimos IPC registrados</h3>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {ipcHistoryQ.data?.map((row) => (
-              <div key={row.id} className="surface-soft p-3">
-                <p className="text-xs text-stone-500">
-                  {new Date(row.period).toLocaleDateString('es-AR')}
-                </p>
-                <p className="mono text-sm font-medium text-stone-900">{row.valuePct.toFixed(2)}%</p>
+              <div className="flex-[2] flex flex-col gap-2">
+                 <label className="text-[10px] font-black uppercase tracking-widest text-text-subtle px-1">Producto a analizar</label>
+                 <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-subtle group-focus-within:text-primary-600 transition-colors">
+                       <Package size={18} />
+                    </div>
+                    <select
+                      value={productId}
+                      onChange={(e) => setProductId(e.target.value)}
+                      className="w-full pl-11 pr-4 h-12"
+                      disabled={products.length === 0}
+                    >
+                      {products.length === 0 ? (
+                        <option>Sin productos registrados</option>
+                      ) : (
+                        products.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                 </div>
               </div>
-            ))}
-          </div>
+           </div>
         </section>
+
+        <div className="space-y-12">
+           {productsQ.isLoading ? (
+             <div className="space-y-6">
+                <div className="skeleton h-[300px] w-full" />
+                <div className="skeleton h-[200px] w-full" />
+             </div>
+           ) : products.length === 0 ? (
+             <div className="py-12">
+                <EmptyState 
+                   icon={Package}
+                   title="Local sin productos"
+                   description="Este negocio no tiene artículos cargados para generar un historial."
+                   action={
+                     <Link to="/products?new=1" className="btn-primary">
+                        Empezar carga de stock
+                     </Link>
+                   }
+                />
+             </div>
+           ) : historyQ.isLoading ? (
+             <div className="space-y-6 pt-4">
+                <div className="skeleton h-[400px] w-full rounded-[2rem]" />
+             </div>
+           ) : historyRows.length > 0 ? (
+             <>
+               <div className="space-y-6">
+                  <div className="flex items-center gap-3">
+                     <div className="h-8 w-8 flex items-center justify-center rounded-lg bg-primary-600 text-white shadow-md">
+                        <LineChart size={18} strokeWidth={2.5} />
+                     </div>
+                     <h2 className="heading-lg">Gráfico de Evolución</h2>
+                     <div className="h-px flex-1 bg-border" />
+                  </div>
+                  {marginTrendMonths < 2 ? (
+                    <div className="surface-card p-12 flex flex-col items-center justify-center text-center animate-fade-in border-dashed">
+                       <div className="rounded-3xl bg-surface-soft p-6 text-text-subtle mb-6">
+                          <TrendingUp size={40} strokeWidth={1.5} />
+                       </div>
+                       <p className="text-base font-black text-text-main leading-none">Historial insuficiente</p>
+                       <p className="mt-3 text-sm font-medium text-text-subtle max-w-xs leading-relaxed">
+                          La visualización aparecerá cuando realices cambios en los costos o márgenes a lo largo del tiempo.
+                       </p>
+                    </div>
+                  ) : (
+                    <div className="animate-scale-in">
+                       <PriceHistoryChart rows={historyRows} />
+                    </div>
+                  )}
+               </div>
+
+               <div className="space-y-6 pt-4">
+                  <div className="flex items-center gap-3">
+                     <div className="h-8 w-8 flex items-center justify-center rounded-lg bg-accent-600 text-white shadow-md">
+                        <History size={18} strokeWidth={2.5} />
+                     </div>
+                     <h2 className="heading-lg">Bitácora de Cambios</h2>
+                     <div className="h-px flex-1 bg-border" />
+                  </div>
+                  <div className="animate-fade-in">
+                     <PriceHistoryTable rows={historyRows} />
+                  </div>
+               </div>
+             </>
+           ) : (
+             <div className="py-12">
+                <EmptyState 
+                   icon={History}
+                   title="Sin registros previos"
+                   description={`El producto "${selectedProduct?.name}" mantiene sus valores originales desde la creación.`}
+                   compact
+                />
+             </div>
+           )}
+
+           <section className="space-y-6 pt-4">
+             <div className="flex items-center gap-3">
+                <div className="h-8 w-8 flex items-center justify-center rounded-lg bg-accent-600 text-white shadow-md">
+                   <TrendingUp size={18} strokeWidth={2.5} />
+                </div>
+                <h2 className="heading-lg">Referencia IPC INDEC</h2>
+                <div className="h-px flex-1 bg-border" />
+             </div>
+             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+               {ipcHistoryQ.data?.map((row) => (
+                 <div key={row.id} className="surface-card p-6 group hover:border-accent-600/30 transition-all duration-300">
+                   <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2.5">
+                         <div className="rounded-xl bg-surface-soft p-2.5 text-primary-600">
+                            <Calendar size={16} strokeWidth={2.5} />
+                         </div>
+                         <span className="text-[10px] font-black text-text-muted uppercase tracking-widest leading-none">
+                            {new Date(row.period).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })}
+                         </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 rounded-full bg-accent-50 px-3 py-1 text-accent-700 dark:bg-accent-900/20 shadow-xs border border-accent-100/50">
+                         <TrendingUp size={12} strokeWidth={3} />
+                         <span className="font-mono text-xs font-black">+{row.valuePct.toFixed(2)}%</span>
+                      </div>
+                   </div>
+                   <div className="flex items-center gap-2">
+                      <div className="h-1.5 w-1.5 rounded-full bg-accent-600" />
+                      <p className="text-[10px] font-extrabold text-text-main uppercase tracking-tight leading-none">Índice Mensual Oficial</p>
+                   </div>
+                 </div>
+               ))}
+               {!ipcHistoryQ.isLoading && ipcHistoryQ.data?.length === 0 && (
+                  <div className="col-span-full rounded-[2rem] border border-dashed border-border p-12 text-center bg-surface-soft/30">
+                     <Info size={32} className="mx-auto text-text-subtle/50 mb-4" />
+                     <p className="text-sm font-bold text-text-subtle">No hay datos históricos del INDEC registrados.</p>
+                  </div>
+               )}
+             </div>
+           </section>
+        </div>
       </div>
     </main>
   )

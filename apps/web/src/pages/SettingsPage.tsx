@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { ApiSuccess } from 'shared'
+import { User, CreditCard, Store, Info, ExternalLink, ShieldCheck, Clock, Activity } from 'lucide-react'
 
 import { LocalSelector } from '@/components/locals/LocalSelector'
 import { useApiClient } from '@/hooks/useApiClient'
@@ -56,153 +57,209 @@ export default function SettingsPage() {
 
   return (
     <main className="page-shell">
-      <div className="page-wrap max-w-4xl">
-        <h1 className="page-heading">Configuración</h1>
-        <p className="page-subtitle">
-          Ajustá tu negocio, cuenta y plan desde un solo lugar.
-        </p>
+      <div className="page-wrap max-w-4xl space-y-10 animate-fade-in">
+        <header className="flex flex-col gap-2">
+          <h1 className="heading-xl">Configuración General</h1>
+          <p className="text-small">
+             Gestioná tu perfil, suscripción y parámetros de negocio.
+          </p>
+        </header>
 
-        <div className="mt-5 flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => setTab('business')}
-            className={`rounded-lg px-3 py-2 text-sm ${
-              tab === 'business'
-                ? 'bg-green-100 font-medium text-green-900'
-                : 'border border-stone-300 bg-white text-stone-700'
-            }`}
-          >
-            Mi Negocio
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab('account')}
-            className={`rounded-lg px-3 py-2 text-sm ${
-              tab === 'account'
-                ? 'bg-green-100 font-medium text-green-900'
-                : 'border border-stone-300 bg-white text-stone-700'
-            }`}
-          >
-            Mi Cuenta
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab('plan')}
-            className={`rounded-lg px-3 py-2 text-sm ${
-              tab === 'plan'
-                ? 'bg-green-100 font-medium text-green-900'
-                : 'border border-stone-300 bg-white text-stone-700'
-            }`}
-          >
-            Mi Plan
-          </button>
-        </div>
+        <section className="grid gap-8 lg:grid-cols-4">
+           {/* Tab Navigation Sidebar */}
+           <aside className="lg:col-span-1">
+              <nav className="flex flex-col gap-1 p-1 rounded-2xl bg-surface-soft border border-border">
+                 <TabButton 
+                    active={tab === 'business'} 
+                    onClick={() => setTab('business')} 
+                    icon={Store} 
+                    label="Mi Negocio" 
+                 />
+                 <TabButton 
+                    active={tab === 'account'} 
+                    onClick={() => setTab('account')} 
+                    icon={User} 
+                    label="Mi Cuenta" 
+                 />
+                 <TabButton 
+                    active={tab === 'plan'} 
+                    onClick={() => setTab('plan')} 
+                    icon={CreditCard} 
+                    label="Suscripción" 
+                 />
+              </nav>
+           </aside>
 
-        {tab === 'business' ? (
-          <section className="surface-card mt-4 p-5">
-            <h2 className="text-sm font-medium text-stone-800">Datos del local</h2>
-            {locals && locals.length > 0 ? (
-              <div className="mt-4 space-y-3 text-sm text-stone-700">
-                <LocalSelector
-                  locals={locals}
-                  value={localId}
-                  onChange={setLocalId}
-                  label="Local"
-                />
-                {selectedLocal ? (
-                  <dl className="grid gap-2 sm:grid-cols-2">
-                    <div>
-                      <dt className="text-xs text-stone-500">Nombre</dt>
-                      <dd className="font-medium text-stone-900">{selectedLocal.name}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs text-stone-500">Dirección</dt>
-                      <dd>{selectedLocal.address || '—'}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs text-stone-500">Moneda</dt>
-                      <dd>{selectedLocal.currency}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs text-stone-500">Margen mínimo</dt>
-                      <dd>{selectedLocal.minMarginPct.toFixed(2)}%</dd>
-                    </div>
-                  </dl>
-                ) : null}
-              </div>
-            ) : (
-              <p className="mt-3 text-sm text-stone-600">No hay locales creados todavía.</p>
-            )}
-          </section>
-        ) : null}
+           <div className="lg:col-span-3 space-y-6">
+              {tab === 'business' && (
+                <section className="surface-card p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
+                   <div className="flex items-center gap-4">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg">
+                         <Store size={24} strokeWidth={2.5} />
+                      </div>
+                      <div>
+                         <h2 className="text-xl font-black tracking-tight text-text-main">Datos Operativos</h2>
+                         <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Configuración por Local</p>
+                      </div>
+                   </div>
 
-        {tab === 'account' ? (
-          <section className="surface-card mt-4 p-5">
-            <h2 className="text-sm font-medium text-stone-800">Datos de la cuenta</h2>
-            {meError ? (
-              <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-900">
-                <p className="font-medium">No pudimos cargar tu cuenta</p>
-                <p className="mt-2 text-red-800">
-                  Suele deberse a que el navegador bloquea la API (CORS) o a una URL de API mal
-                  configurada. En el hosting del backend, configurá{' '}
-                  <span className="mono text-xs">FRONTEND_URL</span> con la URL exacta de esta web
-                  (incluido <span className="mono text-xs">https://</span>). Podés poner varias
-                  separadas por coma. En el build del front, <span className="mono text-xs">VITE_API_URL</span>{' '}
-                  debe ser la URL pública del backend.
-                </p>
-              </div>
-            ) : user ? (
-              <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-                <div>
-                  <dt className="text-xs text-stone-500">Nombre</dt>
-                  <dd className="font-medium text-stone-900">{user.name}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-stone-500">Email</dt>
-                  <dd>{user.email}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-stone-500">Plan actual</dt>
-                  <dd>{user.plan}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-stone-500">Rol</dt>
-                  <dd>{user.isAdmin ? 'Administrador' : 'Usuario'}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-stone-500">Vencimiento</dt>
-                  <dd>{user.planExpiresAt ? new Date(user.planExpiresAt).toLocaleDateString('es-AR') : '—'}</dd>
-                </div>
-              </dl>
-            ) : (
-              <p className="mt-3 text-sm text-stone-600">Cargando cuenta…</p>
-            )}
-          </section>
-        ) : null}
+                   {locals && locals.length > 0 ? (
+                     <div className="space-y-8">
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black uppercase tracking-widest text-text-subtle px-1">Seleccionar Local</label>
+                           <LocalSelector
+                              locals={locals}
+                              value={localId}
+                              onChange={setLocalId}
+                           />
+                        </div>
 
-        {tab === 'plan' ? (
-          <section className="surface-card mt-4 p-5">
-            <h2 className="text-sm font-medium text-stone-800">Uso del plan</h2>
-            <p className="mt-2 text-sm text-stone-600">
-              Productos activos en el local seleccionado.
-            </p>
-            <div className="mt-4">
-              <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="text-stone-700">Uso</span>
-                <span className="font-medium text-stone-900">
-                  {productLimit ? `${usedProducts}/${productLimit}` : `${usedProducts} (ilimitado)`}
-                </span>
-              </div>
-              <div className="h-2 rounded-full bg-stone-200">
-                <div
-                  className="h-2 rounded-full bg-green-600"
-                  style={{ width: `${productLimit ? usagePct : 100}%` }}
-                />
-              </div>
-            </div>
-          </section>
-        ) : null}
+                        {selectedLocal ? (
+                          <div className="grid gap-6 sm:grid-cols-2 p-6 rounded-[2rem] bg-surface-soft border border-border/50">
+                             <DetailItem label="Nombre Fiscal" value={selectedLocal.name} />
+                             <DetailItem label="Dirección" value={selectedLocal.address || 'Sin especificar'} />
+                             <DetailItem label="Moneda Base" value={selectedLocal.currency} />
+                             <DetailItem label="Margen Alerta" value={`${selectedLocal.minMarginPct.toFixed(2)}%`} />
+                          </div>
+                        ) : (
+                          <div className="skeleton h-40 w-full rounded-[2rem]" />
+                        )}
+                        
+                        <div className="bg-primary-50/20 border border-primary-100 p-5 rounded-2xl flex items-start gap-4">
+                           <Info size={20} className="text-primary-600 shrink-0 mt-0.5" />
+                           <p className="text-xs font-bold text-text-muted leading-relaxed uppercase tracking-tight">
+                              Los cambios en los parámetros del local afectan el cálculo automático de márgenes y las alertas críticas.
+                           </p>
+                        </div>
+                     </div>
+                   ) : (
+                     <div className="py-12 text-center border-2 border-dashed border-border rounded-3xl">
+                        <p className="text-sm font-bold text-text-subtle">No hay locales registrados aún.</p>
+                     </div>
+                   )}
+                </section>
+              )}
+
+              {tab === 'account' && (
+                <section className="surface-card p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
+                   <div className="flex items-center gap-4">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-600 text-white shadow-lg">
+                         <User size={24} strokeWidth={2.5} />
+                      </div>
+                      <div>
+                         <h2 className="text-xl font-black tracking-tight text-text-main">Perfil de Usuario</h2>
+                         <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Identidad y Seguridad</p>
+                      </div>
+                   </div>
+
+                   {meError ? (
+                     <div className="rounded-2xl border border-danger-200 bg-danger-50/30 p-6 space-y-4">
+                        <div className="flex items-center gap-3 text-danger-600">
+                           <ShieldCheck size={20} strokeWidth={2.5} />
+                           <h3 className="text-sm font-black uppercase tracking-widest">Error de Sincronización</h3>
+                        </div>
+                        <p className="text-xs font-bold text-danger-950/70 leading-relaxed uppercase tracking-tight">
+                           No pudimos recuperar los datos de tu cuenta. Verificá tu conexión o contactá a soporte técnico.
+                        </p>
+                     </div>
+                   ) : user ? (
+                     <div className="grid gap-6 sm:grid-cols-2 p-6 rounded-[2rem] bg-surface-soft border border-border/50">
+                        <DetailItem label="Nombre Completo" value={user.name} />
+                        <DetailItem label="Correo Electrónico" value={user.email} />
+                        <DetailItem label="Nivel de Acceso" value={user.isAdmin ? 'ADMINISTRADOR' : 'COMERCIANTE'} />
+                        <DetailItem label="Último Ingreso" value={user.planExpiresAt ? new Date().toLocaleDateString('es-AR') : 'Reciente'} />
+                     </div>
+                   ) : (
+                     <div className="space-y-6">
+                        <div className="skeleton h-32 w-full rounded-[2rem]" />
+                     </div>
+                   )}
+                </section>
+              )}
+
+              {tab === 'plan' && (
+                <section className="surface-card p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
+                   <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg">
+                            <CreditCard size={24} strokeWidth={2.5} />
+                         </div>
+                         <div>
+                            <h2 className="text-xl font-black tracking-tight text-text-main">Plan y Suscripción</h2>
+                            <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Límites de Uso</p>
+                         </div>
+                      </div>
+                      <span className="inline-flex rounded-full bg-accent-500 px-3 py-1 text-[10px] font-black text-white uppercase tracking-widest shadow-sm">
+                         {user?.plan || 'PRO'}
+                      </span>
+                   </div>
+
+                   <div className="p-8 rounded-[2.5rem] bg-surface-soft border border-border/50 relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 p-8 opacity-5 text-primary-600 group-hover:scale-110 transition-transform duration-500">
+                         <Activity size={120} />
+                      </div>
+                      
+                      <div className="relative space-y-6">
+                         <div className="flex items-end justify-between px-1">
+                            <div>
+                               <h3 className="text-base font-black text-text-main leading-none">Capacidad de Inventario</h3>
+                               <p className="mt-2 text-[10px] font-black text-text-subtle uppercase tracking-widest">Productos Activos</p>
+                            </div>
+                            <p className="text-2xl font-black text-primary-600 font-mono tracking-tighter">
+                               {usedProducts}<span className="text-text-subtle/50 text-sm mx-1">/</span>{productLimit || '∞'}
+                            </p>
+                         </div>
+
+                         <div className="h-4 w-full bg-border/50 rounded-full overflow-hidden p-1 shadow-inner">
+                            <div 
+                               className="h-full rounded-full bg-primary-600 transition-all duration-1000 shadow-sm"
+                               style={{ width: `${productLimit ? usagePct : 100}%` }}
+                            />
+                         </div>
+
+                         <div className="flex items-center justify-between pt-2">
+                            <div className="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-widest">
+                               <Clock size={12} className="text-primary-600" />
+                               Vencimiento: {user?.planExpiresAt ? new Date(user.planExpiresAt).toLocaleDateString('es-AR') : 'Sin límite'}
+                            </div>
+                            <button className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary-600 hover:underline">
+                               MEJORAR PLAN <ExternalLink size={10} strokeWidth={3} />
+                            </button>
+                         </div>
+                      </div>
+                   </div>
+                </section>
+              )}
+           </div>
+        </section>
       </div>
     </main>
+  )
+}
+
+function TabButton({ active, onClick, icon: Icon, label }: { active: boolean; onClick: () => void; icon: any; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+        active 
+          ? 'bg-surface text-primary-600 shadow-md shadow-primary-600/5 ring-1 ring-border-strong/10' 
+          : 'text-text-subtle hover:bg-surface hover:text-text-main'
+      }`}
+    >
+      <Icon size={18} strokeWidth={active ? 2.5 : 2} className={active ? 'text-primary-600' : ''} />
+      <span className="truncate">{label}</span>
+    </button>
+  )
+}
+
+function DetailItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="space-y-1.5">
+       <dt className="text-[9px] font-black text-text-subtle uppercase tracking-widest leading-none px-1">{label}</dt>
+       <dd className="text-sm font-bold text-text-main bg-white/50 px-3 py-2.5 rounded-xl border border-border/50 truncate dark:bg-black/10">
+          {value}
+       </dd>
+    </div>
   )
 }
