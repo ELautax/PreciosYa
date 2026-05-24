@@ -87,7 +87,7 @@ Aplicada en remoto: `category_templates`, `categories.is_active` / `template_id`
 ### Producción: Vercel (web) + Railway (API)
 
 - En **Vercel** → Variables del proyecto web: `VITE_API_URL` = URL pública del servicio API en **Railway** (pestaña *Networking* del servicio, formato `https://….up.railway.app` o dominio propio), **sin** `/` al final. Tiene que coincidir con lo que el navegador usa para llamar al backend.
-- En **Railway** → Variables del servicio API: `FRONTEND_URL` como arriba (todas las URLs desde las que se abre la app) y **`ALPHACAST_API_KEY`** (ver `docs/ALPHACAST_SETUP.md`).
+- En **Railway** → Variables del servicio API: `FRONTEND_URL` como arriba (todas las URLs desde las que se abre la app) y **`ALPHACAST_API_KEY`** (ver `docs/ALPHACAST_SETUP.md`). Lista completa y variables a **borrar**: **`docs/RAILWAY_ENV.md`** (eliminar `INDEC_API_BASE_URL` si existe).
 
 ### `apps/web/.env`
 

@@ -67,7 +67,7 @@ Si Alphacast devuelve **401**, probá en [dataset 5515](https://www.alphacast.io
 ALPHACAST_DOWNLOAD_URL=https://api.alphacast.io/datasets/5515/data?apiKey=...&format=csv
 ```
 
-Si Alphacast no responde, el backend usa **Argly** para el IPC general (mes actual) y `datos.gob.ar` para divisiones.
+Si Alphacast no responde, el backend usa **Argly** solo para el IPC **general** (mismo % en todas las divisiones hasta que Alphacast vuelva). No se usa datos.gob.ar.
 
 ---
 

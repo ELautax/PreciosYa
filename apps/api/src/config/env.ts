@@ -65,11 +65,7 @@ const schema = z
     ALPHACAST_DOWNLOAD_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
     ALPHACAST_IPC_DATASET_ID: z.coerce.number().int().positive().default(5515),
     ALPHACAST_API_BASE_URL: z.string().url().default('https://api.alphacast.io'),
-    /** Respaldo IPC (datos.gob.ar); opcional si Alphacast está configurado. */
-    INDEC_API_BASE_URL: z
-      .string()
-      .url()
-      .default('https://apis.datos.gob.ar/series/api'),
+    /** Reserva USD oficial (futuro); no usada en el cron IPC actual. */
     BCRA_API_BASE_URL: z.string().url().default('https://api.bcra.gob.ar'),
   })
   .superRefine((data, ctx) => {

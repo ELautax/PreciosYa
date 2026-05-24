@@ -420,7 +420,8 @@ SUPABASE_ANON_KEY=eyJ...
 JWT_SECRET=[min 32 chars random string]
 RESEND_API_KEY=re_...
 FRONTEND_URL=http://localhost:5173
-INDEC_API_BASE_URL=https://apis.datos.gob.ar/series/api
+ALPHACAST_API_KEY=ak_...
+ALPHACAST_IPC_DATASET_ID=5515
 BCRA_API_BASE_URL=https://api.bcra.gob.ar
 ```
 
@@ -629,7 +630,7 @@ Todas las tareas TASK-001 … TASK-044 están implementadas en el monorepo (mayo
 ### PHASE 8 — IPC & Economic Indices
 
 - [x] **TASK-023** INDEC + BCRA fetcher services (backend)
-  - `src/services/indec.service.ts` — `fetchLatestIPC()` with retry logic
+  - `src/services/ipc-fetch/alphacast.service.ts` — IPC desde Alphacast CSV
   - `src/services/economic-index.service.ts` — `saveEconomicIndex()` (upsert), `getLatestIndex()`, `applyIPCToLocal()`
 
 - [x] **TASK-024** IPC routes (backend)
@@ -724,7 +725,7 @@ Todas las tareas TASK-001 … TASK-044 están implementadas en el monorepo (mayo
 
 - [x] **TASK-038** Backend unit tests
   - Setup: Vitest + vitest-mock-extended (Prisma mock)
-  - Tests: `pricing.test.ts`, `product.service.test.ts`, `indec.service.test.ts`, `auth.middleware.test.ts`
+  - Tests: `pricing.test.ts`, `product.service.test.ts`, `alphacast.service.test.ts`, `auth.middleware.test.ts`
   - Coverage threshold: 70% for `services/` and `utils/`
 
 - [x] **TASK-039** Backend integration tests

@@ -97,12 +97,12 @@ export async function runIpcJob(): Promise<void> {
   const cached = await getLatestIpcCached()
   if (cached) {
     console.warn(
-      `[scheduler][IPC] INDEC no disponible, se mantiene cache ${cached.period.toISOString().slice(0, 7)}`,
+      `[scheduler][IPC] fuentes IPC no disponibles, se mantiene cache ${cached.period.toISOString().slice(0, 7)}`,
     )
     return
   }
 
-  console.error('[scheduler][IPC] INDEC no disponible y sin cache local')
+  console.error('[scheduler][IPC] fuentes IPC no disponibles y sin cache local')
 }
 
 async function runBcraJob(): Promise<void> {

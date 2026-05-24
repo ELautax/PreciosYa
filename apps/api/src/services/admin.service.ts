@@ -103,7 +103,7 @@ export async function forceFetchIpcFromAdmin() {
     throw new AppError({
       statusCode: 502,
       message:
-        'No se pudieron obtener datos IPC. Verificá ALPHACAST_API_KEY en Railway o usá carga manual.',
+        'No se pudieron obtener datos IPC (Alphacast/Argly). Verificá ALPHACAST_API_KEY en Railway o usá carga manual.',
       code: 'IPC_FETCH_FAILED',
     })
   }

@@ -62,7 +62,15 @@ export function parseAlphacastIpcCsv(csvText: string): FetchedIpcRow[] {
     })
   }
 
-  const header = parseCsvLine(lines[0])
+  const headerLine = lines[0]
+  if (!headerLine) {
+    throw new AppError({
+      statusCode: 502,
+      message: 'CSV de Alphacast sin encabezado',
+      code: 'ALPHACAST_PARSE_ERROR',
+    })
+  }
+  const header = parseCsvLine(headerLine)
   const dateIdx = header.findIndex((h) => h.trim().toLowerCase() === 'date')
   if (dateIdx < 0) {
     throw new AppError({
@@ -90,7 +98,9 @@ export function parseAlphacastIpcCsv(csvText: string): FetchedIpcRow[] {
   let latestPeriod: Date | null = null
 
   for (let i = 1; i < lines.length; i++) {
-    const cells = parseCsvLine(lines[i])
+    const line = lines[i]
+    if (!line) continue
+    const cells = parseCsvLine(line)
     const rawDate = cells[dateIdx]?.trim()
     if (!rawDate) continue
     const period = startOfUtcMonth(new Date(rawDate))
@@ -170,10 +180,9 @@ async function downloadAlphacastCsv(): Promise<string> {
   let lastStatus = 0
   for (const attempt of attempts) {
     try {
-      const res = await fetch(attempt.url, {
-        headers: attempt.headers,
-        signal: AbortSignal.timeout(60_000),
-      })
+      const init: RequestInit = { signal: AbortSignal.timeout(60_000) }
+      if (attempt.headers) init.headers = attempt.headers
+      const res = await fetch(attempt.url, init)
       if (res.ok) return await res.text()
       lastStatus = res.status
     } catch {

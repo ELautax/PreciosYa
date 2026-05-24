@@ -1,56 +1,28 @@
-# Fuentes IPC — PreciosYa v2
+# Fuentes IPC — PreciosYa
 
-## Problema
+Variación mensual del IPC (%) por **nivel general** y **12 divisiones COICOP**, alineado con publicaciones del [INDEC](https://www.indec.gob.ar).
 
-La API de [datos.gob.ar](https://datos.gob.ar) (`apis.datos.gob.ar/series`) suele **demorar** respecto al comunicado del [INDEC](https://www.indec.gob.ar). PreciosYa necesita variación mensual `%` por **división COICOP** (12 rubros).
-
-## Estrategia adoptada (v2)
+## Orden de fetch (backend)
 
 | Prioridad | Fuente | Uso |
 |-----------|--------|-----|
-| 1 | **Alphacast** ([dataset 5515](https://www.alphacast.io/datasets/consumer-price-index-grouped-5515)) | CSV vía `ALPHACAST_API_KEY`; general + 12 divisiones (`… - current_prices_mom`). Ver **`docs/ALPHACAST_SETUP.md`**. |
-| 2 | **API Series Tiempo AR** (`apis.datos.gob.ar`) | Solo **respaldo** si Alphacast falla o no hay key |
-| 3 | **INDEC informes PDF / CSV FTP** | Referencia humana / validación |
-| 4 | **Admin `POST /api/admin/ipc/force-fetch`** | Reintento manual + entrada futura de override |
+| 1 | **Alphacast** (dataset [5515](https://www.alphacast.io/datasets/consumer-price-index-grouped-5515)) | CSV con `ALPHACAST_API_KEY` — 13 series (`… - current_prices_mom`). Ver `docs/ALPHACAST_SETUP.md`. |
+| 2 | **Argly** (`api.argly.com.ar/v1/ipc`) | Solo si Alphacast falla: IPC **general** replicado en todas las divisiones (log de advertencia). |
+| 3 | **Admin manual** | `POST /api/admin/ipc/manual` — período y % por división. |
 
-Configuración Alphacast: [`apps/api/src/services/ipc-fetch/alphacast.config.ts`](../apps/api/src/services/ipc-fetch/alphacast.config.ts).  
-Respaldo datos.gob.ar: [`ipc-series.config.ts`](../apps/api/src/services/ipc-fetch/ipc-series.config.ts).
+**No se usa** la API de [datos.gob.ar](https://datos.gob.ar) (suele ir meses atrasada, p. ej. enero).
 
-## Divisiones COICOP (12) → `IndexType`
+## Código
 
-| División INDEC | `IndexType` en DB | Serie datos.gob.ar (variación mensual) |
-|----------------|-------------------|----------------------------------------|
-| Nivel general (fallback) | `IPC_INDEC` | `148.3_INIVELNAL_DICI_M_26` |
-| Alimentos y bebidas no alcohólicas | `IPC_INDEC_ALIMENTOS` | `148.3_INIVELNAL_DICI_M_34` |
-| Bebidas alcohólicas y tabaco | `IPC_INDEC_BEBIDAS` | `148.3_INIVELNAL_DICI_M_35` |
-| Prendas de vestir y calzado | `IPC_INDEC_VESTIMENTA` | `148.3_INIVELNAL_DICI_M_36` |
-| Vivienda, agua, electricidad, gas | `IPC_INDEC_VIVIENDA` | `148.3_INIVELNAL_DICI_M_37` |
-| Equipamiento y mantenimiento del hogar | `IPC_INDEC_HOGAR` | `148.3_INIVELNAL_DICI_M_38` |
-| Salud | `IPC_INDEC_SALUD` | `148.3_INIVELNAL_DICI_M_39` |
-| Transporte | `IPC_INDEC_TRANSPORTE` | `148.3_INIVELNAL_DICI_M_40` |
-| Comunicación | `IPC_INDEC_COMUNICACION` | `148.3_INIVELNAL_DICI_M_41` |
-| Recreación y cultura | `IPC_INDEC_RECREACION` | `148.3_INIVELNAL_DICI_M_42` |
-| Educación | `IPC_INDEC_EDUCACION` | `148.3_INIVELNAL_DICI_M_43` |
-| Restaurantes y hoteles | `IPC_INDEC_RESTAURANTES` | `148.3_INIVELNAL_DICI_M_44` |
-| Bienes y servicios varios | `IPC_INDEC_VARIOS` | `148.3_INIVELNAL_DICI_M_45` |
+- Fetch: `apps/api/src/services/ipc-fetch/ipc-fetch.service.ts`
+- Parser CSV: `apps/api/src/services/ipc-fetch/alphacast.service.ts`
+- Columnas: `apps/api/src/services/ipc-fetch/alphacast.config.ts`
 
-> Los sufijos `_M_35`…`_M_45` siguen el patrón del catálogo INDEC en datos.gob.ar. Si una serie no responde, el fetcher **reutiliza `IPC_INDEC` general** para ese tipo y lo registra en logs.
+## Cron y notificaciones
 
-## Formato de respuesta esperado
-
-```json
-{ "data": [["2026-02-01", 0.029], ...] }
-```
-
-Valores decimales `0.029` = 2,9% → normalizar a `2.9` en backend (`normalizeIndecPercentValue`).
-
-## Plan B
-
-- Cron 03:00 reintenta; si falla todo el lote, se mantiene el último mes en `economic_indices`.
-- Notificación `NEW_IPC` solo cuando hay mes nuevo en `IPC_INDEC` general.
-- Roadmap: override manual por división en Admin (TASK futuro).
+- Job diario 03:00 AR: `apps/api/src/jobs/ipc-scheduler.ts`
+- Notificación `NEW_IPC` cuando hay mes nuevo en `IPC_INDEC` general.
 
 ## Referencias
 
-- [API Series — documentación](https://datosgobar.github.io/series-tiempo-ar-api/reference/api-reference/)
-- [INDEC — IPC divisiones (PDF)](https://www.indec.gob.ar/uploads/informesdeprensa/ipc_01_2517A7124C09.pdf)
+- [INDEC — IPC](https://www.indec.gob.ar)

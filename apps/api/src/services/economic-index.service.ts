@@ -3,9 +3,9 @@ import { IndexType } from '@prisma/client'
 import { applyIPC, calculateSalePrice, isMarginAlert } from 'shared'
 
 import { prisma } from '../lib/prisma.js'
+import { AppError } from '../utils/AppError.js'
 import { fetchLatestBcraReserveFromApi } from './bcra.service.js'
 import { fetchAndPersistAllIpcSeries } from './ipc-fetch/ipc-fetch.service.js'
-import { fetchLatestIPCFromApi } from './indec.service.js'
 import { assertLocalOwnership } from './local.service.js'
 
 export function serializeEconomicIndex(row: EconomicIndex) {
@@ -53,17 +53,14 @@ export async function fetchPersistAndReturnLatestIpc(): Promise<{
   valuePct: number
 }> {
   const { general } = await fetchAndPersistAllIpcSeries()
-  if (general) {
-    return { period: general.period, valuePct: general.valuePct }
+  if (!general) {
+    throw new AppError({
+      statusCode: 502,
+      message: 'No se pudo obtener IPC. Configurá ALPHACAST_API_KEY o usá carga manual en Admin.',
+      code: 'IPC_UNAVAILABLE',
+    })
   }
-  const fetched = await fetchLatestIPCFromApi(IndexType.IPC_INDEC)
-  await upsertIpcIndec({
-    type: IndexType.IPC_INDEC,
-    period: fetched.period,
-    valuePct: fetched.valuePct,
-    sourceUrl: fetched.sourceUrl,
-  })
-  return { period: fetched.period, valuePct: fetched.valuePct }
+  return { period: general.period, valuePct: general.valuePct }
 }
 
 export async function upsertBcraUsdOficial(input: {
@@ -152,29 +149,32 @@ export async function getOrFetchLatestIpcByType(
     }
   }
 
+  try {
+    await fetchAndPersistAllIpcSeries()
+  } catch {
+    // sin red o APIs caídas: se intenta leer cache abajo
+  }
+
+  const afterFetch = await prisma.economicIndex.findFirst({
+    where: { type: requestedType },
+    orderBy: { period: 'desc' },
+  })
+  if (afterFetch) {
+    return {
+      requestedType,
+      appliedType: requestedType,
+      valuePct: Number(afterFetch.valuePct),
+      period: afterFetch.period,
+    }
+  }
+
   if (requestedType !== IndexType.IPC_INDEC) {
-    try {
-      const fetched = await fetchLatestIPCFromApi(requestedType)
-      const saved = await upsertIpcIndec({
-        type: requestedType,
-        period: fetched.period,
-        valuePct: fetched.valuePct,
-        sourceUrl: fetched.sourceUrl,
-      })
-      return {
-        requestedType,
-        appliedType: requestedType,
-        valuePct: Number(saved.valuePct),
-        period: saved.period,
-      }
-    } catch {
-      const fallback = await getOrFetchLatestIpcByType(IndexType.IPC_INDEC)
-      return {
-        requestedType,
-        appliedType: IndexType.IPC_INDEC,
-        valuePct: fallback.valuePct,
-        period: fallback.period,
-      }
+    const fallback = await getOrFetchLatestIpcByType(IndexType.IPC_INDEC)
+    return {
+      requestedType,
+      appliedType: IndexType.IPC_INDEC,
+      valuePct: fallback.valuePct,
+      period: fallback.period,
     }
   }
 
