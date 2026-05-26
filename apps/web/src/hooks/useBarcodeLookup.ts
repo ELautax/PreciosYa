@@ -7,7 +7,7 @@ import { appToast } from '@/lib/toast'
 
 export type BarcodeLookupDto = {
   barcode: string
-  source: 'local' | 'openfoodfacts' | null
+  source: 'local' | 'user_catalog' | 'shared_catalog' | 'openfoodfacts' | null
   name: string | null
   unit: ProductUnit | null
   cost: number | null

@@ -2,13 +2,19 @@ import { isProductUnit, type ProductUnit } from 'shared'
 
 import { prisma } from '../lib/prisma.js'
 import { assertLocalOwnership } from './local.service.js'
-import { serializeProduct } from './product.service.js'
 
 const OFF_BASE = 'https://world.openfoodfacts.org/api/v2/product'
 
+type BarcodeLookupSource =
+  | 'local'
+  | 'user_catalog'
+  | 'shared_catalog'
+  | 'openfoodfacts'
+  | null
+
 export type BarcodeLookupResult = {
   barcode: string
-  source: 'local' | 'openfoodfacts' | null
+  source: BarcodeLookupSource
   name: string | null
   unit: ProductUnit | null
   cost: number | null
@@ -17,6 +23,19 @@ export type BarcodeLookupResult = {
   notes: string | null
   existingProductId: string | null
   brand: string | null
+}
+
+type CatalogProductRow = {
+  id: string
+  localId: string
+  name: string
+  barcode: string | null
+  unit: string
+  cost: number
+  marginPct: number
+  notes: string | null
+  categoryId: string | null
+  category: { templateId: string | null } | null
 }
 
 function parseUnitFromQuantity(quantity: string | undefined): ProductUnit | null {
@@ -79,6 +98,146 @@ async function fetchFromOpenFoodFacts(barcode: string): Promise<{
   return { name, unit, brand, notes }
 }
 
+function emptyLookup(barcode: string): BarcodeLookupResult {
+  return {
+    barcode,
+    source: null,
+    name: null,
+    unit: null,
+    cost: null,
+    marginPct: null,
+    categoryId: null,
+    notes: null,
+    existingProductId: null,
+    brand: null,
+  }
+}
+
+async function mapTemplateCategoryToLocal(
+  localId: string,
+  templateId: string | null,
+): Promise<string | null> {
+  if (!templateId) return null
+  const category = await prisma.category.findFirst({
+    where: { localId, templateId, isActive: true },
+    select: { id: true },
+  })
+  return category?.id ?? null
+}
+
+async function buildCatalogLookup(
+  source: Extract<BarcodeLookupSource, 'local' | 'user_catalog' | 'shared_catalog'>,
+  localId: string,
+  row: CatalogProductRow,
+): Promise<BarcodeLookupResult> {
+  const mappedCategoryId =
+    source === 'local'
+      ? row.categoryId
+      : await mapTemplateCategoryToLocal(localId, row.category?.templateId ?? null)
+
+  return {
+    barcode: row.barcode ?? '',
+    source,
+    name: row.name,
+    unit: isProductUnit(row.unit) ? row.unit : null,
+    cost: row.cost,
+    marginPct: row.marginPct,
+    categoryId: mappedCategoryId,
+    notes: row.notes,
+    existingProductId: source === 'local' ? row.id : null,
+    brand: null,
+  }
+}
+
+async function findCatalogProduct(
+  userId: string,
+  localId: string,
+  barcode: string,
+): Promise<BarcodeLookupResult | null> {
+  const localMatch = await prisma.product.findFirst({
+    where: { localId, barcode, isActive: true },
+    select: {
+      id: true,
+      localId: true,
+      name: true,
+      barcode: true,
+      unit: true,
+      cost: true,
+      marginPct: true,
+      notes: true,
+      categoryId: true,
+      category: { select: { templateId: true } },
+    },
+    orderBy: { updatedAt: 'desc' },
+  })
+  if (localMatch) {
+    return buildCatalogLookup('local', localId, {
+      ...localMatch,
+      cost: Number(localMatch.cost),
+      marginPct: Number(localMatch.marginPct),
+    })
+  }
+
+  const userCatalogMatch = await prisma.product.findFirst({
+    where: {
+      barcode,
+      isActive: true,
+      localId: { not: localId },
+      local: { userId, isActive: true },
+    },
+    select: {
+      id: true,
+      localId: true,
+      name: true,
+      barcode: true,
+      unit: true,
+      cost: true,
+      marginPct: true,
+      notes: true,
+      categoryId: true,
+      category: { select: { templateId: true } },
+    },
+    orderBy: { updatedAt: 'desc' },
+  })
+  if (userCatalogMatch) {
+    return buildCatalogLookup('user_catalog', localId, {
+      ...userCatalogMatch,
+      cost: Number(userCatalogMatch.cost),
+      marginPct: Number(userCatalogMatch.marginPct),
+    })
+  }
+
+  const sharedCatalogMatch = await prisma.product.findFirst({
+    where: {
+      barcode,
+      isActive: true,
+      local: { isActive: true, userId: { not: userId } },
+    },
+    select: {
+      id: true,
+      localId: true,
+      name: true,
+      barcode: true,
+      unit: true,
+      cost: true,
+      marginPct: true,
+      notes: true,
+      categoryId: true,
+      category: { select: { templateId: true } },
+    },
+    orderBy: { updatedAt: 'desc' },
+  })
+  if (sharedCatalogMatch) {
+    return buildCatalogLookup('shared_catalog', localId, {
+      ...sharedCatalogMatch,
+      cost: Number(sharedCatalogMatch.cost),
+      marginPct: Number(sharedCatalogMatch.marginPct),
+    })
+  }
+
+  return null
+}
+
 export async function lookupBarcodeForLocal(
   userId: string,
   localId: string,
@@ -87,38 +246,12 @@ export async function lookupBarcodeForLocal(
   await assertLocalOwnership(userId, localId)
   const code = barcode.trim()
   if (!code) {
-    return {
-      barcode: code,
-      source: null,
-      name: null,
-      unit: null,
-      cost: null,
-      marginPct: null,
-      categoryId: null,
-      notes: null,
-      existingProductId: null,
-      brand: null,
-    }
+    return emptyLookup(code)
   }
 
-  const existing = await prisma.product.findFirst({
-    where: { localId, barcode: code, isActive: true },
-  })
-
-  if (existing) {
-    const serialized = serializeProduct(existing)
-    return {
-      barcode: code,
-      source: 'local',
-      name: serialized.name,
-      unit: isProductUnit(serialized.unit) ? serialized.unit : null,
-      cost: serialized.cost,
-      marginPct: serialized.marginPct,
-      categoryId: serialized.categoryId,
-      notes: serialized.notes,
-      existingProductId: serialized.id,
-      brand: null,
-    }
+  const catalogMatch = await findCatalogProduct(userId, localId, code)
+  if (catalogMatch) {
+    return catalogMatch
   }
 
   const off = await fetchFromOpenFoodFacts(code)
@@ -137,16 +270,5 @@ export async function lookupBarcodeForLocal(
     }
   }
 
-  return {
-    barcode: code,
-    source: null,
-    name: null,
-    unit: null,
-    cost: null,
-    marginPct: null,
-    categoryId: null,
-    notes: null,
-    existingProductId: null,
-    brand: null,
-  }
+  return emptyLookup(code)
 }

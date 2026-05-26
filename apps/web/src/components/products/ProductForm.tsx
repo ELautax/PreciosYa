@@ -142,24 +142,42 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
 
     try {
       const lookup = await barcodeLookupMut.mutateAsync(code)
-      if (lookup.name) setValue('name', lookup.name, { shouldDirty: true })
-      if (lookup.unit) setValue('unit', lookup.unit, { shouldDirty: true })
-      if (lookup.cost != null && lookup.cost > 0) {
+      const currentName = watch('name')?.trim() ?? ''
+      const currentUnit = watch('unit') ?? 'unidad'
+      const currentCost = Number(watch('cost') ?? 0)
+      const currentMargin = Number(watch('marginPct') ?? 20)
+      const currentCategoryId = watch('categoryId')?.trim() ?? ''
+      const currentNotes = watch('notes')?.trim() ?? ''
+
+      if (lookup.name && currentName === '') {
+        setValue('name', lookup.name, { shouldDirty: true })
+      }
+      if (lookup.unit && currentUnit === 'unidad') {
+        setValue('unit', lookup.unit, { shouldDirty: true })
+      }
+      if (lookup.cost != null && lookup.cost > 0 && (!Number.isFinite(currentCost) || currentCost <= 0)) {
         setValue('cost', lookup.cost, { shouldDirty: true })
       }
-      if (lookup.marginPct != null && lookup.marginPct >= 0) {
+      if (
+        lookup.marginPct != null &&
+        lookup.marginPct >= 0 &&
+        (!Number.isFinite(currentMargin) || currentMargin === 20)
+      ) {
         setValue('marginPct', lookup.marginPct, { shouldDirty: true })
       }
-      if (lookup.categoryId) {
+      if (lookup.categoryId && currentCategoryId === '') {
         setValue('categoryId', lookup.categoryId, { shouldDirty: true })
       }
-      if (lookup.notes) {
-        const current = watch('notes')?.trim() ?? ''
-        if (!current) setValue('notes', lookup.notes, { shouldDirty: true })
+      if (lookup.notes && currentNotes === '') {
+        setValue('notes', lookup.notes, { shouldDirty: true })
       }
 
       if (lookup.source === 'local') {
         appToast.success('Producto existente en tu inventario — datos cargados')
+      } else if (lookup.source === 'user_catalog') {
+        appToast.success('Datos cargados desde otro local tuyo')
+      } else if (lookup.source === 'shared_catalog') {
+        appToast.success('Datos sugeridos desde el catálogo interno de PreciosYa')
       } else if (lookup.source === 'openfoodfacts') {
         appToast.success(
           lookup.brand
