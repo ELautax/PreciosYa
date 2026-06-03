@@ -5,13 +5,46 @@ import { useApiClient } from '@/hooks/useApiClient'
 import { appToast } from '@/lib/toast'
 import type { LocalDto } from '@/types/local'
 
+const LOCALS_CACHE_KEY = 'preciosya:locals-cache'
+
+function readLocalsCache(): LocalDto[] | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = window.localStorage.getItem(LOCALS_CACHE_KEY)
+    if (!raw) return null
+    const parsed: unknown = JSON.parse(raw)
+    return Array.isArray(parsed) ? (parsed as LocalDto[]) : null
+  } catch {
+    return null
+  }
+}
+
+function writeLocalsCache(locals: LocalDto[]): void {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(LOCALS_CACHE_KEY, JSON.stringify(locals))
+  } catch {
+    /* quota / private mode */
+  }
+}
+
 export function useLocals() {
   const api = useApiClient()
   return useQuery({
     queryKey: ['locals'],
     queryFn: async () => {
-      const res = await api.get<ApiSuccess<{ locals: LocalDto[] }>>('/api/locals')
-      return res.data.data.locals
+      try {
+        const res = await api.get<ApiSuccess<{ locals: LocalDto[] }>>('/api/locals')
+        const locals = res.data.data.locals
+        writeLocalsCache(locals)
+        return locals
+      } catch (error) {
+        const cached = readLocalsCache()
+        if (cached && cached.length > 0) {
+          return cached
+        }
+        throw error
+      }
     },
   })
 }

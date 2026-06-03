@@ -2,6 +2,7 @@
 
 > **Read this entire file before touching any code.**
 > This is the single source of truth for the project. Every architectural decision, every naming convention, every technology choice is documented here.
+> **Markdown en `docs/`:** cada cambio funcional debe reflejarse ahí en la misma sesión (ver sección 2.1).
 
 ---
 
@@ -61,8 +62,30 @@ preciosya/
 
 ### External APIs
 - **INDEC IPC (multi-serie):** ver [`docs/IPC_SOURCES.md`](docs/IPC_SOURCES.md) y `apps/api/src/services/ipc-fetch/`
-- **BCRA rate:** `https://api.bcra.gob.ar/estadisticas/v3.0/monetarias/reservas`
+- **BCRA USD oficial:** `https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Cotizaciones/USD` — ver [`docs/INDICES_Y_PRECIOS.md`](docs/INDICES_Y_PRECIOS.md)
 - **Google OAuth:** managed entirely by Supabase Auth
+
+### 2.1 Documentación (`docs/`) — obligatorio mantener actualizada
+
+**Nunca cerrar una tarea con cambios de producto/API/schema/deploy sin revisar y actualizar los `.md` afectados.** La documentación vive en `docs/`; `.cursorrules` resume arquitectura y convenciones (también hay que actualizarlo si cambia algo estructural).
+
+| Archivo | Actualizar cuando… |
+|---------|-------------------|
+| [`docs/README.md`](docs/README.md) | Agregás o renombrás un doc |
+| [`docs/PRECIOSYA.md`](docs/PRECIOSYA.md) | Módulos, roadmap, planes, alcance, usuarios objetivo |
+| [`docs/GUIA_USUARIO.md`](docs/GUIA_USUARIO.md) | Flujos visibles (pantallas, botones, mensajes) |
+| [`docs/INDICES_Y_PRECIOS.md`](docs/INDICES_Y_PRECIOS.md) | IPC, USD BCRA, rubros, apply-ipc/usd, índices |
+| [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) | Stack, servicios, jobs, rutas API, modelo de datos |
+| [`docs/IPC_SOURCES.md`](docs/IPC_SOURCES.md) | Fuentes IPC, Alphacast, Argly, admin manual |
+| [`docs/DEPLOY_VERCEL.md`](docs/DEPLOY_VERCEL.md) / [`docs/RAILWAY_ENV.md`](docs/RAILWAY_ENV.md) / [`docs/SUPABASE_ENV.md`](docs/SUPABASE_ENV.md) | Deploy, env, CORS, dominios |
+
+**Checklist mínimo por sesión de código:**
+1. ¿Cambió endpoint, schema Prisma, env o comportamiento de usuario? → actualizar `docs/ARQUITECTURA.md` y/o guía de usuario + `INDICES_Y_PRECIOS` si aplica.
+2. ¿Cambió decisión de producto (qué entra / qué no)? → `docs/PRECIOSYA.md` y sección 16 de este archivo si hace falta.
+3. ¿Nueva variable de entorno? → doc de deploy correspondiente + `apps/api/.env.example` si existe.
+4. ¿Resumen técnico en `.cursorrules` (rutas, tablas, schedulers)? → mantener alineado con Prisma y rutas reales.
+
+**Excepciones:** refactors internos sin cambio de contrato ni UX → no hace falta doc largo; opcional una línea en el PR. **Idioma:** docs de producto/guía en **español**; commits en **inglés**.
 
 ### No RLS
 Supabase Row Level Security is **disabled**. All data access control happens in the Express backend via `authMiddleware` and `ownerGuard`. The frontend uses the Supabase `anon` key only for auth and Realtime. All business data goes through the REST API.
@@ -121,21 +144,29 @@ users
   updated_at      DateTime  @updatedAt
 
 locals
-  id              UUID    PK
-  user_id         UUID    FK → users
-  name            String
-  address         String?
-  min_margin_pct  Decimal(5,2)  default 20.00
-  currency        String        default 'ARS'
-  is_active       Boolean       default true
-  created_at      DateTime
-  updated_at      DateTime  @updatedAt
+  id                      UUID    PK
+  user_id                 UUID    FK → users
+  name                    String
+  address                 String?
+  min_margin_pct          Decimal(5,2)  default 20.00
+  currency                String        default 'ARS'
+  last_ipc_applied_period DateTime?     → mes IPC ya aplicado en este local
+  last_usd_applied_period DateTime?     → día USD BCRA ya aplicado en este local
+  is_active               Boolean       default true
+  created_at              DateTime
+  updated_at              DateTime  @updatedAt
+
+category_templates
+  slug, name, color_hex, preferred_index (IndexType), sort_order — seed COICOP/INDEC
 
 categories
   id              UUID    PK
   local_id        UUID    FK → locals  onDelete: Cascade
+  template_id     UUID?   FK → category_templates
   name            String
-  color_hex       String? default '#16A34A'
+  color_hex       String?
+  preferred_index IndexType  default IPC_INDEC  → BCRA_USD_OFICIAL si «indexar USD»
+  is_active       Boolean default true
   created_at      DateTime
   [unique: local_id + name]
 
@@ -309,10 +340,9 @@ PUT  /api/locals/:id          → update local
 
 ### Categories
 ```
-GET  /api/categories?localId= → list categories
-POST /api/categories          → create category
-PUT  /api/categories/:id      → update category
-DEL  /api/categories/:id      → delete (products become uncategorized)
+GET  /api/categories?localId=     → list categories (seed desde templates)
+PATCH /api/categories/:id         → { isActive?, indexByUsd? } — sin crear rubros custom
+GET  /api/category-templates      → catálogo INDEC (opcional UI)
 ```
 
 ### Products
@@ -327,9 +357,12 @@ PUT  /api/products/bulk-update → { localId, categoryId?, increasePct }
 
 ### IPC & Economic Indices
 ```
-GET  /api/ipc/latest          → latest IPC and BCRA values from DB
-GET  /api/ipc/history         → last 12 months of indices
-PUT  /api/locals/:id/apply-ipc → apply latest IPC to all products of a local
+GET  /api/ipc/latest              → IPC + BCRA (sync BCRA si falta cotización)
+GET  /api/ipc/history             → last 12 months IPC
+GET  /api/locals/:id/ipc-breakdown → desglose IPC por rubro
+PUT  /api/locals/:id/apply-ipc    → IPC (excluye rubros indexados USD)
+GET  /api/locals/:id/usd-breakdown → rubros USD + variación diaria
+PUT  /api/locals/:id/apply-usd    → variación USD solo en rubros BCRA_*
 ```
 
 ### Exports
@@ -452,10 +485,10 @@ VITE_SUPABASE_ANON_KEY=eyJ...
   5. Send email via Resend to Pro users
 - **Fallback:** if INDEC API is down, use last cached value from `economic_indices`
 
-### BCRA Scheduler — runs daily
-- **Cron:** `0 10 * * 1-5` (weekdays at 10am)
-- **Logic:** fetch BCRA rate, upsert into `economic_indices`
-- **No notifications** for users (internal reference only)
+### BCRA Scheduler — runs daily (AR)
+- **Cron:** `30 3 * * *` timezone `America/Argentina/Buenos_Aires` (tras job IPC 03:00)
+- **Logic:** cotización USD oficial → `economic_indices` (`value_pct` = variación diaria %, tasa en `source_url` como `|usdRate=`)
+- **Alertas:** `BCRA_USD_ALERT` si `|variación| >= BCRA_USD_ALERT_THRESHOLD_PCT` (default 2.5)
 
 ---
 
@@ -765,6 +798,7 @@ Todas las tareas TASK-001 … TASK-044 están implementadas en el monorepo (mayo
 1. **Preguntar antes de codear** cambios que toquen schema, API pública, deploy o más de ~3 archivos no triviales.
 2. Ante ambigüedad (umbrales, lista de rubros, fuente IPC), hacer preguntas concretas; no asumir.
 3. El backlog activo es **ROADMAP v2** (sección 15). El MVP v1 está cerrado.
+4. **Documentación:** al terminar cambios funcionales, actualizar los `.md` de la sección 2.1 y, si aplica, tablas/rutas/schedulers en este archivo. No delegar la doc “para después”.
 
 ---
 
@@ -789,6 +823,9 @@ Todas las tareas TASK-001 … TASK-044 están implementadas en el monorepo (mayo
 | TASK-106 | Lector código de barras móvil | Hecho → `BarcodeScanner` + html5-qrcode |
 | TASK-107 | Cron 03:00 AR + tests scheduler | Hecho |
 | TASK-108 | Dominio `preciosya.vercel.app` + landing + CORS docs | Hecho → `docs/DEPLOY_VERCEL.md` |
+| TASK-109 | USD BCRA oficial + apply-usd + rubros `indexByUsd` | Hecho → `docs/INDICES_Y_PRECIOS.md` |
+| TASK-110 | `last_ipc/usd_applied_period` + banners pendiente/aplicado | Hecho → `docs/GUIA_USUARIO.md` |
+| TASK-111 | Documentación base en `docs/` (README, PRECIOSYA, guías) | Hecho → mantener con regla 2.1 |
 
 ---
 
@@ -819,8 +856,9 @@ Todas las tareas TASK-001 … TASK-044 están implementadas en el monorepo (mayo
 9. **The Supabase `anon` key is only used in the frontend** for auth (login/logout) and Realtime. All business data goes through `apps/api`.
 10. **Comments in Spanish, commits in English.**
 11. **Preguntar antes de codear** cambios grandes; seguir ROADMAP v2 y diseño Kombai (sección 14).
+12. **Actualizar `docs/` (y `.cursorrules` si cambia contrato/schema/API/deploy)** en la misma sesión que el código — ver sección **2.1**. No cerrar features sin doc.
 
 ---
 
-*Last updated: May 2026 — PreciosYa v2 roadmap*
+*Last updated: June 2026 — PreciosYa v2 + docs sync policy*
 *Author: Lautaro Nahuel Villanueva — Escuela Multimedial Da Vinci*

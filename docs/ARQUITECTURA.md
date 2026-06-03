@@ -34,7 +34,7 @@ Migraciones en `apps/api/prisma/migrations/`. Producción: `pnpm --filter api ru
 
 | Servicio | Responsabilidad |
 |----------|-----------------|
-| `economic-index.service` | IPC, BCRA, apply IPC/USD, breakdown |
+| `economic-index.service` | IPC, BCRA, `ensureFreshBcraInSnapshot`, apply IPC/USD, breakdown |
 | `bcra.service` | Parseo cotización USD BCRA |
 | `ipc-fetch/*` | Alphacast, Argly |
 | `product.service` | CRUD, bulk, import CSV |
@@ -44,8 +44,13 @@ Migraciones en `apps/api/prisma/migrations/`. Producción: `pnpm --filter api ru
 ## Jobs (`ipc-scheduler.ts`)
 
 - 03:00 AR — sincronizar IPC, notificar usuarios.
-- 03:30 AR — sincronizar USD, alertas de salto.
+- 03:30 AR — sincronizar USD, alertas de salto (`BCRA_USD_ALERT`).
 - Al arrancar — catch-up si falta IPC o USD en DB.
+
+### Campos `locals` (estado índices)
+
+- `last_ipc_applied_period` — evita banner “IPC pendiente” tras aplicar el mes vigente.
+- `last_usd_applied_period` — idem para variación USD del día.
 
 ## Frontend
 

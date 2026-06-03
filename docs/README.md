@@ -2,6 +2,8 @@
 
 Índice de documentación del proyecto. Se actualiza junto con el producto (presentación ~2 meses).
 
+> **Regla del repo:** cualquier agente o desarrollador que cambie funcionalidad debe actualizar los `.md` afectados en la **misma sesión** que el código. Está definido en [`.cursorrules`](../.cursorrules) (sección **2.1** y regla **12** en sección 17).
+
 | Documento | Audiencia | Contenido |
 |-----------|-----------|-----------|
 | [PRECIOSYA.md](./PRECIOSYA.md) | Presentación / stakeholders | Qué es, problema, solución, módulos, planes |
@@ -19,6 +21,10 @@
 - Web: https://web-rho-ten-99.vercel.app
 - API: https://api-production-3626.up.railway.app
 - Landing: https://preciosya-landing.vercel.app
+
+## Incidencias conocidas
+
+- [FIX_MIGRACIONES_202606.md](./FIX_MIGRACIONES_202606.md) — locales “desaparecidos” / error al crear producto (migraciones pendientes).
 
 ## Comandos rápidos
 

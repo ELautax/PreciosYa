@@ -47,7 +47,12 @@ Debe incluir `"ipcManualRoute":true` y `"version":"0.2.0"`. Si falta, el servici
 
 | Variable | Uso |
 |----------|-----|
-| `BCRA_API_BASE_URL` | Reserva para cotización USD BCRA (no usada por el cron IPC hoy) |
+| `BCRA_API_BASE_URL` | API BCRA cotización USD |
+| `BCRA_USD_ALERT_THRESHOLD_PCT` | Umbral % para alerta salto USD (default `2.5`) |
+
+## Migraciones en producción
+
+`prisma migrate deploy` desde Railway a veces **no alcanza** `DIRECT_URL` (5432). Si ves locales vacíos o error al crear productos, ejecutá el SQL de **[FIX_MIGRACIONES_202606.md](./FIX_MIGRACIONES_202606.md)** en el SQL Editor de Supabase y redeploy.
 
 ## Eliminar en Railway (ya no se usan)
 

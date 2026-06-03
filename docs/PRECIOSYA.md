@@ -53,7 +53,7 @@ Cron en API (~03:00 AR IPC, ~03:30 USD). Alertas in-app si el USD salta fuerte (
 - **Aplicar IPC** (excluye rubros USD).
 - **Aplicar USD** (solo rubros indexados en USD).
 
-Tras aplicar, el sistema marca el período como **aplicado** para ese local y deja de mostrar el banner de “pendiente” hasta el próximo índice.
+Tras aplicar, el sistema guarda en el local `last_ipc_applied_period` / `last_usd_applied_period` y muestra banner **verde “ya aplicado”** hasta que haya un índice nuevo (no el CTA de “actualizar” indefinido).
 
 ### 6. Historial y alertas
 

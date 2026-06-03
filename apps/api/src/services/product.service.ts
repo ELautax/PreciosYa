@@ -219,6 +219,7 @@ export async function createProduct(
             ? null
             : input.notes,
       },
+      include: { category: { select: { name: true, preferredIndex: true } } },
     })
     return serializeProduct(product)
   } catch (e) {

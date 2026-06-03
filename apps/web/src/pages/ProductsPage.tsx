@@ -412,7 +412,12 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
 }
 
 export default function ProductsPage() {
-  const { data: locals, isLoading: loadingLocals } = useLocals()
+  const {
+    data: locals,
+    isLoading: loadingLocals,
+    isError: localsError,
+    refetch: refetchLocals,
+  } = useLocals()
   const createLocal = useCreateLocal()
   const [newLocalName, setNewLocalName] = useState('')
 
@@ -434,6 +439,25 @@ export default function ProductsPage() {
            </div>
         </div>
       </div>
+    )
+  }
+
+  if (localsError && !locals?.length) {
+    return (
+      <main className="page-shell">
+        <div className="mx-auto max-w-md py-12">
+          <EmptyState
+            icon={AlertTriangle}
+            title="No se pudieron cargar tus locales"
+            description="La API no respondió (suele pasar si faltan migraciones en el servidor). Reintentá en unos segundos."
+            action={
+              <button type="button" className="btn-primary" onClick={() => void refetchLocals()}>
+                Reintentar
+              </button>
+            }
+          />
+        </div>
+      </main>
     )
   }
 

@@ -67,7 +67,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
     resolver: zodResolver(schema),
     defaultValues: {
       name: '',
-      cost: 0,
+      cost: 1,
       marginPct: 20,
       categoryId: '',
       unit: 'unidad',
@@ -100,6 +100,11 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
   }, [product, reset])
 
   async function onSubmit(values: FormValues): Promise<void> {
+    if (!localId) {
+      appToast.error('Seleccioná un local antes de guardar el producto')
+      return
+    }
+
     const barcode =
       values.barcode?.trim() === '' ? null : values.barcode?.trim() ?? null
     const notes =
