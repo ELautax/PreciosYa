@@ -21,7 +21,13 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
     )
   }
 
-  if (!session) return null
+  if (!session) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-canvas text-text-muted">
+        Redirigiendo al login…
+      </div>
+    )
+  }
 
   return <>{children}</>
 }

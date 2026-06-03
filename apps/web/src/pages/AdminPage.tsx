@@ -27,6 +27,7 @@ import {
 import { useMe } from '@/hooks/useMe'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { IPC_INDEX_LABELS, IPC_INDEX_TYPES } from '@/lib/ipcLabels'
+import { formatPct, toPctNumber } from '@/lib/formatPct'
 
 export default function AdminPage() {
   const { data: me, isLoading: loadingMe } = useMe()
@@ -76,7 +77,9 @@ export default function AdminPage() {
 
   const ipcHomogeneous =
     (indicesQ.data?.length ?? 0) > 1 &&
-    indicesQ.data?.every((idx) => idx.valuePct === indicesQ.data?.[0]?.valuePct)
+    indicesQ.data?.every(
+      (idx) => toPctNumber(idx.valuePct) === toPctNumber(indicesQ.data?.[0]?.valuePct),
+    )
 
   const ipcArglyStub =
     (indicesQ.data?.length ?? 0) > 1 &&
@@ -134,7 +137,13 @@ export default function AdminPage() {
           
           <button
             type="button"
-            onClick={() => void forceIpcMut.mutateAsync()}
+            onClick={() => {
+              forceIpcMut.mutate(undefined, {
+                onError: () => {
+                  /* toast en useAdminForceFetchIpc */
+                },
+              })
+            }}
             disabled={forceIpcMut.isPending}
             className="btn-warning h-12 px-6 shadow-xl shadow-accent-600/20 group"
           >
@@ -393,7 +402,7 @@ export default function AdminPage() {
                              {IPC_INDEX_LABELS[idx.type] ?? idx.type}
                           </span>
                           <span className="font-mono text-sm font-black text-text-main tracking-tighter shrink-0">
-                            +{idx.valuePct.toFixed(2)}%
+                            +{formatPct(idx.valuePct)}%
                           </span>
                        </div>
                        {idx.sourceUrl?.startsWith('manual:') && (

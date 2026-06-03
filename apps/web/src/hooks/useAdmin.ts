@@ -4,6 +4,7 @@ import type { ApiSuccess } from 'shared'
 
 import { useApiClient } from '@/hooks/useApiClient'
 import { appToast } from '@/lib/toast'
+import { formatPct, toPctNumber } from '@/lib/formatPct'
 
 function apiErrorStatus(err: unknown): number | undefined {
   if (axios.isAxiosError(err)) return err.response?.status
@@ -83,7 +84,10 @@ export function useAdminIndices() {
           }>
         }>
       >('/api/admin/indices')
-      return res.data.data.indices
+      return res.data.data.indices.map((idx) => ({
+        ...idx,
+        valuePct: toPctNumber(idx.valuePct) ?? 0,
+      }))
     },
   })
 }
@@ -128,6 +132,8 @@ export function useAdminForceFetchIpc() {
     mutationFn: async () => {
       const res = await api.post<ApiSuccess<{ ipc: ForceFetchIpcPayload }>>(
         '/api/admin/ipc/force-fetch',
+        undefined,
+        { timeout: 120_000 },
       )
       return res.data.data.ipc
     },
@@ -142,10 +148,13 @@ export function useAdminForceFetchIpc() {
       const seriesCount = ipc.seriesUpdated ?? ipc.indices?.length
       const seriesLabel =
         seriesCount !== undefined ? `${seriesCount} series` : 'sincronizado'
+      const pctLabel = formatPct(ipc.valuePct)
       if (ipc.warning) {
         appToast.info(ipc.warning)
+      } else if (pctLabel !== '—') {
+        appToast.success(`IPC ${pctLabel}% (${month}, ${seriesLabel})`)
       } else {
-        appToast.success(`IPC ${ipc.valuePct.toFixed(2)}% (${month}, ${seriesLabel})`)
+        appToast.success(`IPC sincronizado (${month}, ${seriesLabel})`)
       }
     },
     onError: (err) => {

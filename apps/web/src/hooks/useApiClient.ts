@@ -26,9 +26,12 @@ export function useApiClient() {
     client.interceptors.response.use(
       (response) => response,
       async (error: unknown) => {
+        const url = axios.isAxiosError(error) ? (error.config?.url ?? '') : ''
+        const isAuthMe = url.includes('/api/auth/me')
         if (
           axios.isAxiosError(error) &&
           error.response?.status === 401 &&
+          isAuthMe &&
           supabase
         ) {
           await supabase.auth.signOut()

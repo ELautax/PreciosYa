@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
+import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 import { InstallPromptButton } from '@/components/pwa/InstallPromptButton'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -198,7 +199,9 @@ export function AppLayout() {
         </header>
 
         <main className="flex-1 overflow-x-hidden">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
 
