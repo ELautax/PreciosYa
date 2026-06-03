@@ -6,7 +6,7 @@
     }
   },
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm build",
+  "buildCommand": "cd ../.. && pnpm --filter web run build",
   "outputDirectory": "dist",
   "rewrites": [
     {
