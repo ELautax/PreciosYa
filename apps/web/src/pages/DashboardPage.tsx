@@ -155,9 +155,11 @@ export default function DashboardPage() {
                 ? `$${ipcQ.data.bcra.usdRateArs.toLocaleString('es-AR')}${
                     ipcQ.data.bcra ? ` (${ipcQ.data.bcra.valuePct >= 0 ? '+' : ''}${ipcQ.data.bcra.valuePct.toFixed(2)}%)` : ''
                   }`
-                : '—'
+                : ipcQ.isFetching
+                  ? '…'
+                  : 'Sin datos'
             } 
-            loading={ipcQ.isLoading}
+            loading={ipcQ.isLoading && !ipcQ.data}
             icon={DollarSign}
             color="text-primary-700"
             bg="bg-primary-50 dark:bg-primary-900/20"

@@ -47,6 +47,8 @@ function makeLocal(minMarginPct: number): Local {
     address: null,
     minMarginPct: new Prisma.Decimal(minMarginPct),
     currency: 'ARS',
+    lastIpcAppliedPeriod: null,
+    lastUsdAppliedPeriod: null,
     isActive: true,
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
     updatedAt: new Date('2026-01-01T00:00:00.000Z'),

@@ -14,6 +14,8 @@ export function serializeLocal(l: Local) {
     address: l.address,
     minMarginPct: Number(l.minMarginPct),
     currency: l.currency,
+    lastIpcAppliedPeriod: l.lastIpcAppliedPeriod?.toISOString() ?? null,
+    lastUsdAppliedPeriod: l.lastUsdAppliedPeriod?.toISOString() ?? null,
     isActive: l.isActive,
     createdAt: l.createdAt.toISOString(),
     updatedAt: l.updatedAt.toISOString(),

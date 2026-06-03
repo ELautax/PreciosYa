@@ -90,6 +90,7 @@ export function useApplyIpcToLocal(localId: string) {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['products', localId] })
       void qc.invalidateQueries({ queryKey: ['ipc-latest'] })
+      void qc.invalidateQueries({ queryKey: ['locals'] })
       appToast.success('IPC aplicado correctamente')
     },
     onError: () => {
@@ -121,6 +122,7 @@ export function useApplyUsdToLocal(localId: string) {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['products', localId] })
       void qc.invalidateQueries({ queryKey: ['ipc-latest'] })
+      void qc.invalidateQueries({ queryKey: ['locals'] })
       appToast.success('Variación USD aplicada')
     },
     onError: () => {

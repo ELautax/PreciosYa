@@ -5,6 +5,8 @@ export type LocalDto = {
   address: string | null
   minMarginPct: number
   currency: string
+  lastIpcAppliedPeriod: string | null
+  lastUsdAppliedPeriod: string | null
   isActive: boolean
   createdAt: string
   updatedAt: string

@@ -24,6 +24,7 @@ import { useBarcodeLookup } from '@/hooks/useBarcodeLookup'
 import { useCategories } from '@/hooks/useCategories'
 import { useLocals } from '@/hooks/useLocals'
 import { useCreateProduct, useUpdateProduct } from '@/hooks/useProducts'
+import { categoryIndexBadgeClass, categoryIndexLabel } from '@/lib/categoryIndex'
 import { appToast } from '@/lib/toast'
 import type { ProductDto } from '@/types/product'
 
@@ -77,6 +78,8 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
 
   const watchedCost = watch('cost') || 0
   const watchedMargin = watch('marginPct') || 0
+  const watchedCategoryId = watch('categoryId')?.trim() ?? ''
+  const selectedCategory = categoriesQuery.data?.find((c) => c.id === watchedCategoryId)
   const salePricePreview = watchedCost * (1 + watchedMargin / 100)
   const marginStatus = getMarginStatus(watchedMargin, minMarginPct)
 
@@ -292,6 +295,28 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
                   <Link to="/categories" className="text-primary-600 underline" onClick={onClose}>
                     Activá rubros en Categorías
                   </Link>
+                </p>
+              )}
+              {selectedCategory ? (
+                <div className="flex items-start gap-2 rounded-xl border border-border bg-surface-soft/80 p-3">
+                  <Info size={16} className="shrink-0 text-primary-600 mt-0.5" />
+                  <p className="text-[10px] font-bold leading-relaxed text-text-muted">
+                    Este producto se actualiza con{' '}
+                    <span
+                      className={`inline-flex rounded-md border px-1.5 py-0.5 font-black uppercase tracking-tighter ${categoryIndexBadgeClass(selectedCategory.preferredIndex)}`}
+                    >
+                      {categoryIndexLabel(selectedCategory.preferredIndex)}
+                    </span>
+                    . Cambiá el índice en{' '}
+                    <Link to="/categories" className="text-primary-600 underline" onClick={onClose}>
+                      Rubros
+                    </Link>
+                    , no acá (evita mezclar IPC y USD por producto).
+                  </p>
+                </div>
+              ) : (
+                <p className="text-[10px] font-bold text-text-subtle leading-tight px-1">
+                  Sin rubro: al aplicar IPC usa el índice general; no entra en ajustes USD.
                 </p>
               )}
             </div>

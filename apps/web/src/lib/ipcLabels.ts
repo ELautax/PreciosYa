@@ -16,3 +16,8 @@ export const IPC_INDEX_LABELS: Record<string, string> = {
 }
 
 export const IPC_INDEX_TYPES = Object.keys(IPC_INDEX_LABELS)
+
+export const BCRA_INDEX_LABELS: Record<string, string> = {
+  BCRA_USD_OFICIAL: 'Dólar oficial BCRA',
+  BCRA_USD_MEP: 'Dólar MEP (referencia)',
+}

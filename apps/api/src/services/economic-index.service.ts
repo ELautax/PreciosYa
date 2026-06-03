@@ -269,6 +269,39 @@ export async function getLatestIndicesSnapshot(): Promise<{
   return { ipc, bcra }
 }
 
+/** Filas BCRA viejas (reservas) o sin tasa en sourceUrl — forzar refresh. */
+export function bcraRowNeedsRefresh(row: EconomicIndex | null): boolean {
+  if (!row) return true
+  const rate = parseUsdRateFromSourceUrl(row.sourceUrl)
+  if (rate !== null) return false
+  const v = Number(row.valuePct)
+  return !Number.isFinite(v) || v > 50 || v < -50
+}
+
+export async function ensureFreshBcraInSnapshot(): Promise<{
+  ipc: EconomicIndex | null
+  bcra: EconomicIndex | null
+}> {
+  let snapshot = await getLatestIndicesSnapshot()
+  if (!snapshot.ipc) {
+    try {
+      await fetchPersistAndReturnLatestIpc()
+      snapshot = await getLatestIndicesSnapshot()
+    } catch {
+      /* cache vacío */
+    }
+  }
+  if (bcraRowNeedsRefresh(snapshot.bcra)) {
+    try {
+      await fetchPersistAndReturnLatestBcraUsdOficial()
+      snapshot = await getLatestIndicesSnapshot()
+    } catch {
+      /* sin red */
+    }
+  }
+  return snapshot
+}
+
 export async function getIpcHistory(months = 12) {
   return prisma.economicIndex.findMany({
     where: { type: IndexType.IPC_INDEC },
@@ -462,6 +495,14 @@ export async function applyIPCToLocal(
     breakdown.reduce((acc, item) => acc + item.ipcPct * item.productCount, 0) /
     Math.max(ipcProducts.length, 1)
 
+  const ipcPeriod = (await getOrFetchLatestIpcByType(IndexType.IPC_INDEC)).period
+  if (ipcProducts.length > 0) {
+    await prisma.local.update({
+      where: { id: localId },
+      data: { lastIpcAppliedPeriod: ipcPeriod },
+    })
+  }
+
   return {
     updated: ipcProducts.length,
     appliedIpcPct: Math.round(weightedPct * 100) / 100,
@@ -528,7 +569,10 @@ export async function applyUsdToLocal(
   breakdown: UsdCategoryBreakdown[]
 }> {
   const local = await assertLocalOwnership(userId, localId)
-  const { breakdown, variationPct } = await getUsdBreakdownForLocal(userId, localId)
+  const { breakdown, variationPct, period: usdPeriod } = await getUsdBreakdownForLocal(
+    userId,
+    localId,
+  )
 
   const usdCategoryIds = new Set(breakdown.map((b) => b.categoryId))
   if (usdCategoryIds.size === 0) {
@@ -585,6 +629,13 @@ export async function applyUsdToLocal(
       })
     }
   })
+
+  if (products.length > 0) {
+    await prisma.local.update({
+      where: { id: localId },
+      data: { lastUsdAppliedPeriod: usdPeriod },
+    })
+  }
 
   return {
     updated: products.length,

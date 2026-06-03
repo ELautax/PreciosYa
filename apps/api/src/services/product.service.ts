@@ -30,11 +30,17 @@ function marginFields(marginPct: number, minMarginPct: number) {
   }
 }
 
-export function serializeProduct(p: Product) {
+type ProductWithCategory = Product & {
+  category?: { name: string; preferredIndex: string } | null
+}
+
+export function serializeProduct(p: ProductWithCategory) {
   return {
     id: p.id,
     localId: p.localId,
     categoryId: p.categoryId,
+    categoryName: p.category?.name ?? null,
+    categoryPreferredIndex: p.category?.preferredIndex ?? null,
     name: p.name,
     barcode: p.barcode,
     unit: p.unit,
@@ -114,6 +120,7 @@ export async function getProducts(
       orderBy: { name: 'asc' },
       skip,
       take: limit,
+      include: { category: { select: { name: true, preferredIndex: true } } },
     }),
     prisma.product.count({ where }),
   ])

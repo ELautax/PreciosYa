@@ -19,8 +19,7 @@ import {
 import { ExportModal } from '@/components/exports/ExportModal'
 import { LocalSelector } from '@/components/locals/LocalSelector'
 import { BulkUpdateModal } from '@/components/products/BulkUpdateModal'
-import { IPCBanner } from '@/components/products/IPCBanner'
-import { UsdBanner } from '@/components/products/UsdBanner'
+import { IndexStatusBanner } from '@/components/products/IndexStatusBanner'
 import { ProductForm } from '@/components/products/ProductForm'
 import { ProductImportModal } from '@/components/products/ProductImportModal'
 import { ProductList } from '@/components/products/ProductList'
@@ -234,17 +233,32 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
            </div>
         </section>
 
-        <IPCBanner
-          ipcPct={ipcQuery.data?.ipc?.valuePct ?? null}
+        <IndexStatusBanner
+          variant="ipc"
+          indexPeriod={ipcQuery.data?.ipc?.period ?? null}
+          indexValueLabel={
+            ipcQuery.data?.ipc != null ? `${ipcQuery.data.ipc.valuePct.toFixed(2)}%` : '—'
+          }
+          lastAppliedPeriod={selectedLocal?.lastIpcAppliedPeriod ?? null}
+          description="Actualizá los costos de rubros con IPC (no incluye rubros marcados como USD en Categorías)."
           onOpenBulk={() => {
             setBulkInitialTab('ipc')
             setBulkOpen(true)
           }}
         />
 
-        <UsdBanner
-          usdRateArs={ipcQuery.data?.bcra?.usdRateArs ?? null}
-          variationPct={ipcQuery.data?.bcra?.valuePct ?? null}
+        <IndexStatusBanner
+          variant="usd"
+          indexPeriod={ipcQuery.data?.bcra?.period ?? null}
+          indexValueLabel={
+            ipcQuery.data?.bcra?.usdRateArs != null
+              ? `$${ipcQuery.data.bcra.usdRateArs.toLocaleString('es-AR')} (${ipcQuery.data.bcra.valuePct >= 0 ? '+' : ''}${ipcQuery.data.bcra.valuePct.toFixed(2)}%)`
+              : ipcQuery.isFetching
+                ? 'Sincronizando…'
+                : 'Sin cotización — redeploy API o esperá al cron BCRA'
+          }
+          lastAppliedPeriod={selectedLocal?.lastUsdAppliedPeriod ?? null}
+          description="Solo afecta productos en rubros con «Indexar USD» activo. Configuralo en Categorías."
           onOpenBulk={() => {
             setBulkInitialTab('usd')
             setBulkOpen(true)

@@ -17,6 +17,8 @@ export function useIpcLatest() {
   const api = useApiClient()
   return useQuery({
     queryKey: ['ipc-latest'],
+    staleTime: 60_000,
+    refetchOnMount: 'always',
     queryFn: async () => {
       const res = await api.get<
         ApiSuccess<{ ipc: EconomicIndexDto | null; bcra: EconomicIndexDto | null }>

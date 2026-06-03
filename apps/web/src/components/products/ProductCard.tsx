@@ -1,5 +1,6 @@
 import { Edit3, Trash2, Tag, Package2, BadgeDollarSign } from 'lucide-react'
 import type { ProductDto } from '@/types/product'
+import { categoryIndexBadgeClass, categoryIndexLabel, isUsdIndex } from '@/lib/categoryIndex'
 import { MarginBadge } from './MarginBadge'
 
 type ProductCardProps = {
@@ -30,6 +31,20 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
                   <Tag size={12} strokeWidth={2.5} className="text-accent-600" />
                   <span className="font-mono">{product.barcode}</span>
                </div>
+             )}
+             {product.categoryName && (
+               <span
+                 className={`inline-flex rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-tighter ${categoryIndexBadgeClass(product.categoryPreferredIndex)}`}
+                 title={product.categoryName}
+               >
+                 {product.categoryName}
+                 {isUsdIndex(product.categoryPreferredIndex) ? ' · USD' : ' · IPC'}
+               </span>
+             )}
+             {!product.categoryName && product.categoryPreferredIndex && (
+               <span className="text-[9px] font-black uppercase text-text-subtle">
+                 {categoryIndexLabel(product.categoryPreferredIndex)}
+               </span>
              )}
           </div>
         </div>

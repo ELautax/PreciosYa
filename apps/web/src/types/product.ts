@@ -4,6 +4,8 @@ export type ProductDto = {
   id: string
   localId: string
   categoryId: string | null
+  categoryName?: string | null
+  categoryPreferredIndex?: string | null
   name: string
   barcode: string | null
   unit: string
