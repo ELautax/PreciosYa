@@ -12,8 +12,20 @@ function startOfUtcMonth(d: Date): Date {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
 }
 
+export type CsvDelimiter = ',' | ';'
+
+/** Normaliza encabezados Alphacast (BOM, espacios, mayúsculas). */
+export function normalizeCsvHeader(h: string): string {
+  return h
+    .replace(/^\uFEFF/, '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+}
+
 /** Parsea una línea CSV con campos entre comillas opcionales. */
-export function parseCsvLine(line: string): string[] {
+export function parseCsvLine(line: string, delimiter: CsvDelimiter = ','): string[] {
   const out: string[] = []
   let cur = ''
   let inQuotes = false
@@ -28,7 +40,7 @@ export function parseCsvLine(line: string): string[] {
       }
       continue
     }
-    if (ch === ',' && !inQuotes) {
+    if (ch === delimiter && !inQuotes) {
       out.push(cur)
       cur = ''
       continue
@@ -37,6 +49,38 @@ export function parseCsvLine(line: string): string[] {
   }
   out.push(cur)
   return out
+}
+
+export function detectCsvDelimiter(headerLine: string): CsvDelimiter {
+  const commas = (headerLine.match(/,/g) ?? []).length
+  const semis = (headerLine.match(/;/g) ?? []).length
+  return semis > commas ? ';' : ','
+}
+
+/** Resuelve índice de columna MoM (exacto, sufijo mom, o por nombre de división). */
+export function resolveMomColumnIndex(
+  header: string[],
+  columnBase: string,
+  suffix: string,
+): number {
+  const exact = `${columnBase}${suffix}`
+  const exactNorm = normalizeCsvHeader(exact)
+  const baseNorm = normalizeCsvHeader(columnBase)
+
+  let idx = header.findIndex((h) => normalizeCsvHeader(h) === exactNorm)
+  if (idx >= 0) return idx
+
+  idx = header.findIndex((h) => {
+    const n = normalizeCsvHeader(h)
+    return n.includes(baseNorm) && n.includes('current_prices_mom')
+  })
+  if (idx >= 0) return idx
+
+  idx = header.findIndex((h) => {
+    const n = normalizeCsvHeader(h)
+    return n.startsWith(baseNorm) && n.endsWith('current_prices_mom')
+  })
+  return idx
 }
 
 function roundPct(n: number): number {
@@ -70,8 +114,9 @@ export function parseAlphacastIpcCsv(csvText: string): FetchedIpcRow[] {
       code: 'ALPHACAST_PARSE_ERROR',
     })
   }
-  const header = parseCsvLine(headerLine)
-  const dateIdx = header.findIndex((h) => h.trim().toLowerCase() === 'date')
+  const delimiter = detectCsvDelimiter(headerLine)
+  const header = parseCsvLine(headerLine, delimiter)
+  const dateIdx = header.findIndex((h) => normalizeCsvHeader(h) === 'date')
   if (dateIdx < 0) {
     throw new AppError({
       statusCode: 502,
@@ -81,17 +126,24 @@ export function parseAlphacastIpcCsv(csvText: string): FetchedIpcRow[] {
   }
 
   const columnIndexByType = new Map<IndexType, number>()
+  const missingColumns: string[] = []
   for (const { indexType, columnBase } of ALPHACAST_MOM_COLUMN_BY_INDEX) {
-    const target = `${columnBase}${ALPHACAST_MOM_SUFFIX}`
-    const idx = header.findIndex((h) => h.trim() === target)
+    const idx = resolveMomColumnIndex(header, columnBase, ALPHACAST_MOM_SUFFIX)
     if (idx < 0) {
-      throw new AppError({
-        statusCode: 502,
-        message: `CSV de Alphacast sin columna ${target}`,
-        code: 'ALPHACAST_PARSE_ERROR',
-      })
+      missingColumns.push(`${columnBase}${ALPHACAST_MOM_SUFFIX}`)
+      continue
     }
     columnIndexByType.set(indexType, idx)
+  }
+  if (!columnIndexByType.has(IndexType.IPC_INDEC) || columnIndexByType.size < 2) {
+    throw new AppError({
+      statusCode: 502,
+      message:
+        missingColumns.length > 0
+          ? `CSV de Alphacast: columnas IPC no encontradas (${missingColumns.slice(0, 3).join('; ')}…)`
+          : 'CSV de Alphacast sin columnas de variación mensual',
+      code: 'ALPHACAST_PARSE_ERROR',
+    })
   }
 
   let latestCells: string[] | null = null
@@ -100,7 +152,7 @@ export function parseAlphacastIpcCsv(csvText: string): FetchedIpcRow[] {
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i]
     if (!line) continue
-    const cells = parseCsvLine(line)
+    const cells = parseCsvLine(line, delimiter)
     const rawDate = cells[dateIdx]?.trim()
     if (!rawDate) continue
     const period = startOfUtcMonth(new Date(rawDate))

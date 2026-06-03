@@ -21,6 +21,25 @@ export function serializeCategory(
   }
 }
 
+/** Alinea preferred_index con la plantilla COICOP (rubros creados antes de v2 quedaban en IPC general). */
+export async function syncCategoryPreferredIndexFromTemplates(localId: string): Promise<void> {
+  const cats = await prisma.category.findMany({
+    where: {
+      localId,
+      templateId: { not: null },
+      preferredIndex: { notIn: [IndexType.BCRA_USD_OFICIAL, IndexType.BCRA_USD_MEP] },
+    },
+    include: { template: true },
+  })
+  for (const c of cats) {
+    if (!c.template || c.preferredIndex === c.template.preferredIndex) continue
+    await prisma.category.update({
+      where: { id: c.id },
+      data: { preferredIndex: c.template.preferredIndex },
+    })
+  }
+}
+
 export async function seedCategoriesFromTemplates(localId: string): Promise<void> {
   const templates = await prisma.categoryTemplate.findMany({
     orderBy: { sortOrder: 'asc' },
@@ -45,6 +64,7 @@ export async function seedCategoriesFromTemplates(localId: string): Promise<void
 export async function ensureCategoriesSeeded(userId: string, localId: string): Promise<void> {
   await assertLocalOwnership(userId, localId)
   await seedCategoriesFromTemplates(localId)
+  await syncCategoryPreferredIndexFromTemplates(localId)
 }
 
 export async function getCategories(userId: string, localId: string) {

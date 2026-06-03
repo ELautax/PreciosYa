@@ -23,6 +23,17 @@ PreciosYa indexa por **categoría (rubro)**, no por producto individual.
 
 ---
 
+## Mismo % en todos los rubros (ej. 2,6%)
+
+El INDEC publica **un % distinto por división** (Alimentos ~1,5%, Transporte ~4%, etc.). Si en Admin o en «Aplicar IPC» todo muestra el mismo número, suele ser porque:
+
+1. **Alphacast no sincronizó** en Railway → el respaldo Argly solo trae el **nivel general**.
+2. **Rubros sin plantilla COICOP** quedaron en «IPC general» (el sistema ahora re-sincroniza `preferred_index` desde la plantilla al listar rubros).
+
+**Solución:** `ALPHACAST_API_KEY` en Railway → Admin → «Sincronizar IPC», o carga manual con un % por cada división. Ver `docs/IPC_SOURCES.md`.
+
+---
+
 ## IPC (mensual)
 
 - Fuente: INDEC vía Alphacast/Argly o carga manual admin.

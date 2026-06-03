@@ -98,7 +98,7 @@ export async function getAdminIndices() {
 }
 
 export async function forceFetchIpcFromAdmin() {
-  const { results, general } = await fetchAndPersistAllIpcSeries()
+  const { results, general, source } = await fetchAndPersistAllIpcSeries()
   if (results.length === 0) {
     throw new AppError({
       statusCode: 502,
@@ -113,12 +113,17 @@ export async function forceFetchIpcFromAdmin() {
   return {
     period: period.toISOString(),
     valuePct,
+    source,
     seriesUpdated: results.length,
     indices: results.map((r) => ({
       type: r.indexType,
       period: r.period.toISOString(),
       valuePct: r.valuePct,
     })),
+    warning:
+      source === 'argly'
+        ? 'Solo se obtuvo IPC nivel general. Las divisiones COICOP (ej. Alimentos 1,5%) requieren Alphacast o carga manual por rubro.'
+        : undefined,
   }
 }
 

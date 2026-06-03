@@ -74,6 +74,17 @@ export default function AdminPage() {
       })
     : null
 
+  const ipcHomogeneous =
+    (indicesQ.data?.length ?? 0) > 1 &&
+    indicesQ.data?.every((idx) => idx.valuePct === indicesQ.data?.[0]?.valuePct)
+
+  const ipcArglyStub =
+    (indicesQ.data?.length ?? 0) > 1 &&
+    indicesQ.data?.some(
+      (idx) =>
+        idx.sourceUrl?.includes('Argly') || idx.sourceUrl?.includes('respaldo general Argly'),
+    )
+
   if (loadingMe) {
     return (
       <div className="page-shell">
@@ -282,6 +293,20 @@ export default function AdminPage() {
                 </p>
               )}
 
+              {(ipcHomogeneous || ipcArglyStub) && (
+                <div
+                  role="alert"
+                  className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:border-amber-800/40 dark:bg-amber-900/20 dark:text-amber-100"
+                >
+                  <p className="font-bold">Todas las divisiones muestran el mismo %</p>
+                  <p className="mt-1 leading-relaxed">
+                    El INDEC publica valores distintos por rubro (ej. Alimentos ~1,5% vs nivel general
+                    ~2,6%). Configurá <strong>ALPHACAST_API_KEY</strong> en Railway y pulsá
+                    «Sincronizar IPC», o cargá cada división en el formulario manual.
+                  </p>
+                </div>
+              )}
+
               <div className="surface-card overflow-hidden">
                 <button
                   type="button"
@@ -373,6 +398,17 @@ export default function AdminPage() {
                        </div>
                        {idx.sourceUrl?.startsWith('manual:') && (
                          <p className="text-[9px] font-bold text-accent-600 uppercase mt-1">Manual</p>
+                       )}
+                       {(idx.sourceUrl?.includes('Argly') ||
+                         idx.sourceUrl?.includes('respaldo general Argly')) && (
+                         <p className="text-[9px] font-bold text-amber-700 uppercase mt-1">
+                           Respaldo Argly (solo general)
+                         </p>
+                       )}
+                       {idx.sourceUrl?.includes('alphacast.io') && (
+                         <p className="text-[9px] font-bold text-primary-600 uppercase mt-1">
+                           Alphacast
+                         </p>
                        )}
                     </div>
                  ))}

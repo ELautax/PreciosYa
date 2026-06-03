@@ -315,6 +315,8 @@ export type IpcCategoryBreakdown = {
   categoryName: string
   requestedIndexType: IndexType
   appliedIndexType: IndexType
+  /** true si no hay dato de división y se usó IPC nivel general */
+  usedGeneralFallback: boolean
   ipcPct: number
   productCount: number
 }
@@ -383,6 +385,7 @@ export async function getIpcBreakdownForLocal(
       categoryName: category.name,
       requestedIndexType: category.preferredIndex,
       appliedIndexType: resolved.appliedType,
+      usedGeneralFallback: resolved.appliedType !== category.preferredIndex,
       ipcPct: resolved.valuePct,
       productCount: countByCategory.get(category.id) ?? 0,
     }
@@ -397,6 +400,7 @@ export async function getIpcBreakdownForLocal(
       categoryName: 'Sin categoría',
       requestedIndexType: IndexType.IPC_INDEC,
       appliedIndexType: resolvedGeneral.appliedType,
+      usedGeneralFallback: false,
       ipcPct: resolvedGeneral.valuePct,
       productCount: uncategorizedCount,
     })

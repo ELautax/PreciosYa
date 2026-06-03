@@ -9,6 +9,7 @@ import {
   useUsdBreakdownForLocal,
 } from '@/hooks/useLocals'
 import { useBulkUpdate } from '@/hooks/useProducts'
+import { categoryIndexLabel } from '@/lib/categoryIndex'
 import { isOfflineQueued } from '@/lib/offline'
 
 type BulkUpdateModalProps = {
@@ -229,12 +230,15 @@ export function BulkUpdateModal({
                             <tr key={`${row.categoryId ?? 'none'}-${row.requestedIndexType}`} className="hover:bg-primary-50/5 transition-colors">
                               <td className="px-5 py-4 font-bold text-text-main truncate max-w-[140px]">{row.categoryName}</td>
                               <td className="px-5 py-4">
-                                <span className={`inline-flex rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-tighter border ${
-                                  row.appliedIndexType === 'IPC_INDEC_ALIMENTOS' 
-                                    ? 'bg-primary-50 text-primary-700 border-primary-100' 
-                                    : 'bg-accent-50 text-accent-700 border-accent-100'
-                                }`}>
-                                  {row.appliedIndexType === 'IPC_INDEC_ALIMENTOS' ? 'Alimentos' : 'General'}
+                                <span className="inline-flex flex-col gap-0.5">
+                                  <span className="inline-flex rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-tighter border border-accent-100 bg-accent-50 text-accent-700 dark:bg-accent-900/20 dark:border-accent-800/40">
+                                    {categoryIndexLabel(row.appliedIndexType)}
+                                  </span>
+                                  {row.usedGeneralFallback && (
+                                    <span className="text-[9px] font-bold text-amber-700 dark:text-amber-400">
+                                      Sin dato de división → general
+                                    </span>
+                                  )}
                                 </span>
                               </td>
                               <td className="px-5 py-4 font-mono font-black text-accent-600 text-right">+{row.ipcPct.toFixed(2)}%</td>

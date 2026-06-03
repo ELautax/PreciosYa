@@ -115,6 +115,8 @@ export function useAdminUpdatePlan() {
 type ForceFetchIpcPayload = {
   period: string
   valuePct: number
+  source?: 'alphacast' | 'argly' | 'none'
+  warning?: string
   seriesUpdated?: number
   indices?: Array<{ type: string; period: string; valuePct: number }>
 }
@@ -140,7 +142,11 @@ export function useAdminForceFetchIpc() {
       const seriesCount = ipc.seriesUpdated ?? ipc.indices?.length
       const seriesLabel =
         seriesCount !== undefined ? `${seriesCount} series` : 'sincronizado'
-      appToast.success(`IPC ${ipc.valuePct.toFixed(2)}% (${month}, ${seriesLabel})`)
+      if (ipc.warning) {
+        appToast.info(ipc.warning)
+      } else {
+        appToast.success(`IPC ${ipc.valuePct.toFixed(2)}% (${month}, ${seriesLabel})`)
+      }
     },
     onError: (err) => {
       if (apiErrorStatus(err) === 404) {

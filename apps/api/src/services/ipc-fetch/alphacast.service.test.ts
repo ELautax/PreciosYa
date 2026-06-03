@@ -1,7 +1,12 @@
 import { IndexType } from '@prisma/client'
 import { describe, expect, it } from 'vitest'
 
-import { parseAlphacastIpcCsv, parseCsvLine } from './alphacast.service.js'
+import {
+  parseAlphacastIpcCsv,
+  parseCsvLine,
+  resolveMomColumnIndex,
+} from './alphacast.service.js'
+import { ALPHACAST_MOM_SUFFIX } from './alphacast.config.js'
 
 describe('parseCsvLine', () => {
   it('respeta comas dentro de comillas', () => {
@@ -25,5 +30,18 @@ describe('parseAlphacastIpcCsv', () => {
     expect(general?.valuePct).toBe(2.58)
     expect(food?.valuePct).toBe(1.5)
     expect(general?.period.toISOString().slice(0, 10)).toBe('2026-04-01')
+  })
+
+  it('resuelve columnas con espacios o mayúsculas distintas', () => {
+    const header = [
+      'DATE',
+      'country',
+      '  Nivel general - current_prices_mom ',
+      'Alimentos y bebidas no alcohólicas - CURRENT_PRICES_MOM',
+    ]
+    expect(resolveMomColumnIndex(header, 'Nivel general', ALPHACAST_MOM_SUFFIX)).toBe(2)
+    expect(
+      resolveMomColumnIndex(header, 'Alimentos y bebidas no alcohólicas', ALPHACAST_MOM_SUFFIX),
+    ).toBe(3)
   })
 })

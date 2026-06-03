@@ -202,8 +202,9 @@ export function useIpcBreakdownForLocal(localId: string | undefined) {
           breakdown: Array<{
             categoryId: string | null
             categoryName: string
-            requestedIndexType: 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'
-            appliedIndexType: 'IPC_INDEC' | 'IPC_INDEC_ALIMENTOS'
+            requestedIndexType: string
+            appliedIndexType: string
+            usedGeneralFallback?: boolean
             ipcPct: number
             productCount: number
           }>
