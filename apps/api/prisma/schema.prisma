@@ -64,6 +64,7 @@ enum ExportFormat {
 
 enum NotifType {
   NEW_IPC
+  BCRA_USD_ALERT
   MARGIN_ALERT
   PLAN_EXPIRING
   PLAN_EXPIRED

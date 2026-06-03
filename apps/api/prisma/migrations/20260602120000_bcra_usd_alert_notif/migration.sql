@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "NotifType" ADD VALUE 'BCRA_USD_ALERT';

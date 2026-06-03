@@ -1,11 +1,14 @@
 import cron from 'node-cron'
 import { PlanType } from '@prisma/client'
 
+import { env } from '../config/env.js'
 import {
   fetchPersistAndReturnLatestBcraUsdOficial,
   fetchPersistAndReturnLatestIpc,
+  getLatestBcraUsdCached,
   getLatestIpcCached,
 } from '../services/economic-index.service.js'
+import { createBcraUsdSpikeNotifications } from '../services/notification.service.js'
 import { prisma } from '../lib/prisma.js'
 import { sendNewIPCEmail } from '../services/email.service.js'
 import {
@@ -106,14 +109,37 @@ export async function runIpcJob(): Promise<void> {
 }
 
 async function runBcraJob(): Promise<void> {
+  const before = await getLatestBcraUsdCached()
   try {
     const result = await fetchPersistAndReturnLatestBcraUsdOficial()
     console.info(
-      `[scheduler][BCRA] guardado ${result.valuePct.toFixed(3)} para ${result.period.toISOString()}`,
+      `[scheduler][BCRA] USD ${result.usdRate.toFixed(2)} · variación ${result.valuePct.toFixed(3)}% (${result.period.toISOString().slice(0, 10)})`,
     )
+
+    const threshold = env.BCRA_USD_ALERT_THRESHOLD_PCT
+    const isNewDay =
+      !before || result.period.getTime() > before.period.getTime()
+    if (
+      isNewDay &&
+      Math.abs(result.valuePct) >= threshold
+    ) {
+      const count = await createBcraUsdSpikeNotifications({
+        valuePct: result.valuePct,
+        period: result.period,
+        usdRate: result.usdRate,
+      })
+      console.info(`[scheduler][BCRA] alertas USD: ${count}`)
+    }
   } catch (error) {
     console.error('[scheduler][BCRA] error al actualizar indice', error)
   }
+}
+
+export async function catchUpBcraIfMissing(): Promise<void> {
+  const cached = await getLatestBcraUsdCached()
+  if (cached) return
+  console.info('[scheduler][BCRA] sin USD en base, sincronización al arrancar')
+  await runBcraJob()
 }
 
 /** Si no hay IPC en DB (p. ej. deploy nuevo), intenta una sincronización al arrancar. */
@@ -143,6 +169,7 @@ export function initScheduler(): void {
   )
 
   void catchUpIpcIfMissing()
+  void catchUpBcraIfMissing()
 
   console.info('[scheduler] jobs IPC/BCRA inicializados')
 }

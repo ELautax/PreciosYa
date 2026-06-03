@@ -1,29 +1,46 @@
 import { useState } from 'react'
-import { X, Zap, TrendingUp, Info, AlertTriangle, CheckCircle2 } from 'lucide-react'
+import { X, Zap, TrendingUp, Info, AlertTriangle, CheckCircle2, DollarSign } from 'lucide-react'
 
 import { useCategories } from '@/hooks/useCategories'
-import { useApplyIpcToLocal, useIpcBreakdownForLocal } from '@/hooks/useLocals'
+import {
+  useApplyIpcToLocal,
+  useApplyUsdToLocal,
+  useIpcBreakdownForLocal,
+  useUsdBreakdownForLocal,
+} from '@/hooks/useLocals'
 import { useBulkUpdate } from '@/hooks/useProducts'
 import { isOfflineQueued } from '@/lib/offline'
 
 type BulkUpdateModalProps = {
   localId: string
   ipcPct: number | null
+  usdRateArs?: number | null
+  usdVariationPct?: number | null
+  initialTab?: TabMode
   onClose: () => void
 }
 
-type TabMode = 'percentage' | 'ipc'
+type TabMode = 'percentage' | 'ipc' | 'usd'
 
-export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalProps) {
-  const [tab, setTab] = useState<TabMode>('percentage')
+export function BulkUpdateModal({
+  localId,
+  ipcPct,
+  usdRateArs = null,
+  usdVariationPct = null,
+  initialTab = 'percentage',
+  onClose,
+}: BulkUpdateModalProps) {
+  const [tab, setTab] = useState<TabMode>(initialTab)
   const [increasePct, setIncreasePct] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [resultMsg, setResultMsg] = useState<{ text: string; type: 'success' | 'warning' } | null>(null)
 
   const categoriesQuery = useCategories(localId)
   const ipcBreakdownQ = useIpcBreakdownForLocal(localId)
+  const usdBreakdownQ = useUsdBreakdownForLocal(localId)
   const bulkMut = useBulkUpdate(localId)
   const applyIpcMut = useApplyIpcToLocal(localId)
+  const applyUsdMut = useApplyUsdToLocal(localId)
 
   async function handleByPercentage(): Promise<void> {
     const pct = Number(increasePct)
@@ -54,7 +71,16 @@ export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalPro
     })
   }
 
-  const pending = bulkMut.isPending || applyIpcMut.isPending
+  async function handleApplyUsd(): Promise<void> {
+    const res = await applyUsdMut.mutateAsync()
+    setResultMsg({
+      text: `USD ${res.appliedUsdPct.toFixed(2)}% aplicado en ${res.updated} producto(s) indexados.`,
+      type: 'success',
+    })
+  }
+
+  const pending = bulkMut.isPending || applyIpcMut.isPending || applyUsdMut.isPending
+  const usdPct = usdVariationPct ?? usdBreakdownQ.data?.variationPct ?? null
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center animate-fade-in backdrop-blur-sm">
@@ -99,7 +125,16 @@ export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalPro
               }`}
             >
               <TrendingUp size={14} />
-              Aplicar IPC
+              IPC
+            </button>
+            <button
+              onClick={() => { setTab('usd'); setResultMsg(null); }}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all ${
+                tab === 'usd' ? 'bg-surface text-primary-600 shadow-sm' : 'text-text-muted hover:text-text-main'
+              }`}
+            >
+              <DollarSign size={14} />
+              USD
             </button>
           </div>
 
@@ -158,7 +193,7 @@ export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalPro
                 <span className="text-sm font-black uppercase tracking-widest">Aplicar Aumento Masivo</span>
               </button>
             </div>
-          ) : (
+          ) : tab === 'ipc' ? (
             <div className="space-y-6 animate-fade-in">
               {ipcBreakdownQ.isLoading ? (
                 <div className="space-y-4">
@@ -218,6 +253,99 @@ export function BulkUpdateModal({ localId, ipcPct, onClose }: BulkUpdateModalPro
                   >
                     <CheckCircle2 size={20} strokeWidth={3} />
                     <span className="text-sm font-black uppercase tracking-widest">Confirmar y Aplicar IPC</span>
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-6 animate-fade-in">
+              {usdBreakdownQ.isLoading ? (
+                <div className="space-y-4">
+                  <div className="skeleton h-14 w-full" />
+                  <div className="skeleton h-40 w-full" />
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-4 rounded-2xl bg-primary-50/50 p-5 border border-primary-100 dark:bg-primary-900/10 dark:border-primary-800/30">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-600 text-white shadow-sm">
+                      <DollarSign size={24} strokeWidth={2.5} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-black text-text-subtle uppercase tracking-widest leading-none">
+                        Dólar oficial BCRA
+                      </p>
+                      <p className="mt-1.5 text-2xl font-black text-text-main leading-none">
+                        {usdRateArs !== null
+                          ? `$${usdRateArs.toLocaleString('es-AR')}`
+                          : usdBreakdownQ.data?.usdRateArs != null
+                            ? `$${usdBreakdownQ.data.usdRateArs.toLocaleString('es-AR')}`
+                            : 'Sin datos'}
+                      </p>
+                      <p className="mt-1 text-sm font-mono font-bold text-primary-700">
+                        {usdPct !== null
+                          ? `Variación diaria ${usdPct >= 0 ? '+' : ''}${usdPct.toFixed(2)}%`
+                          : ''}
+                      </p>
+                    </div>
+                  </div>
+
+                  {usdBreakdownQ.data?.breakdown.length === 0 ? (
+                    <p className="text-sm font-medium text-text-muted rounded-2xl border border-border p-4">
+                      Ningún rubro activo está marcado como &quot;Indexar USD&quot;. Configuralo en
+                      Categorías.
+                    </p>
+                  ) : (
+                    <div className="overflow-hidden rounded-2xl border border-border bg-surface">
+                      <div className="max-h-60 overflow-y-auto scrollbar-hide">
+                        <table className="w-full text-left text-sm border-collapse">
+                          <thead>
+                            <tr className="border-b border-border bg-surface-soft/50">
+                              <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-text-subtle">
+                                Rubro (USD)
+                              </th>
+                              <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-text-subtle text-right">
+                                Productos
+                              </th>
+                              <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-text-subtle text-right">
+                                Ajuste
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-border/50">
+                            {usdBreakdownQ.data?.breakdown.map((row) => (
+                              <tr key={row.categoryId} className="hover:bg-primary-50/5 transition-colors">
+                                <td className="px-5 py-4 font-bold text-text-main truncate max-w-[180px]">
+                                  {row.categoryName}
+                                </td>
+                                <td className="px-5 py-4 font-mono text-right text-text-muted">
+                                  {row.productCount}
+                                </td>
+                                <td className="px-5 py-4 font-mono font-black text-primary-700 text-right">
+                                  {usdPct !== null ? `${usdPct >= 0 ? '+' : ''}${usdPct.toFixed(2)}%` : '—'}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => void handleApplyUsd()}
+                    disabled={
+                      pending ||
+                      usdPct === null ||
+                      usdBreakdownQ.isLoading ||
+                      !usdBreakdownQ.data?.breakdown.length
+                    }
+                    className="btn-primary w-full h-14 shadow-xl shadow-primary-600/20"
+                  >
+                    <CheckCircle2 size={20} strokeWidth={3} />
+                    <span className="text-sm font-black uppercase tracking-widest">
+                      Confirmar variación USD
+                    </span>
                   </button>
                 </>
               )}

@@ -20,6 +20,7 @@ import { ExportModal } from '@/components/exports/ExportModal'
 import { LocalSelector } from '@/components/locals/LocalSelector'
 import { BulkUpdateModal } from '@/components/products/BulkUpdateModal'
 import { IPCBanner } from '@/components/products/IPCBanner'
+import { UsdBanner } from '@/components/products/UsdBanner'
 import { ProductForm } from '@/components/products/ProductForm'
 import { ProductImportModal } from '@/components/products/ProductImportModal'
 import { ProductList } from '@/components/products/ProductList'
@@ -76,6 +77,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   const [categoryFilter, setCategoryFilter] = useState('')
   const [formOpen, setFormOpen] = useState(false)
   const [bulkOpen, setBulkOpen] = useState(false)
+  const [bulkInitialTab, setBulkInitialTab] = useState<'percentage' | 'ipc' | 'usd'>('percentage')
   const [importOpen, setImportOpen] = useState(false)
   const [importResult, setImportResult] = useState<CsvImportResult | null>(null)
   const [exportOpen, setExportOpen] = useState(false)
@@ -234,7 +236,19 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
 
         <IPCBanner
           ipcPct={ipcQuery.data?.ipc?.valuePct ?? null}
-          onOpenBulk={() => setBulkOpen(true)}
+          onOpenBulk={() => {
+            setBulkInitialTab('ipc')
+            setBulkOpen(true)
+          }}
+        />
+
+        <UsdBanner
+          usdRateArs={ipcQuery.data?.bcra?.usdRateArs ?? null}
+          variationPct={ipcQuery.data?.bcra?.valuePct ?? null}
+          onOpenBulk={() => {
+            setBulkInitialTab('usd')
+            setBulkOpen(true)
+          }}
         />
 
         <div className="min-h-[400px]">
@@ -315,6 +329,9 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
         <BulkUpdateModal
           localId={localId}
           ipcPct={ipcQuery.data?.ipc?.valuePct ?? null}
+          usdRateArs={ipcQuery.data?.bcra?.usdRateArs ?? null}
+          usdVariationPct={ipcQuery.data?.bcra?.valuePct ?? null}
+          initialTab={bulkInitialTab}
           onClose={() => setBulkOpen(false)}
         />
       ) : null}

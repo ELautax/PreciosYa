@@ -1,7 +1,12 @@
 import type { Request, Response } from 'express'
 import { z } from 'zod'
 
-import { applyIPCToLocal, getIpcBreakdownForLocal } from '../services/economic-index.service.js'
+import {
+  applyIPCToLocal,
+  applyUsdToLocal,
+  getIpcBreakdownForLocal,
+  getUsdBreakdownForLocal,
+} from '../services/economic-index.service.js'
 import {
   createLocal,
   getLocalsForUser,
@@ -108,5 +113,36 @@ export async function getIpcBreakdownForLocalHandler(
   }
   const id = z.string().uuid().parse(req.params.id)
   const result = await getIpcBreakdownForLocal(user.id, id)
+  sendSuccess(res, result)
+}
+
+export async function applyUsdToLocalHandler(req: Request, res: Response): Promise<void> {
+  const user = req.user
+  if (!user) {
+    throw new AppError({
+      statusCode: 401,
+      message: 'No autenticado',
+      code: 'UNAUTHORIZED',
+    })
+  }
+  const id = z.string().uuid().parse(req.params.id)
+  const result = await applyUsdToLocal(user.id, id)
+  sendSuccess(res, result)
+}
+
+export async function getUsdBreakdownForLocalHandler(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const user = req.user
+  if (!user) {
+    throw new AppError({
+      statusCode: 401,
+      message: 'No autenticado',
+      code: 'UNAUTHORIZED',
+    })
+  }
+  const id = z.string().uuid().parse(req.params.id)
+  const result = await getUsdBreakdownForLocal(user.id, id)
   sendSuccess(res, result)
 }

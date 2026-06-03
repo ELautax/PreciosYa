@@ -24,8 +24,16 @@ vi.mock('@/hooks/useLocals', () => ({
     mutateAsync: applyIpcMutateAsyncMock,
     isPending: false,
   }),
+  useApplyUsdToLocal: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
   useIpcBreakdownForLocal: () => ({
     data: { breakdown: [], totalProducts: 0 },
+    isLoading: false,
+  }),
+  useUsdBreakdownForLocal: () => ({
+    data: { breakdown: [], totalProducts: 0, variationPct: 0, usdRateArs: null, period: '' },
     isLoading: false,
   }),
 }))
@@ -43,9 +51,9 @@ describe('BulkUpdateModal', () => {
       />,
     )
 
-    const ipcTab = screen.getByRole('button', { name: 'Aplicar IPC' })
+    const ipcTab = screen.getByRole('button', { name: 'IPC' })
     await user.click(ipcTab)
-    const confirmIpc = screen.getByRole('button', { name: 'Confirmar y aplicar IPC' })
+    const confirmIpc = screen.getByRole('button', { name: /Confirmar y Aplicar IPC/i })
     expect(confirmIpc).toBeDisabled()
   })
 
@@ -61,8 +69,8 @@ describe('BulkUpdateModal', () => {
       />,
     )
 
-    await user.type(screen.getByLabelText('Aumento (%)'), '5')
-    await user.click(screen.getByRole('button', { name: 'Aplicar aumento' }))
+    await user.type(screen.getByPlaceholderText('8.5'), '5')
+    await user.click(screen.getByRole('button', { name: /Aplicar Aumento Masivo/i }))
 
     await waitFor(() => {
       expect(bulkMutateAsyncMock).toHaveBeenCalledWith({
@@ -70,6 +78,6 @@ describe('BulkUpdateModal', () => {
         increasePct: 5,
       })
     })
-    expect(screen.getByText('Se actualizaron 2 producto(s).')).toBeInTheDocument()
+    expect(screen.getByText(/Se actualizaron 2 producto\(s\)/)).toBeInTheDocument()
   })
 })

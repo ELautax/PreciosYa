@@ -11,7 +11,8 @@ import {
   Store,
   ArrowUpRight,
   Activity,
-  CheckCircle2
+  CheckCircle2,
+  DollarSign,
 } from 'lucide-react'
 
 import type { ApiSuccess } from 'shared'
@@ -121,7 +122,7 @@ export default function DashboardPage() {
         </header>
 
         {/* KPI Grid */}
-        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4 animate-fade-in">
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 animate-fade-in">
           <KPICard 
             label="Productos" 
             value={productsQ.data?.total} 
@@ -146,6 +147,20 @@ export default function DashboardPage() {
             icon={TrendingUp}
             color="text-accent-600"
             bg="bg-accent-50 dark:bg-accent-900/20"
+          />
+          <KPICard 
+            label="USD oficial" 
+            value={
+              ipcQ.data?.bcra?.usdRateArs != null
+                ? `$${ipcQ.data.bcra.usdRateArs.toLocaleString('es-AR')}${
+                    ipcQ.data.bcra ? ` (${ipcQ.data.bcra.valuePct >= 0 ? '+' : ''}${ipcQ.data.bcra.valuePct.toFixed(2)}%)` : ''
+                  }`
+                : '—'
+            } 
+            loading={ipcQ.isLoading}
+            icon={DollarSign}
+            color="text-primary-700"
+            bg="bg-primary-50 dark:bg-primary-900/20"
           />
           <KPICard 
             label="Último PNG" 

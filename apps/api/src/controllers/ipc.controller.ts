@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express'
 
 import {
+  fetchPersistAndReturnLatestBcraUsdOficial,
   fetchPersistAndReturnLatestIpc,
   getIpcHistory,
   getLatestIndicesSnapshot,
@@ -26,6 +27,14 @@ export async function getIpcLatestHandler(req: Request, res: Response): Promise<
       snapshot = await getLatestIndicesSnapshot()
     } catch {
       // Se devuelve null si el INDEC no está disponible.
+    }
+  }
+  if (!snapshot.bcra) {
+    try {
+      await fetchPersistAndReturnLatestBcraUsdOficial()
+      snapshot = await getLatestIndicesSnapshot()
+    } catch {
+      // Sin BCRA en red: se devuelve null.
     }
   }
 

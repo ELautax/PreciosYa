@@ -98,6 +98,63 @@ export function useApplyIpcToLocal(localId: string) {
   })
 }
 
+export function useApplyUsdToLocal(localId: string) {
+  const api = useApiClient()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      const res = await api.put<
+        ApiSuccess<{
+          updated: number
+          appliedUsdPct: number
+          breakdown: Array<{
+            categoryId: string
+            categoryName: string
+            indexType: string
+            variationPct: number
+            productCount: number
+          }>
+        }>
+      >(`/api/locals/${localId}/apply-usd`)
+      return res.data.data
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['products', localId] })
+      void qc.invalidateQueries({ queryKey: ['ipc-latest'] })
+      appToast.success('Variación USD aplicada')
+    },
+    onError: () => {
+      appToast.error('No se pudo aplicar la variación USD')
+    },
+  })
+}
+
+export function useUsdBreakdownForLocal(localId: string | undefined) {
+  const api = useApiClient()
+  return useQuery({
+    queryKey: ['locals-usd-breakdown', localId],
+    enabled: Boolean(localId),
+    queryFn: async () => {
+      const res = await api.get<
+        ApiSuccess<{
+          totalProducts: number
+          variationPct: number
+          usdRateArs: number | null
+          period: string
+          breakdown: Array<{
+            categoryId: string
+            categoryName: string
+            indexType: string
+            variationPct: number
+            productCount: number
+          }>
+        }>
+      >(`/api/locals/${localId}/usd-breakdown`)
+      return res.data.data
+    },
+  })
+}
+
 export function useIpcBreakdownForLocal(localId: string | undefined) {
   const api = useApiClient()
   return useQuery({

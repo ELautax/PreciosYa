@@ -1,4 +1,5 @@
 import type { Category, CategoryTemplate } from '@prisma/client'
+import { IndexType } from '@prisma/client'
 
 import { prisma } from '../lib/prisma.js'
 import { assertLocalOwnership } from './local.service.js'
@@ -56,10 +57,10 @@ export async function getCategories(userId: string, localId: string) {
   return rows.map(serializeCategory)
 }
 
-export async function setCategoryActive(
+export async function updateCategory(
   userId: string,
   categoryId: string,
-  isActive: boolean,
+  patch: { isActive?: boolean; indexByUsd?: boolean },
 ) {
   const cat = await prisma.category.findFirst({
     where: { id: categoryId },
@@ -73,9 +74,21 @@ export async function setCategoryActive(
     })
   }
 
+  const data: { isActive?: boolean; preferredIndex?: IndexType } = {}
+  if (patch.isActive !== undefined) data.isActive = patch.isActive
+  if (patch.indexByUsd !== undefined) {
+    if (patch.indexByUsd) {
+      data.preferredIndex = IndexType.BCRA_USD_OFICIAL
+    } else if (cat.template) {
+      data.preferredIndex = cat.template.preferredIndex
+    } else {
+      data.preferredIndex = IndexType.IPC_INDEC
+    }
+  }
+
   const updated = await prisma.category.update({
     where: { id: categoryId },
-    data: { isActive },
+    data,
     include: { template: true },
   })
   return serializeCategory(updated)

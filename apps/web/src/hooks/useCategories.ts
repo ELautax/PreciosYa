@@ -32,23 +32,42 @@ export function useCategories(
   })
 }
 
-export function usePatchCategoryActive(localId: string) {
+export function usePatchCategory(localId: string) {
   const api = useApiClient()
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (input: { id: string; isActive: boolean }) => {
+    mutationFn: async (input: {
+      id: string
+      isActive?: boolean
+      indexByUsd?: boolean
+    }) => {
+      const body: { isActive?: boolean; indexByUsd?: boolean } = {}
+      if (input.isActive !== undefined) body.isActive = input.isActive
+      if (input.indexByUsd !== undefined) body.indexByUsd = input.indexByUsd
       const res = await api.patch<ApiSuccess<{ category: CategoryDto }>>(
         `/api/categories/${input.id}`,
-        { isActive: input.isActive },
+        body,
       )
       return res.data.data.category
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['categories', localId] })
+      void qc.invalidateQueries({ queryKey: ['locals-ipc-breakdown', localId] })
+      void qc.invalidateQueries({ queryKey: ['locals-usd-breakdown', localId] })
       appToast.success('Rubro actualizado')
     },
     onError: () => {
       appToast.error('No se pudo actualizar el rubro')
     },
   })
+}
+
+/** @deprecated Usar usePatchCategory */
+export function usePatchCategoryActive(localId: string) {
+  const mut = usePatchCategory(localId)
+  return {
+    ...mut,
+    mutateAsync: (input: { id: string; isActive: boolean }) =>
+      mut.mutateAsync({ id: input.id, isActive: input.isActive }),
+  }
 }

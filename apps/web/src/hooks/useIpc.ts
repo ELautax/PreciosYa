@@ -8,6 +8,7 @@ type EconomicIndexDto = {
   type: string
   period: string
   valuePct: number
+  usdRateArs?: number | null
   sourceUrl: string | null
   fetchedAt: string
 }

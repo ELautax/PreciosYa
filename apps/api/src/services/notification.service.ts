@@ -139,6 +139,53 @@ export async function hasIpcNotificationForPeriod(period: Date): Promise<boolean
   })
 }
 
+export async function hasBcraUsdNotificationForPeriod(period: Date): Promise<boolean> {
+  const periodKey = period.toISOString().slice(0, 10)
+  const recent = await prisma.notification.findMany({
+    where: { type: 'BCRA_USD_ALERT' },
+    orderBy: { createdAt: 'desc' },
+    take: 100,
+    select: { metadata: true },
+  })
+  return recent.some((row) => {
+    if (!row.metadata || typeof row.metadata !== 'object' || Array.isArray(row.metadata)) {
+      return false
+    }
+    const meta = row.metadata as { period?: string }
+    return typeof meta.period === 'string' && meta.period.startsWith(periodKey)
+  })
+}
+
+export async function createBcraUsdSpikeNotifications(input: {
+  valuePct: number
+  period: Date
+  usdRate: number
+}): Promise<number> {
+  if (await hasBcraUsdNotificationForPeriod(input.period)) {
+    return 0
+  }
+
+  const users = await prisma.user.findMany({
+    select: { id: true },
+  })
+  if (users.length === 0) return 0
+
+  const sign = input.valuePct >= 0 ? '+' : ''
+  return createBulkNotifications(
+    users.map((u: { id: string }) => ({
+      userId: u.id,
+      type: 'BCRA_USD_ALERT' as const,
+      title: 'Salto del dólar oficial',
+      body: `USD BCRA ${input.usdRate.toFixed(2)} (${sign}${input.valuePct.toFixed(2)}% vs día anterior). Revisá costos indexados en USD.`,
+      metadata: {
+        valuePct: input.valuePct,
+        usdRate: input.usdRate,
+        period: input.period.toISOString(),
+      },
+    })),
+  )
+}
+
 export async function createNewIpcNotificationsForActiveUsers(input: {
   valuePct: number
   period: Date

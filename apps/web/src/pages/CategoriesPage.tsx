@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Tags, ChevronLeft, Store, Info } from 'lucide-react'
 
 import { LocalSelector } from '@/components/locals/LocalSelector'
-import { useCategories, usePatchCategoryActive } from '@/hooks/useCategories'
+import { useCategories, usePatchCategory } from '@/hooks/useCategories'
 import { useLocals } from '@/hooks/useLocals'
 import { useSelectedLocal } from '@/hooks/useSelectedLocal'
 import type { CategoryDto } from '@/types/category'
@@ -10,23 +10,31 @@ import type { LocalDto } from '@/types/local'
 import { EmptyState } from '@/components/feedback/EmptyState'
 
 function indexLabel(preferredIndex: string): string {
+  if (preferredIndex.startsWith('BCRA_')) return 'USD BCRA'
   if (preferredIndex.includes('ALIMENTOS')) return 'IPC Alimentos'
   if (preferredIndex === 'IPC_INDEC') return 'IPC General'
   return 'IPC por rubro INDEC'
 }
 
+function isUsdIndexed(preferredIndex: string): boolean {
+  return preferredIndex.startsWith('BCRA_')
+}
+
 function CategoryToggleRow({
   category,
-  onToggle,
+  onToggleActive,
+  onToggleUsd,
   pending,
 }: {
   category: CategoryDto
-  onToggle: (c: CategoryDto, active: boolean) => void
+  onToggleActive: (c: CategoryDto, active: boolean) => void
+  onToggleUsd: (c: CategoryDto, indexByUsd: boolean) => void
   pending: boolean
 }) {
+  const usdOn = isUsdIndexed(category.preferredIndex)
   return (
     <div
-      className={`surface-card flex items-center justify-between gap-4 p-5 transition-all ${
+      className={`surface-card flex flex-col gap-4 p-5 transition-all sm:flex-row sm:items-center sm:justify-between ${
         category.isActive ? 'border-primary-200/60' : 'opacity-60'
       }`}
     >
@@ -41,23 +49,43 @@ function CategoryToggleRow({
           <h3 className="truncate text-base font-extrabold uppercase tracking-tighter text-text-main">
             {category.name}
           </h3>
-          <span className="mt-1 inline-flex rounded-lg border border-accent-100 bg-accent-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-accent-700">
+          <span
+            className={`mt-1 inline-flex rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${
+              usdOn
+                ? 'border-primary-200 bg-primary-50 text-primary-800'
+                : 'border-accent-100 bg-accent-50 text-accent-700'
+            }`}
+          >
             {indexLabel(category.preferredIndex)}
           </span>
         </div>
       </div>
-      <label className="flex shrink-0 cursor-pointer items-center gap-2">
-        <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
-          {category.isActive ? 'Activo' : 'Off'}
-        </span>
-        <input
-          type="checkbox"
-          className="h-5 w-5 accent-primary-600"
-          checked={category.isActive}
-          disabled={pending}
-          onChange={(e) => onToggle(category, e.target.checked)}
-        />
-      </label>
+      <div className="flex flex-wrap items-center gap-4 sm:justify-end">
+        <label className="flex cursor-pointer items-center gap-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
+            Indexar USD
+          </span>
+          <input
+            type="checkbox"
+            className="h-5 w-5 accent-primary-600"
+            checked={usdOn}
+            disabled={pending || !category.isActive}
+            onChange={(e) => onToggleUsd(category, e.target.checked)}
+          />
+        </label>
+        <label className="flex cursor-pointer items-center gap-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
+            {category.isActive ? 'Activo' : 'Off'}
+          </span>
+          <input
+            type="checkbox"
+            className="h-5 w-5 accent-primary-600"
+            checked={category.isActive}
+            disabled={pending}
+            onChange={(e) => onToggleActive(category, e.target.checked)}
+          />
+        </label>
+      </div>
     </div>
   )
 }
@@ -65,10 +93,14 @@ function CategoryToggleRow({
 function CategoriesMain({ locals }: { locals: LocalDto[] }) {
   const [localId, setLocalId] = useSelectedLocal(locals)
   const listQuery = useCategories(localId)
-  const patchMut = usePatchCategoryActive(localId)
+  const patchMut = usePatchCategory(localId)
 
-  function handleToggle(c: CategoryDto, isActive: boolean): void {
+  function handleToggleActive(c: CategoryDto, isActive: boolean): void {
     void patchMut.mutateAsync({ id: c.id, isActive })
+  }
+
+  function handleToggleUsd(c: CategoryDto, indexByUsd: boolean): void {
+    void patchMut.mutateAsync({ id: c.id, indexByUsd })
   }
 
   return (
@@ -103,8 +135,8 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
         <div className="surface-card flex items-start gap-3 border-primary-100 bg-primary-50/20 p-5">
           <Info size={18} className="mt-0.5 shrink-0 text-primary-600" />
           <p className="text-[10px] font-bold uppercase leading-relaxed tracking-tight text-text-muted">
-            No podés crear rubros personalizados: elegís del catálogo oficial. Al aplicar IPC, se
-            usa el porcentaje de la división vinculada a cada rubro.
+            Activá rubros del catálogo INDEC. Marcá &quot;Indexar USD&quot; en rubros sensibles al
+            dólar (importados, tecnología). El resto sigue con IPC por división.
           </p>
         </div>
 
@@ -128,7 +160,8 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
                 key={c.id}
                 category={c}
                 pending={patchMut.isPending}
-                onToggle={handleToggle}
+                onToggleActive={handleToggleActive}
+                onToggleUsd={handleToggleUsd}
               />
             ))}
           </div>
