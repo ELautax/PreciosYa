@@ -60,6 +60,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/download" element={<Navigate to="/login#descargar-apk" replace />} />
           <Route
             element={
               <ProtectedRoute>

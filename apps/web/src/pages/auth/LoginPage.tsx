@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ShieldAlert, ChevronRight, CheckCircle2 } from 'lucide-react'
 
 import { useAuth } from '@/contexts/AuthContext'
+import { AndroidApkDownload } from '@/components/pwa/AndroidApkDownload'
 import preciosYaLogo from '@/assets/preciosya-logo.png'
 
 export default function LoginPage() {
@@ -11,6 +12,14 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams()
   const fromLanding = searchParams.get('from') === 'landing'
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (window.location.hash === '#descargar-apk') {
+      window.requestAnimationFrame(() => {
+        document.getElementById('descargar-apk')?.scrollIntoView({ behavior: 'smooth' })
+      })
+    }
+  }, [])
 
   useEffect(() => {
     if (!loading && session && !fromLanding) {
@@ -85,6 +94,7 @@ export default function LoginPage() {
               <span className="text-xs font-black uppercase tracking-widest text-text-muted">Usar otra cuenta</span>
             </button>
           </div>
+          <AndroidApkDownload />
         </div>
       </main>
     )
@@ -165,7 +175,9 @@ export default function LoginPage() {
           )}
         </div>
 
-        <footer className="mt-16 flex flex-col items-center gap-6 animate-slide-up opacity-60">
+        <AndroidApkDownload />
+
+        <footer className="mt-10 flex flex-col items-center gap-6 animate-slide-up opacity-60">
            <div className="h-12 w-[1px] bg-gradient-to-b from-primary-600 to-transparent" />
            <div className="flex flex-col gap-2">
               <p className="text-[10px] font-black text-text-subtle uppercase tracking-[0.25em]">Desarrollado para</p>

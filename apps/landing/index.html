@@ -21,7 +21,7 @@
   <meta name="twitter:description" content="Actualizá precios con IPC oficial de INDEC, controlá márgenes y compartí listas por WhatsApp." />
   <meta name="theme-color" content="#07110B" />
   <link rel="icon" type="image/png" href="./assets/preciosya-logo.png" />
-  <link rel="manifest" href="./manifest.json" />
+  <script src="./site-config.js"></script>
   <link rel="apple-touch-icon" href="./assets/preciosya-logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -35,7 +35,7 @@
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Android, iOS, Chrome OS",
     "inLanguage": "es-AR",
-    "url": "https://web-rho-ten-99.vercel.app",
+    "url": "https://preciosya-app.vercel.app",
     "offers": [
       { "@type": "Offer", "name": "Plan Free", "price": "0", "priceCurrency": "ARS" },
       { "@type": "Offer", "name": "Plan Pro", "price": "4500", "priceCurrency": "ARS" }
@@ -1447,7 +1447,7 @@
           <a href="#instalar">Instalar</a>
           <a href="#faq">FAQ</a>
         </nav>
-        <a href="https://web-rho-ten-99.vercel.app/login?from=landing" class="btn btn-primary install-app-cta">Empezar gratis</a>
+        <a href="https://preciosya-app.vercel.app/login?from=landing" class="btn btn-primary install-app-cta">Empezar gratis</a>
         <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileNav">
           <span></span>
           <span></span>
@@ -1462,7 +1462,7 @@
       <a href="#precios"><span class="msr">payments</span>Precios</a>
       <a href="#instalar"><span class="msr">smartphone</span>Instalar app</a>
       <a href="#faq"><span class="msr">help</span>FAQ</a>
-      <a href="https://web-rho-ten-99.vercel.app/login?from=landing" class="btn btn-primary install-app-cta">Empezar gratis</a>
+      <a href="https://preciosya-app.vercel.app/login?from=landing" class="btn btn-primary install-app-cta">Empezar gratis</a>
     </nav>
 
     <main id="top" class="hero">
@@ -1478,7 +1478,7 @@
         <h1>Los comerciantes argentinos actualizan precios como hace 30 años.</h1>
         <p class="hero-copy">Libreta, memoria y planilla. PreciosYa reemplaza ese caos con una PWA que aplica IPC, alerta márgenes y genera listas para clientes en minutos.</p>
         <div class="hero-actions">
-          <a href="https://web-rho-ten-99.vercel.app/login?from=landing" class="btn btn-primary install-app-cta">Instalar app</a>
+          <a href="https://preciosya-app.vercel.app/login?from=landing" class="btn btn-primary install-app-cta">Abrir app</a>
           <a href="#precios" class="btn btn-ghost">Ver planes</a>
         </div>
         <div id="installTip" class="install-tip" role="status" aria-live="polite"></div>
@@ -1702,7 +1702,7 @@
               <li>Cálculo automático de precios</li>
               <li>Exportación WhatsApp básica</li>
             </ul>
-            <a href="https://web-rho-ten-99.vercel.app/login?from=landing" class="btn btn-ghost install-app-cta">Empezar gratis</a>
+            <a href="https://preciosya-app.vercel.app/login?from=landing" class="btn btn-ghost install-app-cta">Empezar gratis</a>
           </article>
           <article class="plan highlight">
             <span class="plan-badge">Más elegido</span>
@@ -1714,7 +1714,7 @@
               <li>IPC + alertas de margen</li>
               <li>Historial completo + reportes</li>
             </ul>
-            <a href="https://web-rho-ten-99.vercel.app/login?from=landing" class="btn btn-primary install-app-cta">Probar Pro</a>
+            <a href="https://preciosya-app.vercel.app/login?from=landing" class="btn btn-primary install-app-cta">Probar Pro</a>
           </article>
           <article class="plan">
             <h3>Agency</h3>
@@ -1725,7 +1725,7 @@
               <li>Soporte prioritario</li>
               <li>Configuración asistida</li>
             </ul>
-            <a href="https://web-rho-ten-99.vercel.app/login?from=landing" class="btn btn-mix install-app-cta">Hablar con ventas</a>
+            <a href="https://preciosya-app.vercel.app/login?from=landing" class="btn btn-mix install-app-cta">Hablar con ventas</a>
           </article>
         </div>
       </section>
@@ -1792,7 +1792,7 @@
             </summary>
             <div class="faq-answer-wrap">
               <div class="faq-answer-inner">
-                <p>Sí. Es una PWA. En Android se instala directo; en iPhone se agrega desde Compartir &gt; Agregar a pantalla de inicio.</p>
+                <p>En Android descargás el APK desde preciosya-app.vercel.app. En iPhone agregá la web a inicio desde Safari (Compartir → Agregar a pantalla de inicio).</p>
               </div>
             </div>
           </details>
@@ -1824,18 +1824,18 @@
       <section id="instalar" class="wrap install-section reveal">
         <span class="kicker"><span class="msr">smartphone</span>Disponible en tu celular</span>
         <h2>Llevá PreciosYa en tu celular</h2>
-        <p class="lead">Es una PWA: se instala como una app nativa sin pasar por el Play Store ni el App Store. Sin actualizaciones manuales, siempre al día.</p>
+        <p class="lead">Descargá el APK desde la app web o abrila en el navegador. En iPhone usá «Agregar a pantalla de inicio» en Safari.</p>
         <div class="install-os-grid">
           <div class="install-card">
             <div class="install-card-head">
               <span class="msr" style="color:var(--green)">android</span>
-              Android — Chrome
+              Android — APK
             </div>
             <ol class="install-step-list">
-              <li><span class="install-step-num">1</span>Abrí <strong style="color:var(--fg)">web-rho-ten-99.vercel.app</strong> en Chrome</li>
-              <li><span class="install-step-num">2</span>Tocá el menú <strong style="color:var(--fg)">⋮</strong> (tres puntos) arriba a la derecha</li>
-              <li><span class="install-step-num">3</span>Seleccioná <strong style="color:var(--fg)">"Agregar a pantalla de inicio"</strong></li>
-              <li><span class="install-step-num">4</span>Confirmá — ya aparece como app nativa</li>
+              <li><span class="install-step-num">1</span>Entrá a <strong style="color:var(--fg)">preciosya-app.vercel.app</strong></li>
+              <li><span class="install-step-num">2</span>Tocá <strong style="color:var(--fg)">Descargar APK (Android)</strong></li>
+              <li><span class="install-step-num">3</span>Abrí el archivo e instalá la app</li>
+              <li><span class="install-step-num">4</span>Permití «Instalar apps desconocidas» si Android lo pide</li>
             </ol>
           </div>
           <div class="install-card">
@@ -1844,7 +1844,7 @@
               iPhone — Safari
             </div>
             <ol class="install-step-list">
-              <li><span class="install-step-num">1</span>Abrí <strong style="color:var(--fg)">web-rho-ten-99.vercel.app</strong> en Safari</li>
+              <li><span class="install-step-num">1</span>Abrí <strong style="color:var(--fg)">preciosya-app.vercel.app</strong> en Safari</li>
               <li><span class="install-step-num">2</span>Tocá el botón <strong style="color:var(--fg)">Compartir</strong> (cuadrado con flecha ↑)</li>
               <li><span class="install-step-num">3</span>Seleccioná <strong style="color:var(--fg)">"Agregar a pantalla de inicio"</strong></li>
               <li><span class="install-step-num">4</span>Tocá "Agregar" arriba a la derecha</li>
@@ -1852,10 +1852,10 @@
           </div>
         </div>
         <div class="install-cta-row">
-          <a href="https://web-rho-ten-99.vercel.app/login?from=landing" class="btn btn-primary install-app-cta" style="padding:0.82rem 1.6rem;font-size:0.95rem;">
-            <span class="msr" style="font-size:1rem;vertical-align:-0.2em;margin-right:0.22rem;">download</span>Instalar PreciosYa
+          <a href="https://preciosya-app.vercel.app/preciosya.apk" class="btn btn-primary" style="padding:0.82rem 1.6rem;font-size:0.95rem;">
+            <span class="msr" style="font-size:1rem;vertical-align:-0.2em;margin-right:0.22rem;">download</span>Descargar APK
           </a>
-          <a href="#precios" class="btn btn-ghost">Ver planes</a>
+          <a href="https://preciosya-app.vercel.app/login?from=landing" class="btn btn-ghost">Abrir app web</a>
         </div>
       </section>
 
@@ -1863,7 +1863,7 @@
         <h3>Pasá de actualizar “a ojo” a decidir con datos</h3>
         <p>Instalá PreciosYa y empezá a controlar márgenes, aplicar IPC y compartir precios con una operación simple y profesional.</p>
         <div class="final-actions">
-          <a href="https://web-rho-ten-99.vercel.app/login?from=landing" class="btn btn-primary install-app-cta">Instalar app</a>
+          <a href="https://preciosya-app.vercel.app/login?from=landing" class="btn btn-primary install-app-cta">Abrir app</a>
           <a href="#precios" class="btn btn-ghost">Ver planes</a>
         </div>
       </section>
@@ -1886,7 +1886,7 @@
             <li><a href="#beneficios"><span class="msr">bolt</span>Funcionalidades</a></li>
             <li><a href="#como-funciona"><span class="msr">route</span>Cómo funciona</a></li>
             <li><a href="#precios"><span class="msr">payments</span>Precios</a></li>
-            <li><a href="https://web-rho-ten-99.vercel.app/login?from=landing" class="install-app-cta"><span class="msr">open_in_new</span>Abrir app</a></li>
+            <li><a href="https://preciosya-app.vercel.app/login?from=landing" class="install-app-cta"><span class="msr">open_in_new</span>Abrir app</a></li>
           </ul>
         </div>
         <div class="footer-col">
@@ -1921,7 +1921,8 @@
     (function () {
       "use strict";
 
-      const appLoginUrl = "https://web-rho-ten-99.vercel.app/login?from=landing";
+      const appLoginUrl = window.PRECIOSYA_APP_LOGIN || "https://preciosya-app.vercel.app/login?from=landing";
+      const appApkUrl = window.PRECIOSYA_APP_APK || "https://preciosya-app.vercel.app/preciosya.apk";
       const installButtons = document.querySelectorAll(".install-app-cta");
       const installTip = document.getElementById("installTip");
       const heroVideo = document.getElementById("heroVideo");
@@ -1934,9 +1935,8 @@
       const dotHalo = document.getElementById("dotHalo");
       const chartTabs = document.querySelectorAll(".chart-tab");
 
-      let deferredInstallPrompt = null;
 
-      const chartSeries = {
+      const chartPath = document.getElementById("chartPath");
         "7": [48, 56, 53, 58, 60, 57, 59],
         "30": [44, 57, 56, 49, 53, 60, 55, 56],
         "90": [39, 46, 52, 59, 57, 52, 55, 60, 58],
@@ -2091,36 +2091,17 @@
         }
       });
 
-      window.addEventListener("beforeinstallprompt", function (event) {
-        event.preventDefault();
-        deferredInstallPrompt = event;
-      });
-
       installButtons.forEach(function (button) {
-        button.addEventListener("click", async function (event) {
-          event.preventDefault();
-          const fallbackUrl = button.getAttribute("href") || appLoginUrl;
-
-          if (deferredInstallPrompt) {
-            deferredInstallPrompt.prompt();
-            const choiceResult = await deferredInstallPrompt.userChoice;
-            deferredInstallPrompt = null;
-            if (choiceResult.outcome === "accepted") {
-              showTip("Instalando PreciosYa en tu dispositivo...", 2200);
-              return;
-            }
-          }
-
-          const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-          if (isIOS) {
-            showTip("En iPhone: Compartir -> Agregar a pantalla de inicio", 3200);
-            window.setTimeout(function () {
-              window.location.href = fallbackUrl;
-            }, 1200);
+        button.addEventListener("click", function (event) {
+          const href = button.getAttribute("href") || appLoginUrl;
+          if (button.dataset.apk === "true") {
+            event.preventDefault();
+            window.location.href = appApkUrl;
             return;
           }
-
-          window.location.href = fallbackUrl;
+          if (!href.startsWith("#")) return;
+          event.preventDefault();
+          window.location.href = appLoginUrl;
         });
       });
 

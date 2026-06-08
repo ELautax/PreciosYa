@@ -6,7 +6,7 @@ Gestión de precios para comercios (IPC, USD BCRA, rubros, listas).
 
 | Componente | URL |
 |------------|-----|
-| Web | https://preciosya.vercel.app |
+| Web (app) | https://preciosya-app.vercel.app |
 | API | https://api-production-3626.up.railway.app |
 | Landing | https://preciosya-landing.vercel.app |
 
