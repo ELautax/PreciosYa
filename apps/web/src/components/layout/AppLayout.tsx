@@ -146,9 +146,9 @@ export function AppLayout() {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col pb-20 md:pb-0">
+      <div className="flex flex-1 flex-col">
         <header 
-          className={`sticky top-0 z-40 border-b border-border bg-surface/80 backdrop-blur-md transition-all ${wcoActive ? 'wco-active' : ''}`}
+          className={`sticky top-0 z-40 border-b border-border bg-surface/80 backdrop-blur-md safe-area-inset-top transition-all ${wcoActive ? 'wco-active' : ''}`}
         >
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
             {wcoActive && <div className="wco-drag-region" aria-hidden />}
@@ -164,41 +164,41 @@ export function AppLayout() {
                {/* Contextual Title based on route can go here */}
             </div>
 
-            <div className="flex items-center gap-2 wco-no-drag">
+            <div className="flex items-center gap-3 wco-no-drag">
               <div className="hidden sm:block">
                 <InstallPromptButton />
               </div>
               <NotificationCenter />
               <button
                 onClick={toggleTheme}
-                className="btn-secondary h-10 w-10 p-0 rounded-full border-none bg-transparent shadow-none hover:bg-surface-soft"
+                className="btn-secondary h-11 w-11 p-0 rounded-full border-none bg-transparent shadow-none hover:bg-surface-soft active:scale-90"
                 aria-label={theme === 'light' ? 'Activar modo oscuro' : 'Activar modo claro'}
               >
-                <div className="transition-transform duration-300 hover:rotate-12">
-                   {theme === 'light' ? <Moon size={20} className="text-text-muted" /> : <Sun size={20} className="text-accent-500" />}
+                <div className="transition-transform duration-300">
+                   {theme === 'light' ? <Moon size={22} className="text-text-muted" /> : <Sun size={22} className="text-accent-500" />}
                 </div>
               </button>
-              <div className="h-8 w-[1px] bg-border mx-1 hidden sm:block" />
-              <div className="hidden items-center gap-3 sm:flex">
-                 <div className="flex flex-col items-end text-right">
-                    {loadingMe ? (
-                      <div className="skeleton h-3 w-20" />
-                    ) : (
-                      <p className="text-xs font-black text-text-main leading-none">{me?.name}</p>
-                    )}
-                    <p className="text-[10px] font-bold text-text-subtle leading-none mt-1 uppercase tracking-tighter">
-                      {me?.isAdmin ? 'ADMINISTRADOR' : 'COMERCIANTE'}
-                    </p>
-                 </div>
-                 <div className="h-9 w-9 rounded-full bg-primary-50 border border-primary-100 flex items-center justify-center font-black text-primary-700 dark:bg-primary-900/20 dark:border-primary-800">
-                    {me?.name?.charAt(0).toUpperCase()}
-                 </div>
+              
+              <div className="flex items-center gap-2">
+                <div className="hidden flex-col items-end text-right sm:flex">
+                   {loadingMe ? (
+                     <div className="skeleton h-3 w-20" />
+                   ) : (
+                     <p className="text-xs font-black text-text-main leading-none">{me?.name}</p>
+                   )}
+                   <p className="text-[10px] font-bold text-text-subtle leading-none mt-1 uppercase tracking-tighter">
+                     {me?.isAdmin ? 'ADMINISTRADOR' : 'COMERCIANTE'}
+                   </p>
+                </div>
+                <div className="h-9 w-9 rounded-full bg-primary-50 border border-primary-100 flex items-center justify-center font-black text-primary-700 shadow-sm transition-transform active:scale-95 dark:bg-primary-900/20 dark:border-primary-800">
+                   {me?.name?.charAt(0).toUpperCase() || '?'}
+                </div>
               </div>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 overflow-x-hidden">
+        <main className="flex-1 overflow-x-hidden pb-24 md:pb-8">
           <ErrorBoundary>
             <Outlet />
           </ErrorBoundary>
@@ -206,14 +206,17 @@ export function AppLayout() {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface/90 pb-safe backdrop-blur-xl md:hidden" aria-label="Navegación móvil">
+      <nav 
+        className={`fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface/90 pb-safe backdrop-blur-xl transition-transform duration-300 md:hidden ${isMoreMenuOpen ? 'translate-y-full' : 'translate-y-0'}`} 
+        aria-label="Navegación móvil"
+      >
         <div className="grid h-16 grid-cols-5">
           {mobileNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex flex-col items-center justify-center gap-1 transition-all ${
+                `relative flex flex-col items-center justify-center gap-1 transition-all ${
                   isActive ? 'text-primary-600' : 'text-text-subtle'
                 }`
               }
@@ -223,7 +226,10 @@ export function AppLayout() {
                 strokeWidth={location.pathname === item.to ? 2.5 : 2} 
                 className={`transition-transform ${location.pathname === item.to ? 'scale-110' : ''}`}
               />
-              <span className="text-[9px] font-black uppercase tracking-widest">{item.label}</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
+              {location.pathname === item.to && (
+                <div className="absolute -bottom-1 h-1 w-1 rounded-full bg-primary-600" />
+              )}
             </NavLink>
           ))}
           <button
@@ -234,7 +240,7 @@ export function AppLayout() {
             aria-expanded={isMoreMenuOpen}
           >
             <MoreHorizontal size={22} />
-            <span className="text-[9px] font-black uppercase tracking-widest">Más</span>
+            <span className="text-[10px] font-black uppercase tracking-widest">Más</span>
           </button>
         </div>
       </nav>
@@ -242,7 +248,7 @@ export function AppLayout() {
       {/* Mobile "More" Menu Overlay */}
       {isMoreMenuOpen && (
         <div 
-          className="fixed inset-0 z-[60] bg-black/40 animate-fade-in md:hidden" 
+          className="fixed inset-0 z-[70] bg-black/40 animate-fade-in md:hidden" 
           onClick={() => setIsMoreMenuOpen(false)}
           role="presentation"
         >
@@ -257,11 +263,17 @@ export function AppLayout() {
               <h2 className="text-xl font-black tracking-tight text-text-main">Menú Principal</h2>
               <button 
                 onClick={() => setIsMoreMenuOpen(false)} 
-                className="rounded-full bg-surface-soft p-2 text-text-subtle transition-transform active:scale-90"
+                className="rounded-full bg-surface-soft p-3 text-text-subtle transition-transform active:scale-90"
+                aria-label="Cerrar menú"
               >
-                <X size={20} strokeWidth={3} />
+                <X size={22} strokeWidth={3} />
               </button>
             </div>
+            
+            <div className="mb-6 sm:hidden">
+              <InstallPromptButton />
+            </div>
+
             <div className="grid gap-3">
               {moreNavItems.map((item) => (
                 <NavLink

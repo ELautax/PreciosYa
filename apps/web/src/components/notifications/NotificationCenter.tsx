@@ -60,13 +60,13 @@ export function NotificationCenter() {
   const items = listQ.data?.items ?? []
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setOpen(false)
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    document.addEventListener('pointerdown', handleClickOutside)
+    return () => document.removeEventListener('pointerdown', handleClickOutside)
   }, [])
 
   return (
@@ -74,14 +74,14 @@ export function NotificationCenter() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`relative flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95 ${
+        className={`relative flex h-11 w-11 items-center justify-center rounded-full transition-all active:scale-90 ${
           open 
             ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20' 
-            : 'bg-surface-soft text-text-muted hover:bg-border/50'
+            : 'bg-surface-soft/80 text-text-muted hover:bg-border/50'
         }`}
         aria-label="Notificaciones"
       >
-        <Bell size={20} strokeWidth={open ? 2.5 : 2} />
+        <Bell size={22} strokeWidth={open ? 2.5 : 2} />
         {unread > 0 ? (
           <span className={`absolute -right-0.5 -top-0.5 flex h-5 min-w-5 animate-scale-in items-center justify-center rounded-full bg-danger-600 px-1 text-[10px] font-black text-white ring-2 ${open ? 'ring-primary-600' : 'ring-surface'}`}>
             {unread > 9 ? '9+' : unread}
@@ -90,12 +90,12 @@ export function NotificationCenter() {
       </button>
 
       {open ? (
-        <div className="absolute right-0 z-50 mt-3 w-[calc(100vw-2rem)] sm:w-[400px] overflow-hidden animate-slide-down rounded-2xl border border-border bg-surface shadow-warm-lg">
-          <div className="flex items-center justify-between border-b border-border bg-surface px-5 py-4">
+        <div className="absolute right-0 z-50 mt-4 w-[calc(100vw-2rem)] sm:w-[400px] overflow-hidden animate-slide-down rounded-3xl border border-border bg-surface shadow-2xl">
+          <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-5">
             <div>
               <h3 className="text-sm font-black text-text-main leading-none">Notificaciones</h3>
-              <p className="mt-1 text-[10px] font-extrabold text-text-subtle uppercase tracking-widest leading-none">
-                {unread} pendientes de lectura
+              <p className="mt-1.5 text-[10px] font-extrabold text-text-subtle uppercase tracking-widest leading-none">
+                {unread} pendientes
               </p>
             </div>
             {items.length > 0 && (
@@ -103,15 +103,15 @@ export function NotificationCenter() {
                 type="button"
                 onClick={() => void markAll.mutateAsync()}
                 disabled={markAll.isPending || unread === 0}
-                className="flex items-center gap-1.5 text-xs font-bold text-primary-600 hover:text-primary-700 disabled:opacity-30"
+                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary-600 hover:text-primary-700 disabled:opacity-30 transition-all"
               >
                 <Check size={14} strokeWidth={3} />
-                Marcar todas
+                Leer todo
               </button>
             )}
           </div>
 
-          <div className="max-h-[420px] divide-y divide-border/50 overflow-y-auto overscroll-contain">
+          <div className="max-h-[420px] divide-y divide-border/50 overflow-y-auto overscroll-contain scrollbar-hide">
             {listQ.isLoading ? (
               <div className="space-y-4 p-5">
                 <div className="skeleton h-16 w-full" />
@@ -123,8 +123,8 @@ export function NotificationCenter() {
                 <div className="mb-4 rounded-3xl bg-surface-soft p-5 text-text-subtle">
                   <BellOff size={40} strokeWidth={1.5} />
                 </div>
-                <p className="text-base font-black text-text-main">Todo al día por aquí</p>
-                <p className="mt-1 text-sm text-text-subtle text-balance">No tenés notificaciones nuevas en este momento.</p>
+                <p className="text-base font-black text-text-main">Todo al día</p>
+                <p className="mt-1 text-sm text-text-subtle text-balance">No tenés notificaciones nuevas.</p>
               </div>
             ) : (
               items.map((n) => {
@@ -153,11 +153,11 @@ export function NotificationCenter() {
                           {formatDate(n.createdAt)}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs text-text-muted line-clamp-2 leading-relaxed">
+                      <p className="mt-1.5 text-xs text-text-muted line-clamp-2 leading-relaxed">
                         {n.body}
                       </p>
                       {!n.isRead && (
-                        <div className="mt-3 flex items-center justify-between">
+                        <div className="mt-4 flex items-center justify-between">
                           <button
                             type="button"
                             onClick={() => void markOne.mutateAsync(n.id)}
@@ -177,7 +177,7 @@ export function NotificationCenter() {
           
           <div className="bg-surface-soft/50 p-4 text-center border-t border-border">
              <button className="text-[10px] font-black uppercase tracking-widest text-text-subtle hover:text-text-main transition-all">
-                Ver historial completo
+                Historial completo
              </button>
           </div>
         </div>

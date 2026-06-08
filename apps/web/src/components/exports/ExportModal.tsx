@@ -70,14 +70,17 @@ export function ExportModal({ local, products, onClose }: ExportModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center animate-fade-in backdrop-blur-sm">
+    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4 animate-fade-in backdrop-blur-sm">
       <div
-        className="surface-card flex flex-col max-h-[92vh] w-full max-w-4xl overflow-hidden animate-slide-up shadow-2xl"
+        className="surface-card flex flex-col max-h-[92vh] w-full max-w-4xl overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
         role="dialog"
         aria-modal="true"
       >
+        {/* Mobile Drag Handle */}
+        <div className="mx-auto my-3 h-1.5 w-12 shrink-0 rounded-full bg-border-strong/40 sm:hidden" />
+
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-5">
+        <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-4 sm:py-5">
           <div className="flex items-center gap-3">
              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 text-white shadow-lg shadow-primary-600/20">
                 <FileImage size={20} strokeWidth={2.5} />
@@ -93,12 +96,12 @@ export function ExportModal({ local, products, onClose }: ExportModalProps) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto overscroll-contain p-6 pt-2 space-y-6 scrollbar-hide">
           <div className="flex items-start justify-between gap-4 px-1">
              <div>
                 <p className="text-sm font-bold text-text-main">Vista Previa del Diseño</p>
                 <p className="mt-1 text-xs font-medium text-text-subtle leading-relaxed">
-                   Se generará una imagen optimizada con los {products.length} productos visibles.
+                   Se generará una imagen con los {products.length} productos visibles.
                 </p>
              </div>
              <div className="hidden sm:flex items-center gap-1.5 rounded-lg bg-surface-soft px-3 py-1.5 border border-border shrink-0">
@@ -113,7 +116,6 @@ export function ExportModal({ local, products, onClose }: ExportModalProps) {
                  <PriceListTemplate local={local} products={products} variant="preview" />
               </div>
             </div>
-            {/* Overlay hint */}
             <div className="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                <span className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl border border-border text-text-main">
                   Diseño Optimizado
@@ -132,7 +134,7 @@ export function ExportModal({ local, products, onClose }: ExportModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border bg-surface px-6 py-6 flex flex-col sm:flex-row items-center gap-3">
+        <div className="border-t border-border bg-surface px-6 py-6 pb-safe sm:pb-6 flex flex-col sm:flex-row items-center gap-3">
           <button
             type="button"
             onClick={onClose}

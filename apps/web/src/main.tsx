@@ -9,6 +9,7 @@ import './index.css'
 import App from './App.tsx'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
+import { purgeStaleAppCache } from '@/lib/cachePurge'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,18 +19,33 @@ const queryClient = new QueryClient({
   },
 })
 
-registerSW({ immediate: true })
+async function bootstrap(): Promise<void> {
+  const shouldReload = await purgeStaleAppCache()
+  if (shouldReload) {
+    window.location.reload()
+    return
+  }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <ThemeProvider>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </ThemeProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
-  </StrictMode>,
-)
+  const updateSW = registerSW({
+    immediate: true,
+    onNeedRefresh() {
+      void updateSW(true)
+    },
+  })
+
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <ThemeProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </ThemeProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </StrictMode>,
+  )
+}
+
+void bootstrap()

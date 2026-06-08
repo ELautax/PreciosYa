@@ -9,6 +9,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // https://vite.dev/config/
 export default defineConfig({
+  define: {
+    __PY_BUILD_ID__: JSON.stringify(
+      process.env.VERCEL_GIT_COMMIT_SHA ?? `local-${Date.now()}`,
+    ),
+  },
   plugins: [
     react(),
     VitePWA({
@@ -58,6 +63,9 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: '/index.html',
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
         runtimeCaching: [
           {
             urlPattern: ({ url }) =>

@@ -209,14 +209,17 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
         void handleBarcodeDetected(code)
       }}
     />
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center animate-fade-in backdrop-blur-sm">
+    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4 animate-fade-in backdrop-blur-sm">
       <div
-        className="surface-card flex flex-col max-h-[90vh] w-full max-w-lg overflow-hidden animate-slide-up shadow-2xl"
+        className="surface-card flex flex-col max-h-[92vh] w-full max-w-lg overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
         role="dialog"
         aria-modal="true"
       >
+        {/* Mobile Drag Handle */}
+        <div className="mx-auto my-3 h-1.5 w-12 shrink-0 rounded-full bg-border-strong/40 sm:hidden" />
+
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-5">
+        <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-4 sm:py-5">
           <div className="flex items-center gap-3">
              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 text-white shadow-lg shadow-primary-600/20">
                 <Box size={20} strokeWidth={2.5} />
@@ -239,7 +242,10 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
           </button>
         </div>
 
-        <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide">
+        <form 
+          onSubmit={(e) => void handleSubmit(onSubmit)(e)} 
+          className="flex-1 overflow-y-auto overscroll-contain p-6 pt-2 space-y-6 scrollbar-hide"
+        >
           {/* Price Preview Card */}
           <div className="relative overflow-hidden rounded-2xl border border-primary-100 bg-primary-50/30 p-5 dark:border-primary-800/30 dark:bg-primary-900/10">
              <div className="absolute right-0 top-0 -translate-y-4 translate-x-4 opacity-10 text-primary-600">
@@ -304,8 +310,8 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
               )}
               {selectedCategory ? (
                 <div className="flex items-start gap-2 rounded-xl border border-border bg-surface-soft/80 p-3">
-                  <Info size={16} className="shrink-0 text-primary-600 mt-0.5" />
-                  <p className="text-[10px] font-bold leading-relaxed text-text-muted">
+                   <Info size={16} className="shrink-0 text-primary-600 mt-0.5" />
+                   <p className="text-[10px] font-bold leading-relaxed text-text-muted">
                     Este producto se actualiza con{' '}
                     <span
                       className={`inline-flex rounded-md border px-1.5 py-0.5 font-black uppercase tracking-tighter ${categoryIndexBadgeClass(selectedCategory.preferredIndex)}`}
@@ -316,7 +322,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
                     <Link to="/categories" className="text-primary-600 underline" onClick={onClose}>
                       Rubros
                     </Link>
-                    , no acá (evita mezclar IPC y USD por producto).
+                    , no acá.
                   </p>
                 </div>
               ) : (
@@ -419,7 +425,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
         </form>
 
         {/* Modal Footer */}
-        <div className="flex items-center gap-3 border-t border-border bg-surface px-6 py-6">
+        <div className="flex items-center gap-3 border-t border-border bg-surface px-6 py-6 pb-safe sm:pb-6">
           <button
             type="button"
             onClick={onClose}
@@ -435,7 +441,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
           >
             <Save size={18} strokeWidth={3} />
             <span className="text-xs font-black uppercase tracking-widest">
-               {product ? 'Guardar Cambios' : 'Registrar Producto'}
+               {product ? 'Guardar Cambios' : 'Registrar'}
             </span>
           </button>
         </div>

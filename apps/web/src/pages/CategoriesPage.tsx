@@ -34,7 +34,7 @@ function CategoryToggleRow({
   const usdOn = isUsdIndexed(category.preferredIndex)
   return (
     <div
-      className={`surface-card flex flex-col gap-4 p-5 transition-all sm:flex-row sm:items-center sm:justify-between ${
+      className={`surface-card flex flex-col gap-6 p-5 transition-all sm:flex-row sm:items-center sm:justify-between ${
         category.isActive ? 'border-primary-200/60' : 'opacity-60'
       }`}
     >
@@ -60,29 +60,31 @@ function CategoryToggleRow({
           </span>
         </div>
       </div>
-      <div className="flex flex-wrap items-center gap-4 sm:justify-end">
-        <label className="flex cursor-pointer items-center gap-2">
+      <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-4 sm:justify-end">
+        <label className="flex cursor-pointer items-center justify-between gap-4 h-12 px-3 rounded-xl border border-border bg-surface-soft/30 hover:bg-surface-soft active:scale-95 transition-all sm:border-none sm:bg-transparent sm:h-auto sm:px-0">
           <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
-            Indexar USD
+            USD
           </span>
           <input
             type="checkbox"
-            className="h-5 w-5 accent-primary-600"
+            className="h-6 w-6 accent-primary-600 rounded-lg pointer-events-none"
             checked={usdOn}
+            readOnly
             disabled={pending || !category.isActive}
-            onChange={(e) => onToggleUsd(category, e.target.checked)}
+            onClick={(e) => { e.preventDefault(); onToggleUsd(category, !usdOn); }}
           />
         </label>
-        <label className="flex cursor-pointer items-center gap-2">
+        <label className="flex cursor-pointer items-center justify-between gap-4 h-12 px-3 rounded-xl border border-border bg-surface-soft/30 hover:bg-surface-soft active:scale-95 transition-all sm:border-none sm:bg-transparent sm:h-auto sm:px-0">
           <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
-            {category.isActive ? 'Activo' : 'Off'}
+            {category.isActive ? 'ON' : 'OFF'}
           </span>
           <input
             type="checkbox"
-            className="h-5 w-5 accent-primary-600"
+            className="h-6 w-6 accent-primary-600 rounded-lg pointer-events-none"
             checked={category.isActive}
+            readOnly
             disabled={pending}
-            onChange={(e) => onToggleActive(category, e.target.checked)}
+            onClick={(e) => { e.preventDefault(); onToggleActive(category, !category.isActive); }}
           />
         </label>
       </div>
@@ -120,8 +122,7 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
           </Link>
           <h1 className="heading-xl">Rubros del negocio</h1>
           <p className="text-small max-w-lg">
-            Rubros predefinidos según divisiones del IPC INDEC. Activá solo los que usás en tu
-            comercio; cada uno tiene su propio índice de inflación.
+            Activá los que usás en tu comercio; cada uno tiene su propio índice de inflación.
           </p>
         </header>
 
@@ -135,8 +136,7 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
         <div className="surface-card flex items-start gap-3 border-primary-100 bg-primary-50/20 p-5">
           <Info size={18} className="mt-0.5 shrink-0 text-primary-600" />
           <p className="text-[10px] font-bold uppercase leading-relaxed tracking-tight text-text-muted">
-            Activá rubros del catálogo INDEC. Marcá &quot;Indexar USD&quot; en rubros sensibles al
-            dólar (importados, tecnología). El resto sigue con IPC por división.
+            Marcá &quot;USD&quot; en rubros sensibles al dólar (importados, tecnología). El resto sigue con IPC.
           </p>
         </div>
 

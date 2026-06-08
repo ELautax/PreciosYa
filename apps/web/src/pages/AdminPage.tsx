@@ -166,12 +166,12 @@ export default function AdminPage() {
       <div className="page-wrap space-y-10 animate-fade-in">
         <header className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-danger-600 text-white shadow-lg shadow-danger-600/20 animate-pulse">
+             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-danger-600 text-white shadow-lg shadow-danger-600/20">
                 <ShieldCheck size={24} strokeWidth={2.5} />
              </div>
              <div>
-                <h1 className="heading-xl">Panel de Administración</h1>
-                <p className="text-[10px] font-black text-text-subtle uppercase tracking-widest leading-none mt-1">Control Central del Sistema</p>
+                <h1 className="heading-xl">Administración</h1>
+                <p className="text-[10px] font-black text-text-subtle uppercase tracking-widest leading-none mt-1">Control Central</p>
              </div>
           </div>
           
@@ -192,7 +192,7 @@ export default function AdminPage() {
             ) : (
                <Zap size={18} className="mr-2 group-hover:scale-110 transition-transform" />
             )}
-            <span className="text-xs font-black uppercase tracking-widest">Sincronizar IPC Manual</span>
+            <span className="text-xs font-black uppercase tracking-widest">Sincronizar IPC</span>
           </button>
         </header>
 
@@ -201,12 +201,9 @@ export default function AdminPage() {
             role="alert"
             className="rounded-2xl border border-danger-200 bg-danger-50 dark:bg-danger-900/20 px-5 py-4 text-sm text-danger-800 dark:text-danger-200"
           >
-            <p className="font-bold">API en Railway desactualizada</p>
+            <p className="font-bold">API desactualizada</p>
             <p className="mt-1 text-danger-700 dark:text-danger-300">
-              La carga manual IPC y Alphacast requieren redeploy en rama <strong>Trincheras</strong>.
-              En <code className="text-xs">/health</code> debe aparecer{' '}
-              <code className="text-xs">ipcManualRoute: true</code> (ahora: versión{' '}
-              {healthQ.data?.version ?? '?'}).
+              La carga manual IPC y Alphacast requieren redeploy.
             </p>
           </div>
         )}
@@ -247,7 +244,7 @@ export default function AdminPage() {
            {/* User Management Section */}
            <section className="lg:col-span-2 space-y-6">
               <div className="flex items-center gap-3">
-                 <h2 className="heading-lg">Gestión de Usuarios</h2>
+                 <h2 className="heading-lg">Usuarios</h2>
                  <div className="h-px flex-1 bg-border" />
               </div>
 
@@ -260,13 +257,60 @@ export default function AdminPage() {
                        <input
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
-                          placeholder="Buscar por nombre o email..."
+                          placeholder="Buscar usuarios..."
                           className="w-full pl-10 pr-4 h-11"
                        />
                     </div>
                  </div>
 
-                 <div className="overflow-x-auto scrollbar-hide">
+                 {/* User Cards for Mobile */}
+                 <div className="grid gap-3 p-4 sm:p-5 lg:hidden">
+                   {usersQ.data?.items.map((u) => (
+                     <div key={u.id} className="rounded-xl border border-border bg-surface p-4 space-y-4 shadow-sm">
+                       <div className="flex items-center gap-3">
+                         <div className="h-10 w-10 rounded-full bg-surface-soft border border-border flex items-center justify-center font-bold text-text-muted">
+                            {u.name?.charAt(0)}
+                         </div>
+                         <div className="min-w-0 flex-1">
+                            <p className="font-extrabold text-text-main truncate">{u.name}</p>
+                            <p className="text-[10px] font-bold text-text-subtle truncate flex items-center gap-1 uppercase tracking-tighter">
+                               <Mail size={10} /> {u.email}
+                            </p>
+                         </div>
+                         <span className={`inline-flex rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-widest border ${
+                            u.plan === 'AGENCY' ? 'border-accent-200 bg-accent-50 text-accent-700' : 
+                            u.plan === 'PRO' ? 'border-primary-100 bg-primary-50 text-primary-700' : 
+                            'border-border bg-surface-soft text-text-subtle'
+                         }`}>
+                            {u.plan}
+                         </span>
+                       </div>
+                       <div className="flex items-center gap-3 pt-3 border-t border-border/50">
+                          <span className="text-[10px] font-black text-text-subtle uppercase whitespace-nowrap">Plan:</span>
+                          <select
+                             defaultValue={u.plan}
+                             onChange={(e) =>
+                               void updatePlanMut.mutateAsync({
+                                 userId: u.id,
+                                 plan: e.target.value as 'FREE' | 'PRO' | 'AGENCY',
+                               })
+                             }
+                             className="h-10 flex-1 text-[10px] font-black uppercase tracking-widest px-3 rounded-lg bg-surface-soft border-none focus:ring-2 ring-primary-600/20"
+                          >
+                             <option value="FREE">LIBRE</option>
+                             <option value="PRO">PRO</option>
+                             <option value="AGENCY">AGENCY</option>
+                          </select>
+                       </div>
+                     </div>
+                   ))}
+                   {!usersQ.isLoading && usersQ.data?.items.length === 0 && (
+                     <p className="py-8 text-center text-text-subtle font-bold italic">No se encontraron usuarios.</p>
+                   )}
+                 </div>
+
+                 {/* Desktop Table */}
+                 <div className="hidden lg:block overflow-x-auto scrollbar-hide">
                     <table className="w-full text-left text-sm border-collapse">
                        <thead>
                           <tr className="border-b border-border bg-surface-soft/50">
@@ -318,11 +362,6 @@ export default function AdminPage() {
                                 </td>
                              </tr>
                           ))}
-                          {!usersQ.isLoading && usersQ.data?.items.length === 0 && (
-                             <tr>
-                                <td colSpan={3} className="px-6 py-12 text-center text-text-subtle font-bold italic">No se encontraron usuarios coincidentes.</td>
-                             </tr>
-                          )}
                        </tbody>
                     </table>
                  </div>
@@ -338,7 +377,7 @@ export default function AdminPage() {
 
               {latestPeriodLabel && (
                 <p className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
-                  Último mes cargado: {latestPeriodLabel}
+                  Corte: {latestPeriodLabel}
                 </p>
               )}
 
@@ -347,25 +386,9 @@ export default function AdminPage() {
                   role="alert"
                   className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:border-amber-800/40 dark:bg-amber-900/20 dark:text-amber-100"
                 >
-                  <p className="font-bold">Todas las divisiones muestran el mismo %</p>
+                  <p className="font-bold">Datos homogéneos</p>
                   <p className="mt-1 leading-relaxed">
-                    El INDEC publica valores distintos por rubro (ej. Alimentos ~1,5% vs nivel general
-                    ~2,6%). Configurá <strong>ALPHACAST_API_KEY</strong> en Railway y pulsá
-                    «Sincronizar IPC», o cargá cada división en el formulario manual.
-                  </p>
-                </div>
-              )}
-
-              {ipcMixedArglyAlphacast && (
-                <div
-                  role="alert"
-                  className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-xs text-sky-900 dark:border-sky-800/40 dark:bg-sky-900/20 dark:text-sky-100"
-                >
-                  <p className="font-bold">Nivel general y divisiones de fuentes distintas</p>
-                  <p className="mt-1 leading-relaxed">
-                    El nivel general viene de <strong>Argly</strong> (Alphacast no respondió o el plan
-                    gratuito está agotado). Las divisiones COICOP conservan el último dato{' '}
-                    <strong>Alphacast</strong>. Renová Alphacast o editá rubros en carga manual.
+                    Todas las divisiones muestran el mismo %. Verificá ALPHACAST_API_KEY.
                   </p>
                 </div>
               )}
@@ -399,7 +422,7 @@ export default function AdminPage() {
                   >
                     <label className="block space-y-1">
                       <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
-                        Período (YYYY-MM)
+                        Período
                       </span>
                       <input
                         type="month"
@@ -442,7 +465,7 @@ export default function AdminPage() {
                       ) : (
                         <Save size={16} className="mr-2" />
                       )}
-                      Guardar IPC manual
+                      Guardar IPC
                     </button>
                   </form>
                 )}
@@ -459,28 +482,8 @@ export default function AdminPage() {
                             +{formatPct(idx.valuePct)}%
                           </span>
                        </div>
-                       {ipcSourceKind(idx.sourceUrl) === 'manual' && (
-                         <p className="text-[9px] font-bold text-accent-600 uppercase mt-1">Manual</p>
-                       )}
-                       {ipcSourceKind(idx.sourceUrl) === 'argly' && (
-                         <p className="text-[9px] font-bold text-amber-700 uppercase mt-1">
-                           Argly (solo general)
-                         </p>
-                       )}
-                       {ipcSourceKind(idx.sourceUrl) === 'alphacast' && (
-                         <p className="text-[9px] font-bold text-primary-600 uppercase mt-1">
-                           Alphacast
-                         </p>
-                       )}
                     </div>
                  ))}
-                 {!indicesQ.isLoading && indicesQ.data?.length === 0 && (
-                   <div className="surface-card p-8 text-center border-dashed border-border opacity-50">
-                      <TrendingUp size={32} className="mx-auto mb-2 text-text-subtle opacity-40" />
-                      <p className="text-xs font-bold text-text-subtle uppercase">Sin datos IPC</p>
-                      <p className="text-[10px] text-text-subtle mt-2">Sincronizá desde Alphacast o cargá manualmente.</p>
-                   </div>
-                 )}
               </div>
            </aside>
         </div>

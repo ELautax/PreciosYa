@@ -21,9 +21,11 @@ const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 function getInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'light'
+  const fromLanding = new URLSearchParams(window.location.search).get('from') === 'landing'
+  if (fromLanding) return 'light'
   const stored = window.localStorage.getItem(STORAGE_KEY)
   if (stored === 'light' || stored === 'dark') return stored
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  return 'light'
 }
 
 function applyThemeToDocument(theme: Theme): void {

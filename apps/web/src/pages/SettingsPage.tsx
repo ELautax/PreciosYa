@@ -61,176 +61,176 @@ export default function SettingsPage() {
         <header className="flex flex-col gap-2">
           <h1 className="heading-xl">Configuración General</h1>
           <p className="text-small">
-             Gestioná tu perfil, suscripción y parámetros de negocio.
+             Gestioná tu perfil y parámetros de negocio.
           </p>
         </header>
 
         <section className="grid gap-8 lg:grid-cols-4">
-           {/* Tab Navigation Sidebar */}
-           <aside className="lg:col-span-1">
-              <nav className="flex flex-col gap-1 p-1 rounded-2xl bg-surface-soft border border-border">
-                 <TabButton 
-                    active={tab === 'business'} 
-                    onClick={() => setTab('business')} 
-                    icon={Store} 
-                    label="Mi Negocio" 
-                 />
-                 <TabButton 
-                    active={tab === 'account'} 
-                    onClick={() => setTab('account')} 
-                    icon={User} 
-                    label="Mi Cuenta" 
-                 />
-                 <TabButton 
-                    active={tab === 'plan'} 
-                    onClick={() => setTab('plan')} 
-                    icon={CreditCard} 
-                    label="Suscripción" 
-                 />
-              </nav>
-           </aside>
+            {/* Tab Navigation */}
+            <aside className="lg:col-span-1">
+               <nav className="flex flex-row md:flex-col gap-1 p-1 rounded-2xl bg-surface-soft border border-border overflow-x-auto scrollbar-hide snap-x">
+                  <TabButton 
+                     active={tab === 'business'} 
+                     onClick={() => setTab('business')} 
+                     icon={Store} 
+                     label="Negocio" 
+                  />
+                  <TabButton 
+                     active={tab === 'account'} 
+                     onClick={() => setTab('account')} 
+                     icon={User} 
+                     label="Cuenta" 
+                  />
+                  <TabButton 
+                     active={tab === 'plan'} 
+                     onClick={() => setTab('plan')} 
+                     icon={CreditCard} 
+                     label="Plan" 
+                  />
+               </nav>
+            </aside>
 
-           <div className="lg:col-span-3 space-y-6">
-              {tab === 'business' && (
-                <section className="surface-card p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
-                   <div className="flex items-center gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg">
-                         <Store size={24} strokeWidth={2.5} />
-                      </div>
-                      <div>
-                         <h2 className="text-xl font-black tracking-tight text-text-main">Datos Operativos</h2>
-                         <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Configuración por Local</p>
-                      </div>
-                   </div>
+            <div className="lg:col-span-3 space-y-6">
+               {tab === 'business' && (
+                 <section className="surface-card p-5 sm:p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
+                    <div className="flex items-center gap-4">
+                       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg">
+                          <Store size={24} strokeWidth={2.5} />
+                       </div>
+                       <div>
+                          <h2 className="text-xl font-black tracking-tight text-text-main">Datos Operativos</h2>
+                          <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Configuración por Local</p>
+                       </div>
+                    </div>
 
-                   {locals && locals.length > 0 ? (
-                     <div className="space-y-8">
-                        <div className="space-y-2">
-                           <label className="text-[10px] font-black uppercase tracking-widest text-text-subtle px-1">Seleccionar Local</label>
-                           <LocalSelector
-                              locals={locals}
-                              value={localId}
-                              onChange={setLocalId}
-                           />
-                        </div>
-
-                        {selectedLocal ? (
-                          <div className="grid gap-6 sm:grid-cols-2 p-6 rounded-[2rem] bg-surface-soft border border-border/50">
-                             <DetailItem label="Nombre Fiscal" value={selectedLocal.name} />
-                             <DetailItem label="Dirección" value={selectedLocal.address || 'Sin especificar'} />
-                             <DetailItem label="Moneda Base" value={selectedLocal.currency} />
-                             <DetailItem label="Margen Alerta" value={`${selectedLocal.minMarginPct.toFixed(2)}%`} />
-                          </div>
-                        ) : (
-                          <div className="skeleton h-40 w-full rounded-[2rem]" />
-                        )}
-                        
-                        <div className="bg-primary-50/20 border border-primary-100 p-5 rounded-2xl flex items-start gap-4">
-                           <Info size={20} className="text-primary-600 shrink-0 mt-0.5" />
-                           <p className="text-xs font-bold text-text-muted leading-relaxed uppercase tracking-tight">
-                              Los cambios en los parámetros del local afectan el cálculo automático de márgenes y las alertas críticas.
-                           </p>
-                        </div>
-                     </div>
-                   ) : (
-                     <div className="py-12 text-center border-2 border-dashed border-border rounded-3xl">
-                        <p className="text-sm font-bold text-text-subtle">No hay locales registrados aún.</p>
-                     </div>
-                   )}
-                </section>
-              )}
-
-              {tab === 'account' && (
-                <section className="surface-card p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
-                   <div className="flex items-center gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-600 text-white shadow-lg">
-                         <User size={24} strokeWidth={2.5} />
-                      </div>
-                      <div>
-                         <h2 className="text-xl font-black tracking-tight text-text-main">Perfil de Usuario</h2>
-                         <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Identidad y Seguridad</p>
-                      </div>
-                   </div>
-
-                   {meError ? (
-                     <div className="rounded-2xl border border-danger-200 bg-danger-50/30 p-6 space-y-4">
-                        <div className="flex items-center gap-3 text-danger-600">
-                           <ShieldCheck size={20} strokeWidth={2.5} />
-                           <h3 className="text-sm font-black uppercase tracking-widest">Error de Sincronización</h3>
-                        </div>
-                        <p className="text-xs font-bold text-danger-950/70 leading-relaxed uppercase tracking-tight">
-                           No pudimos recuperar los datos de tu cuenta. Verificá tu conexión o contactá a soporte técnico.
-                        </p>
-                     </div>
-                   ) : user ? (
-                     <div className="grid gap-6 sm:grid-cols-2 p-6 rounded-[2rem] bg-surface-soft border border-border/50">
-                        <DetailItem label="Nombre Completo" value={user.name} />
-                        <DetailItem label="Correo Electrónico" value={user.email} />
-                        <DetailItem label="Nivel de Acceso" value={user.isAdmin ? 'ADMINISTRADOR' : 'COMERCIANTE'} />
-                        <DetailItem label="Último Ingreso" value={user.planExpiresAt ? new Date().toLocaleDateString('es-AR') : 'Reciente'} />
-                     </div>
-                   ) : (
-                     <div className="space-y-6">
-                        <div className="skeleton h-32 w-full rounded-[2rem]" />
-                     </div>
-                   )}
-                </section>
-              )}
-
-              {tab === 'plan' && (
-                <section className="surface-card p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
-                   <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg">
-                            <CreditCard size={24} strokeWidth={2.5} />
-                         </div>
-                         <div>
-                            <h2 className="text-xl font-black tracking-tight text-text-main">Plan y Suscripción</h2>
-                            <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Límites de Uso</p>
-                         </div>
-                      </div>
-                      <span className="inline-flex rounded-full bg-accent-500 px-3 py-1 text-[10px] font-black text-white uppercase tracking-widest shadow-sm">
-                         {user?.plan || 'PRO'}
-                      </span>
-                   </div>
-
-                   <div className="p-8 rounded-[2.5rem] bg-surface-soft border border-border/50 relative overflow-hidden group">
-                      <div className="absolute top-0 right-0 p-8 opacity-5 text-primary-600 group-hover:scale-110 transition-transform duration-500">
-                         <Activity size={120} />
-                      </div>
-                      
-                      <div className="relative space-y-6">
-                         <div className="flex items-end justify-between px-1">
-                            <div>
-                               <h3 className="text-base font-black text-text-main leading-none">Capacidad de Inventario</h3>
-                               <p className="mt-2 text-[10px] font-black text-text-subtle uppercase tracking-widest">Productos Activos</p>
-                            </div>
-                            <p className="text-2xl font-black text-primary-600 font-mono tracking-tighter">
-                               {usedProducts}<span className="text-text-subtle/50 text-sm mx-1">/</span>{productLimit || '∞'}
-                            </p>
-                         </div>
-
-                         <div className="h-4 w-full bg-border/50 rounded-full overflow-hidden p-1 shadow-inner">
-                            <div 
-                               className="h-full rounded-full bg-primary-600 transition-all duration-1000 shadow-sm"
-                               style={{ width: `${productLimit ? usagePct : 100}%` }}
+                    {locals && locals.length > 0 ? (
+                      <div className="space-y-8">
+                         <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-text-subtle px-1">Seleccionar Local</label>
+                            <LocalSelector
+                               locals={locals}
+                               value={localId}
+                               onChange={setLocalId}
                             />
                          </div>
 
-                         <div className="flex items-center justify-between pt-2">
-                            <div className="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-widest">
-                               <Clock size={12} className="text-primary-600" />
-                               Vencimiento: {user?.planExpiresAt ? new Date(user.planExpiresAt).toLocaleDateString('es-AR') : 'Sin límite'}
-                            </div>
-                            <button className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary-600 hover:underline">
-                               MEJORAR PLAN <ExternalLink size={10} strokeWidth={3} />
-                            </button>
+                         {selectedLocal ? (
+                           <div className="grid gap-6 sm:grid-cols-2 p-6 rounded-[2rem] bg-surface-soft border border-border/50">
+                              <DetailItem label="Nombre Fiscal" value={selectedLocal.name} />
+                              <DetailItem label="Dirección" value={selectedLocal.address || 'Sin especificar'} />
+                              <DetailItem label="Moneda Base" value={selectedLocal.currency} />
+                              <DetailItem label="Margen Alerta" value={`${selectedLocal.minMarginPct.toFixed(2)}%`} />
+                           </div>
+                         ) : (
+                           <div className="skeleton h-40 w-full rounded-[2rem]" />
+                         )}
+                         
+                         <div className="bg-primary-50/20 border border-primary-100 p-5 rounded-2xl flex items-start gap-4">
+                            <Info size={20} className="text-primary-600 shrink-0 mt-0.5" />
+                            <p className="text-[10px] font-bold text-text-muted leading-relaxed uppercase tracking-tight">
+                               Los cambios en los parámetros del local afectan el cálculo automático de márgenes.
+                            </p>
                          </div>
                       </div>
-                   </div>
-                </section>
-              )}
-           </div>
+                    ) : (
+                      <div className="py-12 text-center border-2 border-dashed border-border rounded-3xl">
+                         <p className="text-sm font-bold text-text-subtle">No hay locales registrados.</p>
+                      </div>
+                    )}
+                 </section>
+               )}
+
+               {tab === 'account' && (
+                 <section className="surface-card p-5 sm:p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
+                    <div className="flex items-center gap-4">
+                       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-600 text-white shadow-lg">
+                          <User size={24} strokeWidth={2.5} />
+                       </div>
+                       <div>
+                          <h2 className="text-xl font-black tracking-tight text-text-main">Perfil de Usuario</h2>
+                          <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Identidad</p>
+                       </div>
+                    </div>
+
+                    {meError ? (
+                      <div className="rounded-2xl border border-danger-200 bg-danger-50/30 p-6 space-y-4">
+                         <div className="flex items-center gap-3 text-danger-600">
+                            <ShieldCheck size={20} strokeWidth={2.5} />
+                            <h3 className="text-sm font-black uppercase tracking-widest">Error</h3>
+                         </div>
+                         <p className="text-xs font-bold text-danger-950/70 leading-relaxed uppercase tracking-tight">
+                            No pudimos recuperar los datos de tu cuenta.
+                         </p>
+                      </div>
+                    ) : user ? (
+                      <div className="grid gap-6 sm:grid-cols-2 p-6 rounded-[2rem] bg-surface-soft border border-border/50">
+                         <DetailItem label="Nombre Completo" value={user.name} />
+                         <DetailItem label="Correo Electrónico" value={user.email} />
+                         <DetailItem label="Nivel de Acceso" value={user.isAdmin ? 'ADMINISTRADOR' : 'COMERCIANTE'} />
+                         <DetailItem label="Ingreso" value={user.planExpiresAt ? new Date().toLocaleDateString('es-AR') : 'Reciente'} />
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                         <div className="skeleton h-32 w-full rounded-[2rem]" />
+                      </div>
+                    )}
+                 </section>
+               )}
+
+               {tab === 'plan' && (
+                 <section className="surface-card p-5 sm:p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
+                    <div className="flex items-center justify-between">
+                       <div className="flex items-center gap-4">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg">
+                             <CreditCard size={24} strokeWidth={2.5} />
+                          </div>
+                          <div>
+                             <h2 className="text-xl font-black tracking-tight text-text-main">Plan y Suscripción</h2>
+                             <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Límites</p>
+                          </div>
+                       </div>
+                       <span className="inline-flex rounded-full bg-accent-500 px-3 py-1 text-[10px] font-black text-white uppercase tracking-widest shadow-sm">
+                          {user?.plan || 'PRO'}
+                       </span>
+                    </div>
+
+                    <div className="p-6 sm:p-8 rounded-[2.5rem] bg-surface-soft border border-border/50 relative overflow-hidden group">
+                       <div className="absolute top-0 right-0 p-8 opacity-5 text-primary-600 group-hover:scale-110 transition-transform duration-500">
+                          <Activity size={120} />
+                       </div>
+                       
+                       <div className="relative space-y-6">
+                          <div className="flex items-end justify-between px-1">
+                             <div>
+                                <h3 className="text-base font-black text-text-main leading-none">Capacidad</h3>
+                                <p className="mt-2 text-[10px] font-black text-text-subtle uppercase tracking-widest">Productos Activos</p>
+                             </div>
+                             <p className="text-2xl font-black text-primary-600 font-mono tracking-tighter">
+                                {usedProducts}<span className="text-text-subtle/50 text-sm mx-1">/</span>{productLimit || '∞'}
+                             </p>
+                          </div>
+
+                          <div className="h-4 w-full bg-border/50 rounded-full overflow-hidden p-1 shadow-inner">
+                             <div 
+                                className="h-full rounded-full bg-primary-600 transition-all duration-1000 shadow-sm"
+                                style={{ width: `${productLimit ? usagePct : 100}%` }}
+                             />
+                          </div>
+
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
+                             <div className="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-widest">
+                                <Clock size={12} className="text-primary-600" />
+                                Vencimiento: {user?.planExpiresAt ? new Date(user.planExpiresAt).toLocaleDateString('es-AR') : 'Sin límite'}
+                             </div>
+                             <button className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary-600 hover:underline">
+                                MEJORAR PLAN <ExternalLink size={10} strokeWidth={3} />
+                             </button>
+                          </div>
+                       </div>
+                    </div>
+                 </section>
+               )}
+            </div>
         </section>
       </div>
     </main>
@@ -241,14 +241,14 @@ function TabButton({ active, onClick, icon: Icon, label }: { active: boolean; on
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+      className={`flex items-center gap-3 px-5 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all snap-start whitespace-nowrap min-w-max md:min-w-0 md:w-full ${
         active 
           ? 'bg-surface text-primary-600 shadow-md shadow-primary-600/5 ring-1 ring-border-strong/10' 
           : 'text-text-subtle hover:bg-surface hover:text-text-main'
       }`}
     >
       <Icon size={18} strokeWidth={active ? 2.5 : 2} className={active ? 'text-primary-600' : ''} />
-      <span className="truncate">{label}</span>
+      <span>{label}</span>
     </button>
   )
 }

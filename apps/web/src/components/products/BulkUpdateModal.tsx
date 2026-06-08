@@ -84,14 +84,17 @@ export function BulkUpdateModal({
   const usdPct = usdVariationPct ?? usdBreakdownQ.data?.variationPct ?? null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center animate-fade-in backdrop-blur-sm">
+    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4 animate-fade-in backdrop-blur-sm">
       <div
-        className="surface-card flex flex-col max-h-[90vh] w-full max-w-xl overflow-hidden animate-slide-up shadow-2xl"
+        className="surface-card flex flex-col max-h-[92vh] w-full max-w-xl overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
         role="dialog"
         aria-modal="true"
       >
+        {/* Mobile Drag Handle */}
+        <div className="mx-auto my-3 h-1.5 w-12 shrink-0 rounded-full bg-border-strong/40 sm:hidden" />
+
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-5">
+        <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-4 sm:py-5">
           <div className="flex items-center gap-3">
              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-600 text-white shadow-lg shadow-accent-600/20">
                 <Zap size={20} strokeWidth={2.5} />
@@ -107,12 +110,12 @@ export function BulkUpdateModal({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto overscroll-contain p-6 pt-2 scrollbar-hide">
           {/* Tabs */}
           <div className="flex p-1 rounded-2xl bg-surface-soft border border-border mb-6">
             <button
               onClick={() => { setTab('percentage'); setResultMsg(null); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
                 tab === 'percentage' ? 'bg-surface text-primary-600 shadow-sm' : 'text-text-muted hover:text-text-main'
               }`}
             >
@@ -121,7 +124,7 @@ export function BulkUpdateModal({
             </button>
             <button
               onClick={() => { setTab('ipc'); setResultMsg(null); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
                 tab === 'ipc' ? 'bg-surface text-primary-600 shadow-sm' : 'text-text-muted hover:text-text-main'
               }`}
             >
@@ -130,7 +133,7 @@ export function BulkUpdateModal({
             </button>
             <button
               onClick={() => { setTab('usd'); setResultMsg(null); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
                 tab === 'usd' ? 'bg-surface text-primary-600 shadow-sm' : 'text-text-muted hover:text-text-main'
               }`}
             >
@@ -180,7 +183,7 @@ export function BulkUpdateModal({
               <div className="flex items-start gap-3 rounded-2xl bg-primary-50/50 p-4 border border-primary-100 dark:bg-primary-900/10 dark:border-primary-800/30">
                  <Info size={18} className="text-primary-600 shrink-0 mt-0.5" />
                  <p className="text-xs font-medium text-text-muted leading-relaxed">
-                    Esta acción incrementará el costo de los productos seleccionados. El precio de venta se recalculará automáticamente manteniendo tus márgenes de ganancia.
+                    Esta acción incrementará el costo de los productos seleccionados. El precio de venta se recalculará automáticamente.
                  </p>
               </div>
 
@@ -191,7 +194,7 @@ export function BulkUpdateModal({
                 className="btn-primary w-full h-14 shadow-xl shadow-primary-600/20"
               >
                 <Zap size={20} strokeWidth={3} />
-                <span className="text-sm font-black uppercase tracking-widest">Aplicar Aumento Masivo</span>
+                <span className="text-sm font-black uppercase tracking-widest">Aplicar Aumento</span>
               </button>
             </div>
           ) : tab === 'ipc' ? (
@@ -216,7 +219,7 @@ export function BulkUpdateModal({
                   </div>
 
                   <div className="overflow-hidden rounded-2xl border border-border bg-surface">
-                    <div className="max-h-60 overflow-y-auto scrollbar-hide">
+                    <div className="max-h-60 overflow-y-auto scrollbar-hide overscroll-contain">
                       <table className="w-full text-left text-sm border-collapse">
                         <thead>
                           <tr className="border-b border-border bg-surface-soft/50">
@@ -236,7 +239,7 @@ export function BulkUpdateModal({
                                   </span>
                                   {row.usedGeneralFallback && (
                                     <span className="text-[9px] font-bold text-amber-700 dark:text-amber-400">
-                                      Sin dato de división → general
+                                      General
                                     </span>
                                   )}
                                 </span>
@@ -256,7 +259,7 @@ export function BulkUpdateModal({
                     className="btn-warning w-full h-14 shadow-xl shadow-accent-600/20"
                   >
                     <CheckCircle2 size={20} strokeWidth={3} />
-                    <span className="text-sm font-black uppercase tracking-widest">Confirmar y Aplicar IPC</span>
+                    <span className="text-sm font-black uppercase tracking-widest">Confirmar y Aplicar</span>
                   </button>
                 </>
               )}
@@ -287,7 +290,7 @@ export function BulkUpdateModal({
                       </p>
                       <p className="mt-1 text-sm font-mono font-bold text-primary-700">
                         {usdPct !== null
-                          ? `Variación diaria ${usdPct >= 0 ? '+' : ''}${usdPct.toFixed(2)}%`
+                          ? `${usdPct >= 0 ? '+' : ''}${usdPct.toFixed(2)}%`
                           : ''}
                       </p>
                     </div>
@@ -295,12 +298,11 @@ export function BulkUpdateModal({
 
                   {usdBreakdownQ.data?.breakdown.length === 0 ? (
                     <p className="text-sm font-medium text-text-muted rounded-2xl border border-border p-4">
-                      Ningún rubro activo está marcado como &quot;Indexar USD&quot;. Configuralo en
-                      Categorías.
+                      Ningún rubro activo está marcado como &quot;Indexar USD&quot;.
                     </p>
                   ) : (
                     <div className="overflow-hidden rounded-2xl border border-border bg-surface">
-                      <div className="max-h-60 overflow-y-auto scrollbar-hide">
+                      <div className="max-h-60 overflow-y-auto scrollbar-hide overscroll-contain">
                         <table className="w-full text-left text-sm border-collapse">
                           <thead>
                             <tr className="border-b border-border bg-surface-soft/50">
@@ -308,7 +310,7 @@ export function BulkUpdateModal({
                                 Rubro (USD)
                               </th>
                               <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-text-subtle text-right">
-                                Productos
+                                Prod.
                               </th>
                               <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-text-subtle text-right">
                                 Ajuste
@@ -348,7 +350,7 @@ export function BulkUpdateModal({
                   >
                     <CheckCircle2 size={20} strokeWidth={3} />
                     <span className="text-sm font-black uppercase tracking-widest">
-                      Confirmar variación USD
+                      Confirmar variación
                     </span>
                   </button>
                 </>
@@ -367,7 +369,7 @@ export function BulkUpdateModal({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border bg-surface px-6 py-6 flex justify-end">
+        <div className="border-t border-border bg-surface px-6 py-6 pb-safe sm:pb-6 flex justify-end">
           <button
             type="button"
             onClick={onClose}

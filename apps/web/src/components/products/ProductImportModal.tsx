@@ -40,15 +40,18 @@ export function ProductImportModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center animate-fade-in backdrop-blur-sm">
+    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4 animate-fade-in backdrop-blur-sm">
       <div
-        className="surface-card flex flex-col max-h-[90vh] w-full max-w-xl overflow-hidden animate-slide-up shadow-2xl"
+        className="surface-card flex flex-col max-h-[92vh] w-full max-w-xl overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
         role="dialog"
         aria-modal="true"
         aria-labelledby="import-csv-title"
       >
+        {/* Mobile Drag Handle */}
+        <div className="mx-auto my-3 h-1.5 w-12 shrink-0 rounded-full bg-border-strong/40 sm:hidden" />
+
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-5">
+        <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-4 sm:py-5">
           <div className="flex items-center gap-3">
              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 text-white shadow-lg shadow-primary-600/20">
                 <Upload size={20} strokeWidth={2.5} />
@@ -64,7 +67,7 @@ export function ProductImportModal({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto overscroll-contain p-6 pt-2 space-y-6 scrollbar-hide">
           <div className="space-y-4">
              <div className="flex items-start gap-4 p-5 rounded-2xl bg-surface-soft border border-border">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm dark:bg-black/20">
@@ -73,7 +76,7 @@ export function ProductImportModal({
                 <div>
                    <p className="text-sm font-black text-text-main">Estructura del archivo</p>
                    <p className="mt-1.5 text-xs font-medium text-text-muted leading-relaxed">
-                      El archivo debe tener las siguientes columnas (la cabecera es opcional):
+                      El archivo debe tener las siguientes columnas:
                    </p>
                    <div className="mt-3 p-2.5 rounded-lg bg-white/50 border border-border/50 font-mono text-[10px] text-text-muted leading-relaxed select-all">
                       nombre, costo, margen_pct, unidad, codigo_barras, categoria
@@ -93,7 +96,7 @@ export function ProductImportModal({
                    </li>
                    <li className="flex items-center gap-3 text-xs font-bold text-text-muted">
                       <div className="h-1.5 w-1.5 rounded-full bg-primary-600 shrink-0" />
-                      Separador decimal: Punto ( . ) o Coma ( , )
+                      Separador decimal: Punto ( . )
                    </li>
                    <li className="flex items-center gap-3 text-xs font-bold text-text-muted">
                       <div className="h-1.5 w-1.5 rounded-full bg-primary-600 shrink-0" />
@@ -163,30 +166,30 @@ export function ProductImportModal({
                 </div>
 
                 {lastResult.errors.length > 0 && (
-                  <div className="rounded-2xl border border-warning-200 bg-surface p-5 space-y-4">
-                    <div className="flex items-center justify-between">
-                       <h3 className="text-[10px] font-black text-warning-700 uppercase tracking-widest">Líneas con Observaciones ({lastResult.errors.length})</h3>
-                    </div>
-                    <div className="max-h-48 overflow-y-auto divide-y divide-border/50 pr-2 scrollbar-hide">
-                      {[...lastResult.errors]
-                        .sort((a, b) => a.line - b.line)
-                        .map((e, idx) => (
-                          <div key={idx} className="py-3 first:pt-0 last:pb-0">
-                            <div className="flex items-start justify-between gap-3">
-                               <p className="text-xs font-bold text-text-main flex-1">{e.message}</p>
-                               <span className="shrink-0 font-mono text-[10px] font-black text-text-subtle uppercase">FILA {e.line}</span>
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
+                   <div className="rounded-2xl border border-warning-200 bg-surface p-5 space-y-4">
+                     <div className="flex items-center justify-between">
+                        <h3 className="text-[10px] font-black text-warning-700 uppercase tracking-widest">Líneas con Observaciones ({lastResult.errors.length})</h3>
+                     </div>
+                     <div className="max-h-48 overflow-y-auto overscroll-contain divide-y divide-border/50 pr-2 scrollbar-hide">
+                       {[...lastResult.errors]
+                         .sort((a, b) => a.line - b.line)
+                         .map((e, idx) => (
+                           <div key={idx} className="py-3 first:pt-0 last:pb-0">
+                             <div className="flex items-start justify-between gap-3">
+                                <p className="text-xs font-bold text-text-main flex-1">{e.message}</p>
+                                <span className="shrink-0 font-mono text-[10px] font-black text-text-subtle uppercase">FILA {e.line}</span>
+                             </div>
+                           </div>
+                         ))}
+                     </div>
+                   </div>
                 )}
              </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border bg-surface px-6 py-6 flex justify-end">
+        <div className="border-t border-border bg-surface px-6 py-6 pb-safe sm:pb-6 flex justify-end">
           <button
             type="button"
             onClick={onClose}

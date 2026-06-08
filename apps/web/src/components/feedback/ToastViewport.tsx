@@ -58,18 +58,18 @@ export function ToastViewport() {
             role="status"
             aria-live="polite"
           >
-            <div className={`mt-0.5 shrink-0 ${config.color}`}>
+            <div className={`mt-1 shrink-0 ${config.color}`}>
               <Icon size={20} strokeWidth={2.5} />
             </div>
-            <div className="flex-1 text-sm font-bold text-text-main leading-tight pt-0.5">
+            <div className="flex-1 text-sm font-bold text-text-main leading-tight pt-1">
               {item.message}
             </div>
             <button
               onClick={() => remove(item.id)}
-              className="shrink-0 rounded-lg p-1 text-text-subtle transition-colors hover:bg-black/5 hover:text-text-main"
+              className="shrink-0 rounded-xl p-3 text-text-subtle transition-colors hover:bg-black/5 hover:text-text-main active:scale-90"
               aria-label="Cerrar notificación"
             >
-              <X size={16} strokeWidth={3} />
+              <X size={18} strokeWidth={3} />
             </button>
           </div>
         )

@@ -40,6 +40,7 @@
   --py-shadow-warm-lg: 0 20px 48px rgba(28, 25, 23, 0.12);
 
   --py-canvas-glow: rgba(22, 163, 74, 0.03);
+  --nav-height: 4rem;
   color-scheme: light;
 }
 
@@ -79,6 +80,7 @@ html.dark,
   --py-shadow-warm-lg: 0 20px 48px rgba(0, 0, 0, 0.55);
 
   --py-canvas-glow: rgba(34, 197, 94, 0.08);
+  --nav-height: 4rem;
   color-scheme: dark;
 }
 
@@ -134,14 +136,24 @@ html.dark,
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  @keyframes slide-down {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   @keyframes pulse-soft {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
   }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
 
   --animate-fade-in: fade-in 0.3s ease-out;
   --animate-slide-up: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-slide-down: slide-down 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-pulse-soft: pulse-soft 2s infinite ease-in-out;
+  --animate-scale-in: scale-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
@@ -151,7 +163,6 @@ html.dark,
     background: radial-gradient(circle at 50% 0%, var(--py-canvas-glow), transparent 50%),
                 var(--py-canvas);
     color: var(--py-text-main);
-    padding-bottom: env(safe-area-inset-bottom);
   }
 
   #root {
@@ -232,6 +243,19 @@ html.dark,
   .empty-state-icon {
     @apply mb-4 rounded-3xl bg-primary-50 p-4 text-primary-600;
   }
+
+  /* WCO Support */
+  .wco-active {
+    padding-top: env(titlebar-area-height, 0px);
+  }
+  .wco-drag-region {
+    app-region: drag;
+    -webkit-app-region: drag;
+  }
+  .wco-no-drag {
+    app-region: no-drag;
+    -webkit-app-region: no-drag;
+  }
 }
 
 @utility btn-base {
@@ -254,6 +278,18 @@ html.dark,
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@utility safe-area-inset-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+@utility kpi-value {
+  @apply font-mono text-2xl font-black truncate text-text-main;
 }
 
 @layer base {

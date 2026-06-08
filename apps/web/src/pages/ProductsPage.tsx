@@ -13,7 +13,8 @@ import {
   Package,
   Zap,
   AlertTriangle,
-  ArrowRight
+  ArrowRight,
+  MoreHorizontal
 } from 'lucide-react'
 
 import { ExportModal } from '@/components/exports/ExportModal'
@@ -82,6 +83,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   const [exportOpen, setExportOpen] = useState(false)
   const [editing, setEditing] = useState<ProductDto | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<ProductDto | null>(null)
+  const [isActionsOpen, setIsActionsOpen] = useState(false)
 
   const ipcQuery = useIpcLatest()
   const waitingForLocal = locals.length > 0 && !localId
@@ -155,7 +157,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                 setEditing(null)
                 setFormOpen(true)
               }}
-              className="btn-primary"
+              className="btn-primary flex-1 sm:flex-none shadow-primary-600/30"
             >
               <Plus size={18} strokeWidth={3} />
               <span>Nuevo Producto</span>
@@ -165,34 +167,48 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
 
         <section className="grid gap-4">
            {/* Contextual Action Bar */}
-           <div className="surface-card p-4 flex flex-col gap-4 lg:flex-row lg:items-center">
-              <div className="flex flex-1 flex-wrap items-center gap-3">
+           <div className="surface-card p-3 sm:p-4 flex flex-col gap-3 lg:flex-row lg:items-center">
+              <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-3">
                  <LocalSelector locals={locals} value={localId} onChange={setLocalId} />
                  
-                 <div className="relative flex-1 min-w-[200px] group">
+                 <div className="relative flex-1 group">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-subtle group-focus-within:text-primary-600 transition-colors">
                        <Search size={18} />
                     </div>
                     <input
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Buscar por nombre o código..."
+                      placeholder="Buscar productos..."
                       className="w-full pl-10 pr-4"
                     />
                  </div>
 
-                 <CategoryFilterSelect localId={localId} value={categoryFilter} onChange={setCategoryFilter} />
+                 <div className="hidden sm:block">
+                   <CategoryFilterSelect localId={localId} value={categoryFilter} onChange={setCategoryFilter} />
+                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4 lg:border-t-0 lg:pt-0 lg:pl-4 lg:border-l">
+              <div className="sm:hidden grid grid-cols-2 gap-2">
+                <CategoryFilterSelect localId={localId} value={categoryFilter} onChange={setCategoryFilter} />
+                <button
+                  type="button"
+                  onClick={() => setIsActionsOpen(!isActionsOpen)}
+                  className={`btn-secondary h-11 px-4 ${isActionsOpen ? 'bg-surface-soft border-border-strong' : ''}`}
+                >
+                  <MoreHorizontal size={18} className="text-primary-600" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Acciones</span>
+                </button>
+              </div>
+
+              <div className={`${isActionsOpen ? 'flex' : 'hidden lg:flex'} flex-wrap items-center gap-2 border-t border-border pt-4 lg:border-t-0 lg:pt-0 lg:pl-4 lg:border-l`}>
                  <button
                    type="button"
-                   onClick={() => setBulkOpen(true)}
+                   onClick={() => { setBulkInitialTab('percentage'); setBulkOpen(true); }}
                    className="btn-secondary flex-1 sm:flex-none h-11 px-4"
                    title="Actualización Masiva"
                  >
                     <Zap size={18} className="text-accent-600" />
-                    <span className="sm:hidden xl:inline">Actualizar</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Actualizar</span>
                  </button>
                  <button
                    type="button"
@@ -201,7 +217,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                    title="Importar CSV"
                  >
                     <Upload size={18} className="text-primary-600" />
-                    <span className="sm:hidden xl:inline">Importar</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Importar</span>
                  </button>
                  <button
                    type="button"
@@ -211,24 +227,24 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                    title="Exportar PNG"
                  >
                     <Download size={18} className="text-primary-600" />
-                    <span className="sm:hidden xl:inline">Exportar</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Exportar</span>
                  </button>
               </div>
            </div>
 
-           {/* Links Bar */}
-           <div className="flex flex-wrap gap-2 overflow-x-auto pb-1 scrollbar-hide">
-              <Link to="/categories" className="btn-ghost h-9 px-3 gap-1.5 whitespace-nowrap">
+           {/* Links Bar - Scrollable Chips */}
+           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+              <Link to="/categories" className="btn-secondary h-10 px-4 gap-2 whitespace-nowrap rounded-full snap-start text-xs font-black uppercase tracking-widest shadow-sm">
                 <Tags size={16} />
                 Categorías
               </Link>
-              <Link to="/history" className="btn-ghost h-9 px-3 gap-1.5 whitespace-nowrap">
+              <Link to="/history" className="btn-secondary h-10 px-4 gap-2 whitespace-nowrap rounded-full snap-start text-xs font-black uppercase tracking-widest shadow-sm">
                 <History size={16} />
                 Historial
               </Link>
-              <Link to="/locals" className="btn-ghost h-9 px-3 gap-1.5 whitespace-nowrap">
+              <Link to="/locals" className="btn-secondary h-10 px-4 gap-2 whitespace-nowrap rounded-full snap-start text-xs font-black uppercase tracking-widest shadow-sm">
                 <Store size={16} />
-                Gestionar Locales
+                Locales
               </Link>
            </div>
         </section>
@@ -373,7 +389,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
         />
       ) : null}
       {deleteTarget ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center animate-fade-in backdrop-blur-sm">
+        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40 p-4 sm:items-center animate-fade-in backdrop-blur-sm">
           <div
             className="surface-card w-full max-w-md p-6 shadow-warm-lg animate-slide-up"
             role="dialog"
@@ -389,7 +405,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
             <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                className="btn-secondary flex-1 sm:flex-none"
+                className="btn-secondary flex-1 sm:flex-none h-12"
                 disabled={deleteMut.isPending}
                 onClick={() => setDeleteTarget(null)}
               >
@@ -397,7 +413,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
               </button>
               <button
                 type="button"
-                className="btn-danger flex-1 sm:flex-none"
+                className="btn-danger flex-1 sm:flex-none h-12"
                 disabled={deleteMut.isPending}
                 onClick={() => void confirmDelete()}
               >
@@ -484,7 +500,7 @@ export default function ProductsPage() {
                   <button
                     type="submit"
                     disabled={createLocal.isPending}
-                    className="btn-primary w-full"
+                    className="btn-primary w-full h-12"
                   >
                     {createLocal.isPending ? 'Creando...' : 'Registrar Local'}
                     <ArrowRight size={18} className="ml-2" />

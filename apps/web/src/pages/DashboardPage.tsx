@@ -164,14 +164,16 @@ export default function DashboardPage() {
             color="text-primary-700"
             bg="bg-primary-50 dark:bg-primary-900/20"
           />
-          <KPICard 
-            label="Último PNG" 
-            value={latestExportQ.data?.priceList ? new Date(latestExportQ.data.priceList.createdAt).toLocaleDateString('es-AR') : '—'} 
-            loading={latestExportQ.isLoading}
-            icon={Share2}
-            color="text-primary-700"
-            bg="bg-primary-100/50 dark:bg-primary-900/30"
-          />
+          <div className="col-span-2 lg:col-span-1">
+            <KPICard 
+              label="Último PNG" 
+              value={latestExportQ.data?.priceList ? new Date(latestExportQ.data.priceList.createdAt).toLocaleDateString('es-AR') : '—'} 
+              loading={latestExportQ.isLoading}
+              icon={Share2}
+              color="text-primary-700"
+              bg="bg-primary-100/50 dark:bg-primary-900/30"
+            />
+          </div>
         </div>
 
         {/* Main Content Grid */}
@@ -221,7 +223,7 @@ export default function DashboardPage() {
                    <h3 className="text-xs font-black uppercase tracking-widest text-white/90">Estado Operativo</h3>
                 </div>
                 <div className="p-6 space-y-5">
-                  {selectedLocal ? (
+                   {selectedLocal ? (
                     <>
                       <div className="space-y-2">
                         <div className="flex justify-between items-end">
@@ -306,7 +308,7 @@ function KPICard({ label, value, loading, icon: Icon, color, bg, alert }: any) {
       {loading ? (
         <div className="skeleton mt-3 h-8 w-20" />
       ) : (
-        <p className={`kpi-value mt-2 ${alert ? 'text-danger-600' : 'text-text-main'}`}>
+        <p className={`kpi-value mt-2 ${alert ? '!text-danger-600' : ''}`}>
           {value}
         </p>
       )}
