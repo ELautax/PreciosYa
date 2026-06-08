@@ -3,7 +3,7 @@
 ## App (proyecto `web`)
 
 - **URL producción:** https://preciosya.vercel.app (alias secundario: https://preciosya-app.vercel.app)
-- **APK Android:** https://preciosya.vercel.app/preciosya.apk (regenerar con `node scripts/build-preciosya-apk.mjs`)
+- **APK Android:** https://preciosya.vercel.app/preciosya.apk (regenerar con `node scripts/build-preciosya-apk.mjs`; el APK debe estar **firmado** — el script usa `signingMode: new` y guarda el keystore en `android-signing/`, que no se commitea)
 - Deploy desde la raíz del monorepo (`.vercel/project.json`):
 
 ```bash

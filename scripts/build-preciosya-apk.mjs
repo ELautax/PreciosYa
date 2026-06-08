@@ -39,8 +39,14 @@ const body = {
   packageId: 'app.preciosya.twa',
   serviceAccountJsonFile: null,
   shortcuts: [],
-  signing: null,
-  signingMode: 'none',
+  signing: {
+    alias: 'preciosya',
+    countryCode: 'AR',
+    fullName: 'PreciosYa',
+    organization: 'PreciosYa',
+    organizationalUnit: 'Mobile',
+  },
+  signingMode: 'new',
   splashScreenFadeOutDuration: 300,
   startUrl: '/',
   themeColor: '#16A34A',
@@ -69,11 +75,26 @@ execSync(
   { stdio: 'inherit' },
 )
 
-const apkSrc = path.join(outDir, 'PreciosYa-unsigned.apk')
+const apkSrc = path.join(outDir, 'PreciosYa.apk')
 const apkDest = path.join(root, 'apps/web/public/preciosya.apk')
 if (!fs.existsSync(apkSrc)) {
-  console.error('[apk] No se encontró PreciosYa-unsigned.apk en el zip')
+  console.error('[apk] No se encontró PreciosYa.apk firmado en el zip')
   process.exit(1)
 }
 fs.copyFileSync(apkSrc, apkDest)
+
+const keyInfo = path.join(outDir, 'signing-key-info.txt')
+if (fs.existsSync(keyInfo)) {
+  const keysDir = path.join(root, 'android-signing')
+  fs.mkdirSync(keysDir, { recursive: true })
+  for (const f of ['signing.keystore', 'signing-key-info.txt', 'assetlinks.json']) {
+    const src = path.join(outDir, f)
+    if (fs.existsSync(src)) fs.copyFileSync(src, path.join(keysDir, f))
+  }
+  const assetLinksDest = path.join(root, 'apps/web/public/.well-known/assetlinks.json')
+  fs.mkdirSync(path.dirname(assetLinksDest), { recursive: true })
+  fs.copyFileSync(path.join(outDir, 'assetlinks.json'), assetLinksDest)
+  console.info(`[apk] Claves de firma guardadas en ${keysDir}/ (no commitear)`)
+}
+
 console.info(`[apk] Listo → ${apkDest} (${fs.statSync(apkDest).size} bytes)`)
