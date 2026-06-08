@@ -62,4 +62,3 @@ jobs:
 
       - name: Deploy to production
         run: npx vercel deploy --prod --token="$VERCEL_TOKEN"
-        working-directory: apps/web
