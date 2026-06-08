@@ -102,6 +102,28 @@ export default function AdminPage() {
     )
   }
 
+  if (indicesQ.isError) {
+    return (
+      <main className="page-shell">
+        <div className="page-wrap max-w-lg py-12">
+          <div className="surface-card p-6 text-center">
+            <p className="font-bold text-text-main">No se pudieron cargar los índices IPC</p>
+            <p className="mt-2 text-sm text-text-muted">
+              {indicesQ.error instanceof Error ? indicesQ.error.message : 'Error de red o sesión'}
+            </p>
+            <button
+              type="button"
+              className="btn-primary mt-4 h-11 px-6"
+              onClick={() => void indicesQ.refetch()}
+            >
+              Reintentar
+            </button>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
   if (!me?.isAdmin) {
     return (
       <main className="page-shell">
