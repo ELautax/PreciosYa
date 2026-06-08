@@ -81,8 +81,10 @@ export async function fetchAndPersistAllIpcSeries(): Promise<{
   results: FetchedIpcRow[]
   general: FetchedIpcRow | null
   source: IpcFetchSource
+  alphacastFailureReason?: string
 }> {
   const hasAlphacast = Boolean(env.ALPHACAST_API_KEY?.trim() || env.ALPHACAST_DOWNLOAD_URL)
+  let alphacastFailureReason: string | undefined
 
   if (hasAlphacast) {
     try {
@@ -94,6 +96,8 @@ export async function fetchAndPersistAllIpcSeries(): Promise<{
         return { ...fromAlphacast, source: 'alphacast' }
       }
     } catch (e) {
+      alphacastFailureReason =
+        e instanceof AppError ? e.message : 'Alphacast no disponible'
       console.error('[ipc-fetch] Alphacast falló; probando Argly (solo IPC general)', e)
     }
   } else {
@@ -102,7 +106,7 @@ export async function fetchAndPersistAllIpcSeries(): Promise<{
 
   try {
     const fromArgly = await fetchAndPersistFromArglyFallback()
-    return { ...fromArgly, source: 'argly' }
+    return { ...fromArgly, source: 'argly', alphacastFailureReason }
   } catch (arglyErr) {
     console.error('[ipc-fetch] Argly falló', arglyErr)
     throw new AppError({

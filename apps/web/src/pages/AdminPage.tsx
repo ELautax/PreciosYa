@@ -29,6 +29,15 @@ import { EmptyState } from '@/components/feedback/EmptyState'
 import { IPC_INDEX_LABELS, IPC_INDEX_TYPES } from '@/lib/ipcLabels'
 import { formatPct, toPctNumber } from '@/lib/formatPct'
 
+function ipcSourceKind(sourceUrl: string | null | undefined): 'manual' | 'alphacast' | 'argly' | null {
+  if (!sourceUrl) return null
+  if (sourceUrl.startsWith('manual:')) return 'manual'
+  const lower = sourceUrl.toLowerCase()
+  if (lower.includes('alphacast')) return 'alphacast'
+  if (lower.includes('argly')) return 'argly'
+  return null
+}
+
 export default function AdminPage() {
   const { data: me, isLoading: loadingMe } = useMe()
   const [search, setSearch] = useState('')
@@ -85,8 +94,17 @@ export default function AdminPage() {
     (indicesQ.data?.length ?? 0) > 1 &&
     indicesQ.data?.some(
       (idx) =>
-        idx.sourceUrl?.includes('Argly') || idx.sourceUrl?.includes('respaldo general Argly'),
+        ipcSourceKind(idx.sourceUrl) === 'argly' &&
+        idx.type !== 'IPC_INDEC',
     )
+
+  const generalIndex = indicesQ.data?.find((idx) => idx.type === 'IPC_INDEC')
+  const ipcMixedArglyAlphacast =
+    ipcSourceKind(generalIndex?.sourceUrl) === 'argly' &&
+    (indicesQ.data?.some(
+      (idx) => idx.type !== 'IPC_INDEC' && ipcSourceKind(idx.sourceUrl) === 'alphacast',
+    ) ??
+      false)
 
   if (loadingMe) {
     return (
@@ -338,6 +356,20 @@ export default function AdminPage() {
                 </div>
               )}
 
+              {ipcMixedArglyAlphacast && (
+                <div
+                  role="alert"
+                  className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-xs text-sky-900 dark:border-sky-800/40 dark:bg-sky-900/20 dark:text-sky-100"
+                >
+                  <p className="font-bold">Nivel general y divisiones de fuentes distintas</p>
+                  <p className="mt-1 leading-relaxed">
+                    El nivel general viene de <strong>Argly</strong> (Alphacast no respondió o el plan
+                    gratuito está agotado). Las divisiones COICOP conservan el último dato{' '}
+                    <strong>Alphacast</strong>. Renová Alphacast o editá rubros en carga manual.
+                  </p>
+                </div>
+              )}
+
               <div className="surface-card overflow-hidden">
                 <button
                   type="button"
@@ -427,16 +459,15 @@ export default function AdminPage() {
                             +{formatPct(idx.valuePct)}%
                           </span>
                        </div>
-                       {idx.sourceUrl?.startsWith('manual:') && (
+                       {ipcSourceKind(idx.sourceUrl) === 'manual' && (
                          <p className="text-[9px] font-bold text-accent-600 uppercase mt-1">Manual</p>
                        )}
-                       {(idx.sourceUrl?.includes('Argly') ||
-                         idx.sourceUrl?.includes('respaldo general Argly')) && (
+                       {ipcSourceKind(idx.sourceUrl) === 'argly' && (
                          <p className="text-[9px] font-bold text-amber-700 uppercase mt-1">
-                           Respaldo Argly (solo general)
+                           Argly (solo general)
                          </p>
                        )}
-                       {idx.sourceUrl?.includes('alphacast.io') && (
+                       {ipcSourceKind(idx.sourceUrl) === 'alphacast' && (
                          <p className="text-[9px] font-bold text-primary-600 uppercase mt-1">
                            Alphacast
                          </p>

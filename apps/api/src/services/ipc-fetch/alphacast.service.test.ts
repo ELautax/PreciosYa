@@ -5,6 +5,7 @@ import {
   parseAlphacastIpcCsv,
   parseCsvLine,
   resolveMomColumnIndex,
+  assertValidAlphacastCsv,
 } from './alphacast.service.js'
 import { ALPHACAST_MOM_SUFFIX } from './alphacast.config.js'
 
@@ -43,5 +44,10 @@ describe('parseAlphacastIpcCsv', () => {
     expect(
       resolveMomColumnIndex(header, 'Alimentos y bebidas no alcohólicas', ALPHACAST_MOM_SUFFIX),
     ).toBe(3)
+  })
+
+  it('rechaza CSV de error por plan gratuito agotado', () => {
+    const csv = 'error\nYou exceeded your free membership plan. Please upgrade your subscription.\n'
+    expect(() => assertValidAlphacastCsv(csv)).toThrow(/plan gratuito agotado/i)
   })
 })

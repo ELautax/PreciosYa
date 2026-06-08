@@ -98,7 +98,8 @@ export async function getAdminIndices() {
 }
 
 export async function forceFetchIpcFromAdmin() {
-  const { results, general, source } = await fetchAndPersistAllIpcSeries()
+  const { results, general, source, alphacastFailureReason } =
+    await fetchAndPersistAllIpcSeries()
   if (results.length === 0) {
     throw new AppError({
       statusCode: 502,
@@ -110,6 +111,32 @@ export async function forceFetchIpcFromAdmin() {
   const fallback = results[0]!
   const period = general?.period ?? fallback.period
   const valuePct = general?.valuePct ?? fallback.valuePct
+
+  let warning: string | undefined
+  if (source === 'argly') {
+    const divisionAlphacastCount = await prisma.economicIndex.count({
+      where: {
+        period,
+        type: { in: IPC_INDEX_TYPES.filter((t) => t !== IndexType.IPC_INDEC) },
+        sourceUrl: { contains: 'alphacast', mode: 'insensitive' },
+      },
+    })
+    if (alphacastFailureReason?.includes('plan gratuito agotado')) {
+      warning =
+        divisionAlphacastCount > 0
+          ? `${alphacastFailureReason} Se actualizó solo el nivel general (Argly). Las divisiones COICOP conservan el último dato Alphacast.`
+          : `${alphacastFailureReason} Solo se obtuvo IPC general (Argly). Cargá cada división en el formulario manual.`
+    } else if (alphacastFailureReason) {
+      warning =
+        divisionAlphacastCount > 0
+          ? `Alphacast no respondió (${alphacastFailureReason}). Se actualizó solo el nivel general (Argly). Las divisiones conservan el último dato Alphacast.`
+          : `Alphacast no respondió (${alphacastFailureReason}). Solo se obtuvo IPC general (Argly). Las divisiones COICOP requieren Alphacast o carga manual por rubro.`
+    } else {
+      warning =
+        'Solo se obtuvo IPC nivel general. Las divisiones COICOP (ej. Alimentos 1,5%) requieren Alphacast o carga manual por rubro.'
+    }
+  }
+
   return {
     period: period.toISOString(),
     valuePct,
@@ -120,10 +147,7 @@ export async function forceFetchIpcFromAdmin() {
       period: r.period.toISOString(),
       valuePct: r.valuePct,
     })),
-    warning:
-      source === 'argly'
-        ? 'Solo se obtuvo IPC nivel general. Las divisiones COICOP (ej. Alimentos 1,5%) requieren Alphacast o carga manual por rubro.'
-        : undefined,
+    warning,
   }
 }
 

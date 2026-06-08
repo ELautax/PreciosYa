@@ -93,7 +93,40 @@ export function buildAlphacastIpcDownloadUrl(): string {
   return `${base}/datasets/${env.ALPHACAST_IPC_DATASET_ID}/data?apiKey=${key}&format=csv`
 }
 
+/** Alphacast a veces responde 200 con CSV de error (p. ej. plan gratuito agotado). */
+export function assertValidAlphacastCsv(csvText: string): void {
+  const trimmed = csvText.trim()
+  if (
+    /exceeded your free membership/i.test(trimmed) ||
+    /upgrade your subscription/i.test(trimmed)
+  ) {
+    throw new AppError({
+      statusCode: 402,
+      message:
+        'Alphacast: plan gratuito agotado. Renová la suscripción en alphacast.io/membership o usá carga manual por rubro.',
+      code: 'ALPHACAST_QUOTA_EXCEEDED',
+    })
+  }
+  const firstLine = trimmed.split(/\r?\n/)[0]?.trim() ?? ''
+  const delimiter = detectCsvDelimiter(firstLine)
+  const firstCell = parseCsvLine(firstLine, delimiter)[0] ?? firstLine
+  if (normalizeCsvHeader(firstCell) === 'error') {
+    const detail = trimmed
+      .split(/\r?\n/)
+      .slice(0, 3)
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+    throw new AppError({
+      statusCode: 502,
+      message: detail || 'Alphacast devolvió un error en lugar del dataset IPC',
+      code: 'ALPHACAST_ERROR_CSV',
+    })
+  }
+}
+
 export function parseAlphacastIpcCsv(csvText: string): FetchedIpcRow[] {
+  assertValidAlphacastCsv(csvText)
   const lines = csvText
     .split(/\r?\n/)
     .map((l) => l.trim())
@@ -223,10 +256,6 @@ async function downloadAlphacastCsv(): Promise<string> {
       url: `${base}/datasets/${id}/data?format=csv`,
       headers: { Authorization: basicAuthHeader(key) },
     })
-    attempts.push({
-      url: `https://charts.alphacast.io/api/datasets/${id}.csv`,
-      headers: { Authorization: basicAuthHeader(key) },
-    })
   }
 
   let lastStatus = 0
@@ -235,7 +264,11 @@ async function downloadAlphacastCsv(): Promise<string> {
       const init: RequestInit = { signal: AbortSignal.timeout(60_000) }
       if (attempt.headers) init.headers = attempt.headers
       const res = await fetch(attempt.url, init)
-      if (res.ok) return await res.text()
+      if (res.ok) {
+        const text = await res.text()
+        assertValidAlphacastCsv(text)
+        return text
+      }
       lastStatus = res.status
     } catch {
       // siguiente intento
@@ -254,5 +287,6 @@ async function downloadAlphacastCsv(): Promise<string> {
 
 export async function fetchLatestIpcFromAlphacast(): Promise<FetchedIpcRow[]> {
   const csvText = await downloadAlphacastCsv()
+  assertValidAlphacastCsv(csvText)
   return parseAlphacastIpcCsv(csvText)
 }
