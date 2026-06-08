@@ -16,6 +16,7 @@
   <meta property="og:title" content="PreciosYa — Control de precios con IPC" />
   <meta property="og:description" content="Actualizá precios en segundos y cuidá tu margen de la inflación." />
   <meta property="og:image" content="./assets/preciosya-logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
   
   <link rel="icon" type="image/png" href="./assets/preciosya-logo.png" />
   <script src="./site-config.js"></script>
@@ -26,6 +27,7 @@
 
   <style>
     :root {
+      /* App Design Tokens */
       --canvas: #f8f7f4;
       --surface: #ffffff;
       --surface-soft: #f2efea;
@@ -33,7 +35,7 @@
       --border-strong: #d7d1ca;
       --text-main: #1c1917;
       --text-muted: #44403c;
-      --text-subtle: #78716c;
+      --text-subtle: #6b6661; /* Adjusted for WCAG AA contrast from #78716c */
       --primary: #16a34a;
       --primary-hover: #15803d;
       --accent: #d97706;
@@ -49,21 +51,6 @@
       
       --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
       --font-mono: 'DM Mono', monospace;
-    }
-
-    [data-theme='dark'] {
-      --canvas: #12100e;
-      --surface: #1c1917;
-      --surface-soft: #292522;
-      --border: #312e2b;
-      --border-strong: #44403c;
-      --text-main: #f5f5f4;
-      --text-muted: #d6d3d1;
-      --text-subtle: #a8a29e;
-      --primary: #22c55e;
-      --primary-hover: #16a34a;
-      --accent: #fbbf24;
-      --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -82,14 +69,29 @@
     .container { width: 100%; max-width: 1140px; margin: 0 auto; padding: 0 1.5rem; }
     .font-mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
     .text-center { text-align: center; }
+    .text-muted { color: var(--text-muted); }
     .mb-2 { margin-bottom: 0.5rem; }
     .mb-4 { margin-bottom: 1rem; }
     .mb-8 { margin-bottom: 2rem; }
     .mb-12 { margin-bottom: 3rem; }
 
+    /* Animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 500ms ease, transform 500ms ease;
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { transform: none !important; transition: opacity 500ms ease !important; }
+    }
+
     /* Sections */
     section { padding: 6rem 0; }
-    .section-title { font-size: clamp(1.75rem, 5vw, 2.75rem); margin-bottom: 1rem; line-height: 1.1; }
+    .section-title { font-size: clamp(1.75rem, 5vw, 2.75rem); margin-bottom: 1rem; line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; }
     .section-lead { font-size: 1.125rem; color: var(--text-muted); max-width: 60ch; }
 
     /* Buttons */
@@ -108,6 +110,8 @@
       cursor: pointer;
       border: none;
       white-space: nowrap;
+      position: relative;
+      z-index: 1;
     }
     .btn-primary {
       background-color: var(--primary);
@@ -142,11 +146,7 @@
       border-bottom: 1px solid transparent;
       transition: all 0.3s ease;
     }
-    .header.scrolled {
-      background-color: var(--surface);
-      border-color: var(--border);
-      box-shadow: var(--shadow-sm);
-    }
+    .header.scrolled { background-color: var(--surface); border-color: var(--border); box-shadow: var(--shadow-sm); }
     .header-inner { display: flex; align-items: center; justify-content: space-between; height: 4.5rem; }
     .logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; font-weight: 800; font-size: 1.35rem; color: var(--text-main); }
     .logo img { height: 1.85rem; width: auto; }
@@ -179,41 +179,54 @@
     .mobile-menu.active { display: flex; }
 
     /* Hero */
-    .hero { text-align: center; padding-top: 5rem; padding-bottom: 6rem; overflow: hidden; }
+    .hero { text-align: center; padding-top: 4rem; padding-bottom: 6rem; overflow: hidden; }
+    @media (min-width: 980px) {
+      .hero { text-align: left; }
+      .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+      .hero-actions { justify-content: flex-start !important; }
+    }
     .kicker { display: inline-flex; align-items: center; gap: 0.5rem; background-color: var(--surface-soft); border: 1px solid var(--border); padding: 0.5rem 0.85rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 2rem; }
-    .hero h1 { font-size: clamp(2.5rem, 8vw, 4.25rem); margin-bottom: 1.5rem; max-width: 15ch; margin-left: auto; margin-right: auto; line-height: 1; }
-    .hero p { font-size: clamp(1.125rem, 3vw, 1.35rem); color: var(--text-muted); max-width: 54ch; margin: 0 auto 3rem; text-wrap: balance; }
-    .hero-actions { display: flex; flex-direction: column; gap: 1rem; justify-content: center; margin-bottom: 5rem; }
+    .hero h1 { font-size: clamp(2.5rem, 8vw, 4.25rem); margin-bottom: 1.5rem; max-width: 15ch; line-height: 1; font-weight: 800; }
+    .hero p { font-size: clamp(1.125rem, 3vw, 1.35rem); color: var(--text-muted); max-width: 54ch; margin-bottom: 2rem; text-wrap: balance; }
+    @media (max-width: 979px) { .hero h1, .hero p { margin-left: auto; margin-right: auto; } }
+    .hero-actions { display: flex; flex-direction: column; gap: 1rem; justify-content: center; margin-bottom: 2rem; }
     @media (min-width: 620px) { .hero-actions { flex-direction: row; } }
 
-    /* Mock App UI (Hero) */
-    .hero-visual { position: relative; padding: 2rem 0; }
-    .app-mock {
-      background-color: var(--canvas);
-      border: 12px solid #1c1917;
-      border-radius: 3.5rem;
-      padding: 0.75rem;
-      aspect-ratio: 9/19;
+    /* Visual Frame */
+    .hero-visual { position: relative; padding: 2rem 0; display: flex; justify-content: center; }
+    .app-frame {
+      background-color: #1c1917;
+      border: 8px solid #1c1917;
+      border-radius: 2.5rem;
       max-width: 320px;
-      margin: 0 auto;
+      width: 100%;
       box-shadow: var(--shadow-lg);
       overflow: hidden;
       position: relative;
+      z-index: 2;
     }
-    .app-mock-screen { background-color: var(--canvas); height: 100%; border-radius: 2.75rem; display: flex; flex-direction: column; overflow: hidden; }
-    .app-mock-header { padding: 1.75rem 1.25rem 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface); }
-    .app-mock-list { flex: 1; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; overflow: hidden; }
-    .app-mock-item { background: var(--surface); border: 1px solid var(--border); padding: 0.85rem; border-radius: 1.25rem; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); }
-    .badge { padding: 0.35rem 0.6rem; border-radius: 0.6rem; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
-    .badge-danger { background-color: var(--danger); color: white; }
-    .badge-success { background-color: var(--primary); color: white; }
+    .app-frame img { display: block; width: 100%; height: auto; }
+    .glow-bg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 150%;
+      height: 150%;
+      background: radial-gradient(circle, rgba(22, 163, 74, 0.04) 0%, transparent 70%);
+      z-index: 1;
+      pointer-events: none;
+    }
 
     /* Steps */
-    .steps-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; }
-    @media (min-width: 980px) { .steps-grid { grid-template-columns: repeat(3, 1fr); } }
+    .how-it-works-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; }
+    @media (min-width: 980px) { .how-it-works-grid { grid-template-columns: 1fr 1fr; align-items: start; } }
+    .steps-list { display: flex; flex-direction: column; gap: 2.5rem; }
     .step-card { text-align: left; }
     .step-icon { width: 3.5rem; height: 3.5rem; background-color: var(--primary); color: white; border-radius: 1rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
     .step-number { font-size: 0.75rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 0.5rem; display: block; letter-spacing: 0.05em; }
+    .sticky-visual { position: sticky; top: 7rem; display: flex; justify-content: center; margin-top: 2rem; }
+    @media (max-width: 979px) { .sticky-visual { position: static; margin-top: 0; margin-bottom: 8rem; } }
 
     /* Feature Cards */
     .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
@@ -222,14 +235,23 @@
     .feature-card svg { color: var(--primary); margin-bottom: 1.5rem; }
     .feature-card h4 { font-size: 1.25rem; margin-bottom: 0.75rem; }
 
-    /* Compare Table */
-    .compare-wrap { overflow-x: auto; border-radius: var(--radius-2xl); border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow-sm); }
-    .compare-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    /* Compare Section */
+    .compare-section { max-width: 900px; margin: 0 auto; }
+    .compare-wrap { overflow: hidden; border-radius: var(--radius-2xl); border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow-sm); }
+    .compare-table { width: 100%; border-collapse: collapse; display: none; }
+    @media (min-width: 621px) { .compare-table { display: table; } }
     .compare-table th, .compare-table td { padding: 1.5rem; border-bottom: 1px solid var(--border); text-align: left; }
     .compare-table th { background-color: var(--surface-soft); font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-subtle); }
     .compare-table tr:last-child td { border-bottom: none; }
     .compare-py { background-color: rgba(22, 163, 74, 0.03); font-weight: 700; color: var(--primary); border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
     .compare-cell-icon { display: flex; align-items: center; gap: 0.5rem; }
+
+    .compare-mobile { display: flex; flex-direction: column; gap: 1rem; }
+    @media (min-width: 621px) { .compare-mobile { display: none; } }
+    .compare-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 1.25rem; }
+    .compare-row-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; font-size: 0.875rem; }
+    .compare-row-item:not(:last-child) { border-bottom: 1px solid var(--surface-soft); }
+    .compare-label { font-weight: 700; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; }
 
     /* Pricing */
     .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; align-items: stretch; }
@@ -251,8 +273,32 @@
     .faq-item[open] summary::after { transform: rotate(45deg); }
     .faq-content { padding: 0 1.5rem 1.5rem; color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
 
+    /* CTA Final Refined */
+    .cta-final-container {
+      background-color: var(--surface-soft);
+      border-radius: var(--radius-2xl);
+      padding: 4rem 2rem;
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-glow-container { position: relative; display: inline-block; }
+    .btn-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(22, 163, 74, 0.08) 0%, transparent 60%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
     /* Footer */
-    .footer { background-color: var(--surface); border-top: 1px solid var(--border); padding: 5rem 0 3rem; }
+    .footer { background-color: var(--surface); border-top: 1px solid var(--border); padding: 4rem 0 3rem; }
     .footer-grid { display: grid; grid-template-columns: 1fr; gap: 4rem; margin-bottom: 5rem; }
     @media (min-width: 980px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr 1.5fr; } }
     .footer-title { font-size: 0.75rem; text-transform: uppercase; font-weight: 800; margin-bottom: 1.5rem; color: var(--text-main); letter-spacing: 0.05em; }
@@ -265,7 +311,6 @@
     .logo-footer { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; font-weight: 800; font-size: 1.25rem; color: var(--text-main); margin-bottom: 1rem; }
     .logo-footer img { height: 1.5rem; }
 
-    /* Utilities */
     .py-tokens-line { text-align: center; margin-top: 2rem; color: var(--text-subtle); font-size: 0.875rem; }
   </style>
 </head>
@@ -274,7 +319,7 @@
   <header class="header" id="header">
     <div class="container header-inner">
       <a href="#" class="logo">
-        <img src="./assets/preciosya-logo.png" alt="PreciosYa Logo">
+        <img src="./assets/preciosya-logo.png" alt="PreciosYa Logo" width="30" height="30">
         <span>Precios<span class="ya">Ya</span></span>
       </a>
       <nav class="nav-desktop">
@@ -301,27 +346,25 @@
   <main>
     <!-- Hero -->
     <section class="hero">
-      <div class="container">
-        <div class="kicker">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-          Hecho en Argentina para kioscos y almacenes
-        </div>
-        <h1>Dejá la libreta: actualizá precios con IPC y cuidá tu margen.</h1>
-        <p>Control de costos, márgenes reales y actualización masiva por rubro. Mandá tus listas por WhatsApp en segundos y sin vueltas.</p>
-        
-        <div class="kicker mb-8" style="background-color: var(--primary); color: white; border: none;">
-          Proyecto en crecimiento · Probá gratis
-        </div>
-
-        <div class="hero-actions">
-          <a id="cta-hero-primary" href="#" class="btn btn-primary">Empezar gratis — sin tarjeta</a>
-          <a href="#como-funciona" class="btn btn-secondary">Ver cómo funciona</a>
+      <div class="container hero-grid">
+        <div class="hero-text reveal" id="hero-text">
+          <div class="kicker">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Hecho en Argentina para kioscos y almacenes
+          </div>
+          <h1>Dejá la libreta: actualizá precios con IPC y cuidá tu margen.</h1>
+          <p>Control de costos, márgenes reales y actualización masiva por rubro. Mandá tus listas por WhatsApp en segundos y sin vueltas.</p>
+          <div class="hero-actions">
+            <a id="cta-hero-primary" href="#" class="btn btn-primary">Empezar gratis — sin tarjeta</a>
+            <a href="#como-funciona" class="btn btn-secondary">Ver cómo funciona</a>
+          </div>
         </div>
         
-        <div class="hero-visual">
-          <figure>
+        <div class="hero-visual reveal" id="hero-visual">
+          <div class="glow-bg"></div>
+          <figure class="app-frame">
             <!-- Reemplazar con captura real: pantalla Productos o Dashboard -->
-            <img src="./assets/app-screenshot-hero.png" alt="PreciosYa App Hero Screenshot" style="max-width: 100%; height: auto; border-radius: 2rem; box-shadow: var(--shadow-lg); border: 8px solid var(--text-main);">
+            <img src="./assets/app-screenshot-hero.png" alt="PreciosYa App Hero Screenshot" width="320" height="675">
           </figure>
         </div>
       </div>
@@ -330,45 +373,47 @@
     <!-- Cómo funciona -->
     <section id="como-funciona" style="background-color: var(--surface-soft);">
       <div class="container">
-        <div class="text-center mb-12">
+        <div class="text-center mb-12 reveal">
           <h2 class="section-title">De la libreta a un sistema, sin fricción.</h2>
           <p class="section-lead" style="margin: 0 auto;">Tres pasos simples para pasar de “reaccionar tarde” a “decidir con números”.</p>
         </div>
         
-        <div class="steps-grid mb-12">
-          <div class="step-card">
-            <div class="step-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <div class="how-it-works-grid">
+          <div class="steps-list">
+            <div class="step-card reveal">
+              <div class="step-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </div>
+              <span class="step-number">Paso 01</span>
+              <h3 class="mb-4">Cargás productos</h3>
+              <p class="text-muted">Ingresá costo y el margen que querés ganar. El sistema te dice a cuánto tenés que vender cada cosa automáticamente.</p>
             </div>
-            <span class="step-number">Paso 01</span>
-            <h3 class="mb-4">Cargás productos</h3>
-            <p class="text-muted">Ingresá costo y el margen que querés ganar. El sistema te dice a cuánto tenés que vender cada cosa automáticamente.</p>
-          </div>
-          
-          <div class="step-card">
-            <div class="step-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            
+            <div class="step-card reveal">
+              <div class="step-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </div>
+              <span class="step-number">Paso 02</span>
+              <h3 class="mb-4">Aplicás IPC o aumento</h3>
+              <p class="text-muted">Un solo toque para aplicar el IPC oficial o un aumento de proveedor a todo tu local o un rubro específico.</p>
             </div>
-            <span class="step-number">Paso 02</span>
-            <h3 class="mb-4">Aplicás IPC o aumento</h3>
-            <p class="text-muted">Un solo toque para aplicar el IPC oficial o un aumento de proveedor a todo tu local o un rubro específico.</p>
-          </div>
-          
-          <div class="step-card">
-            <div class="step-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            
+            <div class="step-card reveal">
+              <div class="step-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <span class="step-number">Paso 03</span>
+              <h3 class="mb-4">Compartís y controlás</h3>
+              <p class="text-muted">Mandá la lista actualizada por WhatsApp y recibí alertas visuales si tus márgenes bajan del mínimo establecido.</p>
             </div>
-            <span class="step-number">Paso 03</span>
-            <h3 class="mb-4">Compartís y controlás</h3>
-            <p class="text-muted">Mandá la lista actualizada por WhatsApp y recibí alertas visuales si tus márgenes bajan del mínimo establecido.</p>
           </div>
-        </div>
 
-        <div class="text-center">
-          <figure>
-            <!-- Reemplazar con captura real: pantalla actualización IPC -->
-            <img src="./assets/app-screenshot-ipc.png" alt="PreciosYa App IPC Update Screenshot" style="max-width: 600px; width: 100%; height: auto; border-radius: 1.5rem; box-shadow: var(--shadow-md); border: 1px solid var(--border);">
-          </figure>
+          <div class="sticky-visual reveal">
+            <figure class="app-frame" style="max-width: 300px;">
+              <!-- Reemplazar con captura real: pantalla actualización IPC -->
+              <img src="./assets/app-screenshot-ipc.png" alt="PreciosYa App IPC Update Screenshot" width="300" height="630" loading="lazy">
+            </figure>
+          </div>
         </div>
       </div>
     </section>
@@ -376,36 +421,39 @@
     <!-- Funcionalidades -->
     <section id="funcionalidades">
       <div class="container">
-        <h2 class="section-title mb-12">Funcionalidades pensadas para vos</h2>
+        <div class="text-center mb-12 reveal">
+          <h2 class="section-title">Funcionalidades pensadas para vos</h2>
+          <p class="section-lead" style="margin: 0 auto;">Todo lo que necesitás para profesionalizar la gestión de tu negocio hoy mismo.</p>
+        </div>
         <div class="features-grid">
-          <div class="feature-card">
+          <div class="feature-card reveal">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7"/><path d="M16 5V3"/><path d="M8 5V3"/><path d="M3 9h18"/><path d="M18 21v-8"/><path d="M14 17h8"/></svg>
-            <h4 class="mb-4">IPC por rubro COICOP</h4>
+            <h4>IPC por rubro COICOP</h4>
             <p class="text-muted">Alimentos, bebidas, limpieza. No apliques el mismo porcentaje a todo si la inflación no es pareja por rubro.</p>
           </div>
-          <div class="feature-card">
+          <div class="feature-card reveal">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            <h4 class="mb-4">Alertas de margen</h4>
+            <h4>Alertas de margen</h4>
             <p class="text-muted">Productos en rojo cuando bajan de tu margen mínimo aceptable. No vendas a pérdida sin darte cuenta.</p>
           </div>
-          <div class="feature-card">
+          <div class="feature-card reveal">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-2 10h9L7 22l2-10H1L13 2z"/></svg>
-            <h4 class="mb-4">Actualización masiva</h4>
+            <h4>Actualización masiva</h4>
             <p class="text-muted">Ajustá todos tus precios por IPC, valor del dólar o un porcentaje manual en un solo paso operativo.</p>
           </div>
-          <div class="feature-card">
+          <div class="feature-card reveal">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            <h4 class="mb-4">Lista WhatsApp</h4>
+            <h4>Lista WhatsApp</h4>
             <p class="text-muted">Exportá una imagen profesional y clara de tus precios para compartir con tus clientes al instante.</p>
           </div>
-          <div class="feature-card">
+          <div class="feature-card reveal">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
-            <h4 class="mb-4">Historial de cambios</h4>
+            <h4>Historial de cambios</h4>
             <p class="text-muted">Controlá qué cambió, cuándo y por qué. Mantené la transparencia total en la evolución de tus costos.</p>
           </div>
-          <div class="feature-card">
+          <div class="feature-card reveal">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="m3 9 2.45-4.91A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.79 1.09L21 9"/><path d="M12 3v6"/></svg>
-            <h4 class="mb-4">Multi-local</h4>
+            <h4>Multi-local</h4>
             <p class="text-muted">Gestioná varios puntos de venta o negocios distintos desde una sola cuenta centralizada con el plan Pro.</p>
           </div>
         </div>
@@ -414,40 +462,65 @@
 
     <!-- Comparativa -->
     <section style="background-color: var(--canvas);">
-      <div class="container">
-        <h2 class="section-title mb-12">¿Por qué cambiar hoy?</h2>
-        <div class="compare-wrap">
-          <table class="compare-table">
-            <thead>
-              <tr>
-                <th>Tarea</th>
-                <th>Libreta / Excel</th>
-                <th class="compare-py">PreciosYa</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Actualizar 100 productos</td>
-                <td class="text-muted"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Horas de laburo manual</div></td>
-                <td class="compare-py"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Segundos</div></td>
-              </tr>
-              <tr>
-                <td>Aplicar inflación (IPC)</td>
-                <td class="text-muted"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Cálculo manual lento</div></td>
-                <td class="compare-py"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Totalmente automático</div></td>
-              </tr>
-              <tr>
-                <td>Saber si perdés margen</td>
-                <td class="text-muted"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Ojo y memoria (falla)</div></td>
-                <td class="compare-py"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Alertas visuales al toque</div></td>
-              </tr>
-              <tr>
-                <td>Mandar precios por WA</td>
-                <td class="text-muted"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Fotos borrosas del cuaderno</div></td>
-                <td class="compare-py"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Imagen profesional lista</div></td>
-              </tr>
-            </tbody>
-          </table>
+      <div class="container compare-section">
+        <h2 class="section-title mb-12 text-center reveal">¿Por qué cambiar hoy?</h2>
+        <div class="reveal">
+          <div class="compare-wrap">
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>Tarea</th>
+                  <th>Libreta / Excel</th>
+                  <th class="compare-py">PreciosYa</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Actualizar 100 productos</td>
+                  <td class="text-muted"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Horas de laburo manual</div></td>
+                  <td class="compare-py"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Segundos</div></td>
+                </tr>
+                <tr>
+                  <td>Aplicar inflación (IPC)</td>
+                  <td class="text-muted"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Cálculo manual lento</div></td>
+                  <td class="compare-py"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Totalmente automático</div></td>
+                </tr>
+                <tr>
+                  <td>Saber si perdés margen</td>
+                  <td class="text-muted"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Ojo y memoria (falla)</div></td>
+                  <td class="compare-py"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Alertas visuales al toque</div></td>
+                </tr>
+                <tr>
+                  <td>Mandar precios por WA</td>
+                  <td class="text-muted"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Fotos borrosas del cuaderno</div></td>
+                  <td class="compare-py"><div class="compare-cell-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Imagen profesional lista</div></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="compare-mobile">
+              <div class="compare-card">
+                <h5 class="mb-4">Actualizar 100 productos</h5>
+                <div class="compare-row-item"><span class="compare-label">Libreta</span> <span class="text-muted">Horas de laburo</span></div>
+                <div class="compare-row-item"><span class="compare-label" style="color:var(--primary)">PreciosYa</span> <span style="font-weight:700;color:var(--primary)">Segundos</span></div>
+              </div>
+              <div class="compare-card">
+                <h5 class="mb-4">Aplicar inflación (IPC)</h5>
+                <div class="compare-row-item"><span class="compare-label">Libreta</span> <span class="text-muted">Cálculo manual lento</span></div>
+                <div class="compare-row-item"><span class="compare-label" style="color:var(--primary)">PreciosYa</span> <span style="font-weight:700;color:var(--primary)">Automático</span></div>
+              </div>
+              <div class="compare-card">
+                <h5 class="mb-4">Saber si perdés margen</h5>
+                <div class="compare-row-item"><span class="compare-label">Libreta</span> <span class="text-muted">Ojo y memoria</span></div>
+                <div class="compare-row-item"><span class="compare-label" style="color:var(--primary)">PreciosYa</span> <span style="font-weight:700;color:var(--primary)">Alertas al toque</span></div>
+              </div>
+              <div class="compare-card">
+                <h5 class="mb-4">Mandar precios por WA</h5>
+                <div class="compare-row-item"><span class="compare-label">Libreta</span> <span class="text-muted">Fotos borrosas</span></div>
+                <div class="compare-row-item"><span class="compare-label" style="color:var(--primary)">PreciosYa</span> <span style="font-weight:700;color:var(--primary)">Imagen profesional</span></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -455,13 +528,13 @@
     <!-- Precios -->
     <section id="precios">
       <div class="container">
-        <div class="text-center mb-12">
+        <div class="text-center mb-12 reveal">
           <h2 class="section-title">Planes para tu negocio</h2>
           <p class="section-lead" style="margin: 0 auto;">Sin vueltas ni costos ocultos. Elegí el que mejor te calce hoy.</p>
         </div>
         
         <div class="pricing-grid">
-          <div class="price-card">
+          <div class="price-card reveal">
             <h3 class="mb-2">Free</h3>
             <div class="price-val font-mono">$0<span>/siempre</span></div>
             <ul class="price-list">
@@ -473,7 +546,7 @@
             <a id="cta-free" href="#" class="btn btn-secondary">Empezar gratis</a>
           </div>
           
-          <div class="price-card featured">
+          <div class="price-card featured reveal">
             <div class="price-badge">RECOMENDADO</div>
             <h3 class="mb-2">Pro</h3>
             <div class="price-val font-mono">$4.500<span>/mes</span></div>
@@ -486,7 +559,7 @@
             <a id="cta-pro" href="#" class="btn btn-primary">Probar Pro</a>
           </div>
           
-          <div class="price-card">
+          <div class="price-card reveal">
             <h3 class="mb-2">Agency</h3>
             <div class="price-val font-mono">$9.900<span>/mes</span></div>
             <ul class="price-list">
@@ -499,7 +572,7 @@
           </div>
         </div>
         
-        <p class="py-tokens-line">
+        <p class="py-tokens-line reveal">
           En el plan Free podés probar la app; IPC automático y alertas de margen requieren Pro.
         </p>
       </div>
@@ -508,25 +581,25 @@
     <!-- FAQ -->
     <section id="faq" style="background-color: var(--surface-soft);">
       <div class="container">
-        <h2 class="section-title text-center mb-12">Dudas comunes</h2>
+        <h2 class="section-title text-center mb-12 reveal">Dudas comunes</h2>
         <div class="faq-list">
-          <details class="faq-item">
+          <details class="faq-item reveal">
             <summary>¿Necesito saber de computación?</summary>
             <div class="faq-content">No. Está pensado para que lo use cualquier comerciante: cargás costo y margen, y PreciosYa hace el resto. Si usás WhatsApp para vender, podés usar esto sin problemas.</div>
           </details>
-          <details class="faq-item">
+          <details class="faq-item reveal">
             <summary>¿El IPC es el oficial?</summary>
             <div class="faq-content">Sí. Tomamos la referencia oficial del INDEC para que tus actualizaciones masivas tengan una base consistente y profesional, sin tener que andar buscando los datos por fuera.</div>
           </details>
-          <details class="faq-item">
+          <details class="faq-item reveal">
             <summary>¿Funciona en el celular?</summary>
             <div class="faq-content">¡Claro! Entrás desde el navegador o instalás la app en Android. En iPhone podés agregarla a la pantalla de inicio desde Safari para que se sienta y funcione como una app más.</div>
           </details>
-          <details class="faq-item">
+          <details class="faq-item reveal">
             <summary>¿Qué pasa si cambio de teléfono?</summary>
             <div class="faq-content">Tus datos siguen guardados en la nube. Simplemente iniciás sesión en el nuevo dispositivo con tu cuenta y recuperás toda la información de tu local al instante.</div>
           </details>
-          <details class="faq-item">
+          <details class="faq-item reveal">
             <summary>¿Cuánto cuesta empezar?</summary>
             <div class="faq-content">Empezar es totalmente gratis. Podés cargar hasta 30 productos y usar todas las funciones básicas para ver cómo te ordena el negocio sin poner un peso.</div>
           </details>
@@ -537,9 +610,14 @@
     <!-- Final CTA -->
     <section class="text-center">
       <div class="container">
-        <h2 class="section-title">Empezá hoy con tu primer local</h2>
-        <p class="section-lead" style="margin: 0 auto 3rem;">Sumate a los comerciantes que ya cuidan sus ganancias y profesionalizan su gestión con PreciosYa.</p>
-        <a id="cta-footer" href="#" class="btn btn-primary">Empezar gratis ahora</a>
+        <div class="cta-final-container reveal">
+          <h2 class="section-title">Empezá hoy con tu primer local</h2>
+          <p class="section-lead mb-8" style="margin-inline: auto;">Sumate a los comerciantes que ya cuidan sus ganancias y profesionalizan su gestión con PreciosYa.</p>
+          <div class="btn-glow-container">
+            <div class="btn-glow"></div>
+            <a id="cta-footer" href="#" class="btn btn-primary">Empezar gratis ahora</a>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -549,7 +627,7 @@
       <div class="footer-grid">
         <div>
           <a href="#" class="logo-footer">
-            <img src="./assets/preciosya-logo.png" alt="PreciosYa">
+            <img src="./assets/preciosya-logo.png" alt="PreciosYa" width="24" height="24">
             <span>Precios<span class="ya">Ya</span></span>
           </a>
           <p style="color: var(--text-subtle); font-size: 0.875rem; max-width: 30ch;">Profesionalizá tu negocio. Controlá tus márgenes y enfrentá la inflación con datos reales.</p>
@@ -578,7 +656,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>© 2026 PreciosYa · Hecho en Argentina 🇦🇷 · Da Vinci Escuela Multimedial</p>
+        <p>© 2026 PreciosYa · Hecho en Argentina AR · Da Vinci Escuela Multimedial</p>
         <div style="display: flex; gap: 2rem;">
           <span style="color: var(--text-subtle); font-size: 0.875rem;">sales@preciosya.com</span>
         </div>
@@ -616,7 +694,6 @@
           menuToggle.setAttribute('aria-expanded', isActive);
         });
         
-        // Close menu when clicking outside
         document.addEventListener('click', (e) => {
           if (!mobileMenu.contains(e.target) && !menuToggle.contains(e.target)) {
             mobileMenu.classList.remove('active');
@@ -624,7 +701,6 @@
           }
         });
 
-        // Close menu on link click
         mobileMenu.querySelectorAll('a').forEach(link => {
           link.addEventListener('click', () => {
             mobileMenu.classList.remove('active');
@@ -652,6 +728,30 @@
             });
           }
         });
+      });
+
+      // Reveal on Scroll (Intersection Observer)
+      const revealOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, revealOptions);
+
+      document.querySelectorAll('.reveal').forEach(el => {
+        // Hero visual and text should animate on load
+        if (el.id === 'hero-text' || el.id === 'hero-visual') {
+          setTimeout(() => el.classList.add('active'), 100);
+        } else {
+          revealObserver.observe(el);
+        }
       });
     })();
   </script>
