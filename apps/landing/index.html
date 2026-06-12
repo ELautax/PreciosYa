@@ -10,7 +10,7 @@
   />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://preciosya-landing.vercel.app" />
-  
+
   <!-- Social -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="PreciosYa — Control de precios con IPC" />
@@ -34,7 +34,7 @@
     })();
   </script>
   <script src="./site-config.js"></script>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -54,7 +54,7 @@
       --primary-hover: #15803d;
       --accent: #d97706;
       --danger: #dc2626;
-      --header-bg: rgba(248, 247, 244, 0.85);
+      --header-bg: rgba(248, 247, 244, 0.82);
       --canvas-glow: rgba(22, 163, 74, 0.04);
       --phone-frame: #1c1917;
       --compare-py-bg: rgba(22, 163, 74, 0.03);
@@ -62,6 +62,9 @@
       --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.05);
       --shadow-md: 0 8px 20px rgba(28, 25, 23, 0.08);
       --shadow-lg: 0 20px 48px rgba(28, 25, 23, 0.12);
+      --hero-fade: rgba(248, 247, 244, 0);
+      --hero-fade-solid: #f8f7f4;
+      --section-alt: #f2efea;
       color-scheme: light;
     }
 
@@ -78,7 +81,7 @@
       --primary-hover: #16a34a;
       --accent: #fbbf24;
       --danger: #f87171;
-      --header-bg: rgba(18, 16, 14, 0.88);
+      --header-bg: rgba(18, 16, 14, 0.85);
       --canvas-glow: rgba(34, 197, 94, 0.08);
       --phone-frame: #0c0a09;
       --compare-py-bg: rgba(34, 197, 94, 0.08);
@@ -86,6 +89,9 @@
       --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
       --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.5);
       --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.55);
+      --hero-fade: rgba(18, 16, 14, 0);
+      --hero-fade-solid: #12100e;
+      --section-alt: #171411;
       color-scheme: dark;
     }
 
@@ -99,6 +105,7 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; font-size: 16px; height: 100%; }
+    html.lenis { scroll-behavior: auto; }
     body {
       font-family: var(--font-sans);
       background-color: var(--canvas);
@@ -108,10 +115,11 @@
       -webkit-font-smoothing: antialiased;
       min-height: 100%;
       transition: background-color 0.25s ease, color 0.25s ease;
+      overflow-x: hidden;
     }
 
     /* Layout & Utilities */
-    .container { width: 100%; max-width: 1140px; margin: 0 auto; padding: 0 1.5rem; }
+    .container { width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 1.5rem; }
     .font-mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
     .text-center { text-align: center; }
     .text-muted { color: var(--text-muted); }
@@ -120,26 +128,33 @@
     .mb-8 { margin-bottom: 2rem; }
     .mb-12 { margin-bottom: 3rem; }
 
-    /* Animations */
-    .js .reveal {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    .reveal {
-      transition: opacity 500ms ease, transform 500ms ease;
-    }
-    .reveal.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    /* Animations base (fallback sin GSAP) */
+    .js .reveal { opacity: 0; transform: translateY(18px); }
+    .reveal { transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+    html.gsap-on .reveal { transition: none; }
     @media (prefers-reduced-motion: reduce) {
-      .reveal { transform: none !important; transition: opacity 500ms ease !important; }
+      .reveal { transform: none !important; transition: opacity 400ms ease !important; }
     }
 
     /* Sections */
-    section { padding: 6rem 0; }
-    .section-title { font-size: clamp(1.75rem, 5vw, 2.75rem); margin-bottom: 1rem; line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; }
-    .section-lead { font-size: 1.125rem; color: var(--text-muted); max-width: 60ch; }
+    section { padding: 6.5rem 0; position: relative; scroll-margin-top: 5rem; }
+    .section-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    .section-kicker::before { content: ''; width: 1.5rem; height: 2px; background: var(--primary); border-radius: 2px; }
+    .section-kicker.centered { justify-content: center; }
+    .section-kicker.centered::after { content: ''; width: 1.5rem; height: 2px; background: var(--primary); border-radius: 2px; }
+    .section-title { font-size: clamp(1.9rem, 5vw, 3rem); margin-bottom: 1rem; line-height: 1.06; font-weight: 800; letter-spacing: -0.025em; }
+    .section-lead { font-size: 1.125rem; color: var(--text-muted); max-width: 58ch; }
 
     /* Buttons */
     .btn {
@@ -149,11 +164,11 @@
       gap: 0.5rem;
       height: 3.5rem;
       padding: 0 1.75rem;
-      border-radius: var(--radius-xl);
+      border-radius: 9999px;
       font-weight: 700;
       font-size: 1rem;
       text-decoration: none;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       cursor: pointer;
       border: none;
       white-space: nowrap;
@@ -163,37 +178,50 @@
     .btn-primary {
       background-color: var(--primary);
       color: #ffffff;
-      box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25);
+      box-shadow: 0 8px 24px rgba(22, 163, 74, 0.28);
     }
     .btn-primary:hover {
       background-color: var(--primary-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(22, 163, 74, 0.35);
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 14px 32px rgba(22, 163, 74, 0.38);
     }
     .btn-secondary {
       background-color: var(--surface);
-      color: var(--text-muted);
-      border: 1px solid var(--border);
+      color: var(--text-main);
+      border: 1px solid var(--border-strong);
     }
     .btn-secondary:hover {
       background-color: var(--surface-soft);
-      border-color: var(--border-strong);
-      color: var(--text-main);
+      transform: translateY(-2px);
     }
-    .btn-sm { height: 2.75rem; padding: 0 1.25rem; font-size: 0.875rem; border-radius: var(--radius-lg); }
+    .btn-dark {
+      background-color: var(--text-main);
+      color: var(--canvas);
+      box-shadow: var(--shadow-md);
+    }
+    .btn-dark:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .btn-sm { height: 2.75rem; padding: 0 1.25rem; font-size: 0.875rem; }
+    .btn .btn-arrow { transition: transform 0.25s ease; }
+    .btn:hover .btn-arrow { transform: translateX(3px); }
 
     /* Header */
     .header {
-      position: sticky;
+      position: fixed;
       top: 0;
+      left: 0;
+      right: 0;
       z-index: 100;
-      background-color: var(--header-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background-color: transparent;
       border-bottom: 1px solid transparent;
-      transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
     }
-    .header.scrolled { background-color: var(--surface); border-color: var(--border); box-shadow: var(--shadow-sm); }
+    .header.scrolled {
+      background-color: var(--header-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-color: var(--border);
+      box-shadow: var(--shadow-sm);
+    }
     .header-inner { display: flex; align-items: center; justify-content: space-between; height: 4.5rem; }
     .logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; font-weight: 800; font-size: 1.35rem; color: var(--text-main); }
     .logo img { height: 1.85rem; width: auto; }
@@ -236,7 +264,7 @@
     .menu-toggle { display: flex; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; position: relative; width: 40px; height: 40px; align-items: center; justify-content: center; }
     .menu-toggle span { width: 24px; height: 2px; background: var(--text-main); border-radius: 2px; transition: 0.3s; }
     @media (min-width: 980px) { .menu-toggle { display: none; } }
-    
+
     .mobile-menu {
       position: fixed;
       top: 4.5rem;
@@ -253,65 +281,425 @@
     }
     .mobile-menu.active { display: flex; }
 
-    /* Hero */
-    .hero { text-align: center; padding-top: 4rem; padding-bottom: 6rem; overflow: hidden; }
-    @media (min-width: 980px) {
-      .hero { text-align: left; }
-      .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-      .hero-actions { justify-content: flex-start !important; }
+    /* ======================= HERO (shader) ======================= */
+    .hero {
+      position: relative;
+      min-height: clamp(620px, 96vh, 940px);
+      display: flex;
+      align-items: flex-end;
+      padding: 8rem 0 5rem;
+      overflow: hidden;
     }
-    .kicker { display: inline-flex; align-items: center; gap: 0.5rem; background-color: var(--surface-soft); border: 1px solid var(--border); padding: 0.5rem 0.85rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 2rem; }
-    .hero h1 { font-size: clamp(2.5rem, 8vw, 4.25rem); margin-bottom: 1.5rem; max-width: 15ch; line-height: 1; font-weight: 800; }
-    .hero p { font-size: clamp(1.125rem, 3vw, 1.35rem); color: var(--text-muted); max-width: 54ch; margin-bottom: 2rem; text-wrap: balance; }
-    @media (max-width: 979px) { .hero h1, .hero p { margin-left: auto; margin-right: auto; } }
-    .hero-actions { display: flex; flex-direction: column; gap: 1rem; justify-content: center; margin-bottom: 2rem; }
+    #heroShader {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 0;
+    }
+    .hero-fallback {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      display: none;
+      background: linear-gradient(118deg,
+        var(--canvas) 0%,
+        rgba(22, 163, 74, 0.14) 22%,
+        var(--canvas) 41%,
+        rgba(217, 119, 6, 0.16) 58%,
+        var(--canvas) 76%,
+        rgba(22, 163, 74, 0.12) 100%);
+      background-size: 300% 300%;
+      animation: heroPan 16s ease-in-out infinite alternate;
+    }
+    [data-theme='dark'] .hero-fallback {
+      background: linear-gradient(118deg,
+        var(--canvas) 0%,
+        rgba(34, 197, 94, 0.16) 22%,
+        var(--canvas) 41%,
+        rgba(251, 191, 36, 0.12) 58%,
+        var(--canvas) 76%,
+        rgba(34, 197, 94, 0.14) 100%);
+      background-size: 300% 300%;
+    }
+    @keyframes heroPan {
+      from { background-position: 0% 0%; }
+      to { background-position: 100% 100%; }
+    }
+    html.no-webgl #heroShader { display: none; }
+    html.no-webgl .hero-fallback { display: block; }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-fallback { animation: none; }
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 38%;
+      background: linear-gradient(to bottom, var(--hero-fade), var(--hero-fade-solid));
+      z-index: 1;
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 2; width: 100%; }
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 1.75rem;
+      background: var(--header-bg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      padding: 0.5rem 1rem;
+    }
+    .hero-kicker svg { color: var(--primary); }
+    .hero h1 {
+      font-size: clamp(2.6rem, 7.2vw, 5rem);
+      line-height: 1.02;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      max-width: 17ch;
+      margin-bottom: 1.75rem;
+    }
+    /* padding/margen compensados para que no se corten acentos ni descendentes */
+    .hero h1 .line {
+      display: block;
+      overflow: hidden;
+      padding: 0.08em 0.08em 0.18em 0;
+      margin: -0.08em 0 -0.18em 0;
+    }
+    .hero h1 .line > span { display: inline-block; }
+    .hero h1 .hl-green { color: var(--primary); }
+    .hero h1 .hl-amber { color: var(--accent); }
+    .hero p.lead {
+      font-size: clamp(1.1rem, 2.6vw, 1.3rem);
+      color: var(--text-muted);
+      max-width: 50ch;
+      margin-bottom: 2.25rem;
+      text-wrap: balance;
+    }
+    .hero-actions { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem; }
     @media (min-width: 620px) { .hero-actions { flex-direction: row; } }
 
-    /* Visual Frame */
-    .hero-visual { position: relative; padding: 2rem 0; display: flex; justify-content: center; }
-    .app-frame {
-      background-color: var(--phone-frame);
-      border: 8px solid var(--phone-frame);
-      border-radius: 2.5rem;
-      max-width: 320px;
+    .hero-stats { display: flex; flex-wrap: wrap; gap: 2.5rem; }
+    .hero-stat { min-width: 7rem; }
+    .hero-stat .num {
+      font-family: var(--font-mono);
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 500;
+      color: var(--text-main);
+      line-height: 1.1;
+    }
+    .hero-stat .num em { font-style: normal; color: var(--primary); }
+    .hero-stat .lbl {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-subtle);
+      margin-top: 0.35rem;
+    }
+
+    /* ======================= SHOWCASE ======================= */
+    .showcase { padding-top: 2rem; }
+    .showcase-inner { position: relative; display: flex; justify-content: center; }
+
+    /* ====== Teléfono con la app recreada en HTML/CSS (sigue el tema) ====== */
+    .phone {
+      background: var(--phone-frame);
+      border-radius: 2.6rem;
+      padding: 10px;
+      max-width: 340px;
       width: 100%;
       box-shadow: var(--shadow-lg);
-      overflow: hidden;
       position: relative;
       z-index: 2;
     }
-    .app-frame img { display: block; width: 100%; height: auto; }
+    .phone-screen {
+      position: relative;
+      border-radius: 2rem;
+      overflow: hidden;
+      background: var(--canvas);
+      aspect-ratio: 9 / 18.2;
+      display: flex;
+      flex-direction: column;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .mock-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1rem 0.7rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .mock-brand { display: flex; align-items: center; gap: 0.4rem; font-weight: 800; font-size: 0.95rem; color: var(--text-main); }
+    .mock-brand img { width: 1.15rem; height: 1.15rem; }
+    .mock-brand .ya { color: var(--accent); }
+    .mock-top-icons { display: flex; align-items: center; gap: 0.6rem; color: var(--text-subtle); }
+    .mock-bell { position: relative; display: flex; }
+    .mock-bell::after {
+      content: '2';
+      position: absolute;
+      top: -5px;
+      right: -6px;
+      background: var(--danger);
+      color: #fff;
+      font-size: 0.5rem;
+      font-weight: 800;
+      width: 0.85rem;
+      height: 0.85rem;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mock-body { flex: 1; padding: 0.9rem 1rem; overflow: hidden; }
+    .mock-greet { font-weight: 800; font-size: 1.05rem; color: var(--text-main); }
+    .mock-greet span { display: flex; align-items: center; gap: 0.3rem; font-size: 0.64rem; font-weight: 600; color: var(--text-subtle); margin-top: 3px; }
+    .mock-greet span svg { color: var(--primary); flex-shrink: 0; }
+    .mock-avatar {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 9999px;
+      background: rgba(22, 163, 74, 0.12);
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.62rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; margin-top: 0.85rem; }
+    .mock-kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 0.9rem; padding: 0.65rem 0.7rem; }
+    .mock-kpi .ic { width: 1.7rem; height: 1.7rem; border-radius: 9999px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.45rem; }
+    .ic-green { background: rgba(22, 163, 74, 0.12); color: var(--primary); }
+    .ic-amber { background: rgba(217, 119, 6, 0.12); color: var(--accent); }
+    .ic-red { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
+    .mock-kpi .lbl { font-size: 0.54rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-subtle); }
+    .mock-kpi .val { font-family: var(--font-mono); font-weight: 700; font-size: 0.98rem; margin-top: 2px; color: var(--text-main); }
+    .mock-actions-title { display: flex; align-items: center; gap: 0.6rem; font-weight: 800; font-size: 0.82rem; margin-top: 0.95rem; color: var(--text-main); }
+    .mock-actions-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .mock-action {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.9rem;
+      padding: 0.6rem 0.7rem;
+      margin-top: 0.5rem;
+    }
+    .mock-action .aic { width: 1.9rem; height: 1.9rem; border-radius: 0.6rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mock-action .at { font-weight: 800; font-size: 0.72rem; color: var(--text-main); line-height: 1.2; }
+    .mock-action .as { font-size: 0.48rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-subtle); margin-top: 1px; }
+    .mock-action .arr { margin-left: auto; width: 1.5rem; height: 1.5rem; border-radius: 9999px; background: var(--surface-soft); display: flex; align-items: center; justify-content: center; color: var(--text-subtle); flex-shrink: 0; }
+    .mock-nav {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      padding: 0.55rem 0 0.75rem;
+      flex-shrink: 0;
+    }
+    .mock-nav div { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 0.46rem; font-weight: 800; letter-spacing: 0.06em; color: var(--text-subtle); text-transform: uppercase; }
+    .mock-nav div svg { width: 0.95rem; height: 0.95rem; }
+    .mock-nav div.on { color: var(--primary); }
+
+    /* Pantallas intercambiables (sección Cómo funciona) */
+    .phone-screen .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .phone-screen .screen.active { opacity: 1; pointer-events: auto; }
+    .mock-field { margin-top: 0.55rem; }
+    .flabel { font-size: 0.52rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-subtle); margin-bottom: 3px; display: flex; align-items: center; gap: 0.25rem; }
+    .mock-field .fval { background: var(--surface); border: 1px solid var(--border); border-radius: 0.7rem; padding: 0.5rem 0.65rem; font-weight: 600; font-size: 0.74rem; color: var(--text-main); }
+    .mock-field .fval.sel { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15); display: flex; align-items: center; justify-content: space-between; }
+    .mock-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .mock-btn {
+      margin-top: auto;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 9999px;
+      padding: 0.65rem;
+      text-align: center;
+      font-weight: 800;
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+    .mock-btn.amber { background: var(--accent); }
+    .mock-btn.flow { margin-top: 0.7rem; }
+
+    /* Réplicas de pantallas reales de la app */
+    .mock-modal-head { display: flex; align-items: center; gap: 0.55rem; padding-bottom: 0.65rem; border-bottom: 1px solid var(--border); margin-bottom: 0.7rem; }
+    .mock-modal-head .mic { width: 2rem; height: 2rem; border-radius: 0.65rem; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mock-modal-head .mt { font-weight: 800; font-size: 0.85rem; color: var(--text-main); line-height: 1.15; }
+    .mock-modal-head .ms { font-size: 0.48rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-subtle); margin-top: 1px; }
+    .mock-modal-head .mx { margin-left: auto; width: 1.6rem; height: 1.6rem; border-radius: 9999px; background: var(--surface-soft); display: flex; align-items: center; justify-content: center; color: var(--text-subtle); flex-shrink: 0; }
+    .mock-suggest { background: rgba(22, 163, 74, 0.08); border: 1px solid rgba(22, 163, 74, 0.25); border-radius: 0.9rem; padding: 0.65rem 0.75rem; margin-bottom: 0.55rem; }
+    .mock-suggest .row { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; }
+    .mock-suggest .big { font-family: var(--font-mono); font-weight: 700; font-size: 1.35rem; color: var(--primary); }
+    .mock-pill { font-size: 0.48rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; background: var(--surface); border: 1px solid rgba(22, 163, 74, 0.3); color: var(--primary); padding: 0.25rem 0.5rem; border-radius: 9999px; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.25rem; }
+    .mock-foot { display: grid; grid-template-columns: 1fr 1.35fr; gap: 0.5rem; margin-top: auto; padding-top: 0.7rem; }
+    .mock-foot .mock-btn { margin-top: 0; }
+    .mock-btn-outline { background: var(--surface); border: 1px solid var(--border); color: var(--text-main); border-radius: 9999px; padding: 0.6rem; text-align: center; font-weight: 800; font-size: 0.68rem; display: flex; align-items: center; justify-content: center; gap: 0.35rem; }
+    .mock-back { display: flex; align-items: center; gap: 0.2rem; font-size: 0.52rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); margin-bottom: 0.35rem; }
+    .mock-page-title { font-weight: 800; font-size: 1.05rem; color: var(--text-main); margin-bottom: 0.6rem; letter-spacing: -0.01em; }
+    .mock-search { display: flex; align-items: center; gap: 0.45rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.8rem; padding: 0.55rem 0.7rem; color: var(--text-subtle); font-size: 0.72rem; font-weight: 600; margin-top: 0.55rem; }
+    .mock-banner { background: rgba(217, 119, 6, 0.07); border: 1px solid rgba(217, 119, 6, 0.28); border-radius: 1rem; padding: 0.75rem; margin-top: 0.65rem; }
+    .mock-banner .bhead { display: flex; align-items: flex-start; gap: 0.55rem; }
+    .mock-banner .bic { width: 1.9rem; height: 1.9rem; border-radius: 9999px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mock-banner .bt { font-weight: 800; font-size: 0.78rem; color: var(--text-main); line-height: 1.2; }
+    .mock-banner .bt em { font-style: normal; color: var(--accent); font-family: var(--font-mono); }
+    .mock-banner .bs { font-size: 0.48rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-subtle); margin-top: 2px; }
+    .mock-banner p { font-size: 0.62rem; color: var(--text-muted); margin: 0.45rem 0 0; font-weight: 500; line-height: 1.45; }
+    .mock-preview { background: var(--surface); border: 1px solid var(--border); border-radius: 0.9rem; padding: 0.75rem 0.85rem; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05); }
+    .mock-preview .pv-title { color: var(--primary); font-weight: 800; font-size: 1rem; letter-spacing: -0.01em; }
+    .mock-preview .pv-sub { font-size: 0.56rem; color: var(--text-subtle); font-weight: 600; border-bottom: 1px solid var(--border); padding-bottom: 0.45rem; margin-bottom: 0.2rem; }
+    .mock-prow { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; padding: 0.38rem 0; border-bottom: 1px solid var(--surface-soft); }
+    .mock-prow .pn { font-weight: 700; font-size: 0.72rem; color: var(--text-main); }
+    .mock-prow .pu { display: block; font-size: 0.48rem; color: var(--text-subtle); font-weight: 600; margin-top: 1px; }
+    .mock-prow .pp { font-family: var(--font-mono); font-weight: 700; font-size: 0.78rem; color: var(--text-main); white-space: nowrap; }
+    .mock-pfoot { font-size: 0.52rem; color: var(--text-subtle); padding-top: 0.45rem; font-weight: 600; }
     .glow-bg {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 150%;
-      height: 150%;
+      width: 130%;
+      height: 130%;
       background: radial-gradient(circle, var(--canvas-glow) 0%, transparent 70%);
       z-index: 1;
       pointer-events: none;
     }
+    .float-card {
+      position: absolute;
+      z-index: 3;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+      padding: 0.9rem 1.1rem;
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    @media (min-width: 880px) { .float-card { display: flex; } }
+    .float-card .ic {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .float-card.fc-ipc { top: 14%; left: calc(50% - 340px); }
+    .float-card.fc-ipc .ic { background: rgba(217, 119, 6, 0.12); color: var(--accent); }
+    .float-card.fc-margin { bottom: 20%; right: calc(50% - 350px); }
+    .float-card.fc-margin .ic { background: rgba(22, 163, 74, 0.12); color: var(--primary); }
+    .float-card .sub { display: block; font-size: 0.7rem; font-weight: 600; color: var(--text-subtle); }
 
-    /* Steps */
+    /* ======================= STEPS ======================= */
     .how-it-works-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; }
     @media (min-width: 980px) { .how-it-works-grid { grid-template-columns: 1fr 1fr; align-items: start; } }
-    .steps-list { display: flex; flex-direction: column; gap: 2.5rem; }
-    .step-card { text-align: left; }
-    .step-icon { width: 3.5rem; height: 3.5rem; background-color: var(--primary); color: white; border-radius: 1rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
-    .step-number { font-size: 0.75rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 0.5rem; display: block; letter-spacing: 0.05em; }
+    .steps-list { display: flex; flex-direction: column; gap: 2rem; }
+    .step-card {
+      text-align: left;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      background: var(--surface);
+      padding: 2rem;
+      cursor: pointer;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .step-card:hover { border-color: var(--border-strong); }
+    .step-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 1rem;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .step-card.is-active .step-hint,
+    .step-card:hover .step-hint { opacity: 1; }
+    .step-card.is-active {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+      transform: translateX(4px);
+    }
+    .step-icon { width: 3.25rem; height: 3.25rem; background-color: var(--primary); color: white; border-radius: 1rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; }
+    .step-number { font-size: 0.7rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 0.5rem; display: block; letter-spacing: 0.1em; }
+    .step-card h3 { font-size: 1.3rem; margin-bottom: 0.75rem; }
     .sticky-visual { position: sticky; top: 7rem; display: flex; justify-content: center; margin-top: 2rem; }
     @media (max-width: 979px) { .sticky-visual { position: static; margin-top: 0; margin-bottom: 2rem; } }
 
-    /* Feature Cards */
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
-    .feature-card { background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-2xl); padding: 2.5rem; transition: transform 0.2s ease, box-shadow 0.2s ease; text-align: left; }
-    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
-    .feature-card svg { color: var(--primary); margin-bottom: 1.5rem; }
+    /* ======================= FEATURES ======================= */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .feature-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      padding: 2.5rem;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .feature-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 0.9rem;
+      background: rgba(22, 163, 74, 0.1);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
     .feature-card h4 { font-size: 1.25rem; margin-bottom: 0.75rem; }
 
-    /* Compare Section */
-    .compare-section { max-width: 900px; margin: 0 auto; }
+    /* ======================= COMPARE ======================= */
+    .compare-section { max-width: 920px; margin: 0 auto; }
     .compare-wrap { overflow: hidden; border-radius: var(--radius-2xl); border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow-sm); }
     .compare-table { width: 100%; border-collapse: collapse; display: none; }
     @media (min-width: 621px) { .compare-table { display: table; } }
@@ -328,9 +716,10 @@
     .compare-row-item:not(:last-child) { border-bottom: 1px solid var(--surface-soft); }
     .compare-label { font-weight: 700; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; }
 
-    /* Pricing */
+    /* ======================= PRICING ======================= */
     .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; align-items: stretch; }
-    .price-card { display: flex; flex-direction: column; background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-2xl); padding: 3rem 2rem; transition: 0.2s; }
+    .price-card { display: flex; flex-direction: column; background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-2xl); padding: 3rem 2rem; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .price-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
     .price-card.featured { border: 2px solid var(--primary); position: relative; box-shadow: var(--shadow-lg); }
     .price-badge { position: absolute; top: -0.85rem; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 0.4rem 1rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 800; }
     .price-val { font-size: 3.5rem; font-weight: 800; margin-bottom: 2rem; color: var(--text-main); }
@@ -339,7 +728,7 @@
     .price-list li { display: flex; align-items: center; gap: 0.75rem; color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
     .price-list li svg { color: var(--primary); flex-shrink: 0; }
 
-    /* FAQ */
+    /* ======================= FAQ ======================= */
     .faq-list { max-width: 800px; margin: 0 auto; }
     .faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 1rem; }
     .faq-item summary { padding: 1.5rem; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; align-items: center; list-style: none; transition: background 0.2s; }
@@ -348,17 +737,104 @@
     .faq-item[open] summary::after { transform: rotate(45deg); }
     .faq-content { padding: 0 1.5rem 1.5rem; color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
 
-    /* CTA Final Refined */
-    .cta-final-container {
-      background-color: var(--surface-soft);
+    /* ======================= APK DOWNLOAD ======================= */
+    .apk-section { background-color: var(--section-alt); }
+    .apk-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: var(--radius-2xl);
-      padding: 4rem 2rem;
-      max-width: 720px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr;
+      max-width: 980px;
+      margin: 0 auto;
+      position: relative;
+    }
+    @media (min-width: 880px) { .apk-card { grid-template-columns: 1.2fr 1fr; } }
+    .apk-copy { padding: 3rem 2rem; }
+    @media (min-width: 880px) { .apk-copy { padding: 3.5rem 3rem; } }
+    .apk-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(22, 163, 74, 0.1);
+      color: var(--primary);
+      border-radius: 9999px;
+      padding: 0.45rem 1rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .apk-copy h2 { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 1rem; }
+    .apk-copy > p { color: var(--text-muted); margin-bottom: 2rem; max-width: 44ch; }
+    .apk-steps { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2.25rem; counter-reset: apkstep; }
+    .apk-steps li { display: flex; align-items: flex-start; gap: 0.9rem; font-size: 0.95rem; color: var(--text-muted); font-weight: 500; }
+    .apk-steps li::before {
+      counter-increment: apkstep;
+      content: counter(apkstep);
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 9999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .apk-actions { display: flex; flex-direction: column; gap: 0.85rem; }
+    @media (min-width: 620px) { .apk-actions { flex-direction: row; } }
+    .apk-note { margin-top: 1.5rem; font-size: 0.78rem; font-weight: 600; color: var(--text-subtle); display: flex; align-items: center; gap: 0.5rem; }
+    .apk-visual {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(22, 163, 74, 0.16), transparent 55%),
+        radial-gradient(circle at 75% 80%, rgba(217, 119, 6, 0.14), transparent 50%),
+        var(--surface-soft);
+      min-height: 280px;
+      padding: 2.5rem;
+    }
+    .apk-visual .android-mark {
+      width: clamp(7rem, 14vw, 10rem);
+      height: auto;
+      color: var(--primary);
+      filter: drop-shadow(0 16px 32px rgba(22, 163, 74, 0.3));
+    }
+
+    /* ======================= CTA FINAL ======================= */
+    .cta-final-container {
+      background-color: var(--text-main);
+      color: var(--canvas);
+      border-radius: var(--radius-2xl);
+      padding: 5rem 2rem;
+      max-width: 880px;
       margin: 0 auto;
       text-align: center;
       position: relative;
       overflow: hidden;
     }
+    .cta-final-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(34, 197, 94, 0.25), transparent 45%),
+        radial-gradient(circle at 85% 90%, rgba(251, 191, 36, 0.2), transparent 45%);
+      pointer-events: none;
+    }
+    .cta-final-container > * { position: relative; }
+    .cta-final-container .section-title { color: inherit; }
+    .cta-final-container .section-lead { color: inherit; opacity: 0.75; }
     .btn-glow-container { position: relative; display: inline-block; }
     .btn-glow {
       position: absolute;
@@ -372,7 +848,7 @@
       pointer-events: none;
     }
 
-    /* Footer */
+    /* ======================= FOOTER ======================= */
     .footer { background-color: var(--surface); border-top: 1px solid var(--border); padding: 4rem 0 3rem; }
     .footer-grid { display: grid; grid-template-columns: 1fr; gap: 4rem; margin-bottom: 5rem; }
     @media (min-width: 980px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr 1.5fr; } }
@@ -382,11 +858,31 @@
     .footer-list a:hover { color: var(--text-main); }
     .footer-bottom { border-top: 1px solid var(--border); padding-top: 2.5rem; display: flex; flex-direction: column; gap: 1.5rem; align-items: center; justify-content: space-between; text-align: center; }
     @media (min-width: 768px) { .footer-bottom { flex-direction: row; text-align: left; } }
-    
+
     .logo-footer { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; font-weight: 800; font-size: 1.25rem; color: var(--text-main); margin-bottom: 1rem; }
     .logo-footer img { height: 1.5rem; }
 
     .py-tokens-line { text-align: center; margin-top: 2rem; color: var(--text-subtle); font-size: 0.875rem; }
+
+    /* ======================= AJUSTES MOBILE ======================= */
+    @media (max-width: 619px) {
+      section { padding: 4rem 0; }
+      .hero { min-height: auto; padding: 7.5rem 0 3.75rem; align-items: flex-start; }
+      .hero-kicker { font-size: 0.7rem; padding: 0.45rem 0.85rem; margin-bottom: 1.4rem; }
+      .hero h1 { margin-bottom: 1.4rem; }
+      .hero p.lead { margin-bottom: 1.9rem; }
+      .hero-actions { margin-bottom: 2.5rem; }
+      .hero-actions .btn { width: 100%; white-space: normal; height: auto; min-height: 3.5rem; padding: 0.8rem 1.5rem; text-align: center; }
+      .hero-stats { gap: 1.5rem 2.25rem; }
+      .showcase { padding-top: 0.5rem; padding-bottom: 3.5rem; }
+      .phone { max-width: 290px; }
+      .step-card { padding: 1.5rem; }
+      .feature-card { padding: 1.75rem; }
+      .price-card { padding: 2.25rem 1.5rem; }
+      .apk-copy { padding: 2.5rem 1.5rem; }
+      .cta-final-container { padding: 3.5rem 1.5rem; }
+      .sticky-visual { margin-bottom: 0; }
+    }
   </style>
 </head>
 <body>
@@ -401,6 +897,7 @@
         <a href="#funcionalidades" class="nav-link">Funcionalidades</a>
         <a href="#como-funciona" class="nav-link">Cómo funciona</a>
         <a href="#precios" class="nav-link">Precios</a>
+        <a href="#descargar" class="nav-link">Descargar app</a>
         <a href="#faq" class="nav-link">FAQ</a>
       </nav>
       <div class="header-actions">
@@ -418,80 +915,301 @@
       <a href="#funcionalidades" class="nav-link">Funcionalidades</a>
       <a href="#como-funciona" class="nav-link">Cómo funciona</a>
       <a href="#precios" class="nav-link">Precios</a>
+      <a href="#descargar" class="nav-link">Descargar app</a>
       <a href="#faq" class="nav-link">FAQ</a>
     </nav>
   </header>
 
   <main>
-    <!-- Hero -->
-    <section class="hero">
-      <div class="container hero-grid">
-        <div class="hero-text reveal" id="hero-text">
-          <div class="kicker">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-            Hecho en Argentina para kioscos y almacenes
+    <!-- Hero con shader -->
+    <section class="hero" id="hero">
+      <canvas id="heroShader" aria-hidden="true"></canvas>
+      <div class="hero-fallback" aria-hidden="true"></div>
+
+      <div class="container hero-content">
+        <div class="hero-kicker" data-hero="kicker">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          Hecho en Argentina para kioscos y almacenes
+        </div>
+
+        <h1 id="heroTitle">
+          <span class="line"><span>Tus precios,</span></span>
+          <span class="line"><span>al día con la <span class="hl-green">inflación</span>.</span></span>
+          <span class="line"><span>Tu margen, <span class="hl-amber">protegido</span>.</span></span>
+        </h1>
+
+        <p class="lead" data-hero="lead">
+          Actualizá todos tus costos con el IPC oficial del INDEC en un toque, recibí alertas cuando tu margen cae y mandá tu lista por WhatsApp en segundos.
+        </p>
+
+        <div class="hero-actions" data-hero="actions">
+          <a id="cta-hero-primary" href="#" class="btn btn-primary">
+            Empezar gratis — sin tarjeta
+            <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+          <a href="#descargar" class="btn btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Descargar APK
+          </a>
+        </div>
+
+        <div class="hero-stats" data-hero="stats">
+          <div class="hero-stat">
+            <div class="num"><em data-count="30">30</em></div>
+            <div class="lbl">Productos gratis</div>
           </div>
-          <h1>Dejá la libreta: actualizá precios con IPC y cuidá tu margen.</h1>
-          <p>Control de costos, márgenes reales y actualización masiva por rubro. Mandá tus listas por WhatsApp en segundos y sin vueltas.</p>
-          <div class="hero-actions">
-            <a id="cta-hero-primary" href="#" class="btn btn-primary">Empezar gratis — sin tarjeta</a>
-            <a href="#como-funciona" class="btn btn-secondary">Ver cómo funciona</a>
+          <div class="hero-stat">
+            <div class="num"><em data-count="1">1</em> toque</div>
+            <div class="lbl">Para aplicar IPC</div>
+          </div>
+          <div class="hero-stat">
+            <div class="num"><em data-count="100">100</em>%</div>
+            <div class="lbl">Datos INDEC oficiales</div>
           </div>
         </div>
-        
-        <div class="hero-visual reveal" id="hero-visual">
+      </div>
+    </section>
+
+    <!-- Showcase -->
+    <section class="showcase" aria-label="Vista de la app">
+      <div class="container">
+        <div class="showcase-inner">
           <div class="glow-bg"></div>
-          <figure class="app-frame">
-            <!-- Reemplazar con captura real: pantalla Productos o Dashboard -->
-            <img src="./assets/app-screenshot-hero.png" alt="PreciosYa App Hero Screenshot" width="320" height="675">
-          </figure>
+          <div class="float-card fc-ipc" data-parallax="-30">
+            <div class="ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            </div>
+            <div>IPC aplicado <span class="sub">+2,15% en 142 productos</span></div>
+          </div>
+          <div class="float-card fc-margin" data-parallax="40">
+            <div class="ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <div>Margen sano <span class="sub">35% sobre costo</span></div>
+          </div>
+          <div class="phone" data-parallax="-50" role="img" aria-label="Panel de PreciosYa en el celular">
+            <div class="phone-screen">
+              <div class="mock-top">
+                <div class="mock-brand">
+                  <img src="./assets/preciosya-logo.png" alt="">
+                  Precios<span class="ya">Ya</span>
+                </div>
+                <div class="mock-top-icons">
+                  <span class="mock-bell">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                  </span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                  <span class="mock-avatar">L</span>
+                </div>
+              </div>
+              <div class="mock-body">
+                <div class="mock-greet">Hola, Lautaro<span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Resumen de actividad · Kiosco1</span></div>
+                <div class="mock-grid">
+                  <div class="mock-kpi">
+                    <div class="ic ic-green"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+                    <div class="lbl">Productos</div>
+                    <div class="val">142</div>
+                  </div>
+                  <div class="mock-kpi">
+                    <div class="ic ic-red"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                    <div class="lbl">Alertas margen</div>
+                    <div class="val">0</div>
+                  </div>
+                  <div class="mock-kpi">
+                    <div class="ic ic-amber"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+                    <div class="lbl">Variación IPC</div>
+                    <div class="val">2.15%</div>
+                  </div>
+                  <div class="mock-kpi">
+                    <div class="ic ic-green"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                    <div class="lbl">USD oficial</div>
+                    <div class="val">$1.432,5</div>
+                  </div>
+                </div>
+                <div class="mock-actions-title">Acciones Rápidas</div>
+                <div class="mock-action">
+                  <div class="aic ic-green"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+                  <div>
+                    <div class="at">Nuevo Producto</div>
+                    <div class="as">Carga manual de artículos</div>
+                  </div>
+                  <div class="arr"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+                </div>
+                <div class="mock-action">
+                  <div class="aic ic-amber"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                  <div>
+                    <div class="at">Actualización IPC</div>
+                    <div class="as">Ajuste masivo por inflación</div>
+                  </div>
+                  <div class="arr"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+                </div>
+              </div>
+              <div class="mock-nav">
+                <div class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Panel</div>
+                <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Productos</div>
+                <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>Historial</div>
+                <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Categorías</div>
+                <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/><circle cx="5" cy="12" r="1.6" fill="currentColor"/></svg>Más</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Cómo funciona -->
-    <section id="como-funciona" style="background-color: var(--surface-soft);">
+    <section id="como-funciona" style="background-color: var(--section-alt);">
       <div class="container">
         <div class="text-center mb-12 reveal">
+          <div class="section-kicker centered">Cómo funciona</div>
           <h2 class="section-title">De la libreta a un sistema, sin fricción.</h2>
           <p class="section-lead" style="margin: 0 auto;">Tres pasos simples para pasar de “reaccionar tarde” a “decidir con números”.</p>
         </div>
-        
+
         <div class="how-it-works-grid">
-          <div class="steps-list">
+          <div class="steps-list" id="stepsList">
             <div class="step-card reveal">
               <div class="step-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </div>
               <span class="step-number">Paso 01</span>
-              <h3 class="mb-4">Cargás productos</h3>
+              <h3>Cargás productos</h3>
               <p class="text-muted">Ingresá costo y el margen que querés ganar. El sistema te dice a cuánto tenés que vender cada cosa automáticamente.</p>
+              <span class="step-hint">Ver en el teléfono →</span>
             </div>
-            
+
             <div class="step-card reveal">
               <div class="step-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
               </div>
               <span class="step-number">Paso 02</span>
-              <h3 class="mb-4">Aplicás IPC o aumento</h3>
+              <h3>Aplicás IPC o aumento</h3>
               <p class="text-muted">Un solo toque para aplicar el IPC oficial o un aumento de proveedor a todo tu local o un rubro específico.</p>
+              <span class="step-hint">Ver en el teléfono →</span>
             </div>
-            
+
             <div class="step-card reveal">
               <div class="step-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               </div>
               <span class="step-number">Paso 03</span>
-              <h3 class="mb-4">Compartís y controlás</h3>
+              <h3>Compartís y controlás</h3>
               <p class="text-muted">Mandá la lista actualizada por WhatsApp y recibí alertas visuales si tus márgenes bajan del mínimo establecido.</p>
+              <span class="step-hint">Ver en el teléfono →</span>
             </div>
           </div>
 
           <div class="sticky-visual reveal">
-            <figure class="app-frame" style="max-width: 300px;">
-              <!-- Reemplazar con captura real: pantalla actualización IPC -->
-              <img src="./assets/app-screenshot-ipc.png" alt="PreciosYa App IPC Update Screenshot" width="300" height="630" loading="lazy">
-            </figure>
+            <div class="phone" style="max-width: 300px;">
+              <div class="phone-screen" id="stepsPhone">
+                <!-- Paso 01: modal Nuevo Producto (réplica de la app) -->
+                <div class="screen active">
+                  <div class="mock-modal-head">
+                    <div class="mic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+                    <div>
+                      <div class="mt">Nuevo Producto</div>
+                      <div class="ms">Módulo de inventario</div>
+                    </div>
+                    <div class="mx"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+                  </div>
+                  <div class="mock-suggest">
+                    <div class="flabel" style="margin-bottom:1px;">Sugerencia de venta</div>
+                    <div class="row">
+                      <div class="big">$1440.00</div>
+                      <span class="mock-pill"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>80.0% calculado</span>
+                    </div>
+                  </div>
+                  <div class="mock-field">
+                    <div class="flabel">Nombre del producto</div>
+                    <div class="fval">Coca Cola 500 ml</div>
+                  </div>
+                  <div class="mock-field">
+                    <div class="flabel">Categoría</div>
+                    <div class="fval sel">Alimentos y bebidas <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-subtle)"><polyline points="6 9 12 15 18 9"/></svg></div>
+                  </div>
+                  <div class="mock-2col">
+                    <div class="mock-field">
+                      <div class="flabel">Costo de compra</div>
+                      <div class="fval mono">800</div>
+                    </div>
+                    <div class="mock-field">
+                      <div class="flabel">Margen (%)</div>
+                      <div class="fval mono">80</div>
+                    </div>
+                  </div>
+                  <div class="mock-foot">
+                    <div class="mock-btn-outline">Cancelar</div>
+                    <div class="mock-btn">Registrar</div>
+                  </div>
+                </div>
+
+                <!-- Paso 02: Catálogo de Productos con IPC pendiente (réplica de la app) -->
+                <div class="screen">
+                  <div class="mock-back">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    Volver al panel
+                  </div>
+                  <div class="mock-page-title">Catálogo de Productos</div>
+                  <div class="mock-btn flow" style="margin-top:0;">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Nuevo Producto
+                  </div>
+                  <div class="mock-search">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    Buscar productos...
+                  </div>
+                  <div class="mock-banner">
+                    <div class="bhead">
+                      <div class="bic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+                      <div>
+                        <div class="bt">IPC pendiente: <em>2.15%</em></div>
+                        <div class="bs">Período: abril de 2026</div>
+                      </div>
+                    </div>
+                    <p>Actualizá los costos de tus rubros con el IPC oficial en un solo paso.</p>
+                    <div class="mock-btn amber flow">
+                      Aplicar IPC
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Paso 03: modal Exportar Catálogo (réplica de la app) -->
+                <div class="screen">
+                  <div class="mock-modal-head">
+                    <div class="mic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                    <div>
+                      <div class="mt">Exportar Catálogo</div>
+                      <div class="ms">Generador de PNG</div>
+                    </div>
+                    <div class="mx"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+                  </div>
+                  <div class="mock-preview">
+                    <div class="pv-title">Kiosco1</div>
+                    <div class="pv-sub">Lista de precios · 12/6/2026</div>
+                    <div class="mock-prow">
+                      <div class="pn">Heineken 500 ml<span class="pu">ml</span></div>
+                      <div class="pp">$1000.00</div>
+                    </div>
+                    <div class="mock-prow">
+                      <div class="pn">Pitusas de Limón<span class="pu">unidad</span></div>
+                      <div class="pp">$1050.00</div>
+                    </div>
+                    <div class="mock-pfoot">Generado con PreciosYa</div>
+                  </div>
+                  <div class="mock-foot">
+                    <div class="mock-btn-outline">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      Descargar
+                    </div>
+                    <div class="mock-btn">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                      Compartir
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -501,37 +1219,50 @@
     <section id="funcionalidades">
       <div class="container">
         <div class="text-center mb-12 reveal">
-          <h2 class="section-title">Funcionalidades pensadas para vos</h2>
+          <div class="section-kicker centered">Funcionalidades</div>
+          <h2 class="section-title">Pensadas para tu negocio real</h2>
           <p class="section-lead" style="margin: 0 auto;">Todo lo que necesitás para profesionalizar la gestión de tu negocio hoy mismo.</p>
         </div>
         <div class="features-grid">
           <div class="feature-card reveal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7"/><path d="M16 5V3"/><path d="M8 5V3"/><path d="M3 9h18"/><path d="M18 21v-8"/><path d="M14 17h8"/></svg>
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7"/><path d="M16 5V3"/><path d="M8 5V3"/><path d="M3 9h18"/><path d="M18 21v-8"/><path d="M14 17h8"/></svg>
+            </div>
             <h4>IPC por rubro COICOP</h4>
             <p class="text-muted">Alimentos, bebidas, limpieza. No apliques el mismo porcentaje a todo si la inflación no es pareja por rubro.</p>
           </div>
           <div class="feature-card reveal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
             <h4>Alertas de margen</h4>
             <p class="text-muted">Productos en rojo cuando bajan de tu margen mínimo aceptable. No vendas a pérdida sin darte cuenta.</p>
           </div>
           <div class="feature-card reveal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-2 10h9L7 22l2-10H1L13 2z"/></svg>
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-2 10h9L7 22l2-10H1L13 2z"/></svg>
+            </div>
             <h4>Actualización masiva</h4>
             <p class="text-muted">Ajustá todos tus precios por IPC, valor del dólar o un porcentaje manual en un solo paso operativo.</p>
           </div>
           <div class="feature-card reveal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
             <h4>Lista WhatsApp</h4>
             <p class="text-muted">Exportá una imagen profesional y clara de tus precios para compartir con tus clientes al instante.</p>
           </div>
           <div class="feature-card reveal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+            </div>
             <h4>Historial de cambios</h4>
             <p class="text-muted">Controlá qué cambió, cuándo y por qué. Mantené la transparencia total en la evolución de tus costos.</p>
           </div>
           <div class="feature-card reveal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="m3 9 2.45-4.91A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.79 1.09L21 9"/><path d="M12 3v6"/></svg>
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="m3 9 2.45-4.91A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.79 1.09L21 9"/><path d="M12 3v6"/></svg>
+            </div>
             <h4>Multi-local</h4>
             <p class="text-muted">Gestioná varios puntos de venta o negocios distintos desde una sola cuenta centralizada con el plan Pro.</p>
           </div>
@@ -542,7 +1273,10 @@
     <!-- Comparativa -->
     <section style="background-color: var(--canvas);">
       <div class="container compare-section">
-        <h2 class="section-title mb-12 text-center reveal">¿Por qué cambiar hoy?</h2>
+        <div class="text-center mb-12 reveal">
+          <div class="section-kicker centered">Comparativa</div>
+          <h2 class="section-title">¿Por qué cambiar hoy?</h2>
+        </div>
         <div class="reveal">
           <div class="compare-wrap">
             <table class="compare-table">
@@ -608,10 +1342,11 @@
     <section id="precios">
       <div class="container">
         <div class="text-center mb-12 reveal">
+          <div class="section-kicker centered">Planes</div>
           <h2 class="section-title">Planes para tu negocio</h2>
           <p class="section-lead" style="margin: 0 auto;">Sin vueltas ni costos ocultos. Elegí el que mejor te calce hoy.</p>
         </div>
-        
+
         <div class="pricing-grid">
           <div class="price-card reveal">
             <h3 class="mb-2">Free</h3>
@@ -624,7 +1359,7 @@
             </ul>
             <a id="cta-free" href="#" class="btn btn-secondary">Empezar gratis</a>
           </div>
-          
+
           <div class="price-card featured reveal">
             <div class="price-badge">RECOMENDADO</div>
             <h3 class="mb-2">Pro</h3>
@@ -637,7 +1372,7 @@
             </ul>
             <a id="cta-pro" href="#" class="btn btn-primary">Probar Pro</a>
           </div>
-          
+
           <div class="price-card reveal">
             <h3 class="mb-2">Agency</h3>
             <div class="price-val font-mono">$9.900<span>/mes</span></div>
@@ -650,7 +1385,7 @@
             <a id="cta-agency" href="mailto:hola@preciosya.app" class="btn btn-secondary">Contactar</a>
           </div>
         </div>
-        
+
         <p class="py-tokens-line reveal">
           En el plan Free podés probar la app; IPC automático y alertas de margen requieren Pro.
         </p>
@@ -658,9 +1393,12 @@
     </section>
 
     <!-- FAQ -->
-    <section id="faq" style="background-color: var(--surface-soft);">
+    <section id="faq" style="background-color: var(--section-alt);">
       <div class="container">
-        <h2 class="section-title text-center mb-12 reveal">Dudas comunes</h2>
+        <div class="text-center mb-12 reveal">
+          <div class="section-kicker centered">FAQ</div>
+          <h2 class="section-title">Dudas comunes</h2>
+        </div>
         <div class="faq-list">
           <details class="faq-item reveal">
             <summary>¿Necesito saber de computación?</summary>
@@ -672,7 +1410,7 @@
           </details>
           <details class="faq-item reveal">
             <summary>¿Funciona en el celular?</summary>
-            <div class="faq-content">¡Claro! Entrás desde el navegador o instalás la app en Android. En iPhone podés agregarla a la pantalla de inicio desde Safari para que se sienta y funcione como una app más.</div>
+            <div class="faq-content">¡Claro! Entrás desde el navegador o instalás la app en Android descargando el APK desde esta misma página. En iPhone podés agregarla a la pantalla de inicio desde Safari para que se sienta y funcione como una app más.</div>
           </details>
           <details class="faq-item reveal">
             <summary>¿Qué pasa si cambio de teléfono?</summary>
@@ -682,6 +1420,45 @@
             <summary>¿Cuánto cuesta empezar?</summary>
             <div class="faq-content">Empezar es totalmente gratis. Podés cargar hasta 30 productos y usar todas las funciones básicas para ver cómo te ordena el negocio sin poner un peso.</div>
           </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Descarga APK -->
+    <section id="descargar" class="apk-section">
+      <div class="container">
+        <div class="apk-card reveal">
+          <div class="apk-copy">
+            <div class="apk-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85a.637.637 0 0 0-.83.22l-1.88 3.24a11.46 11.46 0 0 0-8.94 0L5.65 5.67a.643.643 0 0 0-.87-.2c-.28.18-.37.54-.22.83L6.4 9.48A10.78 10.78 0 0 0 1 18h22a10.78 10.78 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></svg>
+              App Android
+            </div>
+            <h2>Llevá PreciosYa<br />en tu bolsillo</h2>
+            <p>Instalá la app en tu celular Android y gestioná precios desde la góndola, el depósito o donde estés. Gratis y en menos de un minuto.</p>
+
+            <ol class="apk-steps">
+              <li>Descargá el archivo APK con el botón de abajo.</li>
+              <li>Abrilo y permití «Instalar apps desconocidas» si Android lo pide.</li>
+              <li>Listo: iniciá sesión con tu cuenta de Google y empezá.</li>
+            </ol>
+
+            <div class="apk-actions">
+              <a id="apk-download-btn" href="#" download="PreciosYa.apk" class="btn btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Descargar APK
+              </a>
+              <a id="cta-apk-web" href="#" class="btn btn-secondary">Usar versión web</a>
+            </div>
+
+            <p class="apk-note">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              iPhone: abrí la versión web en Safari y usá «Agregar a pantalla de inicio».
+            </p>
+          </div>
+
+          <div class="apk-visual" aria-hidden="true">
+            <svg class="android-mark" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85a.637.637 0 0 0-.83.22l-1.88 3.24a11.46 11.46 0 0 0-8.94 0L5.65 5.67a.643.643 0 0 0-.87-.2c-.28.18-.37.54-.22.83L6.4 9.48A10.78 10.78 0 0 0 1 18h22a10.78 10.78 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></svg>
+          </div>
         </div>
       </div>
     </section>
@@ -717,6 +1494,7 @@
             <li><a href="#funcionalidades">Funcionalidades</a></li>
             <li><a href="#como-funciona">Cómo funciona</a></li>
             <li><a href="#precios">Precios</a></li>
+            <li><a href="#descargar">Descargar APK</a></li>
           </ul>
         </div>
         <div>
@@ -774,15 +1552,15 @@
         }
       }
 
-      // Config URLs from site-config.js
-      const loginUrl = window.PRECIOSYA_APP_LOGIN || 'https://preciosya-app.vercel.app/login?from=landing';
-      
-      // Selectors
+      // URLs desde site-config.js
+      const loginUrl = window.PRECIOSYA_APP_LOGIN || 'https://preciosya.vercel.app/login?from=landing';
+      const apkUrl = window.PRECIOSYA_APP_APK || 'https://preciosya.vercel.app/preciosya.apk';
+
       const header = document.getElementById('header');
       const menuToggle = document.getElementById('menuToggle');
       const mobileMenu = document.getElementById('mobileMenu');
       const themeToggle = document.getElementById('themeToggle');
-      const ctaIds = ['cta-header', 'cta-hero-primary', 'cta-free', 'cta-pro', 'cta-footer'];
+      const ctaIds = ['cta-header', 'cta-hero-primary', 'cta-free', 'cta-pro', 'cta-footer', 'cta-apk-web'];
 
       applyTheme(getStoredTheme());
 
@@ -793,25 +1571,25 @@
         });
       }
 
-      // CTAs
       ctaIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.href = loginUrl;
       });
 
-      // Sticky Header
+      const apkBtn = document.getElementById('apk-download-btn');
+      if (apkBtn) apkBtn.href = apkUrl;
+
       window.addEventListener('scroll', () => {
         header.classList.toggle('scrolled', window.scrollY > 20);
       }, { passive: true });
 
-      // Mobile Menu
       if (menuToggle && mobileMenu) {
         menuToggle.addEventListener('click', (e) => {
           e.stopPropagation();
           const isActive = mobileMenu.classList.toggle('active');
           menuToggle.setAttribute('aria-expanded', isActive);
         });
-        
+
         document.addEventListener('click', (e) => {
           if (!mobileMenu.contains(e.target) && !menuToggle.contains(e.target)) {
             mobileMenu.classList.remove('active');
@@ -826,50 +1604,312 @@
           });
         });
       }
+    })();
+  </script>
 
-      // Smooth scroll
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-          const href = this.getAttribute('href');
-          if (href === '#' || href === '') return;
-          
-          const target = document.querySelector(href);
-          if (target) {
-            e.preventDefault();
-            const headerOffset = 80;
-            const elementPosition = target.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+  <!-- Pantallas interactivas (Cómo funciona) -->
+  <script>
+    (function () {
+      const cards = document.querySelectorAll('#stepsList .step-card');
+      const screens = document.querySelectorAll('#stepsPhone .screen');
+      if (!cards.length || !screens.length) return;
 
-            window.scrollTo({
-              top: offsetPosition,
-              behavior: 'smooth'
-            });
-          }
+      window.__pyShowStep = function (i) {
+        screens.forEach((s, j) => s.classList.toggle('active', j === i));
+        cards.forEach((c, j) => c.classList.toggle('is-active', j === i));
+      };
+
+      cards.forEach((card, i) => {
+        card.addEventListener('click', () => window.__pyShowStep(i));
+      });
+    })();
+  </script>
+
+  <!-- Shader hero (WebGL) -->
+  <script>
+    (function () {
+      const canvas = document.getElementById('heroShader');
+      const hero = document.getElementById('hero');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let gl = null;
+      try {
+        gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
+      } catch (err) { gl = null; }
+
+      if (!gl) {
+        document.documentElement.classList.add('no-webgl');
+        return;
+      }
+
+      const VERT = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+      const FRAG = [
+        'precision highp float;',
+        'uniform vec2 u_res;',
+        'uniform float u_time;',
+        'uniform vec3 u_c1;', // canvas base
+        'uniform vec3 u_c2;', // banda clara
+        'uniform vec3 u_c3;', // verde
+        'uniform vec3 u_c4;', // ambar
+        'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+        'float noise(vec2 p){',
+        '  vec2 i=floor(p),f=fract(p);',
+        '  vec2 u=f*f*(3.-2.*f);',
+        '  return mix(mix(hash(i),hash(i+vec2(1.,0.)),u.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),u.x),u.y);',
+        '}',
+        'float fbm(vec2 p){',
+        '  float v=0.,a=.5;',
+        '  for(int i=0;i<5;i++){v+=a*noise(p);p*=2.03;a*=.55;}',
+        '  return v;',
+        '}',
+        'void main(){',
+        '  vec2 uv=gl_FragCoord.xy/u_res;',
+        '  float ar=u_res.x/u_res.y;',
+        '  vec2 q=vec2(uv.x*ar,uv.y);',
+        '  float t=u_time*0.05;',
+        // coordenada diagonal (bandas inclinadas estilo referencia)
+        '  float d=q.x*0.7-q.y*1.15;',
+        '  float n=fbm(vec2(d*2.0+t,uv.y*0.7-t*0.45));',
+        '  float bands=sin(d*5.5+n*5.5+t*1.6);',
+        '  float soft=smoothstep(-1.1,1.1,bands);',
+        '  vec3 col=mix(u_c1,u_c2,soft*0.9);',
+        // veladura verde
+        '  float g=fbm(vec2(d*1.15-t*0.65,q.x*0.5+t*0.3));',
+        '  col=mix(col,u_c3,smoothstep(0.52,0.95,g)*0.42);',
+        // toques ambar
+        '  float a2=fbm(vec2(d*1.6+t*0.5+4.7,uv.y*1.2-t*0.2));',
+        '  col=mix(col,u_c4,smoothstep(0.6,0.98,a2)*0.38);',
+        // brillo superior sutil
+        '  col+=u_c2*smoothstep(0.75,1.0,uv.y)*0.06;',
+        // fundido inferior hacia el canvas para legibilidad del texto
+        '  col=mix(col,u_c1,smoothstep(0.45,0.0,uv.y));',
+        '  gl_FragColor=vec4(col,1.0);',
+        '}'
+      ].join('\n');
+
+      function compile(type, src) {
+        const sh = gl.createShader(type);
+        gl.shaderSource(sh, src);
+        gl.compileShader(sh);
+        if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) return null;
+        return sh;
+      }
+
+      const vs = compile(gl.VERTEX_SHADER, VERT);
+      const fs = compile(gl.FRAGMENT_SHADER, FRAG);
+      if (!vs || !fs) {
+        document.documentElement.classList.add('no-webgl');
+        return;
+      }
+      const prog = gl.createProgram();
+      gl.attachShader(prog, vs);
+      gl.attachShader(prog, fs);
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+        document.documentElement.classList.add('no-webgl');
+        return;
+      }
+      gl.useProgram(prog);
+
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(prog, 'p');
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+      const uRes = gl.getUniformLocation(prog, 'u_res');
+      const uTime = gl.getUniformLocation(prog, 'u_time');
+      const uC1 = gl.getUniformLocation(prog, 'u_c1');
+      const uC2 = gl.getUniformLocation(prog, 'u_c2');
+      const uC3 = gl.getUniformLocation(prog, 'u_c3');
+      const uC4 = gl.getUniformLocation(prog, 'u_c4');
+
+      function hex(h) {
+        return [
+          parseInt(h.slice(1, 3), 16) / 255,
+          parseInt(h.slice(3, 5), 16) / 255,
+          parseInt(h.slice(5, 7), 16) / 255,
+        ];
+      }
+
+      const PALETTES = {
+        light: { c1: hex('#f8f7f4'), c2: hex('#ffffff'), c3: hex('#16a34a'), c4: hex('#d97706') },
+        dark: { c1: hex('#14110f'), c2: hex('#26211c'), c3: hex('#22c55e'), c4: hex('#fbbf24') },
+      };
+
+      function setPalette() {
+        const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        const p = PALETTES[theme];
+        gl.uniform3fv(uC1, p.c1);
+        gl.uniform3fv(uC2, p.c2);
+        gl.uniform3fv(uC3, p.c3);
+        gl.uniform3fv(uC4, p.c4);
+      }
+
+      function resize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+        const w = Math.floor(canvas.clientWidth * dpr);
+        const h = Math.floor(canvas.clientHeight * dpr);
+        if (canvas.width !== w || canvas.height !== h) {
+          canvas.width = w;
+          canvas.height = h;
+          gl.viewport(0, 0, w, h);
+        }
+        gl.uniform2f(uRes, canvas.width, canvas.height);
+      }
+
+      let visible = true;
+      let rafId = 0;
+      const start = performance.now();
+
+      function frame(now) {
+        rafId = 0;
+        if (!visible) return;
+        resize();
+        gl.uniform1f(uTime, (now - start) / 1000);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        if (!reducedMotion) rafId = requestAnimationFrame(frame);
+      }
+
+      function kick() {
+        if (!rafId) rafId = requestAnimationFrame(frame);
+      }
+
+      setPalette();
+      resize();
+      kick();
+
+      // Pausar cuando el hero sale del viewport
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver((entries) => {
+          visible = entries[0].isIntersecting;
+          if (visible) kick();
+        }, { threshold: 0 }).observe(hero);
+      }
+
+      // Cambio de tema → actualizar paleta (y re-render si está estático)
+      new MutationObserver(() => { setPalette(); kick(); })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+      window.addEventListener('resize', kick, { passive: true });
+
+      canvas.addEventListener('webglcontextlost', (e) => {
+        e.preventDefault();
+        document.documentElement.classList.add('no-webgl');
+      });
+    })();
+  </script>
+
+  <!-- Animaciones: GSAP + ScrollTrigger + Lenis -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.11/dist/lenis.min.js"></script>
+  <script>
+    (function () {
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Fallback: sin GSAP o con reduced motion → reveals con IntersectionObserver
+      function fallbackReveals() {
+        const obs = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('active');
+              obs.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        document.querySelectorAll('.reveal').forEach((el) => obs.observe(el));
+      }
+
+      if (reducedMotion || !window.gsap || !window.ScrollTrigger) {
+        document.querySelectorAll('[data-hero]').forEach((el) => { el.style.opacity = '1'; });
+        if (reducedMotion) {
+          document.querySelectorAll('.reveal').forEach((el) => el.classList.add('active'));
+        } else {
+          fallbackReveals();
+        }
+        return;
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+      document.documentElement.classList.add('gsap-on');
+
+      // Lenis smooth scroll integrado con ScrollTrigger
+      if (window.Lenis) {
+        const lenis = new Lenis({ lerp: 0.12, smoothWheel: true });
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+        gsap.ticker.lagSmoothing(0);
+
+        // Anclas internas via Lenis
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (!href || href === '#') return;
+            const target = document.querySelector(href);
+            if (target) {
+              e.preventDefault();
+              lenis.scrollTo(target, { offset: -80 });
+            }
+          });
+        });
+      }
+
+      // Intro del hero
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      tl.from('.hero-kicker', { y: 24, opacity: 0, duration: 0.7 })
+        .from('#heroTitle .line > span', { yPercent: 110, duration: 0.9, stagger: 0.12 }, '-=0.4')
+        .from('[data-hero="lead"]', { y: 24, opacity: 0, duration: 0.7 }, '-=0.5')
+        .from('[data-hero="actions"]', { y: 24, opacity: 0, duration: 0.7 }, '-=0.5')
+        .from('[data-hero="stats"]', { y: 24, opacity: 0, duration: 0.7 }, '-=0.5');
+
+      // Contadores del hero
+      document.querySelectorAll('[data-count]').forEach((el) => {
+        const end = parseInt(el.getAttribute('data-count'), 10);
+        const obj = { v: 0 };
+        gsap.to(obj, {
+          v: end,
+          duration: 1.4,
+          delay: 0.9,
+          ease: 'power2.out',
+          onUpdate: () => { el.textContent = Math.round(obj.v); },
         });
       });
 
-      // Reveal on Scroll (Intersection Observer)
-      const revealOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-      };
+      // Reveals por scroll
+      ScrollTrigger.batch('.reveal', {
+        start: 'top 88%',
+        once: true,
+        onEnter: (els) => {
+          gsap.to(els, { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out', overwrite: true });
+          els.forEach((el) => el.classList.add('active'));
+        },
+      });
 
-      const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('active');
-            revealObserver.unobserve(entry.target);
-          }
+      // Parallax en mockups y cards flotantes
+      document.querySelectorAll('[data-parallax]').forEach((el) => {
+        const amount = parseFloat(el.getAttribute('data-parallax')) || 0;
+        gsap.to(el, {
+          y: amount,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 0.8,
+          },
         });
-      }, revealOptions);
+      });
 
-      document.querySelectorAll('.reveal').forEach(el => {
-        // Hero visual and text should animate on load
-        if (el.id === 'hero-text' || el.id === 'hero-visual') {
-          setTimeout(() => el.classList.add('active'), 100);
-        } else {
-          revealObserver.observe(el);
-        }
+      // Steps activos al scrollear → cambian la pantalla del teléfono
+      document.querySelectorAll('#stepsList .step-card').forEach((card, i) => {
+        ScrollTrigger.create({
+          trigger: card,
+          start: 'top 58%',
+          end: 'bottom 42%',
+          onEnter: () => window.__pyShowStep && window.__pyShowStep(i),
+          onEnterBack: () => window.__pyShowStep && window.__pyShowStep(i),
+        });
       });
     })();
   </script>

@@ -22,6 +22,12 @@ const HistoryPage = lazy(() => import('@/pages/HistoryPage'))
 const SettingsPage = lazy(() => import('@/pages/SettingsPage'))
 const AdminPage = lazy(() => import('@/pages/AdminPage'))
 
+function ExternalRedirect({ to }: { to: string }) {
+  // Redirige fuera de la SPA (la descarga del APK vive en la landing)
+  window.location.replace(to)
+  return null
+}
+
 function RootRedirect() {
   const { session, loading } = useAuth()
 
@@ -60,7 +66,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/download" element={<Navigate to="/login#descargar-apk" replace />} />
+          <Route path="/download" element={<ExternalRedirect to="https://preciosya-landing.vercel.app/#descargar" />} />
           <Route
             element={
               <ProtectedRoute>

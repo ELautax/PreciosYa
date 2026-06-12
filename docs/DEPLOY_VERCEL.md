@@ -3,7 +3,7 @@
 ## App (proyecto `web`)
 
 - **URL producción:** https://preciosya.vercel.app (alias secundario: https://preciosya-app.vercel.app)
-- **APK Android:** https://preciosya.vercel.app/preciosya.apk (regenerar con `node scripts/build-preciosya-apk.mjs`)
+- **APK Android:** https://preciosya.vercel.app/preciosya.apk (regenerar con `node scripts/build-preciosya-apk.mjs`). La descarga se promociona desde la **landing** (`#descargar`), no desde el login; el login solo muestra un link de texto a la landing.
 - Deploy desde la raíz del monorepo (`.vercel/project.json`):
 
 ```bash
@@ -20,7 +20,8 @@ npx vercel alias set web-xxxxx-elautaxs-projects.vercel.app preciosya.vercel.app
 
 - URL: https://preciosya-landing.vercel.app
 - CTAs → **`https://preciosya.vercel.app/login?from=landing`**
-- APK: enlace directo a **`https://preciosya.vercel.app/preciosya.apk`** (no se instala PWA desde la landing)
+- APK: sección **`#descargar`** con botón directo a **`https://preciosya.vercel.app/preciosya.apk`** (URL viene de `site-config.js` → `PRECIOSYA_APP_APK`); no se instala PWA desde la landing
+- Hero con shader WebGL (fallback CSS si no hay WebGL o `prefers-reduced-motion`); animaciones GSAP/ScrollTrigger + Lenis via CDN
 - Deploy: `cd apps/landing && npx vercel deploy --prod --yes`
 
 ## Railway CORS

@@ -6,7 +6,6 @@ import {
   Package,
   AlertTriangle,
   Search,
-  TrendingUp,
   Zap,
   Mail,
   ArrowUpRight,
@@ -97,14 +96,6 @@ export default function AdminPage() {
         ipcSourceKind(idx.sourceUrl) === 'argly' &&
         idx.type !== 'IPC_INDEC',
     )
-
-  const generalIndex = indicesQ.data?.find((idx) => idx.type === 'IPC_INDEC')
-  const ipcMixedArglyAlphacast =
-    ipcSourceKind(generalIndex?.sourceUrl) === 'argly' &&
-    (indicesQ.data?.some(
-      (idx) => idx.type !== 'IPC_INDEC' && ipcSourceKind(idx.sourceUrl) === 'alphacast',
-    ) ??
-      false)
 
   if (loadingMe) {
     return (

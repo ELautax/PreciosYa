@@ -3,6 +3,8 @@
  * Genera preciosya.apk (TWA) vía PWABuilder Cloud y lo copia a apps/web/public/.
  * Uso: node scripts/build-preciosya-apk.mjs [APP_ORIGIN]
  * Default: https://preciosya-app.vercel.app
+ * (PWABuilder cloud debe poder leer el manifest públicamente; si falla con
+ * preciosya.vercel.app, desactivar Deployment Protection en Vercel o usar el alias app.)
  */
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'

@@ -3,8 +3,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
 
 import { useAuth } from '@/contexts/AuthContext'
-import { AndroidApkDownload } from '@/components/pwa/AndroidApkDownload'
 import preciosYaLogo from '@/assets/preciosya-logo.png'
+
+const LANDING_APK_URL = 'https://preciosya-landing.vercel.app/#descargar'
 
 export default function LoginPage() {
   const { session, loading, supabaseConfigured, signInWithGoogle, signOut } = useAuth()
@@ -12,14 +13,6 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams()
   const fromLanding = searchParams.get('from') === 'landing'
   const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (window.location.hash === '#descargar-apk') {
-      window.requestAnimationFrame(() => {
-        document.getElementById('descargar-apk')?.scrollIntoView({ behavior: 'smooth' })
-      })
-    }
-  }, [])
 
   useEffect(() => {
     if (!loading && session && !fromLanding) {
@@ -80,7 +73,6 @@ export default function LoginPage() {
               Usar otra cuenta
             </button>
           </div>
-          <AndroidApkDownload />
         </div>
       </main>
     )
@@ -156,10 +148,17 @@ export default function LoginPage() {
           )}
         </div>
 
-        <AndroidApkDownload />
-
         <p className="mt-8 text-xs text-text-subtle">
           Sin tarjeta · Probá gratis con hasta 30 productos
+        </p>
+        <p className="mt-3 text-xs text-text-subtle">
+          ¿Buscás la app Android?{' '}
+          <a
+            href={LANDING_APK_URL}
+            className="font-bold text-primary-600 underline-offset-2 hover:underline"
+          >
+            Descargala desde la web
+          </a>
         </p>
       </div>
     </main>

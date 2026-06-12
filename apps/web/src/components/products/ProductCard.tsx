@@ -1,6 +1,6 @@
 import { Edit3, Trash2, Tag, Package2, BadgeDollarSign } from 'lucide-react'
 import type { ProductDto } from '@/types/product'
-import { categoryIndexBadgeClass, categoryIndexLabel, isUsdIndex } from '@/lib/categoryIndex'
+import { categoryIndexBadgeClass } from '@/lib/categoryIndex'
 import { MarginBadge } from './MarginBadge'
 
 type ProductCardProps = {

@@ -1,5 +1,10 @@
 # Guía de usuario — PreciosYa
 
+## Instalar la app en el celular
+
+- **Android:** descargá el APK desde la **landing** (https://preciosya-landing.vercel.app/#descargar). El login de la app ya no muestra el bloque de descarga, solo un link de texto a la landing.
+- **iPhone:** abrí la app web en Safari y usá «Agregar a pantalla de inicio».
+
 ## Primeros pasos
 
 1. Iniciá sesión con Google.
