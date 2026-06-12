@@ -12,4 +12,5 @@ coverage
 
 preciosya-apk.zip
 preciosya-apk-out/
+android-signing/
 .vercel

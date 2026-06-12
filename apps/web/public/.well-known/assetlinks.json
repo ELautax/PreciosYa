@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.preciosya.twa",
+        "sha256_cert_fingerprints": ["5F:5A:F7:A1:1F:90:40:E1:3B:32:EF:AB:D7:C7:F4:FF:E7:40:63:F5:E8:3F:29:C8:45:82:30:7C:DC:D3:C7:00"]
+      }
+    }]
