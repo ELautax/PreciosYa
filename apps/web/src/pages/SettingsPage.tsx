@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { ApiSuccess } from 'shared'
 import { User, CreditCard, Store, Info, ShieldCheck, Clock, Activity, ChevronDown } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
@@ -25,8 +25,8 @@ function normalizePlan(plan: string | undefined): 'FREE' | 'PRO' | 'AGENCY' {
 export default function SettingsPage() {
   const [searchParams] = useSearchParams()
   const [tab, setTab] = useState<TabId>('business')
-  const [plansVisible, setPlansVisible] = useState(false)
   const planComparisonRef = useRef<HTMLDivElement>(null)
+  const shouldScrollToPlansRef = useRef(false)
   const api = useApiClient()
   const [user, setUser] = useState<AppUser | null>(null)
   const [meError, setMeError] = useState(false)
@@ -39,21 +39,38 @@ export default function SettingsPage() {
   const productsQ = useProducts(localId || undefined, { page: 1, limit: 1 })
 
   useEffect(() => {
-    if (searchParams.get('tab') === 'plan') {
+    const tabParam = searchParams.get('tab')
+    if (tabParam === 'plan') {
       setTab('plan')
+      shouldScrollToPlansRef.current = window.location.hash === '#plan-comparison'
     }
   }, [searchParams])
 
   const openPlanComparison = () => {
-    setPlansVisible(true)
-    window.requestAnimationFrame(() => {
-      planComparisonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    })
+    if (tab !== 'plan') {
+      shouldScrollToPlansRef.current = true
+      setTab('plan')
+      return
+    }
+
+    planComparisonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  useEffect(() => {
-    if (tab === 'plan') {
-      setPlansVisible(true)
+  useLayoutEffect(() => {
+    if (tab !== 'plan' || !shouldScrollToPlansRef.current) return
+
+    const scrollToPlans = () => {
+      planComparisonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      shouldScrollToPlansRef.current = false
+    }
+
+    // Esperar al layout tras cambiar de pestaña o montar las cards
+    const frame = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(scrollToPlans)
+    })
+
+    return () => {
+      window.cancelAnimationFrame(frame)
     }
   }, [tab])
 
@@ -276,26 +293,28 @@ export default function SettingsPage() {
                              <button
                                 type="button"
                                 onClick={openPlanComparison}
-                                className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary-600 transition-colors hover:text-primary-700"
+                                className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-primary-200 bg-primary-50/40 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-primary-700 transition-colors hover:bg-primary-50 hover:text-primary-800"
                              >
                                 Mejorar plan
-                                <ChevronDown size={14} strokeWidth={2.5} className={plansVisible ? 'rotate-180 transition-transform' : 'transition-transform'} />
+                                <ChevronDown size={14} strokeWidth={2.5} aria-hidden />
                              </button>
                           </div>
                        </div>
                     </div>
 
-                    {plansVisible && (
-                      <div ref={planComparisonRef} id="plan-comparison" className="space-y-4 scroll-mt-6">
-                         <div className="px-1">
-                            <h3 className="text-base font-black text-text-main">Compará planes</h3>
-                            <p className="mt-1 text-xs font-medium text-text-subtle">
-                               Misma oferta que en la web. Pro incluye IPC y dólar BCRA; Agency se cotiza a medida.
-                            </p>
-                         </div>
-                         <PlanPricingCards currentPlan={currentPlan} />
-                      </div>
-                    )}
+                    <div
+                      ref={planComparisonRef}
+                      id="plan-comparison"
+                      className="space-y-4 scroll-mt-24 border-t border-border/60 pt-8"
+                    >
+                       <div className="px-1">
+                          <h3 className="text-base font-black text-text-main">Compará planes</h3>
+                          <p className="mt-1 text-xs font-medium text-text-subtle">
+                             Misma oferta que en la web. Pro incluye IPC y dólar BCRA; Agency se cotiza a medida.
+                          </p>
+                       </div>
+                       <PlanPricingCards currentPlan={currentPlan} />
+                    </div>
                  </section>
                )}
             </div>
