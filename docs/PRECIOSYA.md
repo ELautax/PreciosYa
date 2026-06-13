@@ -67,6 +67,15 @@ Lista de precios en **PNG** para compartir (WhatsApp, redes). PDF planificado.
 
 Panel admin: carga manual de IPC, usuarios, métricas básicas.
 
+### 9. Gestor de ventas
+
+Registro rápido de ventas (escáner o búsqueda + cantidades en lote). **No es POS:** sin cobro, ticket ni stock.
+
+- **Free:** registrar ventas; resumen e historial de **7 días** (KPIs básicos).
+- **Pro/Agency:** dashboard completo (30/90 días, ganancia estimada), top productos, estancados, promocionar, estrellas, ventas por rubro.
+
+Cada línea guarda **snapshot** de costo y precio al momento de la venta (rentabilidad histórica aunque suba el IPC después).
+
 ---
 
 ## Stack tecnológico
@@ -86,8 +95,8 @@ Monorepo **pnpm**: `apps/web`, `apps/api`, `packages/shared`.
 
 ## Modelo de negocio (borrador)
 
-- **FREE:** límites de productos y locales; catálogo, rubros, escáner, export PNG.
-- **PRO:** más capacidad, **IPC por rubro**, **indexar al dólar BCRA**, alertas de margen, historial y email al publicarse IPC.
+- **FREE:** límites de productos y locales; catálogo, rubros, escáner, export PNG; **ventas (7 días)**.
+- **PRO:** más capacidad, **IPC por rubro**, **indexar al dólar BCRA**, alertas de margen, historial, **gestor de ventas completo**, email al publicarse IPC.
 - **AGENCY:** multi-cliente / multi-local a escala; **precio a medida por contacto comercial** (sin tarifa fija publicada en la landing).
 
 Mercado Pago / suscripciones automáticas: en standby.
@@ -102,7 +111,7 @@ Prioridad para presentación:
 2. Onboarding guiado (primer local → activar rubros → primer producto).
 3. PDF export y/o WhatsApp share nativo.
 4. Gráfico IPC/USD en dashboard (ya hay Chart.js).
-5. **Panel de ventas:** análisis de productos, gráficos de margen/tendencias y herramientas para decidir qué promocionar o reponer.
+5. ~~**Panel de ventas**~~ → **Hecho (v1):** módulo Ventas en app.
 6. Semilla de catálogo de barras (más autofill).
 7. Página de ayuda in-app enlazando [GUIA_USUARIO.md](./GUIA_USUARIO.md).
 8. Multi-usuario por local (post-MVP).

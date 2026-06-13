@@ -67,6 +67,30 @@ vi.mock('../services/export.service.js', () => ({
   getLatestPriceListForUser: vi.fn(),
 }))
 
+const { createSaleMock, listSalesMock, getSalesDashboardMock } = vi.hoisted(() => ({
+  createSaleMock: vi.fn(),
+  listSalesMock: vi.fn(),
+  getSalesDashboardMock: vi.fn(),
+}))
+
+vi.mock('../services/sale.service.js', () => ({
+  createSale: createSaleMock,
+  listSales: listSalesMock,
+  getSaleById: vi.fn(),
+  assertSalesLocalAccess: vi.fn(),
+  fetchSaleLinesInRange: vi.fn(),
+}))
+
+vi.mock('../services/sale-analytics.service.js', () => ({
+  getSalesDashboard: getSalesDashboardMock,
+  getTopProducts: vi.fn(),
+  getStagnantProducts: vi.fn(),
+  getPromoteProducts: vi.fn(),
+  getStarProducts: vi.fn(),
+  getCategoryPerformance: vi.fn(),
+  assertPeriodAllowed: vi.fn(),
+}))
+
 import { app } from '../app.js'
 
 const UUID_1 = '11111111-1111-4111-8111-111111111111'
@@ -221,5 +245,49 @@ describe('API integration contracts', () => {
     expect(res.status).toBe(201)
     expect(res.body.success).toBe(true)
     expect(uploadPriceListPngMock).toHaveBeenCalled()
+  })
+
+  it('sales endpoints responden con envelope success', async () => {
+    createSaleMock.mockResolvedValue({
+      id: UUID_2,
+      localId: UUID_1,
+      soldAt: '2026-06-01T12:00:00.000Z',
+      note: null,
+      totalRevenue: 3000,
+      totalProfit: 600,
+      unitsSold: 3,
+      lines: [],
+    })
+    listSalesMock.mockResolvedValue({
+      items: [],
+      total: 0,
+      page: 1,
+      limit: 20,
+      totalPages: 1,
+    })
+    getSalesDashboardMock.mockResolvedValue({
+      salesToday: 125400,
+      salesMonth: 2450000,
+      profitMonth: 820000,
+      unitsSold: 1240,
+      averageTicket: 4500,
+    })
+
+    const createRes = await request(app).post('/api/sales').send({
+      localId: UUID_1,
+      items: [{ productId: UUID_2, quantity: 3 }],
+    })
+    expect(createRes.status).toBe(201)
+    expect(createRes.body.success).toBe(true)
+
+    const listRes = await request(app).get('/api/sales').query({ localId: UUID_1 })
+    expect(listRes.status).toBe(200)
+    expect(listRes.body.success).toBe(true)
+
+    const dashRes = await request(app)
+      .get('/api/sales/dashboard')
+      .query({ localId: UUID_1, period: '7d' })
+    expect(dashRes.status).toBe(200)
+    expect(dashRes.body.success).toBe(true)
   })
 })

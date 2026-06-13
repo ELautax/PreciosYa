@@ -16,6 +16,7 @@ function OfflineOutboxDrainBootstrap() {
 
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const ProductsPage = lazy(() => import('@/pages/ProductsPage'))
+const SalesPage = lazy(() => import('@/pages/SalesPage'))
 const CategoriesPage = lazy(() => import('@/pages/CategoriesPage'))
 const LocalsPage = lazy(() => import('@/pages/LocalsPage'))
 const HistoryPage = lazy(() => import('@/pages/HistoryPage'))
@@ -76,6 +77,7 @@ export default function App() {
           >
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/products" element={<ProductsPage />} />
+            <Route path="/sales" element={<SalesPage />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/locals" element={<LocalsPage />} />
             <Route path="/categories" element={<CategoriesPage />} />

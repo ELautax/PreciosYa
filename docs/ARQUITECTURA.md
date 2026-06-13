@@ -25,6 +25,7 @@ Entidades principales:
 
 - `users`, `locals`, `categories`, `category_templates`
 - `products`, `price_history`
+- `sales`, `sale_lines` (snapshots costo/precio por línea)
 - `economic_indices`
 - `notifications`, `price_lists`, `subscriptions`
 
@@ -38,6 +39,7 @@ Migraciones en `apps/api/prisma/migrations/`. Producción: `pnpm --filter api ru
 | `bcra.service` | Parseo cotización USD BCRA |
 | `ipc-fetch/*` | Alphacast, Argly |
 | `product.service` | CRUD, bulk, import CSV |
+| `sale.service` / `sale-analytics.service` | Ventas, KPIs, rankings, estancados |
 | `barcode-lookup.service` | Autofill código de barras |
 | `notification.service` | IPC nuevo, salto USD |
 
@@ -54,7 +56,7 @@ Migraciones en `apps/api/prisma/migrations/`. Producción: `pnpm --filter api ru
 
 ## Frontend
 
-- **TanStack Query** para cache (`ipc-latest`, `locals`, `products`).
+- **TanStack Query** para cache (`ipc-latest`, `locals`, `products`, `sales`).
 - Tokens CSS `--py-*` + clase `dark` para tema.
 - PWA con Workbox.
 
@@ -67,6 +69,16 @@ Migraciones en `apps/api/prisma/migrations/`. Producción: `pnpm --filter api ru
 | DB | Supabase | Pooler 6543 + `pgbouncer=true` |
 
 Variables críticas: ver `RAILWAY_ENV.md`, `SUPABASE_ENV.md`.
+
+## Rutas API — Ventas (`/api/sales`)
+
+| Método | Ruta | Plan |
+|--------|------|------|
+| POST | `/` | Free+ |
+| GET | `/` | Free+ (historial máx. 7 días en Free) |
+| GET | `/:id` | Free+ |
+| GET | `/dashboard` | Free parcial / Pro completo |
+| GET | `/top-products`, `/stagnant-products`, `/promote-products`, `/star-products`, `/category-performance` | Pro+ |
 
 ## Tests
 

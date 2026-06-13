@@ -27,10 +27,13 @@ const ctaClass: Record<PlanTierView['cta']['variant'], string> = {
 
 type PlanPricingCardProps = {
   plan: PlanTierView
-  isCurrent: boolean
+  currentPlan: PlanId
 }
 
-export function PlanPricingCard({ plan, isCurrent }: PlanPricingCardProps) {
+export function PlanPricingCard({ plan, currentPlan }: PlanPricingCardProps) {
+  const isCurrent = plan.id === currentPlan
+  const hideCta = plan.id === 'FREE' && !isCurrent
+
   return (
     <article
       className={`relative flex h-full flex-col rounded-[2rem] border p-5 sm:p-6 transition-shadow ${
@@ -39,7 +42,7 @@ export function PlanPricingCard({ plan, isCurrent }: PlanPricingCardProps) {
           : 'border-border/60 bg-surface-soft/80'
       } ${plan.id === 'AGENCY' ? 'border-border-strong/80' : ''}`}
     >
-      {plan.featured && (
+      {plan.featured && !isCurrent && currentPlan === 'FREE' && (
         <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-primary-600 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-md">
           Recomendado
         </span>
@@ -78,6 +81,8 @@ export function PlanPricingCard({ plan, isCurrent }: PlanPricingCardProps) {
           <button type="button" disabled className="btn-secondary w-full">
             Tu plan actual
           </button>
+        ) : hideCta ? (
+          <div className="min-h-[48px]" aria-hidden />
         ) : (
           <a
             href={plan.cta.href}

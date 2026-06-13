@@ -37,6 +37,7 @@ export const PLANS: PlanTier[] = [
       'Rubros INDEC (activás los que uses)',
       'Escáner de código de barras',
       'Lista de precios PNG para WhatsApp',
+      'Registro de ventas (7 días)',
     ],
     cta: {
       label: 'Empezar gratis',
@@ -57,6 +58,7 @@ export const PLANS: PlanTier[] = [
       'Indexar al dólar BCRA',
       'Alertas de margen mínimo',
       'Historial y actualización masiva',
+      'Gestor de ventas completo',
     ],
     cta: {
       label: 'Consultar Pro',
@@ -73,6 +75,7 @@ export const PLANS: PlanTier[] = [
       'Locales y productos ilimitados',
       'Multi-negocio y multi-cliente',
       'IPC + dólar BCRA en todos los rubros',
+      'Análisis de ventas y rentabilidad',
       'Soporte prioritario',
       'Onboarding y configuración asistida',
     ],

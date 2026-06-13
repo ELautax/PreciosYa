@@ -76,14 +76,27 @@ Si tenés un aumento puntual (proveedor, promoción):
 
 ---
 
+## Gestor de ventas
+
+Menú **Ventas** → pestañas:
+
+1. **Resumen** — KPIs (hoy, período, ticket promedio). En Pro: ganancia estimada y gráficos.
+2. **Registrar** — escaneá o buscá productos, armá una lista (carga rápida del día) y confirmá. Podés elegir **fecha y hora** de la venta.
+3. **Historial** — ventas registradas con detalle de ítems.
+4. **Análisis** (Pro) — más vendidos, más rentables, estancados, para promocionar, estrellas y por rubro.
+
+No hay cobro ni ticket: solo registrás qué vendiste para estadísticas y márgenes.
+
+---
+
 ## Plan y suscripción
 
-En **Configuración → Plan** ves tu uso (productos y locales) y vencimiento si aplica. Debajo aparece la comparativa de planes (Free, Pro, Agency). Tocá **Mejorar plan** para bajar hasta esa sección.
+En **Configuración → Plan** ves tu uso (productos y locales) y vencimiento. Tocá **Mejorar plan** (Free) o **Gestionar plan** (Pro/Agency) para abrir el modal con la comparativa de planes.
 
 | Plan | Para quién | Lo principal |
 |------|------------|--------------|
-| **Free** | Probar sin tarjeta | Hasta 30 productos, 1 local, rubros, escáner, export PNG |
-| **Pro** | Comercio activo | Productos ilimitados, 3 locales, **IPC por rubro**, **indexar al dólar BCRA**, alertas e historial |
+| **Free** | Probar sin tarjeta | Hasta 30 productos, 1 local, rubros, escáner, export PNG, **ventas 7 días** |
+| **Pro** | Comercio activo | Productos ilimitados, 3 locales, **IPC**, **USD BCRA**, alertas, historial, **gestor de ventas completo** |
 | **Agency** | Estudios, contadores, cadenas | Locales ilimitados, multi-cliente; **precio a medida** — botón «Contactar ventas» abre un mail a hola@preciosya.app |
 
 Para pasar a Pro o Agency usá los botones de la misma pantalla o escribinos por mail. La landing tiene la misma información en [preciosya-landing.vercel.app/#precios](https://preciosya-landing.vercel.app/#precios).

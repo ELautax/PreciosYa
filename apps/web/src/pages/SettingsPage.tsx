@@ -1,11 +1,11 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState, type ComponentType } from 'react'
 import type { ApiSuccess } from 'shared'
-import { User, CreditCard, Store, Info, ShieldCheck, Clock, Activity, ChevronDown } from 'lucide-react'
+import { User, CreditCard, Store, Info, ShieldCheck, Clock, Activity } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 
 import { LocalSelector } from '@/components/locals/LocalSelector'
+import { PlanPricingModal } from '@/components/settings/PlanPricingModal'
 import {
-  PlanPricingCards,
   planLocalLimit,
   planProductLimit,
 } from '@/components/settings/PlanPricingCards'
@@ -22,11 +22,14 @@ function normalizePlan(plan: string | undefined): 'FREE' | 'PRO' | 'AGENCY' {
   return 'FREE'
 }
 
+function planActionLabel(plan: 'FREE' | 'PRO' | 'AGENCY'): string {
+  return plan === 'FREE' ? 'Mejorar plan' : 'Gestionar plan'
+}
+
 export default function SettingsPage() {
   const [searchParams] = useSearchParams()
   const [tab, setTab] = useState<TabId>('business')
-  const planComparisonRef = useRef<HTMLDivElement>(null)
-  const shouldScrollToPlansRef = useRef(false)
+  const [planModalOpen, setPlanModalOpen] = useState(false)
   const api = useApiClient()
   const [user, setUser] = useState<AppUser | null>(null)
   const [meError, setMeError] = useState(false)
@@ -42,37 +45,11 @@ export default function SettingsPage() {
     const tabParam = searchParams.get('tab')
     if (tabParam === 'plan') {
       setTab('plan')
-      shouldScrollToPlansRef.current = window.location.hash === '#plan-comparison'
+    }
+    if (tabParam === 'plan' && searchParams.get('planes') === '1') {
+      setPlanModalOpen(true)
     }
   }, [searchParams])
-
-  const openPlanComparison = () => {
-    if (tab !== 'plan') {
-      shouldScrollToPlansRef.current = true
-      setTab('plan')
-      return
-    }
-
-    planComparisonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-
-  useLayoutEffect(() => {
-    if (tab !== 'plan' || !shouldScrollToPlansRef.current) return
-
-    const scrollToPlans = () => {
-      planComparisonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      shouldScrollToPlansRef.current = false
-    }
-
-    // Esperar al layout tras cambiar de pestaña o montar las cards
-    const frame = window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(scrollToPlans)
-    })
-
-    return () => {
-      window.cancelAnimationFrame(frame)
-    }
-  }, [tab])
 
   useEffect(() => {
     let cancelled = false
@@ -234,7 +211,7 @@ export default function SettingsPage() {
                           </div>
                           <div>
                              <h2 className="text-xl font-black tracking-tight text-text-main">Plan y Suscripción</h2>
-                             <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Capacidad y planes</p>
+                             <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Capacidad y uso</p>
                           </div>
                        </div>
                        <span className="inline-flex shrink-0 rounded-full bg-accent-500 px-3 py-1 text-[10px] font-black text-white uppercase tracking-widest shadow-sm">
@@ -292,39 +269,30 @@ export default function SettingsPage() {
                              </div>
                              <button
                                 type="button"
-                                onClick={openPlanComparison}
-                                className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-primary-200 bg-primary-50/40 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-primary-700 transition-colors hover:bg-primary-50 hover:text-primary-800"
+                                onClick={() => setPlanModalOpen(true)}
+                                className="btn-primary min-h-[44px] px-4 text-[10px] font-black uppercase tracking-widest"
                              >
-                                Mejorar plan
-                                <ChevronDown size={14} strokeWidth={2.5} aria-hidden />
+                                {planActionLabel(currentPlan)}
                              </button>
                           </div>
                        </div>
-                    </div>
-
-                    <div
-                      ref={planComparisonRef}
-                      id="plan-comparison"
-                      className="space-y-4 scroll-mt-24 border-t border-border/60 pt-8"
-                    >
-                       <div className="px-1">
-                          <h3 className="text-base font-black text-text-main">Compará planes</h3>
-                          <p className="mt-1 text-xs font-medium text-text-subtle">
-                             Misma oferta que en la web. Pro incluye IPC y dólar BCRA; Agency se cotiza a medida.
-                          </p>
-                       </div>
-                       <PlanPricingCards currentPlan={currentPlan} />
                     </div>
                  </section>
                )}
             </div>
         </section>
       </div>
+
+      <PlanPricingModal
+        open={planModalOpen}
+        currentPlan={currentPlan}
+        onClose={() => setPlanModalOpen(false)}
+      />
     </main>
   )
 }
 
-function TabButton({ active, onClick, icon: Icon, label }: { active: boolean; onClick: () => void; icon: any; label: string }) {
+function TabButton({ active, onClick, icon: Icon, label }: { active: boolean; onClick: () => void; icon: ComponentType<{ size?: number; strokeWidth?: number; className?: string }>; label: string }) {
   return (
     <button
       onClick={onClick}

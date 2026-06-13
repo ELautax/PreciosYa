@@ -237,6 +237,23 @@ subscriptions
   expires_at          DateTime?
   cancelled_at        DateTime?
   created_at          DateTime  default now()
+
+sales
+  id          UUID    PK
+  local_id    UUID    FK → locals  onDelete: Cascade
+  sold_at     DateTime
+  note        String?
+  created_at  DateTime  default now()
+  updated_at  DateTime  @updatedAt
+
+sale_lines
+  id                   UUID    PK
+  sale_id              UUID    FK → sales  onDelete: Cascade
+  product_id           UUID    FK → products  onDelete: Restrict
+  quantity             Decimal(10,3)
+  unit_sale_price      Decimal(12,2)   → snapshot
+  unit_cost_snapshot   Decimal(12,2)   → snapshot
+  created_at           DateTime  default now()
 ```
 
 ### PostgreSQL triggers (run once in Supabase SQL editor)
@@ -355,6 +372,19 @@ GET  /api/products/:id/history → price history (last 50 entries)
 PUT  /api/products/bulk-update → { localId, categoryId?, increasePct }
 ```
 
+### Sales (Gestor de ventas)
+```
+POST /api/sales                        → crear venta con items[] y soldAt opcional
+GET  /api/sales?localId=&from=&to=     → listar (Free: máx. 7 días)
+GET  /api/sales/:id                    → detalle con líneas
+GET  /api/sales/dashboard              → KPIs + tendencias (period)
+GET  /api/sales/top-products           → Pro+
+GET  /api/sales/stagnant-products      → Pro+
+GET  /api/sales/promote-products       → Pro+
+GET  /api/sales/star-products          → Pro+
+GET  /api/sales/category-performance   → Pro+
+```
+
 ### IPC & Economic Indices
 ```
 GET  /api/ipc/latest              → IPC + BCRA (sync BCRA si falta cotización)
@@ -425,6 +455,7 @@ HTTP status codes used:
 /login              → LoginPage (Google OAuth button)
 /dashboard          → DashboardPage (summary cards + margin alerts)
 /products           → ProductsPage (full product list)
+/sales              → SalesPage (gestor de ventas: resumen, registrar, historial, análisis)
 /categories         → CategoriesPage
 /price-list         → PriceListPage (generate + share PNG)
 /history            → HistoryPage (IPC history + per-product charts)
@@ -826,6 +857,7 @@ Todas las tareas TASK-001 … TASK-044 están implementadas en el monorepo (mayo
 | TASK-109 | USD BCRA oficial + apply-usd + rubros `indexByUsd` | Hecho → `docs/INDICES_Y_PRECIOS.md` |
 | TASK-110 | `last_ipc/usd_applied_period` + banners pendiente/aplicado | Hecho → `docs/GUIA_USUARIO.md` |
 | TASK-111 | Documentación base en `docs/` (README, PRECIOSYA, guías) | Hecho → mantener con regla 2.1 |
+| TASK-112 | Gestor de ventas v1 (sales/sale_lines, API, UI /sales) | Hecho |
 
 ---
 

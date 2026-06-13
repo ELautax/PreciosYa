@@ -113,6 +113,7 @@ model Local {
   categories Category[]
   products   Product[]
   priceLists PriceList[]
+  sales      Sale[]
 
   @@map("locals")
 }
@@ -170,6 +171,7 @@ model Product {
   local        Local          @relation(fields: [localId], references: [id], onDelete: Cascade)
   category     Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   priceHistory PriceHistory[]
+  saleLines    SaleLine[]
 
   @@unique([localId, barcode])
   @@index([localId, isActive])
@@ -251,4 +253,36 @@ model Subscription {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("subscriptions")
+}
+
+model Sale {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  localId   String   @map("local_id") @db.Uuid
+  soldAt    DateTime @map("sold_at")
+  note      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  local Local      @relation(fields: [localId], references: [id], onDelete: Cascade)
+  lines SaleLine[]
+
+  @@index([localId, soldAt(sort: Desc)])
+  @@map("sales")
+}
+
+model SaleLine {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  saleId           String   @map("sale_id") @db.Uuid
+  productId        String   @map("product_id") @db.Uuid
+  quantity         Decimal  @db.Decimal(10, 3)
+  unitSalePrice    Decimal  @map("unit_sale_price") @db.Decimal(12, 2)
+  unitCostSnapshot Decimal  @map("unit_cost_snapshot") @db.Decimal(12, 2)
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  sale    Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([saleId])
+  @@index([productId])
+  @@map("sale_lines")
 }

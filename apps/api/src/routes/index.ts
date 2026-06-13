@@ -10,6 +10,7 @@ import { ipcRoutes } from './ipc.routes.js'
 import { localRoutes } from './local.routes.js'
 import { notificationRoutes } from './notification.routes.js'
 import { productRoutes } from './product.routes.js'
+import { saleRoutes } from './sale.routes.js'
 
 const root = Router()
 
@@ -48,6 +49,7 @@ api.use('/exports', exportRoutes)
 api.use('/ipc', ipcRoutes)
 api.use('/notifications', notificationRoutes)
 api.use('/products', productRoutes)
+api.use('/sales', saleRoutes)
 
 export const routes: IRouter = root
 export const apiRoutes: IRouter = api

@@ -13,7 +13,8 @@ import {
   ChevronRight,
   MoreHorizontal,
   Sun,
-  Moon
+  Moon,
+  Receipt,
 } from 'lucide-react'
 
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
@@ -33,6 +34,7 @@ type NavItem = {
 const baseNavItems: NavItem[] = [
   { to: '/dashboard', label: 'Panel', icon: LayoutDashboard },
   { to: '/products', label: 'Productos', icon: Package },
+  { to: '/sales', label: 'Ventas', icon: Receipt },
   { to: '/history', label: 'Historial', icon: History },
   { to: '/categories', label: 'Categorías', icon: Tags },
   { to: '/locals', label: 'Locales', icon: Store },
