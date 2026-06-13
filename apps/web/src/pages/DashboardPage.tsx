@@ -25,6 +25,7 @@ import { useSelectedLocal } from '@/hooks/useSelectedLocal'
 import { useProducts } from '@/hooks/useProducts'
 import type { AppUser } from '@/types/appUser'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { UserTierBadge } from '@/components/ui/UserTierBadge'
 
 export default function DashboardPage() {
   const api = useApiClient()
@@ -102,8 +103,9 @@ export default function DashboardPage() {
         {/* Header Section */}
         <header className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="animate-fade-in">
-            <h1 className="heading-xl">
-              Hola, {profile?.name?.split(' ')[0] || 'Comerciante'} <span className="animate-bounce inline-block">👋</span>
+            <h1 className="heading-xl flex flex-wrap items-center gap-3">
+              <span>Hola, {profile?.name?.split(' ')[0] || 'Comerciante'}</span>
+              {profile ? <UserTierBadge user={profile} size="md" /> : null}
             </h1>
             <p className="text-small mt-2 flex items-center gap-2">
               <Activity size={14} className="text-primary-600" />

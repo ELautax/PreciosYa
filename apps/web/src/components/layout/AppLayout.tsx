@@ -22,6 +22,7 @@ import {
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 import { InstallPromptButton } from '@/components/pwa/InstallPromptButton'
+import { UserTierBadge } from '@/components/ui/UserTierBadge'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useMe } from '@/hooks/useMe'
@@ -169,16 +170,7 @@ export function AppLayout() {
                   strokeWidth={location.pathname === item.to ? 2.5 : 2}
                   className="shrink-0"
                 />
-                {!sidebarCollapsed ? (
-                  <>
-                    <span className="truncate">{item.label}</span>
-                    {item.to === '/admin' ? (
-                      <span className="ml-auto rounded-full bg-accent-500 px-1.5 py-0.5 text-[8px] font-black text-white">
-                        PRO
-                      </span>
-                    ) : null}
-                  </>
-                ) : null}
+                {!sidebarCollapsed ? <span className="truncate">{item.label}</span> : null}
               </NavLink>
             ))}
           </nav>
@@ -270,16 +262,17 @@ export function AppLayout() {
               </button>
 
               <div className="flex items-center gap-2">
-                <div className="hidden flex-col items-end text-right sm:flex">
+                <div className="hidden flex-col items-end gap-1 text-right sm:flex">
                   {loadingMe ? (
                     <div className="skeleton h-3 w-20" />
                   ) : (
                     <p className="text-xs font-black leading-none text-text-main">{me?.name}</p>
                   )}
-                  <p className="mt-1 text-[10px] font-bold uppercase leading-none tracking-tighter text-text-subtle">
-                    {me?.isAdmin ? 'ADMINISTRADOR' : 'COMERCIANTE'}
-                  </p>
+                  {!loadingMe && me ? <UserTierBadge user={me} /> : null}
                 </div>
+                {!loadingMe && me ? (
+                  <UserTierBadge user={me} className="sm:hidden" />
+                ) : null}
                 <div className="flex h-9 w-9 items-center justify-center rounded-full border border-primary-100 bg-primary-50 font-black text-primary-700 shadow-sm transition-transform active:scale-95 dark:border-primary-800 dark:bg-primary-900/20">
                   {me?.name?.charAt(0).toUpperCase() || '?'}
                 </div>
