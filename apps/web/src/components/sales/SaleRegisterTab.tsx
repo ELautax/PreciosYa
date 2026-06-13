@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Barcode, Search } from 'lucide-react'
 
 import { fromDatetimeLocalValue, toDatetimeLocalValue } from '@/components/sales/format'
