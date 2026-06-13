@@ -78,7 +78,7 @@ Si tenés un aumento puntual (proveedor, promoción):
 
 ## Plan y suscripción
 
-En **Configuración → Plan** ves tu uso (productos y locales), vencimiento si aplica, y la comparativa de planes:
+En **Configuración → Plan** ves tu uso (productos y locales) y vencimiento si aplica. Tocá **Mejorar plan** para desplegar la comparativa de planes (Free, Pro, Agency) con los mismos textos que la landing.
 
 | Plan | Para quién | Lo principal |
 |------|------------|--------------|

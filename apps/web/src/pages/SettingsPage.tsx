@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ApiSuccess } from 'shared'
-import { User, CreditCard, Store, Info, ShieldCheck, Clock, Activity } from 'lucide-react'
+import { User, CreditCard, Store, Info, ShieldCheck, Clock, Activity, ChevronDown } from 'lucide-react'
+import { useSearchParams } from 'react-router-dom'
 
 import { LocalSelector } from '@/components/locals/LocalSelector'
 import {
@@ -22,7 +23,10 @@ function normalizePlan(plan: string | undefined): 'FREE' | 'PRO' | 'AGENCY' {
 }
 
 export default function SettingsPage() {
+  const [searchParams] = useSearchParams()
   const [tab, setTab] = useState<TabId>('business')
+  const [plansVisible, setPlansVisible] = useState(false)
+  const planComparisonRef = useRef<HTMLDivElement>(null)
   const api = useApiClient()
   const [user, setUser] = useState<AppUser | null>(null)
   const [meError, setMeError] = useState(false)
@@ -33,6 +37,25 @@ export default function SettingsPage() {
     [locals, localId],
   )
   const productsQ = useProducts(localId || undefined, { page: 1, limit: 1 })
+
+  useEffect(() => {
+    if (searchParams.get('tab') === 'plan') {
+      setTab('plan')
+    }
+  }, [searchParams])
+
+  const openPlanComparison = () => {
+    setPlansVisible(true)
+    window.requestAnimationFrame(() => {
+      planComparisonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  }
+
+  useEffect(() => {
+    if (tab === 'plan') {
+      setPlansVisible(true)
+    }
+  }, [tab])
 
   useEffect(() => {
     let cancelled = false
@@ -245,22 +268,34 @@ export default function SettingsPage() {
                              </div>
                           </div>
 
-                          <div className="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-widest pt-1">
-                             <Clock size={12} className="text-primary-600" />
-                             Vencimiento: {user?.planExpiresAt ? new Date(user.planExpiresAt).toLocaleDateString('es-AR') : 'Sin límite'}
+                          <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                             <div className="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-widest">
+                                <Clock size={12} className="text-primary-600" />
+                                Vencimiento: {user?.planExpiresAt ? new Date(user.planExpiresAt).toLocaleDateString('es-AR') : 'Sin límite'}
+                             </div>
+                             <button
+                                type="button"
+                                onClick={openPlanComparison}
+                                className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary-600 transition-colors hover:text-primary-700"
+                             >
+                                Mejorar plan
+                                <ChevronDown size={14} strokeWidth={2.5} className={plansVisible ? 'rotate-180 transition-transform' : 'transition-transform'} />
+                             </button>
                           </div>
                        </div>
                     </div>
 
-                    <div className="space-y-4">
-                       <div className="px-1">
-                          <h3 className="text-base font-black text-text-main">Compará planes</h3>
-                          <p className="mt-1 text-xs font-medium text-text-subtle">
-                             Misma oferta que en la web. Pro incluye IPC y dólar BCRA; Agency se cotiza a medida.
-                          </p>
-                       </div>
-                       <PlanPricingCards currentPlan={currentPlan} />
-                    </div>
+                    {plansVisible && (
+                      <div ref={planComparisonRef} id="plan-comparison" className="space-y-4 scroll-mt-6">
+                         <div className="px-1">
+                            <h3 className="text-base font-black text-text-main">Compará planes</h3>
+                            <p className="mt-1 text-xs font-medium text-text-subtle">
+                               Misma oferta que en la web. Pro incluye IPC y dólar BCRA; Agency se cotiza a medida.
+                            </p>
+                         </div>
+                         <PlanPricingCards currentPlan={currentPlan} />
+                      </div>
+                    )}
                  </section>
                )}
             </div>

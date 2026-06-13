@@ -805,7 +805,19 @@
     .objection-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.55; }
 
     /* ======================= FEATURES ======================= */
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .features-grid {
+      display: grid;
+      gap: 1.25rem;
+      grid-template-columns: 1fr;
+      max-width: 72rem;
+      margin: 0 auto;
+    }
+    @media (min-width: 620px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .features-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+    }
     .feature-card {
       background-color: var(--surface);
       border: 1px solid var(--border);
@@ -841,6 +853,24 @@
       margin-bottom: 1.5rem;
     }
     .feature-card h4 { font-size: 1.25rem; margin-bottom: 0.75rem; }
+    .feature-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 9999px;
+      background: var(--wash-amber);
+      color: var(--accent);
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    @media (min-width: 1024px) {
+      .feature-card { padding: 1.75rem; }
+      .feature-card h4 { font-size: 1.1rem; }
+      .feature-card p.text-muted { font-size: 0.9rem; }
+    }
 
     /* ======================= COMPARE ======================= */
     .compare-section { max-width: 920px; margin: 0 auto; }
@@ -861,14 +891,23 @@
     .compare-label { font-weight: 700; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; }
 
     /* ======================= PRICING ======================= */
-    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; align-items: stretch; }
-    .price-card { display: flex; flex-direction: column; background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-2xl); padding: 3rem 2rem; transition: transform 0.3s ease, box-shadow 0.3s ease; min-height: 100%; }
+    .pricing-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 1fr;
+      max-width: 72rem;
+      margin: 0 auto;
+      align-items: stretch;
+    }
+    @media (min-width: 900px) {
+      .pricing-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    .price-card { display: flex; flex-direction: column; background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-2xl); padding: 2rem 1.75rem; transition: transform 0.3s ease, box-shadow 0.3s ease; min-height: 100%; }
     .price-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
     .price-card.featured { border: 2px solid var(--primary); position: relative; box-shadow: var(--shadow-lg); padding-top: 3.35rem; }
     .price-badge { position: absolute; top: -0.85rem; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 0.4rem 1rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 800; }
     .price-head {
-      min-height: 8.75rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
       display: flex;
       flex-direction: column;
     }
@@ -897,7 +936,7 @@
       background: color-mix(in srgb, var(--surface) 88%, transparent);
     }
     .price-list { list-style: none; flex: 1; display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 0; }
-    .price-list li { display: flex; align-items: flex-start; gap: 0.75rem; color: var(--text-muted); font-size: 0.92rem; font-weight: 500; line-height: 1.35; }
+    .price-list li { display: flex; align-items: flex-start; gap: 0.75rem; color: var(--text-muted); font-size: 0.875rem; font-weight: 500; line-height: 1.45; }
     .price-list li svg { color: var(--primary); flex-shrink: 0; margin-top: 0.15rem; }
     .price-list li strong { color: var(--text-main); font-weight: 700; }
     .price-footer {
@@ -1641,10 +1680,17 @@
           </div>
           <div class="feature-card reveal">
             <div class="feature-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             </div>
-            <h4>Lista WhatsApp</h4>
-            <p class="text-muted">Exportá una imagen profesional y clara de tus precios para compartir con tus clientes al instante.</p>
+            <h4>Indexar al dólar BCRA</h4>
+            <p class="text-muted">Marcá rubros importados o dolarizados y actualizalos con la variación diaria del dólar oficial, aparte del IPC mensual.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-6 4 3 5-7"/></svg>
+            </div>
+            <h4>Panel de ventas</h4>
+            <p class="text-muted">Analizá productos, márgenes y tendencias con gráficos claros para decidir qué conviene promocionar, reponer o ajustar.</p>
           </div>
           <div class="feature-card reveal">
             <div class="feature-icon">
@@ -1655,10 +1701,10 @@
           </div>
           <div class="feature-card reveal">
             <div class="feature-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </div>
-            <h4>Indexar al dólar BCRA</h4>
-            <p class="text-muted">Marcá rubros importados o dolarizados y actualizalos con la variación diaria del dólar oficial, aparte del IPC mensual.</p>
+            <h4>Lista WhatsApp</h4>
+            <p class="text-muted">Exportá una imagen profesional y clara de tus precios para compartir con tus clientes al instante.</p>
           </div>
           <div class="feature-card reveal">
             <div class="feature-icon">
@@ -1706,11 +1752,11 @@
               <div class="price-val font-mono">$4.500<span>/mes</span></div>
             </div>
             <ul class="price-list">
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Productos ilimitados y hasta 3 locales</li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> <strong>IPC por rubro</strong> — aplicación en un toque</li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> <strong>Indexar al dólar BCRA</strong> por rubro</li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Alertas cuando el margen baja del mínimo</li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Historial, actualización masiva y notificaciones</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Productos ilimitados · 3 locales</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> <strong>IPC por rubro</strong> en un toque</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> <strong>Indexar al dólar BCRA</strong></li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Alertas de margen mínimo</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Historial y actualización masiva</li>
             </ul>
             <div class="price-footer">
               <a id="cta-pro" href="#" class="btn btn-primary">Probar Pro</a>
@@ -2279,6 +2325,7 @@
           onEnterBack: () => window.__pyShowStep && window.__pyShowStep(i),
         });
       });
+
     })();
   </script>
 </body>

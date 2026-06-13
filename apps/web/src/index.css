@@ -244,6 +244,74 @@ html.dark,
     @apply mb-4 rounded-3xl bg-primary-50 p-4 text-primary-600;
   }
 
+  /* Card deck spread (Framer-style pricing fan) */
+  .card-deck-spread {
+    @apply relative w-full py-2;
+    perspective: 1200px;
+  }
+
+  .card-deck-spread-track {
+    @apply mx-auto grid w-full max-w-5xl grid-cols-3 items-stretch gap-4;
+  }
+
+  .card-deck-spread:not(.is-spread) .card-deck-spread-track {
+    min-height: 34rem;
+  }
+
+  .card-deck-spread-item {
+    @apply min-h-0 will-change-transform;
+    transform-origin: center bottom;
+    transition:
+      transform 0.72s cubic-bezier(0.25, 0.8, 0.25, 1),
+      filter 0.35s ease,
+      opacity 0.35s ease,
+      box-shadow 0.35s ease;
+    transition-delay: calc(var(--deck-i, 0) * 90ms);
+  }
+
+  .card-deck-spread:not(.is-spread) .card-deck-spread-item:nth-child(1) {
+    transform: translateX(calc(100% + 0.65rem)) rotate(-4deg);
+    z-index: 1;
+  }
+
+  .card-deck-spread:not(.is-spread) .card-deck-spread-item:nth-child(2) {
+    transform: translateY(-12px) scale(1.02);
+    z-index: 3;
+  }
+
+  .card-deck-spread:not(.is-spread) .card-deck-spread-item:nth-child(3) {
+    transform: translateX(calc(-100% - 0.65rem)) rotate(4deg);
+    z-index: 2;
+  }
+
+  .card-deck-spread.is-spread .card-deck-spread-item {
+    transform: none;
+    z-index: auto;
+  }
+
+  .card-deck-spread.is-spread.has-hover .card-deck-spread-item:not(.is-hovered) {
+    filter: blur(2px);
+    opacity: 0.62;
+    transform: scale(0.985);
+  }
+
+  .card-deck-spread.is-spread .card-deck-spread-item.is-hovered {
+    transform: translateY(-12px) scale(1.025);
+    z-index: 20;
+    filter: none;
+    opacity: 1;
+  }
+
+  .card-deck-spread.is-spread .card-deck-spread-item.is-hovered > * {
+    @apply shadow-warm-lg;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-deck-spread-item {
+      transition: none !important;
+    }
+  }
+
   /* WCO Support */
   .wco-active {
     padding-top: env(titlebar-area-height, 0px);

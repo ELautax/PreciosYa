@@ -102,10 +102,11 @@ Prioridad para presentación:
 2. Onboarding guiado (primer local → activar rubros → primer producto).
 3. PDF export y/o WhatsApp share nativo.
 4. Gráfico IPC/USD en dashboard (ya hay Chart.js).
-5. Semilla de catálogo de barras (más autofill).
-6. Página de ayuda in-app enlazando [GUIA_USUARIO.md](./GUIA_USUARIO.md).
-7. Multi-usuario por local (post-MVP).
-8. Suscripción Mercado Pago.
+5. **Panel de ventas:** análisis de productos, gráficos de margen/tendencias y herramientas para decidir qué promocionar o reponer.
+6. Semilla de catálogo de barras (más autofill).
+7. Página de ayuda in-app enlazando [GUIA_USUARIO.md](./GUIA_USUARIO.md).
+8. Multi-usuario por local (post-MVP).
+9. Suscripción Mercado Pago.
 
 ---
 
