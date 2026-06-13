@@ -64,7 +64,9 @@
       --shadow-lg: 0 20px 48px rgba(28, 25, 23, 0.12);
       --hero-fade: rgba(248, 247, 244, 0);
       --hero-fade-solid: #f8f7f4;
-      --section-alt: #f2efea;
+      --wash-green: rgba(22, 163, 74, 0.055);
+      --wash-amber: rgba(217, 119, 6, 0.045);
+      --section-wash: rgba(22, 163, 74, 0.028);
       color-scheme: light;
     }
 
@@ -91,7 +93,9 @@
       --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.55);
       --hero-fade: rgba(18, 16, 14, 0);
       --hero-fade-solid: #12100e;
-      --section-alt: #171411;
+      --wash-green: rgba(34, 197, 94, 0.07);
+      --wash-amber: rgba(251, 191, 36, 0.045);
+      --section-wash: rgba(34, 197, 94, 0.035);
       color-scheme: dark;
     }
 
@@ -109,12 +113,16 @@
     body {
       font-family: var(--font-sans);
       background-color: var(--canvas);
-      background-image: radial-gradient(circle at 50% 0%, var(--canvas-glow), transparent 50%);
+      background-image:
+        radial-gradient(ellipse 90% 55% at 50% -8%, var(--wash-green), transparent 68%),
+        radial-gradient(ellipse 55% 40% at 92% 28%, var(--wash-amber), transparent 62%),
+        radial-gradient(ellipse 50% 38% at 6% 62%, var(--wash-green), transparent 58%);
+      background-attachment: fixed;
       color: var(--text-main);
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
       min-height: 100%;
-      transition: background-color 0.25s ease, color 0.25s ease;
+      transition: background-color 0.35s ease, color 0.35s ease;
       overflow-x: hidden;
     }
 
@@ -137,8 +145,17 @@
       .reveal { transform: none !important; transition: opacity 400ms ease !important; }
     }
 
-    /* Sections */
-    section { padding: 6.5rem 0; position: relative; scroll-margin-top: 5rem; }
+    /* Sections — fondo unificado; variación solo con washes suaves */
+    section { padding: 6.5rem 0; position: relative; scroll-margin-top: 5rem; background: transparent; }
+    .section-wash::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 85% 70% at 50% 42%, var(--section-wash), transparent 78%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .section-wash > .container { position: relative; z-index: 1; }
     .section-kicker {
       display: inline-flex;
       align-items: center;
@@ -336,8 +353,15 @@
       content: '';
       position: absolute;
       inset: auto 0 0 0;
-      height: 38%;
-      background: linear-gradient(to bottom, var(--hero-fade), var(--hero-fade-solid));
+      height: 62%;
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        color-mix(in srgb, var(--canvas) 18%, transparent) 28%,
+        color-mix(in srgb, var(--canvas) 52%, transparent) 52%,
+        color-mix(in srgb, var(--canvas) 82%, transparent) 76%,
+        var(--canvas) 100%
+      );
       z-index: 1;
       pointer-events: none;
     }
@@ -384,8 +408,31 @@
       margin-bottom: 2.25rem;
       text-wrap: balance;
     }
-    .hero-actions { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem; }
+    .hero-actions { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 0.85rem; }
     @media (min-width: 620px) { .hero-actions { flex-direction: row; } }
+    .hero-microcopy {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.25rem;
+      margin-bottom: 2.75rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-subtle);
+    }
+    .hero-microcopy span { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .hero-microcopy svg { color: var(--primary); flex-shrink: 0; }
+    .hero-apk-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 0.35rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .hero-apk-link:hover { color: var(--primary); }
 
     .hero-stats { display: flex; flex-wrap: wrap; gap: 2.5rem; }
     .hero-stat { min-width: 7rem; }
@@ -406,8 +453,44 @@
       margin-top: 0.35rem;
     }
 
+    /* ======================= TRUST BAR ======================= */
+    .trust-bar {
+      position: relative;
+      z-index: 2;
+      padding: 0 0 1.5rem;
+      margin-top: -0.5rem;
+    }
+    .trust-bar-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem 1.5rem;
+      padding: 1rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      background: color-mix(in srgb, var(--surface) 72%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-sm);
+    }
+    .trust-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+      white-space: nowrap;
+    }
+    .trust-item svg { color: var(--primary); flex-shrink: 0; }
+    .trust-divider { width: 1px; height: 1.25rem; background: var(--border); display: none; }
+    @media (min-width: 720px) { .trust-divider { display: block; } }
+
     /* ======================= SHOWCASE ======================= */
-    .showcase { padding-top: 2rem; }
+    .showcase { padding-top: 0.5rem; margin-top: -1rem; padding-bottom: 5rem; }
     .showcase-inner { position: relative; display: flex; justify-content: center; }
 
     /* ====== Teléfono con la app recreada en HTML/CSS (sigue el tema) ====== */
@@ -584,11 +667,12 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 130%;
-      height: 130%;
-      background: radial-gradient(circle, var(--canvas-glow) 0%, transparent 70%);
+      width: 115%;
+      height: 115%;
+      background: radial-gradient(ellipse 68% 58% at 50% 48%, var(--wash-green), transparent 74%);
       z-index: 1;
       pointer-events: none;
+      opacity: 0.85;
     }
     .float-card {
       position: absolute;
@@ -660,6 +744,66 @@
     .sticky-visual { position: sticky; top: 7rem; display: flex; justify-content: center; margin-top: 2rem; }
     @media (max-width: 979px) { .sticky-visual { position: static; margin-top: 0; margin-bottom: 2rem; } }
 
+    /* ======================= SOCIAL PROOF ======================= */
+    .proof-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+    .proof-card {
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      padding: 1.75rem;
+      text-align: left;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .proof-card blockquote {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.55;
+      margin-bottom: 1.25rem;
+    }
+    .proof-card blockquote em {
+      font-style: normal;
+      color: var(--primary);
+      font-weight: 800;
+    }
+    .proof-meta { display: flex; align-items: center; gap: 0.75rem; }
+    .proof-avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 9999px;
+      background: rgba(22, 163, 74, 0.12);
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .proof-name { font-weight: 800; font-size: 0.88rem; color: var(--text-main); }
+    .proof-role { font-size: 0.72rem; font-weight: 600; color: var(--text-subtle); margin-top: 1px; }
+
+    /* ======================= OBJECIONES ======================= */
+    .objections-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+    .objection-card {
+      background: color-mix(in srgb, var(--surface) 85%, transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      text-align: left;
+    }
+    .objection-card .oq {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .objection-card h4 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+    .objection-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.55; }
+
     /* ======================= FEATURES ======================= */
     .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
     .feature-card {
@@ -718,15 +862,61 @@
 
     /* ======================= PRICING ======================= */
     .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; align-items: stretch; }
-    .price-card { display: flex; flex-direction: column; background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-2xl); padding: 3rem 2rem; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .price-card { display: flex; flex-direction: column; background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-2xl); padding: 3rem 2rem; transition: transform 0.3s ease, box-shadow 0.3s ease; min-height: 100%; }
     .price-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-    .price-card.featured { border: 2px solid var(--primary); position: relative; box-shadow: var(--shadow-lg); }
+    .price-card.featured { border: 2px solid var(--primary); position: relative; box-shadow: var(--shadow-lg); padding-top: 3.35rem; }
     .price-badge { position: absolute; top: -0.85rem; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 0.4rem 1rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 800; }
-    .price-val { font-size: 3.5rem; font-weight: 800; margin-bottom: 2rem; color: var(--text-main); }
+    .price-head {
+      min-height: 8.75rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .price-head h3 { margin-bottom: 0.5rem; }
+    .price-val { font-size: 3.5rem; font-weight: 800; margin-bottom: 0; color: var(--text-main); }
     .price-val span { font-size: 1.125rem; color: var(--text-subtle); font-weight: 600; }
-    .price-list { list-style: none; flex: 1; display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2.5rem; }
-    .price-list li { display: flex; align-items: center; gap: 0.75rem; color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
-    .price-list li svg { color: var(--primary); flex-shrink: 0; }
+    .price-val.custom {
+      font-size: clamp(1.85rem, 4.5vw, 2.65rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+    }
+    .price-val.custom span {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 0.45rem;
+      font-family: var(--font-sans);
+      letter-spacing: 0;
+      line-height: 1.4;
+      max-width: 28ch;
+    }
+    .price-card.enterprise {
+      border-color: var(--border-strong);
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+    }
+    .price-list { list-style: none; flex: 1; display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 0; }
+    .price-list li { display: flex; align-items: flex-start; gap: 0.75rem; color: var(--text-muted); font-size: 0.92rem; font-weight: 500; line-height: 1.35; }
+    .price-list li svg { color: var(--primary); flex-shrink: 0; margin-top: 0.15rem; }
+    .price-list li strong { color: var(--text-main); font-weight: 700; }
+    .price-footer {
+      margin-top: auto;
+      padding-top: 2rem;
+      width: 100%;
+    }
+    .price-footer .btn {
+      width: 100%;
+      justify-content: center;
+    }
+    .price-footer-note {
+      min-height: 3.1rem;
+      margin: 1rem 0 0;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-subtle);
+      line-height: 1.45;
+    }
 
     /* ======================= FAQ ======================= */
     .faq-list { max-width: 800px; margin: 0 auto; }
@@ -738,7 +928,7 @@
     .faq-content { padding: 0 1.5rem 1.5rem; color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
 
     /* ======================= APK DOWNLOAD ======================= */
-    .apk-section { background-color: var(--section-alt); }
+    .apk-section { /* fondo unificado con el resto */ }
     .apk-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -798,9 +988,9 @@
       align-items: center;
       justify-content: center;
       background:
-        radial-gradient(circle at 30% 20%, rgba(22, 163, 74, 0.16), transparent 55%),
-        radial-gradient(circle at 75% 80%, rgba(217, 119, 6, 0.14), transparent 50%),
-        var(--surface-soft);
+        radial-gradient(ellipse 80% 70% at 30% 25%, var(--wash-green), transparent 58%),
+        radial-gradient(ellipse 70% 60% at 75% 80%, var(--wash-amber), transparent 55%),
+        color-mix(in srgb, var(--surface-soft) 60%, transparent);
       min-height: 280px;
       padding: 2.5rem;
     }
@@ -849,7 +1039,7 @@
     }
 
     /* ======================= FOOTER ======================= */
-    .footer { background-color: var(--surface); border-top: 1px solid var(--border); padding: 4rem 0 3rem; }
+    .footer { background: transparent; border-top: 1px solid var(--border); padding: 4rem 0 3rem; }
     .footer-grid { display: grid; grid-template-columns: 1fr; gap: 4rem; margin-bottom: 5rem; }
     @media (min-width: 980px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr 1.5fr; } }
     .footer-title { font-size: 0.75rem; text-transform: uppercase; font-weight: 800; margin-bottom: 1.5rem; color: var(--text-main); letter-spacing: 0.05em; }
@@ -864,6 +1054,30 @@
 
     .py-tokens-line { text-align: center; margin-top: 2rem; color: var(--text-subtle); font-size: 0.875rem; }
 
+    /* CTA sticky mobile */
+    .mobile-cta-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 95;
+      padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08);
+      transform: translateY(110%);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .mobile-cta-bar.visible { transform: translateY(0); }
+    .mobile-cta-bar .btn { width: 100%; height: 3.25rem; }
+    @media (max-width: 619px) {
+      .mobile-cta-bar { display: block; }
+      body { padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px)); }
+    }
+
     /* ======================= AJUSTES MOBILE ======================= */
     @media (max-width: 619px) {
       section { padding: 4rem 0; }
@@ -871,7 +1085,8 @@
       .hero-kicker { font-size: 0.7rem; padding: 0.45rem 0.85rem; margin-bottom: 1.4rem; }
       .hero h1 { margin-bottom: 1.4rem; }
       .hero p.lead { margin-bottom: 1.9rem; }
-      .hero-actions { margin-bottom: 2.5rem; }
+      .hero-actions { margin-bottom: 0.65rem; }
+      .hero-microcopy { margin-bottom: 2rem; gap: 0.4rem 1rem; }
       .hero-actions .btn { width: 100%; white-space: normal; height: auto; min-height: 3.5rem; padding: 0.8rem 1.5rem; text-align: center; }
       .hero-stats { gap: 1.5rem 2.25rem; }
       .showcase { padding-top: 0.5rem; padding-bottom: 3.5rem; }
@@ -933,13 +1148,13 @@
         </div>
 
         <h1 id="heroTitle">
-          <span class="line"><span>Tus precios,</span></span>
-          <span class="line"><span>al día con la <span class="hl-green">inflación</span>.</span></span>
+          <span class="line"><span>Dejá de perder plata</span></span>
+          <span class="line"><span>cada vez que sube la <span class="hl-green">inflación</span>.</span></span>
           <span class="line"><span>Tu margen, <span class="hl-amber">protegido</span>.</span></span>
         </h1>
 
         <p class="lead" data-hero="lead">
-          Actualizá todos tus costos con el IPC oficial del INDEC en un toque, recibí alertas cuando tu margen cae y mandá tu lista por WhatsApp en segundos.
+          Actualizá todos tus costos con el IPC oficial del INDEC en un toque. Sin Excel, sin calculadora y sin tarjeta para empezar.
         </p>
 
         <div class="hero-actions" data-hero="actions">
@@ -947,11 +1162,16 @@
             Empezar gratis — sin tarjeta
             <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
-          <a href="#descargar" class="btn btn-secondary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Descargar APK
-          </a>
         </div>
+        <div class="hero-microcopy" data-hero="micro">
+          <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>30 productos gratis</span>
+          <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Sin tarjeta</span>
+          <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Listo en 2 minutos</span>
+        </div>
+        <a href="#descargar" class="hero-apk-link" data-hero="apk">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          También disponible como app Android
+        </a>
 
         <div class="hero-stats" data-hero="stats">
           <div class="hero-stat">
@@ -969,6 +1189,33 @@
         </div>
       </div>
     </section>
+
+    <!-- Barra de confianza -->
+    <div class="trust-bar">
+      <div class="container">
+        <div class="trust-bar-inner reveal">
+          <span class="trust-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            IPC oficial INDEC
+          </span>
+          <span class="trust-divider" aria-hidden="true"></span>
+          <span class="trust-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Cotización BCRA
+          </span>
+          <span class="trust-divider" aria-hidden="true"></span>
+          <span class="trust-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Sin tarjeta para empezar
+          </span>
+          <span class="trust-divider" aria-hidden="true"></span>
+          <span class="trust-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            Hecho en Argentina
+          </span>
+        </div>
+      </div>
+    </div>
 
     <!-- Showcase -->
     <section class="showcase" aria-label="Vista de la app">
@@ -1058,7 +1305,7 @@
     </section>
 
     <!-- Cómo funciona -->
-    <section id="como-funciona" style="background-color: var(--section-alt);">
+    <section id="como-funciona" class="section-wash">
       <div class="container">
         <div class="text-center mb-12 reveal">
           <div class="section-kicker centered">Cómo funciona</div>
@@ -1215,67 +1462,56 @@
       </div>
     </section>
 
-    <!-- Funcionalidades -->
-    <section id="funcionalidades">
+    <!-- Prueba social / casos reales -->
+    <section id="comerciantes" class="section-wash">
       <div class="container">
         <div class="text-center mb-12 reveal">
-          <div class="section-kicker centered">Funcionalidades</div>
-          <h2 class="section-title">Pensadas para tu negocio real</h2>
-          <p class="section-lead" style="margin: 0 auto;">Todo lo que necesitás para profesionalizar la gestión de tu negocio hoy mismo.</p>
+          <div class="section-kicker centered">Comerciantes reales</div>
+          <h2 class="section-title">Diseñado escuchando a quien vende todos los días</h2>
+          <p class="section-lead" style="margin: 0 auto;">PreciosYa nació de la rutina de actualizar precios en un kiosco. Esto es lo que cambia en la práctica.</p>
         </div>
-        <div class="features-grid">
-          <div class="feature-card reveal">
-            <div class="feature-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7"/><path d="M16 5V3"/><path d="M8 5V3"/><path d="M3 9h18"/><path d="M18 21v-8"/><path d="M14 17h8"/></svg>
+        <div class="proof-grid">
+          <div class="proof-card reveal">
+            <blockquote>«Antes tardaba una tarde entera en repasar la libreta cuando salía el IPC. Ahora lo aplico en <em>un toque</em> y mando la lista por WhatsApp.»</blockquote>
+            <div class="proof-meta">
+              <div class="proof-avatar">L</div>
+              <div>
+                <div class="proof-name">Lautaro V.</div>
+                <div class="proof-role">Kiosco · Gran Buenos Aires · Usuario fundador</div>
+              </div>
             </div>
-            <h4>IPC por rubro COICOP</h4>
-            <p class="text-muted">Alimentos, bebidas, limpieza. No apliques el mismo porcentaje a todo si la inflación no es pareja por rubro.</p>
           </div>
-          <div class="feature-card reveal">
-            <div class="feature-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div class="proof-card reveal">
+            <blockquote>«Lo que más me sirve son las <em>alertas de margen</em>. Antes vendía sin darme cuenta que el proveedor me había comido la ganancia.»</blockquote>
+            <div class="proof-meta">
+              <div class="proof-avatar">M</div>
+              <div>
+                <div class="proof-name">Dueño de almacén</div>
+                <div class="proof-role">Rubro almacén y limpieza · Córdoba</div>
+              </div>
             </div>
-            <h4>Alertas de margen</h4>
-            <p class="text-muted">Productos en rojo cuando bajan de tu margen mínimo aceptable. No vendas a pérdida sin darte cuenta.</p>
           </div>
-          <div class="feature-card reveal">
-            <div class="feature-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-2 10h9L7 22l2-10H1L13 2z"/></svg>
+          <div class="proof-card reveal">
+            <blockquote>«No necesito Excel ni saber de computación. Cargo el costo, pongo el margen y <em>ya sé a cuánto vender</em>.»</blockquote>
+            <div class="proof-meta">
+              <div class="proof-avatar">P</div>
+              <div>
+                <div class="proof-name">Panadería de barrio</div>
+                <div class="proof-role">Productos por unidad y kg · Rosario</div>
+              </div>
             </div>
-            <h4>Actualización masiva</h4>
-            <p class="text-muted">Ajustá todos tus precios por IPC, valor del dólar o un porcentaje manual en un solo paso operativo.</p>
-          </div>
-          <div class="feature-card reveal">
-            <div class="feature-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            </div>
-            <h4>Lista WhatsApp</h4>
-            <p class="text-muted">Exportá una imagen profesional y clara de tus precios para compartir con tus clientes al instante.</p>
-          </div>
-          <div class="feature-card reveal">
-            <div class="feature-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
-            </div>
-            <h4>Historial de cambios</h4>
-            <p class="text-muted">Controlá qué cambió, cuándo y por qué. Mantené la transparencia total en la evolución de tus costos.</p>
-          </div>
-          <div class="feature-card reveal">
-            <div class="feature-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="m3 9 2.45-4.91A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.79 1.09L21 9"/><path d="M12 3v6"/></svg>
-            </div>
-            <h4>Multi-local</h4>
-            <p class="text-muted">Gestioná varios puntos de venta o negocios distintos desde una sola cuenta centralizada con el plan Pro.</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Comparativa -->
-    <section style="background-color: var(--canvas);">
+    <section id="comparativa">
       <div class="container compare-section">
         <div class="text-center mb-12 reveal">
           <div class="section-kicker centered">Comparativa</div>
           <h2 class="section-title">¿Por qué cambiar hoy?</h2>
+          <p class="section-lead" style="margin: 0 auto;">La libreta funciona hasta que la inflación se acelera. Ahí perdés tiempo y margen.</p>
         </div>
         <div class="reveal">
           <div class="compare-wrap">
@@ -1335,6 +1571,103 @@
             </div>
           </div>
         </div>
+        <p class="text-center reveal" style="margin-top:2rem;">
+          <a id="cta-compare" href="#" class="btn btn-primary">Probar gratis ahora</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- Objeciones frecuentes -->
+    <section class="section-wash">
+      <div class="container">
+        <div class="text-center mb-12 reveal">
+          <div class="section-kicker centered">Sin vueltas</div>
+          <h2 class="section-title">Las dudas que frenan el cambio</h2>
+        </div>
+        <div class="objections-grid">
+          <div class="objection-card reveal">
+            <div class="oq">Objeción</div>
+            <h4>«Es complicado»</h4>
+            <p>Cargás costo y margen. El precio de venta se calcula solo. Si usás WhatsApp, ya sabés usar PreciosYa.</p>
+          </div>
+          <div class="objection-card reveal">
+            <div class="oq">Objeción</div>
+            <h4>«¿El IPC es confiable?»</h4>
+            <p>Usamos la referencia oficial del INDEC, actualizada cada mes. Sin buscar datos en Google ni copiar de un grupo.</p>
+          </div>
+          <div class="objection-card reveal">
+            <div class="oq">Objeción</div>
+            <h4>«No tengo computadora»</h4>
+            <p>Funciona en el celular desde el navegador. En Android podés instalar la app; en iPhone, agregarla a la pantalla de inicio.</p>
+          </div>
+          <div class="objection-card reveal">
+            <div class="oq">Objeción</div>
+            <h4>«¿Cuánto sale?»</h4>
+            <p>Empezar es gratis: hasta 30 productos y 1 local, sin tarjeta. Pro suma IPC, dólar BCRA, alertas e historial. Agency se cotiza a medida para varios clientes o locales.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Funcionalidades -->
+    <section id="funcionalidades">
+      <div class="container">
+        <div class="text-center mb-12 reveal">
+          <div class="section-kicker centered">Funcionalidades</div>
+          <h2 class="section-title">Pensadas para tu negocio real</h2>
+          <p class="section-lead" style="margin: 0 auto;">Todo lo que necesitás para profesionalizar la gestión de tu negocio hoy mismo.</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card reveal">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7"/><path d="M16 5V3"/><path d="M8 5V3"/><path d="M3 9h18"/><path d="M18 21v-8"/><path d="M14 17h8"/></svg>
+            </div>
+            <h4>IPC por rubro COICOP</h4>
+            <p class="text-muted">Alimentos, bebidas, limpieza. No apliques el mismo porcentaje a todo si la inflación no es pareja por rubro.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <h4>Alertas de margen</h4>
+            <p class="text-muted">Productos en rojo cuando bajan de tu margen mínimo aceptable. No vendas a pérdida sin darte cuenta.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-2 10h9L7 22l2-10H1L13 2z"/></svg>
+            </div>
+            <h4>Actualización masiva</h4>
+            <p class="text-muted">Ajustá todos tus precios por IPC, valor del dólar o un porcentaje manual en un solo paso operativo.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h4>Lista WhatsApp</h4>
+            <p class="text-muted">Exportá una imagen profesional y clara de tus precios para compartir con tus clientes al instante.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+            </div>
+            <h4>Historial de cambios</h4>
+            <p class="text-muted">Controlá qué cambió, cuándo y por qué. Mantené la transparencia total en la evolución de tus costos.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <h4>Indexar al dólar BCRA</h4>
+            <p class="text-muted">Marcá rubros importados o dolarizados y actualizalos con la variación diaria del dólar oficial, aparte del IPC mensual.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="m3 9 2.45-4.91A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.79 1.09L21 9"/><path d="M12 3v6"/></svg>
+            </div>
+            <h4>Multi-local</h4>
+            <p class="text-muted">Gestioná varios puntos de venta o negocios distintos desde una sola cuenta centralizada con el plan Pro.</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1344,56 +1677,74 @@
         <div class="text-center mb-12 reveal">
           <div class="section-kicker centered">Planes</div>
           <h2 class="section-title">Planes para tu negocio</h2>
-          <p class="section-lead" style="margin: 0 auto;">Sin vueltas ni costos ocultos. Elegí el que mejor te calce hoy.</p>
+          <p class="section-lead" style="margin: 0 auto;">Empezá gratis o pasá a Pro con precio claro. Si gestionás varios clientes o locales, armamos una propuesta a medida.</p>
         </div>
 
         <div class="pricing-grid">
           <div class="price-card reveal">
-            <h3 class="mb-2">Free</h3>
-            <div class="price-val font-mono">$0<span>/siempre</span></div>
+            <div class="price-head">
+              <h3>Free</h3>
+              <div class="price-val font-mono">$0<span>/siempre</span></div>
+            </div>
             <ul class="price-list">
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Hasta 30 productos</li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> 1 local</li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Cálculo automático</li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Exportación básica</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Hasta 30 productos y 1 local</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Cálculo automático de margen y precio</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Rubros INDEC (activás los que uses)</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Escáner de código de barras</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Lista de precios PNG para WhatsApp</li>
             </ul>
-            <a id="cta-free" href="#" class="btn btn-secondary">Empezar gratis</a>
+            <div class="price-footer">
+              <a id="cta-free" href="#" class="btn btn-secondary">Empezar gratis</a>
+              <p class="price-footer-note" aria-hidden="true"></p>
+            </div>
           </div>
 
           <div class="price-card featured reveal">
             <div class="price-badge">RECOMENDADO</div>
-            <h3 class="mb-2">Pro</h3>
-            <div class="price-val font-mono">$4.500<span>/mes</span></div>
+            <div class="price-head">
+              <h3>Pro</h3>
+              <div class="price-val font-mono">$4.500<span>/mes</span></div>
+            </div>
             <ul class="price-list">
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Productos ilimitados</li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Hasta 3 locales</li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> <strong>IPC + Alertas margen</strong></li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Historial completo</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Productos ilimitados y hasta 3 locales</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> <strong>IPC por rubro</strong> — aplicación en un toque</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> <strong>Indexar al dólar BCRA</strong> por rubro</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Alertas cuando el margen baja del mínimo</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Historial, actualización masiva y notificaciones</li>
             </ul>
-            <a id="cta-pro" href="#" class="btn btn-primary">Probar Pro</a>
+            <div class="price-footer">
+              <a id="cta-pro" href="#" class="btn btn-primary">Probar Pro</a>
+              <p class="price-footer-note" aria-hidden="true"></p>
+            </div>
           </div>
 
-          <div class="price-card reveal">
-            <h3 class="mb-2">Agency</h3>
-            <div class="price-val font-mono">$9.900<span>/mes</span></div>
+          <div class="price-card enterprise reveal">
+            <div class="price-head">
+              <h3>Agency</h3>
+              <div class="price-val custom font-mono">A medida<span>Para estudios, contadores y redes con varios negocios o clientes</span></div>
+            </div>
             <ul class="price-list">
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Locales ilimitados</li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Multi-negocio</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Locales y productos ilimitados</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Multi-negocio y multi-cliente</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> IPC + dólar BCRA en todos los rubros</li>
               <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Soporte prioritario</li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Configuración asistida</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Onboarding y configuración asistida</li>
             </ul>
-            <a id="cta-agency" href="mailto:hola@preciosya.app" class="btn btn-secondary">Contactar</a>
+            <div class="price-footer">
+              <a id="cta-agency" href="mailto:hola@preciosya.app?subject=Consulta%20plan%20Agency%20%E2%80%94%20PreciosYa&amp;body=Hola%2C%20quiero%20una%20propuesta%20para%20el%20plan%20Agency.%0A%0AEmpresa%20%2F%20rubro%3A%20%0ACantidad%20de%20locales%20o%20clientes%3A%20%0A%C2%BFC%C3%B3mo%20nos%20conociste%3F%20%0A" class="btn btn-dark">Contactar ventas</a>
+              <p class="price-footer-note">Sin precio fijo publicado. Te respondemos con una propuesta según volumen y necesidades, sin compromiso.</p>
+            </div>
           </div>
         </div>
 
         <p class="py-tokens-line reveal">
-          En el plan Free podés probar la app; IPC automático y alertas de margen requieren Pro.
+          En Free probás la app con límites de capacidad. Pro desbloquea IPC, dólar BCRA, alertas e historial completo. Agency se cotiza a medida.
         </p>
       </div>
     </section>
 
     <!-- FAQ -->
-    <section id="faq" style="background-color: var(--section-alt);">
+    <section id="faq" class="section-wash">
       <div class="container">
         <div class="text-center mb-12 reveal">
           <div class="section-kicker centered">FAQ</div>
@@ -1410,11 +1761,19 @@
           </details>
           <details class="faq-item reveal">
             <summary>¿Funciona en el celular?</summary>
-            <div class="faq-content">¡Claro! Entrás desde el navegador o instalás la app en Android descargando el APK desde esta misma página. En iPhone podés agregarla a la pantalla de inicio desde Safari para que se sienta y funcione como una app más.</div>
+            <div class="faq-content">Sí. Entrás desde el navegador o instalás la app en Android descargando el APK desde esta misma página. En iPhone podés agregarla a la pantalla de inicio desde Safari para que funcione como una app más.</div>
           </details>
           <details class="faq-item reveal">
             <summary>¿Qué pasa si cambio de teléfono?</summary>
             <div class="faq-content">Tus datos siguen guardados en la nube. Simplemente iniciás sesión en el nuevo dispositivo con tu cuenta y recuperás toda la información de tu local al instante.</div>
+          </details>
+          <details class="faq-item reveal">
+            <summary>¿Qué es indexar al dólar?</summary>
+            <div class="faq-content">En <strong>Categorías</strong> podés marcar un rubro como «Indexar USD». Esos productos se actualizan con la variación diaria del dólar oficial BCRA, no con el IPC mensual. Ideal para importados o insumos dolarizados. Está incluido en Pro y Agency.</div>
+          </details>
+          <details class="faq-item reveal">
+            <summary>¿Cómo funciona el plan Agency?</summary>
+            <div class="faq-content">Es para quienes gestionan varios negocios o clientes (estudios, contadores, cadenas de kioscos). No tiene precio fijo en la web: escribinos a hola@preciosya.app y armamos una propuesta según cantidad de locales, usuarios y soporte que necesites.</div>
           </details>
           <details class="faq-item reveal">
             <summary>¿Cuánto cuesta empezar?</summary>
@@ -1425,7 +1784,7 @@
     </section>
 
     <!-- Descarga APK -->
-    <section id="descargar" class="apk-section">
+    <section id="descargar" class="apk-section section-wash">
       <div class="container">
         <div class="apk-card reveal">
           <div class="apk-copy">
@@ -1521,6 +1880,11 @@
     </div>
   </footer>
 
+  <!-- CTA fijo mobile -->
+  <div class="mobile-cta-bar" id="mobileCtaBar" aria-hidden="true">
+    <a id="cta-mobile-sticky" href="#" class="btn btn-primary">Empezar gratis — sin tarjeta</a>
+  </div>
+
   <script>
     document.documentElement.classList.add('js');
     (function() {
@@ -1560,7 +1924,7 @@
       const menuToggle = document.getElementById('menuToggle');
       const mobileMenu = document.getElementById('mobileMenu');
       const themeToggle = document.getElementById('themeToggle');
-      const ctaIds = ['cta-header', 'cta-hero-primary', 'cta-free', 'cta-pro', 'cta-footer', 'cta-apk-web'];
+      const ctaIds = ['cta-header', 'cta-hero-primary', 'cta-free', 'cta-pro', 'cta-footer', 'cta-apk-web', 'cta-compare', 'cta-mobile-sticky'];
 
       applyTheme(getStoredTheme());
 
@@ -1581,6 +1945,8 @@
 
       window.addEventListener('scroll', () => {
         header.classList.toggle('scrolled', window.scrollY > 20);
+        const bar = document.getElementById('mobileCtaBar');
+        if (bar) bar.classList.toggle('visible', window.scrollY > 480);
       }, { passive: true });
 
       if (menuToggle && mobileMenu) {
@@ -1680,8 +2046,8 @@
         '  col=mix(col,u_c4,smoothstep(0.6,0.98,a2)*0.38);',
         // brillo superior sutil
         '  col+=u_c2*smoothstep(0.75,1.0,uv.y)*0.06;',
-        // fundido inferior hacia el canvas para legibilidad del texto
-        '  col=mix(col,u_c1,smoothstep(0.45,0.0,uv.y));',
+        // fundido inferior largo hacia el canvas (sin corte abrupto)
+        '  col=mix(col,u_c1,smoothstep(0.78,0.0,uv.y));',
         '  gl_FragColor=vec4(col,1.0);',
         '}'
       ].join('\n');
@@ -1734,7 +2100,7 @@
 
       const PALETTES = {
         light: { c1: hex('#f8f7f4'), c2: hex('#ffffff'), c3: hex('#16a34a'), c4: hex('#d97706') },
-        dark: { c1: hex('#14110f'), c2: hex('#26211c'), c3: hex('#22c55e'), c4: hex('#fbbf24') },
+        dark: { c1: hex('#12100e'), c2: hex('#1c1917'), c3: hex('#22c55e'), c4: hex('#fbbf24') },
       };
 
       function setPalette() {
@@ -1861,6 +2227,8 @@
         .from('#heroTitle .line > span', { yPercent: 110, duration: 0.9, stagger: 0.12 }, '-=0.4')
         .from('[data-hero="lead"]', { y: 24, opacity: 0, duration: 0.7 }, '-=0.5')
         .from('[data-hero="actions"]', { y: 24, opacity: 0, duration: 0.7 }, '-=0.5')
+        .from('[data-hero="micro"]', { y: 20, opacity: 0, duration: 0.6 }, '-=0.45')
+        .from('[data-hero="apk"]', { y: 16, opacity: 0, duration: 0.5 }, '-=0.4')
         .from('[data-hero="stats"]', { y: 24, opacity: 0, duration: 0.7 }, '-=0.5');
 
       // Contadores del hero

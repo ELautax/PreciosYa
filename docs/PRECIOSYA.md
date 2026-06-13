@@ -86,9 +86,9 @@ Monorepo **pnpm**: `apps/web`, `apps/api`, `packages/shared`.
 
 ## Modelo de negocio (borrador)
 
-- **FREE:** límites de productos y locales.
-- **PRO:** más capacidad, email al publicarse IPC.
-- **AGENCY:** reservado multi-cliente (futuro).
+- **FREE:** límites de productos y locales; catálogo, rubros, escáner, export PNG.
+- **PRO:** más capacidad, **IPC por rubro**, **indexar al dólar BCRA**, alertas de margen, historial y email al publicarse IPC.
+- **AGENCY:** multi-cliente / multi-local a escala; **precio a medida por contacto comercial** (sin tarifa fija publicada en la landing).
 
 Mercado Pago / suscripciones automáticas: en standby.
 

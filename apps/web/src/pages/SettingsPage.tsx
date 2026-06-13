@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { ApiSuccess } from 'shared'
-import { User, CreditCard, Store, Info, ExternalLink, ShieldCheck, Clock, Activity } from 'lucide-react'
+import { User, CreditCard, Store, Info, ShieldCheck, Clock, Activity } from 'lucide-react'
 
 import { LocalSelector } from '@/components/locals/LocalSelector'
+import {
+  PlanPricingCards,
+  planLocalLimit,
+  planProductLimit,
+} from '@/components/settings/PlanPricingCards'
 import { useApiClient } from '@/hooks/useApiClient'
 import { useLocals } from '@/hooks/useLocals'
 import { useSelectedLocal } from '@/hooks/useSelectedLocal'
@@ -11,9 +16,9 @@ import type { AppUser } from '@/types/appUser'
 
 type TabId = 'business' | 'account' | 'plan'
 
-function planProductLimit(plan: string): number | null {
-  if (plan === 'FREE') return 30
-  return null
+function normalizePlan(plan: string | undefined): 'FREE' | 'PRO' | 'AGENCY' {
+  if (plan === 'PRO' || plan === 'AGENCY') return plan
+  return 'FREE'
 }
 
 export default function SettingsPage() {
@@ -52,12 +57,15 @@ export default function SettingsPage() {
   }, [api])
 
   const usedProducts = productsQ.data?.total ?? 0
-  const productLimit = planProductLimit(user?.plan ?? 'FREE')
+  const currentPlan = normalizePlan(user?.plan)
+  const productLimit = planProductLimit(currentPlan)
+  const localLimit = planLocalLimit(currentPlan)
+  const usedLocals = locals?.length ?? 0
   const usagePct = productLimit ? Math.min(100, (usedProducts / productLimit) * 100) : 0
 
   return (
     <main className="page-shell">
-      <div className="page-wrap max-w-4xl space-y-10 animate-fade-in">
+      <div className="page-wrap max-w-5xl space-y-10 animate-fade-in">
         <header className="flex flex-col gap-2">
           <h1 className="heading-xl">Configuración General</h1>
           <p className="text-small">
@@ -179,18 +187,18 @@ export default function SettingsPage() {
 
                {tab === 'plan' && (
                  <section className="surface-card p-5 sm:p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-4">
                        <div className="flex items-center gap-4">
                           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg">
                              <CreditCard size={24} strokeWidth={2.5} />
                           </div>
                           <div>
                              <h2 className="text-xl font-black tracking-tight text-text-main">Plan y Suscripción</h2>
-                             <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Límites</p>
+                             <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Capacidad y planes</p>
                           </div>
                        </div>
-                       <span className="inline-flex rounded-full bg-accent-500 px-3 py-1 text-[10px] font-black text-white uppercase tracking-widest shadow-sm">
-                          {user?.plan || 'PRO'}
+                       <span className="inline-flex shrink-0 rounded-full bg-accent-500 px-3 py-1 text-[10px] font-black text-white uppercase tracking-widest shadow-sm">
+                          {user?.plan ?? '…'}
                        </span>
                     </div>
 
@@ -200,33 +208,58 @@ export default function SettingsPage() {
                        </div>
                        
                        <div className="relative space-y-6">
-                          <div className="flex items-end justify-between px-1">
+                          <div className="grid gap-6 sm:grid-cols-2">
                              <div>
-                                <h3 className="text-base font-black text-text-main leading-none">Capacidad</h3>
-                                <p className="mt-2 text-[10px] font-black text-text-subtle uppercase tracking-widest">Productos Activos</p>
+                                <div className="flex items-end justify-between px-1">
+                                   <div>
+                                      <h3 className="text-base font-black text-text-main leading-none">Productos</h3>
+                                      <p className="mt-2 text-[10px] font-black text-text-subtle uppercase tracking-widest">Activos</p>
+                                   </div>
+                                   <p className="text-2xl font-black text-primary-600 font-mono tracking-tighter">
+                                      {usedProducts}<span className="text-text-subtle/50 text-sm mx-1">/</span>{productLimit ?? '∞'}
+                                   </p>
+                                </div>
+                                <div className="mt-3 h-4 w-full bg-border/50 rounded-full overflow-hidden p-1 shadow-inner">
+                                   <div 
+                                      className="h-full rounded-full bg-primary-600 transition-all duration-1000 shadow-sm"
+                                      style={{ width: `${productLimit ? usagePct : 100}%` }}
+                                   />
+                                </div>
                              </div>
-                             <p className="text-2xl font-black text-primary-600 font-mono tracking-tighter">
-                                {usedProducts}<span className="text-text-subtle/50 text-sm mx-1">/</span>{productLimit || '∞'}
-                             </p>
+                             <div>
+                                <div className="flex items-end justify-between px-1">
+                                   <div>
+                                      <h3 className="text-base font-black text-text-main leading-none">Locales</h3>
+                                      <p className="mt-2 text-[10px] font-black text-text-subtle uppercase tracking-widest">Registrados</p>
+                                   </div>
+                                   <p className="text-2xl font-black text-primary-600 font-mono tracking-tighter">
+                                      {usedLocals}<span className="text-text-subtle/50 text-sm mx-1">/</span>{localLimit ?? '∞'}
+                                   </p>
+                                </div>
+                                <div className="mt-3 h-4 w-full bg-border/50 rounded-full overflow-hidden p-1 shadow-inner">
+                                   <div 
+                                      className="h-full rounded-full bg-accent-500 transition-all duration-1000 shadow-sm"
+                                      style={{ width: `${localLimit ? Math.min(100, (usedLocals / localLimit) * 100) : 100}%` }}
+                                   />
+                                </div>
+                             </div>
                           </div>
 
-                          <div className="h-4 w-full bg-border/50 rounded-full overflow-hidden p-1 shadow-inner">
-                             <div 
-                                className="h-full rounded-full bg-primary-600 transition-all duration-1000 shadow-sm"
-                                style={{ width: `${productLimit ? usagePct : 100}%` }}
-                             />
-                          </div>
-
-                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
-                             <div className="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-widest">
-                                <Clock size={12} className="text-primary-600" />
-                                Vencimiento: {user?.planExpiresAt ? new Date(user.planExpiresAt).toLocaleDateString('es-AR') : 'Sin límite'}
-                             </div>
-                             <button className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary-600 hover:underline">
-                                MEJORAR PLAN <ExternalLink size={10} strokeWidth={3} />
-                             </button>
+                          <div className="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-widest pt-1">
+                             <Clock size={12} className="text-primary-600" />
+                             Vencimiento: {user?.planExpiresAt ? new Date(user.planExpiresAt).toLocaleDateString('es-AR') : 'Sin límite'}
                           </div>
                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                       <div className="px-1">
+                          <h3 className="text-base font-black text-text-main">Compará planes</h3>
+                          <p className="mt-1 text-xs font-medium text-text-subtle">
+                             Misma oferta que en la web. Pro incluye IPC y dólar BCRA; Agency se cotiza a medida.
+                          </p>
+                       </div>
+                       <PlanPricingCards currentPlan={currentPlan} />
                     </div>
                  </section>
                )}

@@ -76,6 +76,20 @@ Si tenés un aumento puntual (proveedor, promoción):
 
 ---
 
+## Plan y suscripción
+
+En **Configuración → Plan** ves tu uso (productos y locales), vencimiento si aplica, y la comparativa de planes:
+
+| Plan | Para quién | Lo principal |
+|------|------------|--------------|
+| **Free** | Probar sin tarjeta | Hasta 30 productos, 1 local, rubros, escáner, export PNG |
+| **Pro** | Comercio activo | Productos ilimitados, 3 locales, **IPC por rubro**, **indexar al dólar BCRA**, alertas e historial |
+| **Agency** | Estudios, contadores, cadenas | Locales ilimitados, multi-cliente; **precio a medida** — botón «Contactar ventas» abre un mail a hola@preciosya.app |
+
+Para pasar a Pro o Agency usá los botones de la misma pantalla o escribinos por mail. La landing tiene la misma información en [preciosya-landing.vercel.app/#precios](https://preciosya-landing.vercel.app/#precios).
+
+---
+
 ## Preguntas frecuentes
 
 **¿Por qué el USD muestra “Sin datos”?**  
