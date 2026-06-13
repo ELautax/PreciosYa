@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ApiSuccess, SalesPeriod } from 'shared'
 
+import { dateInputToIsoEnd, dateInputToIsoStart } from '@/components/sales/format'
 import { useApiClient } from '@/hooks/useApiClient'
 import { appToast } from '@/lib/toast'
 import type {
@@ -18,17 +19,35 @@ import type {
 type PeriodParams = {
   localId: string | undefined
   period?: SalesPeriod
+  /** Valores de input type=date (YYYY-MM-DD) cuando period=custom */
   from?: string
   to?: string
+  enabled?: boolean
 }
 
 function periodParams(p: PeriodParams) {
-  return {
+  const period = p.period ?? '7d'
+  const base = {
     localId: p.localId,
-    period: p.period ?? '7d',
-    ...(p.from ? { from: p.from } : {}),
-    ...(p.to ? { to: p.to } : {}),
+    period,
   }
+
+  if (period === 'custom' && p.from && p.to) {
+    return {
+      ...base,
+      from: dateInputToIsoStart(p.from),
+      to: dateInputToIsoEnd(p.to),
+    }
+  }
+
+  return base
+}
+
+function isPeriodQueryReady(p: PeriodParams): boolean {
+  if (!p.localId) return false
+  if (p.enabled === false) return false
+  if (p.period === 'custom') return Boolean(p.from && p.to)
+  return true
 }
 
 export function useSalesList(
@@ -73,7 +92,7 @@ export function useSalesDashboard(params: PeriodParams) {
   const api = useApiClient()
   return useQuery({
     queryKey: ['sales', 'dashboard', params.localId, params.period, params.from, params.to],
-    enabled: Boolean(params.localId),
+    enabled: isPeriodQueryReady(params),
     queryFn: async () => {
       const res = await api.get<ApiSuccess<SalesDashboardDto>>('/api/sales/dashboard', {
         params: periodParams(params),
@@ -83,11 +102,11 @@ export function useSalesDashboard(params: PeriodParams) {
   })
 }
 
-export function useTopProducts(params: PeriodParams & { enabled?: boolean }) {
+export function useTopProducts(params: PeriodParams) {
   const api = useApiClient()
   return useQuery({
-    queryKey: ['sales', 'top-products', params.localId, params.period],
-    enabled: Boolean(params.localId) && (params.enabled ?? true),
+    queryKey: ['sales', 'top-products', params.localId, params.period, params.from, params.to],
+    enabled: isPeriodQueryReady(params),
     queryFn: async () => {
       const res = await api.get<ApiSuccess<TopProductsDto>>('/api/sales/top-products', {
         params: periodParams(params),
@@ -111,11 +130,11 @@ export function useStagnantProducts(localId: string | undefined, enabled = true)
   })
 }
 
-export function usePromoteProducts(params: PeriodParams & { enabled?: boolean }) {
+export function usePromoteProducts(params: PeriodParams) {
   const api = useApiClient()
   return useQuery({
-    queryKey: ['sales', 'promote', params.localId, params.period],
-    enabled: Boolean(params.localId) && (params.enabled ?? true),
+    queryKey: ['sales', 'promote', params.localId, params.period, params.from, params.to],
+    enabled: isPeriodQueryReady(params),
     queryFn: async () => {
       const res = await api.get<ApiSuccess<PromoteProductsDto>>('/api/sales/promote-products', {
         params: periodParams(params),
@@ -125,11 +144,11 @@ export function usePromoteProducts(params: PeriodParams & { enabled?: boolean })
   })
 }
 
-export function useStarProducts(params: PeriodParams & { enabled?: boolean }) {
+export function useStarProducts(params: PeriodParams) {
   const api = useApiClient()
   return useQuery({
-    queryKey: ['sales', 'star', params.localId, params.period],
-    enabled: Boolean(params.localId) && (params.enabled ?? true),
+    queryKey: ['sales', 'star', params.localId, params.period, params.from, params.to],
+    enabled: isPeriodQueryReady(params),
     queryFn: async () => {
       const res = await api.get<ApiSuccess<StarProductsDto>>('/api/sales/star-products', {
         params: periodParams(params),
@@ -139,11 +158,11 @@ export function useStarProducts(params: PeriodParams & { enabled?: boolean }) {
   })
 }
 
-export function useCategoryPerformance(params: PeriodParams & { enabled?: boolean }) {
+export function useCategoryPerformance(params: PeriodParams) {
   const api = useApiClient()
   return useQuery({
-    queryKey: ['sales', 'category-performance', params.localId, params.period],
-    enabled: Boolean(params.localId) && (params.enabled ?? true),
+    queryKey: ['sales', 'category-performance', params.localId, params.period, params.from, params.to],
+    enabled: isPeriodQueryReady(params),
     queryFn: async () => {
       const res = await api.get<ApiSuccess<CategoryPerformanceDto>>(
         '/api/sales/category-performance',

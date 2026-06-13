@@ -13,6 +13,8 @@ import {
 type SalesAnalysisTabProps = {
   localId: string
   period: SalesPeriod
+  customFrom: string
+  customTo: string
   isPro: boolean
 }
 
@@ -66,12 +68,27 @@ function AnalysisTable({
   )
 }
 
-export function SalesAnalysisTab({ localId, period, isPro }: SalesAnalysisTabProps) {
-  const topQ = useTopProducts({ localId, period, enabled: isPro })
+export function SalesAnalysisTab({
+  localId,
+  period,
+  customFrom,
+  customTo,
+  isPro,
+}: SalesAnalysisTabProps) {
+  const periodParams = {
+    localId,
+    period,
+    ...(period === 'custom' && customFrom && customTo
+      ? { from: customFrom, to: customTo }
+      : {}),
+    enabled: isPro,
+  }
+
+  const topQ = useTopProducts(periodParams)
   const stagnantQ = useStagnantProducts(localId, isPro)
-  const promoteQ = usePromoteProducts({ localId, period, enabled: isPro })
-  const starQ = useStarProducts({ localId, period, enabled: isPro })
-  const categoryQ = useCategoryPerformance({ localId, period, enabled: isPro })
+  const promoteQ = usePromoteProducts(periodParams)
+  const starQ = useStarProducts(periodParams)
+  const categoryQ = useCategoryPerformance(periodParams)
 
   if (!isPro) {
     return <PlanUpgradeBanner />

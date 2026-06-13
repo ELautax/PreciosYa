@@ -15,6 +15,7 @@ import { SaleRegisterTab } from '@/components/sales/SaleRegisterTab'
 import { SalesAnalysisTab } from '@/components/sales/SalesAnalysisTab'
 import { SalesHistoryTab } from '@/components/sales/SalesHistoryTab'
 import { SalesSummaryTab } from '@/components/sales/SalesSummaryTab'
+import { defaultCustomRange } from '@/components/sales/format'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLocals } from '@/hooks/useLocals'
 import { useSelectedLocal } from '@/hooks/useSelectedLocal'
@@ -33,6 +34,8 @@ export default function SalesPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [tab, setTab] = useState<TabId>('summary')
   const [period, setPeriod] = useState<SalesPeriod>('7d')
+  const [customFrom, setCustomFrom] = useState('')
+  const [customTo, setCustomTo] = useState('')
 
   const { data: me } = useMe()
   const { data: locals, isLoading: loadingLocals } = useLocals()
@@ -54,6 +57,15 @@ export default function SalesPage() {
   function selectTab(next: TabId) {
     setTab(next)
     setSearchParams({ tab: next }, { replace: true })
+  }
+
+  function handlePeriodChange(next: SalesPeriod) {
+    if (next === 'custom' && (!customFrom || !customTo)) {
+      const defaults = defaultCustomRange()
+      setCustomFrom(defaults.from)
+      setCustomTo(defaults.to)
+    }
+    setPeriod(next)
   }
 
   if (loadingLocals) {
@@ -133,14 +145,24 @@ export default function SalesPage() {
                   <SalesSummaryTab
                     localId={localId}
                     period={period}
-                    onPeriodChange={setPeriod}
+                    onPeriodChange={handlePeriodChange}
+                    customFrom={customFrom}
+                    customTo={customTo}
+                    onCustomFromChange={setCustomFrom}
+                    onCustomToChange={setCustomTo}
                     isPro={isPro}
                   />
                 ) : null}
                 {tab === 'register' && localId ? <SaleRegisterTab localId={localId} /> : null}
                 {tab === 'history' && localId ? <SalesHistoryTab localId={localId} /> : null}
                 {tab === 'analysis' && localId ? (
-                  <SalesAnalysisTab localId={localId} period={period} isPro={isPro} />
+                  <SalesAnalysisTab
+                    localId={localId}
+                    period={period}
+                    customFrom={customFrom}
+                    customTo={customTo}
+                    isPro={isPro}
+                  />
                 ) : null}
               </div>
             </div>
