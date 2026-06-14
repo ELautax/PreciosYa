@@ -8,9 +8,19 @@ type PlanPricingModalProps = {
   open: boolean
   currentPlan: PlanId
   onClose: () => void
+  onSubscribePro?: () => void
+  subscribeProLoading?: boolean
+  mpConfigured?: boolean
 }
 
-export function PlanPricingModal({ open, currentPlan, onClose }: PlanPricingModalProps) {
+export function PlanPricingModal({
+  open,
+  currentPlan,
+  onClose,
+  onSubscribePro,
+  subscribeProLoading = false,
+  mpConfigured = true,
+}: PlanPricingModalProps) {
   useEffect(() => {
     if (!open) return
 
@@ -55,7 +65,7 @@ export function PlanPricingModal({ open, currentPlan, onClose }: PlanPricingModa
                 Compará planes
               </h2>
               <p className="mt-1.5 text-[10px] font-black uppercase tracking-widest text-text-subtle leading-none">
-                Elegí o gestioná tu suscripción
+                Pro se paga con Mercado Pago · Agency por contacto
               </p>
             </div>
           </div>
@@ -70,7 +80,12 @@ export function PlanPricingModal({ open, currentPlan, onClose }: PlanPricingModa
         </div>
 
         <div className="flex-1 overflow-y-auto overscroll-contain p-5 scrollbar-hide sm:p-6">
-          <PlanPricingCards currentPlan={currentPlan} />
+          <PlanPricingCards
+            currentPlan={currentPlan}
+            onSubscribePro={onSubscribePro}
+            subscribeProLoading={subscribeProLoading}
+            mpConfigured={mpConfigured}
+          />
         </div>
       </div>
     </div>

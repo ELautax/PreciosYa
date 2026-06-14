@@ -99,7 +99,11 @@ En **Configuración → Plan** ves tu uso (productos y locales) y vencimiento. T
 | **Pro** | Comercio activo | Productos ilimitados, 3 locales, **IPC**, **USD BCRA**, alertas, historial, **gestor de ventas completo** |
 | **Agency** | Estudios, contadores, cadenas | Locales ilimitados, multi-cliente; **precio a medida** — botón «Contactar ventas» abre un mail a hola@preciosya.app |
 
-Para pasar a Pro o Agency usá los botones de la misma pantalla o escribinos por mail. La landing tiene la misma información en [preciosya-landing.vercel.app/#precios](https://preciosya-landing.vercel.app/#precios).
+Para pasar a **Pro**, tocá **Suscribirme a Pro** en el modal o en la landing: te lleva a iniciar sesión y luego al checkout de **Mercado Pago** (tarjeta en entorno seguro de MP). Al confirmar, el plan se activa automáticamente.
+
+Para **Agency**, el botón «Contactar ventas» abre un mail a hola@preciosya.app. La landing tiene la misma información en [preciosya-landing.vercel.app/#precios](https://preciosya-landing.vercel.app/#precios).
+
+**Modo prueba (tesis):** en sandbox usá tarjetas de test de Mercado Pago; no se debita dinero real.
 
 ---
 

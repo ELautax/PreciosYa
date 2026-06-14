@@ -80,6 +80,22 @@ Variables críticas: ver `RAILWAY_ENV.md`, `SUPABASE_ENV.md`.
 | GET | `/dashboard` | Free parcial / Pro completo |
 | GET | `/top-products`, `/stagnant-products`, `/promote-products`, `/star-products`, `/category-performance` | Pro+ |
 
+## Rutas API — Suscripciones (`/api/subscriptions`)
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| GET | `/status` | JWT | Plan actual + última suscripción MP |
+| POST | `/checkout` | JWT | Crea preapproval Pro → URL checkout MP |
+| POST | `/sync` | JWT | Sincroniza estado pending con MP (post-redirect) |
+
+## Webhook Mercado Pago
+
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| POST | `/api/webhooks/mercadopago` | Ninguno (público) | Notificaciones `subscription_preapproval` |
+
+Variables: `MP_ACCESS_TOKEN`, `MP_PUBLIC_KEY`, `MP_PRO_AMOUNT_ARS` (default 4500), `MP_NOTIFICATION_URL`. Ver `RAILWAY_ENV.md`.
+
 ## Tests
 
 - `packages/shared`: pricing puro.

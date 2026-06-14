@@ -12,13 +12,20 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const fromLanding = searchParams.get('from') === 'landing'
+  const upgradePro = searchParams.get('upgrade') === 'pro'
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!loading && session && !fromLanding) {
-      void navigate('/dashboard', { replace: true })
+    if (!loading && session) {
+      if (upgradePro) {
+        void navigate('/settings?tab=plan&planes=1', { replace: true })
+        return
+      }
+      if (!fromLanding) {
+        void navigate('/dashboard', { replace: true })
+      }
     }
-  }, [loading, session, navigate, fromLanding])
+  }, [loading, session, navigate, fromLanding, upgradePro])
 
   async function handleGoogle(): Promise<void> {
     setError(null)

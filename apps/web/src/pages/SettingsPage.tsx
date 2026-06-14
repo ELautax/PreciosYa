@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ComponentType } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 import type { ApiSuccess } from 'shared'
 import { User, CreditCard, Store, Info, ShieldCheck, Clock, Activity } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
@@ -13,6 +13,11 @@ import { useApiClient } from '@/hooks/useApiClient'
 import { useLocals } from '@/hooks/useLocals'
 import { useSelectedLocal } from '@/hooks/useSelectedLocal'
 import { useProducts } from '@/hooks/useProducts'
+import {
+  useProCheckout,
+  useSubscriptionStatus,
+  useSubscriptionSync,
+} from '@/hooks/useSubscription'
 import type { AppUser } from '@/types/appUser'
 
 type TabId = 'business' | 'account' | 'plan'
@@ -27,12 +32,16 @@ function planActionLabel(plan: 'FREE' | 'PRO' | 'AGENCY'): string {
 }
 
 export default function SettingsPage() {
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [tab, setTab] = useState<TabId>('business')
   const [planModalOpen, setPlanModalOpen] = useState(false)
+  const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null)
   const api = useApiClient()
   const [user, setUser] = useState<AppUser | null>(null)
   const [meError, setMeError] = useState(false)
+  const subscriptionQ = useSubscriptionStatus()
+  const checkoutM = useProCheckout()
+  const syncM = useSubscriptionSync()
   const { data: locals } = useLocals()
   const [localId, setLocalId] = useSelectedLocal(locals)
   const selectedLocal = useMemo(
@@ -40,6 +49,37 @@ export default function SettingsPage() {
     [locals, localId],
   )
   const productsQ = useProducts(localId || undefined, { page: 1, limit: 1 })
+  const currentPlan = normalizePlan(user?.plan)
+  const checkoutStartedRef = useRef(false)
+
+  const refreshUser = useCallback(() => {
+    void api
+      .get<ApiSuccess<{ user: AppUser }>>('/api/auth/me')
+      .then((res) => {
+        setUser(res.data.data.user)
+        setMeError(false)
+      })
+      .catch(() => {
+        setUser(null)
+        setMeError(true)
+      })
+  }, [api])
+
+  const handleSubscribePro = useCallback(async () => {
+    setCheckoutMessage(null)
+    try {
+      const data = await checkoutM.mutateAsync()
+      window.location.href = data.checkoutUrl
+    } catch (e) {
+      setCheckoutMessage(
+        e instanceof Error ? e.message : 'No se pudo iniciar el pago con Mercado Pago',
+      )
+    }
+  }, [checkoutM])
+
+  useEffect(() => {
+    refreshUser()
+  }, [refreshUser])
 
   useEffect(() => {
     const tabParam = searchParams.get('tab')
@@ -52,29 +92,52 @@ export default function SettingsPage() {
   }, [searchParams])
 
   useEffect(() => {
-    let cancelled = false
-    setMeError(false)
-    void api
-      .get<ApiSuccess<{ user: AppUser }>>('/api/auth/me')
-      .then((res) => {
-        if (!cancelled) {
-          setUser(res.data.data.user)
-          setMeError(false)
+    const checkout = searchParams.get('checkout')
+    if (checkout !== 'success') return
+
+    setCheckoutMessage('Procesando tu suscripción Pro…')
+    void syncM
+      .mutateAsync()
+      .then((status) => {
+        refreshUser()
+        if (status.plan === 'PRO') {
+          setCheckoutMessage('¡Plan Pro activado! Ya podés usar analytics de ventas y más capacidad.')
+        } else {
+          setCheckoutMessage(
+            'Pago recibido. Si el plan no se actualiza en unos segundos, recargá la página.',
+          )
         }
       })
       .catch(() => {
-        if (!cancelled) {
-          setUser(null)
-          setMeError(true)
-        }
+        setCheckoutMessage('Volviste del checkout. Si pagaste, esperá un momento y recargá.')
       })
-    return () => {
-      cancelled = true
-    }
-  }, [api])
+
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        next.delete('checkout')
+        return next
+      },
+      { replace: true },
+    )
+  }, [searchParams, setSearchParams, syncM, refreshUser])
+
+  useEffect(() => {
+    const checkout = searchParams.get('checkout')
+    if (checkout !== 'start' || !user || currentPlan !== 'FREE' || checkoutStartedRef.current) return
+    checkoutStartedRef.current = true
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        next.delete('checkout')
+        return next
+      },
+      { replace: true },
+    )
+    void handleSubscribePro()
+  }, [searchParams, setSearchParams, user, currentPlan, handleSubscribePro])
 
   const usedProducts = productsQ.data?.total ?? 0
-  const currentPlan = normalizePlan(user?.plan)
   const productLimit = planProductLimit(currentPlan)
   const localLimit = planLocalLimit(currentPlan)
   const usedLocals = locals?.length ?? 0
@@ -219,6 +282,12 @@ export default function SettingsPage() {
                        </span>
                     </div>
 
+                    {checkoutMessage ? (
+                      <div className="rounded-2xl border border-primary-200 bg-primary-50/50 px-4 py-3 text-sm font-semibold text-primary-900">
+                        {checkoutMessage}
+                      </div>
+                    ) : null}
+
                     <div className="p-6 sm:p-8 rounded-[2.5rem] bg-surface-soft border border-border/50 relative overflow-hidden group">
                        <div className="absolute top-0 right-0 p-8 opacity-5 text-primary-600 group-hover:scale-110 transition-transform duration-500">
                           <Activity size={120} />
@@ -287,6 +356,9 @@ export default function SettingsPage() {
         open={planModalOpen}
         currentPlan={currentPlan}
         onClose={() => setPlanModalOpen(false)}
+        onSubscribePro={() => void handleSubscribePro()}
+        subscribeProLoading={checkoutM.isPending}
+        mpConfigured={subscriptionQ.data?.mpConfigured ?? true}
       />
     </div>
   )

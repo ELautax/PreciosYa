@@ -1,5 +1,7 @@
 import { Router, type IRouter } from 'express'
 
+import { env } from '../config/env.js'
+import { isMpConfigured } from '../services/mercadopago.service.js'
 import { asyncHandler } from '../utils/asyncHandler.js'
 import { sendSuccess } from '../utils/response.js'
 import { adminRoutes } from './admin.routes.js'
@@ -11,6 +13,8 @@ import { localRoutes } from './local.routes.js'
 import { notificationRoutes } from './notification.routes.js'
 import { productRoutes } from './product.routes.js'
 import { saleRoutes } from './sale.routes.js'
+import { subscriptionRoutes } from './subscription.routes.js'
+import { webhookRoutes } from './webhook.routes.js'
 
 const root = Router()
 
@@ -36,6 +40,8 @@ root.get(
       /** Si es true, POST /api/admin/ipc/manual existe (deploy ≥ mayo 2026). */
       ipcManualRoute: true,
       ipcSource: 'alphacast',
+      mpConfigured: isMpConfigured(),
+      mpProAmountArs: env.MP_PRO_AMOUNT_ARS,
     })
   }),
 )
@@ -50,6 +56,8 @@ api.use('/ipc', ipcRoutes)
 api.use('/notifications', notificationRoutes)
 api.use('/products', productRoutes)
 api.use('/sales', saleRoutes)
+api.use('/subscriptions', subscriptionRoutes)
+api.use('/webhooks', webhookRoutes)
 
 export const routes: IRouter = root
 export const apiRoutes: IRouter = api

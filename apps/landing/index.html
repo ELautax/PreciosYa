@@ -1761,7 +1761,7 @@
               <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Gestor de ventas y rentabilidad</li>
             </ul>
             <div class="price-footer">
-              <a id="cta-pro" href="#" class="btn btn-primary">Consultar Pro</a>
+              <a id="cta-pro" href="#" class="btn btn-primary">Suscribirme a Pro</a>
               <p class="price-footer-note" aria-hidden="true"></p>
             </div>
           </div>
@@ -1974,7 +1974,9 @@
       const mobileMenu = document.getElementById('mobileMenu');
       const themeToggle = document.getElementById('themeToggle');
       const loginCtaIds = ['cta-header', 'cta-hero-primary', 'cta-free', 'cta-footer', 'cta-apk-web', 'cta-compare', 'cta-mobile-sticky'];
-      const proMail = window.PRECIOSYA_PRO_MAIL || 'mailto:hola@preciosya.app?subject=Consulta%20plan%20Pro%20%E2%80%94%20PreciosYa';
+      const proCheckoutUrl =
+        window.PRECIOSYA_PRO_CHECKOUT ||
+        'https://preciosya.vercel.app/login?upgrade=pro';
 
       applyTheme(getStoredTheme());
 
@@ -1991,7 +1993,7 @@
       });
 
       const ctaPro = document.getElementById('cta-pro');
-      if (ctaPro) ctaPro.href = proMail;
+      if (ctaPro) ctaPro.href = proCheckoutUrl;
 
       const apkBtn = document.getElementById('apk-download-btn');
       if (apkBtn) apkBtn.href = apkUrl;

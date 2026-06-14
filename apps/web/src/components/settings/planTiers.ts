@@ -25,6 +25,9 @@ export const AGENCY_MAIL =
 export const PRO_MAIL =
   'mailto:hola@preciosya.app?subject=Consulta%20plan%20Pro%20%E2%80%94%20PreciosYa&body=Hola%2C%20quiero%20pasar%20al%20plan%20Pro.%0A%0ALocal%20%2F%20negocio%3A%20%0A%0A'
 
+/** Ruta interna para iniciar checkout Pro (requiere sesión). */
+export const PRO_CHECKOUT_PATH = '/settings?tab=plan&planes=1&checkout=start'
+
 export const PLANS: PlanTier[] = [
   {
     id: 'FREE',
@@ -61,8 +64,8 @@ export const PLANS: PlanTier[] = [
       'Gestor de ventas completo',
     ],
     cta: {
-      label: 'Consultar Pro',
-      href: PRO_MAIL,
+      label: 'Suscribirme a Pro',
+      href: PRO_CHECKOUT_PATH,
       variant: 'primary',
     },
   },

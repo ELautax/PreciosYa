@@ -108,10 +108,10 @@ Monorepo **pnpm**: `apps/web`, `apps/api`, `packages/shared`.
 ## Modelo de negocio (borrador)
 
 - **FREE:** límites de productos y locales; catálogo, rubros, escáner, export PNG; **ventas (7 días)**.
-- **PRO:** más capacidad, **IPC por rubro**, **indexar al dólar BCRA**, alertas de margen, historial, **gestor de ventas completo**, email al publicarse IPC.
+- **PRO:** más capacidad, **IPC por rubro**, **indexar al dólar BCRA**, alertas de margen, historial, **gestor de ventas completo**, email al publicarse IPC. **Suscripción mensual $4.500** vía Mercado Pago (sandbox en tesis; producción al go-live).
 - **AGENCY:** multi-cliente / multi-local a escala; **precio a medida por contacto comercial** (sin tarifa fija publicada en la landing).
 
-Mercado Pago / suscripciones automáticas: en standby.
+**Pagos Pro:** checkout hospedado Mercado Pago (Suscripciones). Agency sigue por mailto. Ver `docs/RAILWAY_ENV.md` (variables MP).
 
 ---
 
@@ -119,7 +119,7 @@ Mercado Pago / suscripciones automáticas: en standby.
 
 - **v1 (entregable):** ver módulos arriba + [ROADMAP_TESIS.md](./ROADMAP_TESIS.md).
 - **v2 (propuesta tesis):** anular ventas, duplicar venta, alertas margen real, “qué subir de precio”, export cierre del día, modo escáner full-screen — ver tabla completa en ROADMAP_TESIS.
-- **Backlog general (post-tesis):** onboarding guiado, PDF export, Mercado Pago, multi-usuario por local, catálogo barras ampliado, ayuda in-app.
+- **Backlog general (post-tesis):** onboarding guiado, PDF export, multi-usuario por local, catálogo barras ampliado, ayuda in-app.
 
 ---
 

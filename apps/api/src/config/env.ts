@@ -68,6 +68,12 @@ const schema = z
     BCRA_API_BASE_URL: z.string().url().default('https://api.bcra.gob.ar'),
     /** Variación diaria USD (%) a partir de la cual se notifica salto brusco. */
     BCRA_USD_ALERT_THRESHOLD_PCT: z.coerce.number().positive().default(2.5),
+    /** Mercado Pago — suscripción Pro (opcional; sin token el checkout queda deshabilitado). */
+    MP_ACCESS_TOKEN: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    MP_PUBLIC_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    MP_PRO_AMOUNT_ARS: z.coerce.number().positive().default(4500),
+    /** URL pública del webhook, ej. https://api…/api/webhooks/mercadopago */
+    MP_NOTIFICATION_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
   })
   .superRefine((data, ctx) => {
     if (data.NODE_ENV !== 'production') return
