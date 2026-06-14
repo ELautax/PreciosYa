@@ -74,6 +74,10 @@ const schema = z
     MP_PRO_AMOUNT_ARS: z.coerce.number().positive().default(4500),
     /** URL pública del webhook, ej. https://api…/api/webhooks/mercadopago */
     MP_NOTIFICATION_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
+    /** Sandbox: email ficticio para preapproval (no usar el Google del usuario). */
+    MP_TEST_PAYER_EMAIL: z.preprocess(emptyToUndefined, z.string().email().optional()),
+    /** Sandbox: username del comprador de prueba (login en checkout MP). */
+    MP_TEST_PAYER_USERNAME: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   })
   .superRefine((data, ctx) => {
     if (data.NODE_ENV !== 'production') return

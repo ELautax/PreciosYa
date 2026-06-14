@@ -7,19 +7,32 @@ import {
   getPreapproval,
   getPreapprovalSafe,
   isMpConfigured,
-  mpCheckoutUrl,
+  isMpTestMode,
+  mpRecurringStartDate,
+  resolvePreapprovalCheckoutUrl,
 } from './mercadopago.service.js'
 import { AppError } from '../utils/AppError.js'
 
 const PRO_REASON = 'PreciosYa Pro — suscripción mensual'
 
 function primaryFrontendUrl(): string {
-  return env.FRONTEND_URL[0] ?? 'http://localhost:5173'
+  const preferred = env.FRONTEND_URL.find((url) => url.includes('preciosya.vercel.app'))
+  return preferred ?? env.FRONTEND_URL[0] ?? 'http://localhost:5173'
 }
 
 function mpNotificationUrl(): string | undefined {
   const raw = env.MP_NOTIFICATION_URL?.trim()
   return raw && raw.length > 0 ? raw : undefined
+}
+
+/** En sandbox MP no usar el email real del usuario: MP pre-asigna payer y bloquea el login del comprador de prueba. */
+const MP_SANDBOX_PAYER_EMAIL = 'preciosya.sandbox.buyer@gmail.com'
+
+function resolvePayerEmail(userEmail: string): string {
+  if (isMpTestMode()) {
+    return env.MP_TEST_PAYER_EMAIL?.trim() || MP_SANDBOX_PAYER_EMAIL
+  }
+  return userEmail
 }
 
 function addOneMonth(from: Date): Date {
@@ -61,6 +74,7 @@ export async function getSubscriptionStatus(userId: string) {
     plan: user.plan,
     planExpiresAt: user.planExpiresAt?.toISOString() ?? null,
     mpConfigured: isMpConfigured(),
+    mpTestMode: isMpTestMode(),
     proAmountArs: env.MP_PRO_AMOUNT_ARS,
     subscription: latest
       ? {
@@ -98,15 +112,42 @@ export async function createProCheckout(userId: string, email: string) {
 
   const frontend = primaryFrontendUrl()
   const notificationUrl = mpNotificationUrl()
+  const payerEmail = resolvePayerEmail(email)
+
+  // En sandbox siempre checkout nuevo (evita preapprovals ligados al email real de Google).
+  if (!isMpTestMode()) {
+    const existingPending = await prisma.subscription.findFirst({
+      where: { userId, status: SubStatus.PENDING, mpSubscriptionId: { not: null } },
+      orderBy: { createdAt: 'desc' },
+    })
+    if (existingPending?.mpSubscriptionId) {
+      const existing = await getPreapprovalSafe(existingPending.mpSubscriptionId)
+      const payerMatches =
+        !existing?.payer_email ||
+        existing.payer_email.toLowerCase() === payerEmail.toLowerCase()
+      if (existing && existing.status === 'pending' && payerMatches) {
+        return {
+          preapprovalId: existing.id,
+          checkoutUrl: await resolvePreapprovalCheckoutUrl(existing),
+          status: existing.status,
+          payerEmail,
+          testMode: isMpTestMode(),
+          sandboxHint: isMpTestMode() ? 'sandbox_guest_checkout' : undefined,
+        }
+      }
+    }
+  }
+
   const preapproval = await createPreapproval({
     reason: PRO_REASON,
     externalReference: userId,
-    payerEmail: email,
+    payerEmail,
     autoRecurring: {
       frequency: 1,
       frequency_type: 'months',
       transaction_amount: env.MP_PRO_AMOUNT_ARS,
       currency_id: 'ARS',
+      start_date: mpRecurringStartDate(),
     },
     backUrl: `${frontend}/settings?tab=plan&checkout=success`,
     ...(notificationUrl ? { notificationUrl } : {}),
@@ -125,8 +166,13 @@ export async function createProCheckout(userId: string, email: string) {
 
   return {
     preapprovalId: preapproval.id,
-    checkoutUrl: mpCheckoutUrl(preapproval),
+    checkoutUrl: await resolvePreapprovalCheckoutUrl(preapproval),
     status: preapproval.status,
+    payerEmail,
+    testMode: isMpTestMode(),
+    sandboxHint: isMpTestMode()
+      ? 'sandbox_guest_checkout'
+      : undefined,
   }
 }
 

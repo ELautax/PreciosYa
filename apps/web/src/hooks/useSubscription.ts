@@ -7,6 +7,7 @@ export type SubscriptionStatus = {
   plan: 'FREE' | 'PRO' | 'AGENCY'
   planExpiresAt: string | null
   mpConfigured: boolean
+  mpTestMode: boolean
   proAmountArs: number
   subscription: {
     id: string
@@ -22,6 +23,8 @@ type CheckoutResponse = {
   preapprovalId: string
   checkoutUrl: string
   status: string
+  testMode?: boolean
+  sandboxHint?: 'sandbox_guest_checkout'
 }
 
 export function useSubscriptionStatus() {

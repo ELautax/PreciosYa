@@ -8,6 +8,9 @@
     },
     "railway": {
       "url": "https://mcp.railway.com"
+    },
+    "mercadopago": {
+      "url": "https://mcp.mercadopago.com/mcp"
     }
   }
 }

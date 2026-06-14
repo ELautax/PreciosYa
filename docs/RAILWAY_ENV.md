@@ -58,10 +58,22 @@ Debe incluir `"ipcManualRoute":true` y `"version":"0.2.0"`. Si falta, el servici
 | `MP_PUBLIC_KEY` | Public Key (referencia; checkout es redirect) |
 | `MP_PRO_AMOUNT_ARS` | Monto mensual Pro (default `4500`) |
 | `MP_NOTIFICATION_URL` | Webhook público, ej. `https://api-production-3626.up.railway.app/api/webhooks/mercadopago` |
+| `MP_TEST_PAYER_EMAIL` | Email **ficticio** para crear la suscripción en sandbox (default `preciosya.sandbox.buyer@gmail.com`). Evita pre-asociar tu Gmail real. |
+| `MP_TEST_PAYER_USERNAME` | Referencia del comprador de prueba en panel MP (no usarlo para login en checkout — ver abajo). |
 
-En el panel MP → **Webhooks**, suscribir topic `subscription_preapproval` apuntando a la URL anterior.
+En el panel MP → **Webhooks**, topic `subscription_preapproval` (también configurable vía MCP `save_webhook`).
 
-**Tesis / sandbox:** usar credenciales `TEST-…`. Tarjetas de prueba en [documentación MP](https://www.mercadopago.com.ar/developers/es/docs/subscriptions/integration-test).
+**Credenciales:** Railway debe usar `TEST-…` (no `APP_USR-…` de producción). App Preciosya_Arg `4079496323452400`.
+
+**Sandbox URL webhook:** `callback_sandbox` → `https://api-production-3626.up.railway.app/api/webhooks/mercadopago`
+
+**Tesis / sandbox — flujo correcto:**
+
+1. PreciosYa con Google → **Suscribirme a Pro** → redirect a MP.
+2. **Incógnito.** Si MP muestra tu cuenta real → **cerrar sesión**.
+3. **No** iniciar sesión con `TESTUSER3869021386766079933` (la suscripción queda ligada a un payer invitado distinto y MP responde *«Una de las partes es de prueba»*).
+4. Tarjeta de prueba **nueva** (no guardada): `5031 7557 3453 0604`, titular **`APRO`**, CVV `123`, DNI `12345678`.
+5. Tras confirmar, volver a PreciosYa → Plan → sincronizar, o esperar webhook `subscription_preapproval`.
 
 **Producción:** reemplazar tokens TEST por PROD y revalidar webhook.
 

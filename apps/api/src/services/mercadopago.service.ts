@@ -68,16 +68,35 @@ async function parseMpError(res: Response): Promise<never> {
 }
 
 export function mpCheckoutUrl(preapproval: MpPreapproval): string {
-  const isTest = env.MP_ACCESS_TOKEN?.startsWith('TEST-') ?? true
-  const url = isTest ? preapproval.sandbox_init_point : preapproval.init_point
-  if (!url) {
+  // Preapproval suele traer solo init_point; sandbox_init_point es más común en Preferences.
+  const url = preapproval.sandbox_init_point ?? preapproval.init_point
+  if (url) return url
+
+  if (preapproval.id) {
+    return `https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_id=${preapproval.id}`
+  }
+
+  throw new AppError({
+    statusCode: 502,
+    message: 'Mercado Pago no devolvió URL de checkout',
+    code: 'MP_NO_INIT_POINT',
+  })
+}
+
+export async function resolvePreapprovalCheckoutUrl(
+  preapproval: MpPreapproval,
+): Promise<string> {
+  try {
+    return mpCheckoutUrl(preapproval)
+  } catch {
+    const refreshed = await getPreapprovalSafe(preapproval.id)
+    if (refreshed) return mpCheckoutUrl(refreshed)
     throw new AppError({
       statusCode: 502,
       message: 'Mercado Pago no devolvió URL de checkout',
       code: 'MP_NO_INIT_POINT',
     })
   }
-  return url
 }
 
 export async function createPreapproval(input: CreatePreapprovalInput): Promise<MpPreapproval> {
@@ -90,6 +109,7 @@ export async function createPreapproval(input: CreatePreapprovalInput): Promise<
       payer_email: input.payerEmail,
       auto_recurring: input.autoRecurring,
       back_url: input.backUrl,
+      status: 'pending',
       ...(input.notificationUrl ? { notification_url: input.notificationUrl } : {}),
     }),
   })
@@ -117,4 +137,15 @@ export async function getPreapprovalSafe(preapprovalId: string): Promise<MpPreap
 
 export function isMpConfigured(): boolean {
   return Boolean(env.MP_ACCESS_TOKEN?.trim())
+}
+
+export function isMpTestMode(): boolean {
+  return env.MP_ACCESS_TOKEN?.trim().startsWith('TEST-') ?? false
+}
+
+/** Fecha de inicio para auto_recurring (MP exige ISO futuro). */
+export function mpRecurringStartDate(): string {
+  const start = new Date()
+  start.setMinutes(start.getMinutes() + 10)
+  return start.toISOString()
 }
