@@ -106,6 +106,15 @@ export async function getPreapproval(preapprovalId: string): Promise<MpPreapprov
   return (await res.json()) as MpPreapproval
 }
 
+/** Para webhooks: no romper con 502 si el id es de prueba o ya no existe en MP. */
+export async function getPreapprovalSafe(preapprovalId: string): Promise<MpPreapproval | null> {
+  try {
+    return await getPreapproval(preapprovalId)
+  } catch {
+    return null
+  }
+}
+
 export function isMpConfigured(): boolean {
   return Boolean(env.MP_ACCESS_TOKEN?.trim())
 }

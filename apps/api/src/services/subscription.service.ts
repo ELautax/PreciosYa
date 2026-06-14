@@ -5,6 +5,7 @@ import { prisma } from '../lib/prisma.js'
 import {
   createPreapproval,
   getPreapproval,
+  getPreapprovalSafe,
   isMpConfigured,
   mpCheckoutUrl,
 } from './mercadopago.service.js'
@@ -181,17 +182,55 @@ export async function syncPendingSubscription(userId: string) {
 type MpWebhookBody = {
   type?: string
   topic?: string
+  entity?: string
   action?: string
-  data?: { id?: string }
+  id?: string | number
+  data?: { id?: string | number }
+}
+
+function resolveWebhookTopic(body: MpWebhookBody): string | undefined {
+  if (body.type) return body.type
+  if (body.topic) return body.topic
+  if (body.entity === 'preapproval') return 'subscription_preapproval'
+  return undefined
+}
+
+function resolveWebhookResourceId(body: MpWebhookBody): string | undefined {
+  const raw = body.data?.id ?? body.id
+  if (raw === undefined || raw === null) return undefined
+  return String(raw)
 }
 
 export async function handleMercadoPagoWebhook(body: MpWebhookBody) {
-  const topic = body.type ?? body.topic
-  const resourceId = body.data?.id
+  const topic = resolveWebhookTopic(body)
+  const resourceId = resolveWebhookResourceId(body)
   if (!resourceId) return { handled: false as const, reason: 'missing_id' }
 
-  if (topic === 'subscription_preapproval' || topic === 'preapproval') {
-    const mp = await getPreapproval(String(resourceId))
+  const isPreapprovalTopic =
+    topic === 'subscription_preapproval' ||
+    topic === 'preapproval' ||
+    body.entity === 'preapproval'
+
+  // Pagos recurrentes: ignorar en v1 (activación vía preapproval authorized)
+  if (
+    topic === 'subscription_authorized_payment' ||
+    topic === 'payment' ||
+    body.entity === 'authorized_payment'
+  ) {
+    return { handled: true as const, action: 'ignored_payment_event', resourceId }
+  }
+
+  if (isPreapprovalTopic) {
+    // Simulación de MP usa id ficticio (ej. 123456) — responder 200 sin error
+    const mp = await getPreapprovalSafe(resourceId)
+    if (!mp) {
+      return {
+        handled: false as const,
+        reason: 'preapproval_not_found',
+        resourceId,
+      }
+    }
+
     const userId = mp.external_reference
     if (!userId) return { handled: false as const, reason: 'missing_external_reference' }
 
