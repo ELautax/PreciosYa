@@ -139,7 +139,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   }
 
   return (
-    <main className="page-shell">
+    <div className="page-shell">
       <div className="page-wrap space-y-8 animate-fade-in">
         <header className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
@@ -271,7 +271,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
               ? `$${ipcQuery.data.bcra.usdRateArs.toLocaleString('es-AR')} (${ipcQuery.data.bcra.valuePct >= 0 ? '+' : ''}${ipcQuery.data.bcra.valuePct.toFixed(2)}%)`
               : ipcQuery.isFetching
                 ? 'Sincronizando…'
-                : 'Sin cotización — redeploy API o esperá al cron BCRA'
+                : 'Cotización no disponible — se actualiza automáticamente cada día'
           }
           lastAppliedPeriod={selectedLocal?.lastUsdAppliedPeriod ?? null}
           description="Solo afecta productos en rubros con «Indexar USD» activo. Configuralo en Categorías."
@@ -423,7 +423,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
           </div>
         </div>
       ) : null}
-    </main>
+    </div>
   )
 }
 
@@ -460,7 +460,7 @@ export default function ProductsPage() {
 
   if (localsError && !locals?.length) {
     return (
-      <main className="page-shell">
+      <div className="page-shell">
         <div className="mx-auto max-w-md py-12">
           <EmptyState
             icon={AlertTriangle}
@@ -473,13 +473,13 @@ export default function ProductsPage() {
             }
           />
         </div>
-      </main>
+      </div>
     )
   }
 
   if (!locals?.length) {
     return (
-      <main className="page-shell">
+      <div className="page-shell">
         <div className="mx-auto max-w-md py-12">
            <EmptyState 
               icon={Store}
@@ -509,7 +509,7 @@ export default function ProductsPage() {
               }
            />
         </div>
-      </main>
+      </div>
     )
   }
 

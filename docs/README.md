@@ -7,6 +7,8 @@
 | Documento | Audiencia | Contenido |
 |-----------|-----------|-----------|
 | [PRECIOSYA.md](./PRECIOSYA.md) | Presentación / stakeholders | Qué es, problema, solución, módulos, planes |
+| [entrega/README.md](./entrega/README.md) | **Tesis — sección 2.1** | Manual, CU, CP, UML, RF Web/APK, DER, arquitectura, Gantt |
+| [ROADMAP_TESIS.md](./ROADMAP_TESIS.md) | Defensa oral | Alcance v1, v2, demo sugerida |
 | [ROADMAP_TESIS.md](./ROADMAP_TESIS.md) | Tesis / defensa | Alcance v1 congelado, v1.1, v2 propuesto, demo sugerida |
 | [GUIA_USUARIO.md](./GUIA_USUARIO.md) | Comerciantes | Flujos: productos, rubros, IPC, USD, exportar |
 | [INDICES_Y_PRECIOS.md](./INDICES_Y_PRECIOS.md) | Producto + dev | Modelo IPC vs USD, rubros, aplicación masiva |
@@ -19,7 +21,7 @@
 
 ## URLs de referencia (producción)
 
-- Web: https://web-rho-ten-99.vercel.app
+- Web: https://preciosya.vercel.app
 - API: https://api-production-3626.up.railway.app
 - Landing: https://preciosya-landing.vercel.app
 

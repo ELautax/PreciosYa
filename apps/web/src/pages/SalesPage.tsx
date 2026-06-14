@@ -70,18 +70,18 @@ export default function SalesPage() {
 
   if (loadingLocals) {
     return (
-      <main className="page-shell">
+      <div className="page-shell">
         <div className="page-wrap space-y-4">
           <div className="skeleton h-10 w-48" />
           <div className="skeleton h-64 w-full rounded-2xl" />
         </div>
-      </main>
+      </div>
     )
   }
 
   if (!locals?.length) {
     return (
-      <main className="page-shell">
+      <div className="page-shell">
         <div className="page-wrap">
           <EmptyState
             icon={Store}
@@ -94,12 +94,12 @@ export default function SalesPage() {
             }
           />
         </div>
-      </main>
+      </div>
     )
   }
 
   return (
-    <main className="page-shell">
+    <div className="page-shell">
       <div className="page-wrap max-w-5xl space-y-8 animate-fade-in">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -154,7 +154,9 @@ export default function SalesPage() {
                   />
                 ) : null}
                 {tab === 'register' && localId ? <SaleRegisterTab localId={localId} /> : null}
-                {tab === 'history' && localId ? <SalesHistoryTab localId={localId} /> : null}
+                {tab === 'history' && localId ? (
+                  <SalesHistoryTab localId={localId} isPro={isPro} />
+                ) : null}
                 {tab === 'analysis' && localId ? (
                   <SalesAnalysisTab
                     localId={localId}
@@ -171,6 +173,6 @@ export default function SalesPage() {
           <div className="skeleton h-40 w-full rounded-2xl" />
         )}
       </div>
-    </main>
+    </div>
   )
 }

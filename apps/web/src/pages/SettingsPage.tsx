@@ -81,7 +81,7 @@ export default function SettingsPage() {
   const usagePct = productLimit ? Math.min(100, (usedProducts / productLimit) * 100) : 0
 
   return (
-    <main className="page-shell">
+    <div className="page-shell">
       <div className="page-wrap max-w-5xl space-y-10 animate-fade-in">
         <header className="flex flex-col gap-2">
           <h1 className="heading-xl">Configuración General</h1>
@@ -192,7 +192,7 @@ export default function SettingsPage() {
                          <DetailItem label="Nombre Completo" value={user.name} />
                          <DetailItem label="Correo Electrónico" value={user.email} />
                          <DetailItem label="Nivel de Acceso" value={user.isAdmin ? 'ADMINISTRADOR' : 'COMERCIANTE'} />
-                         <DetailItem label="Ingreso" value={user.planExpiresAt ? new Date().toLocaleDateString('es-AR') : 'Reciente'} />
+                         <DetailItem label="Vencimiento plan" value={user.planExpiresAt ? new Date(user.planExpiresAt).toLocaleDateString('es-AR') : 'Sin vencimiento'} />
                       </div>
                     ) : (
                       <div className="space-y-6">
@@ -288,7 +288,7 @@ export default function SettingsPage() {
         currentPlan={currentPlan}
         onClose={() => setPlanModalOpen(false)}
       />
-    </main>
+    </div>
   )
 }
 

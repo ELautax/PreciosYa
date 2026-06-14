@@ -76,7 +76,7 @@ export default function LocalsPage() {
   }
 
   return (
-    <main className="page-shell">
+    <div className="page-shell">
       <div className="page-wrap max-w-4xl space-y-10 animate-fade-in">
         <header className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
@@ -240,6 +240,6 @@ export default function LocalsPage() {
            </section>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

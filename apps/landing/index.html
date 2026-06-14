@@ -2,7 +2,7 @@
 <html lang="es-AR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>PreciosYa — Control de precios para comerciantes argentinos</title>
   <meta
     name="description"
@@ -1738,6 +1738,7 @@
               <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Rubros INDEC (activás los que uses)</li>
               <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Escáner de código de barras</li>
               <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Lista de precios PNG para WhatsApp</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Registro de ventas (7 días)</li>
             </ul>
             <div class="price-footer">
               <a id="cta-free" href="#" class="btn btn-secondary">Empezar gratis</a>
@@ -1760,7 +1761,7 @@
               <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Gestor de ventas y rentabilidad</li>
             </ul>
             <div class="price-footer">
-              <a id="cta-pro" href="#" class="btn btn-primary">Probar Pro</a>
+              <a id="cta-pro" href="#" class="btn btn-primary">Consultar Pro</a>
               <p class="price-footer-note" aria-hidden="true"></p>
             </div>
           </div>
@@ -1774,6 +1775,7 @@
               <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Locales y productos ilimitados</li>
               <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Multi-negocio y multi-cliente</li>
               <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> IPC + dólar BCRA en todos los rubros</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Análisis de ventas y rentabilidad</li>
               <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Soporte prioritario</li>
               <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Onboarding y configuración asistida</li>
             </ul>
@@ -1785,7 +1787,7 @@
         </div>
 
         <p class="py-tokens-line reveal">
-          En Free probás la app con límites de capacidad. Pro desbloquea IPC, dólar BCRA, alertas e historial completo. Agency se cotiza a medida.
+          En Free probás con límites de capacidad y ventas de 7 días. Pro suma analytics de ventas, más locales y capacidad ilimitada. Agency se cotiza a medida.
         </p>
       </div>
     </section>
@@ -1971,7 +1973,8 @@
       const menuToggle = document.getElementById('menuToggle');
       const mobileMenu = document.getElementById('mobileMenu');
       const themeToggle = document.getElementById('themeToggle');
-      const ctaIds = ['cta-header', 'cta-hero-primary', 'cta-free', 'cta-pro', 'cta-footer', 'cta-apk-web', 'cta-compare', 'cta-mobile-sticky'];
+      const loginCtaIds = ['cta-header', 'cta-hero-primary', 'cta-free', 'cta-footer', 'cta-apk-web', 'cta-compare', 'cta-mobile-sticky'];
+      const proMail = window.PRECIOSYA_PRO_MAIL || 'mailto:hola@preciosya.app?subject=Consulta%20plan%20Pro%20%E2%80%94%20PreciosYa';
 
       applyTheme(getStoredTheme());
 
@@ -1982,10 +1985,13 @@
         });
       }
 
-      ctaIds.forEach(id => {
+      loginCtaIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.href = loginUrl;
       });
+
+      const ctaPro = document.getElementById('cta-pro');
+      if (ctaPro) ctaPro.href = proMail;
 
       const apkBtn = document.getElementById('apk-download-btn');
       if (apkBtn) apkBtn.href = apkUrl;

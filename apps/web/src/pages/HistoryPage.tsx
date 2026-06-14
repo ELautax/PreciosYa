@@ -64,7 +64,7 @@ export default function HistoryPage() {
 
   if (!locals?.length) {
     return (
-      <main className="page-shell">
+      <div className="page-shell">
         <div className="page-wrap max-w-2xl py-12 animate-fade-in">
            <EmptyState 
               icon={Store}
@@ -77,12 +77,12 @@ export default function HistoryPage() {
               }
            />
         </div>
-      </main>
+      </div>
     )
   }
 
   return (
-    <main className="page-shell">
+    <div className="page-shell">
       <div className="page-wrap space-y-10 animate-fade-in">
         <header className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
@@ -251,6 +251,6 @@ export default function HistoryPage() {
            </section>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

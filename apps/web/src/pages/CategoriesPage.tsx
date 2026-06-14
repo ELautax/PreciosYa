@@ -106,7 +106,7 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
   }
 
   return (
-    <main className="page-shell">
+    <div className="page-shell">
       <div className="page-wrap max-w-3xl animate-fade-in space-y-10">
         <header className="space-y-1">
           <Link
@@ -167,7 +167,7 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
           </div>
         )}
       </div>
-    </main>
+    </div>
   )
 }
 
@@ -188,7 +188,7 @@ export default function CategoriesPage() {
 
   if (!locals?.length) {
     return (
-      <main className="page-shell">
+      <div className="page-shell">
         <div className="page-wrap max-w-2xl animate-fade-in py-12">
           <EmptyState
             icon={Store}
@@ -201,7 +201,7 @@ export default function CategoriesPage() {
             }
           />
         </div>
-      </main>
+      </div>
     )
   }
 

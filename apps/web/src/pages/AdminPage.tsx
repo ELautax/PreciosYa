@@ -113,7 +113,7 @@ export default function AdminPage() {
 
   if (indicesQ.isError) {
     return (
-      <main className="page-shell">
+      <div className="page-shell">
         <div className="page-wrap max-w-lg py-12">
           <div className="surface-card p-6 text-center">
             <p className="font-bold text-text-main">No se pudieron cargar los índices IPC</p>
@@ -129,13 +129,13 @@ export default function AdminPage() {
             </button>
           </div>
         </div>
-      </main>
+      </div>
     )
   }
 
   if (!me?.isAdmin) {
     return (
-      <main className="page-shell">
+      <div className="page-shell">
         <div className="page-wrap max-w-2xl py-20 animate-fade-in">
            <EmptyState 
               icon={ShieldCheck}
@@ -148,12 +148,12 @@ export default function AdminPage() {
               }
            />
         </div>
-      </main>
+      </div>
     )
   }
 
   return (
-    <main className="page-shell">
+    <div className="page-shell">
       <div className="page-wrap space-y-10 animate-fade-in">
         <header className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
@@ -479,7 +479,7 @@ export default function AdminPage() {
            </aside>
         </div>
       </div>
-    </main>
+    </div>
   )
 }
 

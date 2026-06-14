@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { ChevronRight } from 'lucide-react'
 
+import { PlanUpgradeBanner } from '@/components/sales/PlanUpgradeBanner'
 import { fmtArsDecimal } from '@/components/sales/format'
 import { useSalesList } from '@/hooks/useSales'
 import type { SaleDto } from '@/types/sales'
 
 type SalesHistoryTabProps = {
   localId: string
+  isPro?: boolean
 }
 
 function formatSoldAt(iso: string) {
@@ -36,7 +38,7 @@ function SaleDetail({ sale }: { sale: SaleDto }) {
   )
 }
 
-export function SalesHistoryTab({ localId }: SalesHistoryTabProps) {
+export function SalesHistoryTab({ localId, isPro = false }: SalesHistoryTabProps) {
   const [page, setPage] = useState(1)
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const listQ = useSalesList(localId, { page, limit: 15 })
@@ -55,6 +57,9 @@ export function SalesHistoryTab({ localId }: SalesHistoryTabProps) {
 
   return (
     <div className="space-y-3">
+      {!isPro ? (
+        <PlanUpgradeBanner message="En plan Free el historial muestra ventas de los últimos 7 días." />
+      ) : null}
       {listQ.data.items.map((sale) => {
         const open = expandedId === sale.id
         return (

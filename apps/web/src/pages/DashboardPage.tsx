@@ -65,7 +65,7 @@ export default function DashboardPage() {
 
   if (loadingLocals) {
     return (
-      <main className="page-shell">
+      <div className="page-shell">
         <div className="page-wrap space-y-8">
            <div className="flex flex-col gap-4">
               <div className="skeleton h-10 w-48" />
@@ -75,13 +75,13 @@ export default function DashboardPage() {
               {[1, 2, 3, 4].map(i => <div key={i} className="skeleton h-32 w-full" />)}
            </div>
         </div>
-      </main>
+      </div>
     )
   }
 
   if (locals && locals.length === 0) {
     return (
-      <main className="page-shell">
+      <div className="page-shell">
         <div className="page-wrap max-w-2xl py-12">
            <EmptyState 
               icon={Store}
@@ -94,12 +94,12 @@ export default function DashboardPage() {
               }
            />
         </div>
-      </main>
+      </div>
     )
   }
 
   return (
-    <main className="page-shell">
+    <div className="page-shell">
       <div className="page-wrap space-y-10">
         {/* Header Section */}
         <header className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
@@ -304,7 +304,7 @@ export default function DashboardPage() {
           </aside>
         </div>
       </div>
-    </main>
+    </div>
   )
 }
 
