@@ -7,6 +7,7 @@
 | Documento | Audiencia | Contenido |
 |-----------|-----------|-----------|
 | [PRECIOSYA.md](./PRECIOSYA.md) | Presentación / stakeholders | Qué es, problema, solución, módulos, planes |
+| [ROADMAP_TESIS.md](./ROADMAP_TESIS.md) | Tesis / defensa | Alcance v1 congelado, v1.1, v2 propuesto, demo sugerida |
 | [GUIA_USUARIO.md](./GUIA_USUARIO.md) | Comerciantes | Flujos: productos, rubros, IPC, USD, exportar |
 | [INDICES_Y_PRECIOS.md](./INDICES_Y_PRECIOS.md) | Producto + dev | Modelo IPC vs USD, rubros, aplicación masiva |
 | [ARQUITECTURA.md](./ARQUITECTURA.md) | Desarrollo | Monorepo, API, DB, deploy |

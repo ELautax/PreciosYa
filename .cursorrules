@@ -858,6 +858,7 @@ Todas las tareas TASK-001 … TASK-044 están implementadas en el monorepo (mayo
 | TASK-110 | `last_ipc/usd_applied_period` + banners pendiente/aplicado | Hecho → `docs/GUIA_USUARIO.md` |
 | TASK-111 | Documentación base en `docs/` (README, PRECIOSYA, guías) | Hecho → mantener con regla 2.1 |
 | TASK-112 | Gestor de ventas v1 (sales/sale_lines, API, UI /sales) | Hecho |
+| TASK-113 | Docs ROADMAP_TESIS + pulido v1.1 (dashboard → ventas) | Hecho |
 
 ---
 

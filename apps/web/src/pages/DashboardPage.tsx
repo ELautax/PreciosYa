@@ -13,6 +13,7 @@ import {
   Activity,
   CheckCircle2,
   DollarSign,
+  Receipt,
 } from 'lucide-react'
 
 import type { ApiSuccess } from 'shared'
@@ -187,6 +188,13 @@ export default function DashboardPage() {
                <div className="h-[1px] flex-1 bg-border" />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
+              <QuickActionCard 
+                title="Registrar venta"
+                desc="Carga rápida del día"
+                icon={Receipt}
+                to="/sales?tab=register"
+                color="primary"
+              />
               <QuickActionCard 
                 title="Nuevo Producto"
                 desc="Carga manual de artículos"

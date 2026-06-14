@@ -76,6 +76,18 @@ Registro rápido de ventas (escáner o búsqueda + cantidades en lote). **No es 
 
 Cada línea guarda **snapshot** de costo y precio al momento de la venta (rentabilidad histórica aunque suba el IPC después).
 
+Detalle de alcance v1 vs propuesta v2 para la tesis: [ROADMAP_TESIS.md](./ROADMAP_TESIS.md).
+
+---
+
+## Alcance v1 vs v1.1 vs v2
+
+| Versión | Qué es | Estado |
+|---------|--------|--------|
+| **v1** | Producto entregable: catálogo, IPC/USD, export, gestor de ventas (sin POS). | **Cerrado** — demo en producción. |
+| **v1.1** | Pulido UX/docs sin ampliar contrato (sidebar, badges, acción rápida ventas). | En curso / menor. |
+| **v2** | Trabajo futuro para tesis: anular ventas, insights margen, export cierre, etc. | Documentado, no obligatorio implementar. |
+
 ---
 
 ## Stack tecnológico
@@ -103,19 +115,11 @@ Mercado Pago / suscripciones automáticas: en standby.
 
 ---
 
-## Roadmap sugerido (próximos 2 meses)
+## Roadmap
 
-Prioridad para presentación:
-
-1. **Deploy API al día** (migraciones BCRA + `last_*_applied_period`).
-2. Onboarding guiado (primer local → activar rubros → primer producto).
-3. PDF export y/o WhatsApp share nativo.
-4. Gráfico IPC/USD en dashboard (ya hay Chart.js).
-5. ~~**Panel de ventas**~~ → **Hecho (v1):** módulo Ventas en app.
-6. Semilla de catálogo de barras (más autofill).
-7. Página de ayuda in-app enlazando [GUIA_USUARIO.md](./GUIA_USUARIO.md).
-8. Multi-usuario por local (post-MVP).
-9. Suscripción Mercado Pago.
+- **v1 (entregable):** ver módulos arriba + [ROADMAP_TESIS.md](./ROADMAP_TESIS.md).
+- **v2 (propuesta tesis):** anular ventas, duplicar venta, alertas margen real, “qué subir de precio”, export cierre del día, modo escáner full-screen — ver tabla completa en ROADMAP_TESIS.
+- **Backlog general (post-tesis):** onboarding guiado, PDF export, Mercado Pago, multi-usuario por local, catálogo barras ampliado, ayuda in-app.
 
 ---
 

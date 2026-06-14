@@ -23,7 +23,7 @@ npx vercel alias set web-xxxxx-elautaxs-projects.vercel.app preciosya.vercel.app
 - APK: sección **`#descargar`** con botón directo a **`https://preciosya.vercel.app/preciosya.apk`** (URL viene de `site-config.js` → `PRECIOSYA_APP_APK`); no se instala PWA desde la landing
 - Hero con shader WebGL (fallback CSS si no hay WebGL o `prefers-reduced-motion`); animaciones GSAP/ScrollTrigger + Lenis via CDN
 - Secciones de conversión: barra de confianza (INDEC/BCRA), testimonios, comparativa, objeciones, CTA sticky en mobile; fondo unificado sin cortes de color entre secciones
-- **Funcionalidades:** grid **4×2** (8 cards, hover Kombai); incluye **Panel de ventas** (próximamente)
+- **Funcionalidades:** grid **4×2** (8 cards, hover Kombai); incluye **Gestor de ventas** (registro + rentabilidad)
 - Plan **Agency** en `#precios`: precio a medida (sin tarifa fija); CTA `mailto:hola@preciosya.app` con asunto/cuerpo prefilled — no redirige al login
 - Cards de planes en **grid de 3 columnas** (desktop) con textos acortados para evitar saltos de línea raros; sin animación de mazo
 - Deploy: `cd apps/landing && npx vercel deploy --prod --yes`
