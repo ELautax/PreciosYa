@@ -15,7 +15,6 @@ import { useSelectedLocal } from '@/hooks/useSelectedLocal'
 import { useProducts } from '@/hooks/useProducts'
 import {
   useProCheckout,
-  useSubscriptionStatus,
   useSubscriptionSync,
 } from '@/hooks/useSubscription'
 import type { AppUser } from '@/types/appUser'
@@ -39,7 +38,6 @@ export default function SettingsPage() {
   const api = useApiClient()
   const [user, setUser] = useState<AppUser | null>(null)
   const [meError, setMeError] = useState(false)
-  const subscriptionQ = useSubscriptionStatus()
   const checkoutM = useProCheckout()
   const syncM = useSubscriptionSync()
   const { data: locals } = useLocals()
@@ -356,9 +354,7 @@ export default function SettingsPage() {
         open={planModalOpen}
         currentPlan={currentPlan}
         onClose={() => setPlanModalOpen(false)}
-        onSubscribePro={() => void handleSubscribePro()}
-        subscribeProLoading={checkoutM.isPending}
-        mpConfigured={subscriptionQ.data?.mpConfigured ?? true}
+        onCheckoutError={(message) => setCheckoutMessage(message)}
       />
     </div>
   )

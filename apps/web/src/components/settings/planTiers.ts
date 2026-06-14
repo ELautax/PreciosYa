@@ -12,6 +12,7 @@ export type PlanTier = {
   cta: {
     label: string
     href: string
+    action?: 'mp_checkout' | 'mailto' | 'external'
     external?: boolean
     variant: 'primary' | 'secondary' | 'dark'
   }
@@ -66,6 +67,7 @@ export const PLANS: PlanTier[] = [
     cta: {
       label: 'Suscribirme a Pro',
       href: PRO_CHECKOUT_PATH,
+      action: 'mp_checkout',
       variant: 'primary',
     },
   },
@@ -87,6 +89,7 @@ export const PLANS: PlanTier[] = [
     cta: {
       label: 'Contactar ventas',
       href: AGENCY_MAIL,
+      action: 'mailto',
       variant: 'dark',
     },
   },

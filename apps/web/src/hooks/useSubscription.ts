@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
+import { useAuth } from '@/contexts/AuthContext'
 import { useApiClient } from '@/hooks/useApiClient'
 
 export type SubscriptionStatus = {
@@ -25,8 +26,10 @@ type CheckoutResponse = {
 
 export function useSubscriptionStatus() {
   const api = useApiClient()
+  const { session } = useAuth()
   return useQuery({
     queryKey: ['subscription', 'status'],
+    enabled: Boolean(session?.access_token),
     queryFn: async () => {
       const res = await api.get<{ success: true; data: SubscriptionStatus }>(
         '/api/subscriptions/status',

@@ -18,7 +18,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (!loading && session) {
       if (upgradePro) {
-        void navigate('/settings?tab=plan&planes=1', { replace: true })
+        void navigate('/settings?tab=plan&planes=1&checkout=start', { replace: true })
         return
       }
       if (!fromLanding) {
@@ -30,7 +30,11 @@ export default function LoginPage() {
   async function handleGoogle(): Promise<void> {
     setError(null)
     try {
-      await signInWithGoogle()
+      await signInWithGoogle({
+        redirectPath: upgradePro
+          ? '/settings?tab=plan&planes=1&checkout=start'
+          : '/dashboard',
+      })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se pudo iniciar sesión')
     }
@@ -100,10 +104,14 @@ export default function LoginPage() {
         </div>
 
         <h1 className="heading-xl text-balance">
-          Dejá la libreta: actualizá precios con IPC y cuidá tu margen.
+          {upgradePro
+            ? 'Suscribite a Pro con Mercado Pago'
+            : 'Dejá la libreta: actualizá precios con IPC y cuidá tu margen.'}
         </h1>
         <p className="mt-4 text-base text-text-muted text-balance leading-relaxed">
-          Iniciá sesión para automatizar tus precios con los índices oficiales del INDEC.
+          {upgradePro
+            ? 'Iniciá sesión para completar el pago seguro de $4.500/mes con tarjeta.'
+            : 'Iniciá sesión para automatizar tus precios con los índices oficiales del INDEC.'}
         </p>
 
         <div className="surface-card mt-10 w-full p-6 text-left">

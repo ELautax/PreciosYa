@@ -1,7 +1,6 @@
 import { Check, CreditCard, Loader2, Mail } from 'lucide-react'
 
 import type { PlanId } from '@/components/settings/planTiers'
-import { PRO_CHECKOUT_PATH } from '@/components/settings/planTiers'
 
 export type PlanTierView = {
   id: PlanId
@@ -15,6 +14,7 @@ export type PlanTierView = {
   cta: {
     label: string
     href: string
+    action?: 'mp_checkout' | 'mailto' | 'external'
     external?: boolean
     variant: 'primary' | 'secondary' | 'dark'
   }
@@ -32,6 +32,7 @@ type PlanPricingCardProps = {
   onSubscribePro?: () => void
   subscribeProLoading?: boolean
   mpConfigured?: boolean
+  mpLoading?: boolean
 }
 
 export function PlanPricingCard({
@@ -39,23 +40,24 @@ export function PlanPricingCard({
   currentPlan,
   onSubscribePro,
   subscribeProLoading = false,
-  mpConfigured = true,
+  mpConfigured = false,
+  mpLoading = false,
 }: PlanPricingCardProps) {
   const isCurrent = plan.id === currentPlan
   const hideCta = plan.id === 'FREE' && !isCurrent
-  const isProCheckout = plan.id === 'PRO' && plan.cta.href === PRO_CHECKOUT_PATH
-  const isMailto = plan.cta.href.startsWith('mailto:')
+  const isProMpCheckout = plan.id === 'PRO' && plan.cta.action === 'mp_checkout'
+  const isMailto = plan.cta.action === 'mailto' || plan.cta.href.startsWith('mailto:')
 
   function renderCtaContent() {
-    if (subscribeProLoading) {
+    if (subscribeProLoading || (isProMpCheckout && mpLoading)) {
       return (
         <>
           <Loader2 size={16} className="animate-spin" aria-hidden />
-          Redirigiendo…
+          {subscribeProLoading ? 'Redirigiendo…' : 'Cargando…'}
         </>
       )
     }
-    if (isProCheckout) {
+    if (isProMpCheckout) {
       return (
         <>
           <CreditCard size={16} strokeWidth={2.5} aria-hidden />
@@ -73,6 +75,9 @@ export function PlanPricingCard({
     }
     return plan.cta.label
   }
+
+  const proButtonDisabled =
+    isProMpCheckout && (subscribeProLoading || mpLoading || !mpConfigured || !onSubscribePro)
 
   return (
     <article
@@ -123,11 +128,11 @@ export function PlanPricingCard({
           </button>
         ) : hideCta ? (
           <div className="min-h-[48px]" aria-hidden />
-        ) : isProCheckout && onSubscribePro ? (
+        ) : isProMpCheckout ? (
           <button
             type="button"
             onClick={onSubscribePro}
-            disabled={subscribeProLoading || !mpConfigured}
+            disabled={proButtonDisabled}
             className={`${ctaClass[plan.cta.variant]} w-full text-xs font-black uppercase tracking-widest disabled:opacity-60`}
           >
             {renderCtaContent()}
@@ -142,9 +147,9 @@ export function PlanPricingCard({
             {renderCtaContent()}
           </a>
         )}
-        {!mpConfigured && isProCheckout && !isCurrent ? (
+        {isProMpCheckout && !isCurrent && !mpLoading && !mpConfigured ? (
           <p className="mt-2 text-[10px] font-semibold text-amber-700">
-            Pagos en configuración. Escribinos a hola@preciosya.app mientras tanto.
+            Pagos en configuración en el servidor. Agregá las variables MP en Railway y redeploy.
           </p>
         ) : null}
         <p

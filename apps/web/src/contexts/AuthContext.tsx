@@ -17,7 +17,7 @@ type AuthContextValue = {
   session: Session | null
   loading: boolean
   supabaseConfigured: boolean
-  signInWithGoogle: () => Promise<void>
+  signInWithGoogle: (options?: { redirectPath?: string }) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -66,12 +66,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }).catch(() => {})
   }, [session])
 
-  const signInWithGoogle = useCallback(async () => {
+  const signInWithGoogle = useCallback(async (options?: { redirectPath?: string }) => {
     if (!supabase) throw new Error('Supabase no está configurado')
+    const path = options?.redirectPath ?? '/dashboard'
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/dashboard`,
+        redirectTo: `${window.location.origin}${path.startsWith('/') ? path : `/${path}`}`,
       },
     })
     if (error) throw error
