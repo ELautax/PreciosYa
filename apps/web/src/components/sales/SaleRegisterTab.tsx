@@ -83,7 +83,7 @@ export function SaleRegisterTab({ localId }: SaleRegisterTabProps) {
   }
 
   return (
-    <div className="space-y-6 pb-24 sm:pb-0">
+    <div className="space-y-6 pb-36 sm:pb-0">
       <div className="flex flex-col gap-3 sm:flex-row">
         <button type="button" onClick={() => setScannerOpen(true)} className="btn-primary flex-1">
           <Barcode size={18} strokeWidth={2.5} />
@@ -141,7 +141,7 @@ export function SaleRegisterTab({ localId }: SaleRegisterTabProps) {
         />
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-surface p-4 shadow-warm-lg pb-safe sm:static sm:z-auto sm:border-none sm:bg-transparent sm:p-0 sm:shadow-none sm:pb-0">
+      <div className="fixed bottom-16 left-0 right-0 z-40 border-t border-border bg-surface/95 p-4 shadow-warm-lg backdrop-blur-md pb-safe sm:static sm:z-auto sm:border-none sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none sm:pb-0">
         <button
           type="button"
           disabled={draft.length === 0 || createMut.isPending}

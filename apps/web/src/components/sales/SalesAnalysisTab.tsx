@@ -27,31 +27,54 @@ function AnalysisTable({
   headers: string[]
   rows: (string | number)[][]
 }) {
-  return (
-    <div className="surface-card overflow-hidden">
-      <div className="border-b border-border px-4 py-3">
+  if (rows.length === 0) {
+    return (
+      <div className="rounded-2xl border border-border bg-surface-soft/30 p-4">
         <h3 className="text-sm font-black text-text-main">{title}</h3>
+        <p className="mt-4 py-4 text-center text-xs font-semibold text-text-subtle">
+          Sin datos en este período
+        </p>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs">
-          <thead>
-            <tr className="border-b border-border bg-surface-soft">
-              {headers.map((h) => (
-                <th key={h} className="px-4 py-3 font-black uppercase tracking-widest text-text-subtle">
-                  {h}
-                </th>
+    )
+  }
+
+  return (
+    <div className="min-w-0 space-y-3">
+      <h3 className="text-sm font-black text-text-main">{title}</h3>
+      {/* Mobile: cards */}
+      <div className="space-y-2 md:hidden">
+        {rows.map((row, idx) => (
+          <article
+            key={idx}
+            className="rounded-2xl border border-border bg-surface-soft/40 p-4"
+          >
+            <p className="text-sm font-bold text-text-main">{row[0]}</p>
+            <dl className="mt-2 grid gap-1">
+              {headers.slice(1).map((header, ci) => (
+                <div key={header} className="flex items-center justify-between gap-2 text-xs">
+                  <dt className="font-black uppercase tracking-widest text-text-subtle">{header}</dt>
+                  <dd className="font-mono font-bold text-text-muted">{row[ci + 1]}</dd>
+                </div>
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
-              <tr>
-                <td colSpan={headers.length} className="px-4 py-6 text-center text-text-subtle">
-                  Sin datos en este período
-                </td>
+            </dl>
+          </article>
+        ))}
+      </div>
+      {/* Desktop: table */}
+      <div className="surface-card hidden overflow-hidden md:block">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead>
+              <tr className="border-b border-border bg-surface-soft">
+                {headers.map((h) => (
+                  <th key={h} className="px-4 py-3 font-black uppercase tracking-widest text-text-subtle">
+                    {h}
+                  </th>
+                ))}
               </tr>
-            ) : (
-              rows.map((row, idx) => (
+            </thead>
+            <tbody>
+              {rows.map((row, idx) => (
                 <tr key={idx} className="border-b border-border/60 last:border-0">
                   {row.map((cell, ci) => (
                     <td key={ci} className="px-4 py-3 font-semibold text-text-muted">
@@ -59,10 +82,10 @@ function AnalysisTable({
                     </td>
                   ))}
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

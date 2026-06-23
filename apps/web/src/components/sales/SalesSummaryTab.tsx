@@ -42,7 +42,7 @@ export function SalesSummaryTab({
   const profitPoints = dashQ.data?.profitTrend.map((p) => ({ date: p.date, revenue: p.profit })) ?? []
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <SalesPeriodFilter value={period} onChange={onPeriodChange} isPro={isPro} />
 
       {period === 'custom' ? (
@@ -64,7 +64,7 @@ export function SalesSummaryTab({
         </div>
       ) : dashQ.isLoading ? (
         <div className="space-y-4">
-          <div className="grid gap-3 grid-cols-2 lg:grid-cols-5">
+          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="skeleton h-24 rounded-2xl" />
             ))}

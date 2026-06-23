@@ -101,7 +101,7 @@ export default function SalesPage() {
 
   return (
     <div className="page-shell">
-      <div className="page-wrap max-w-5xl space-y-4 sm:space-y-8 animate-fade-in">
+      <div className="page-wrap max-w-5xl min-w-0 space-y-4 sm:space-y-8 animate-fade-in">
         <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary-700 dark:bg-primary-900/20">
@@ -119,40 +119,41 @@ export default function SalesPage() {
         </header>
 
         {selectedLocal ? (
-          <section className="grid gap-3 lg:gap-6 lg:grid-cols-4">
-            <aside className="lg:col-span-1">
-              <div className="relative group lg:block">
-                <nav className="flex flex-row gap-1 overflow-x-auto rounded-2xl border border-border bg-surface-soft p-1.5 scrollbar-hide lg:flex-col snap-x snap-mandatory">
-                  {TABS.map((item) => {
-                    const locked = item.proOnly && !isPro
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => selectTab(item.id)}
-                        aria-label={locked ? `${item.label} (requiere Pro)` : item.label}
-                        className={`relative flex shrink-0 items-center gap-2 rounded-xl px-3 py-3 text-[10px] font-black uppercase tracking-widest transition-all snap-start lg:w-full min-h-[48px] ${
-                          tab === item.id
-                            ? 'bg-surface text-primary-600 shadow-sm ring-1 ring-border-strong/10'
-                            : 'text-text-subtle hover:text-text-main hover:bg-surface/50'
-                        }`}
-                      >
-                        <item.icon size={16} strokeWidth={tab === item.id ? 2.5 : 2} />
-                        <span className="whitespace-nowrap">{item.label}</span>
-                        {locked && (
-                          <Lock size={10} strokeWidth={2.5} className="ml-auto shrink-0 opacity-50" />
-                        )}
-                      </button>
-                    )
-                  })}
-                </nav>
-                {/* Visual fade for mobile scroll indication */}
-                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-surface-soft to-transparent pointer-events-none lg:hidden rounded-r-2xl" />
-              </div>
+          <section className="grid min-w-0 gap-3 lg:grid-cols-4 lg:gap-6">
+            <aside className="min-w-0 lg:col-span-1">
+              <nav
+                className="grid grid-cols-2 gap-1.5 rounded-2xl border border-border bg-surface-soft p-1.5 lg:flex lg:flex-col"
+                aria-label="Secciones de ventas"
+              >
+                {TABS.map((item) => {
+                  const locked = item.proOnly && !isPro
+                  const active = tab === item.id
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => selectTab(item.id)}
+                      aria-label={locked ? `${item.label} (requiere Pro)` : item.label}
+                      aria-current={active ? 'page' : undefined}
+                      className={`relative flex min-h-[48px] items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all sm:gap-2 sm:px-3 sm:py-3 lg:w-full lg:justify-start ${
+                        active
+                          ? 'bg-surface text-primary-600 shadow-sm ring-1 ring-border-strong/10'
+                          : 'text-text-subtle hover:bg-surface/50 hover:text-text-main'
+                      }`}
+                    >
+                      <item.icon size={16} strokeWidth={active ? 2.5 : 2} className="shrink-0" />
+                      <span className="truncate">{item.label}</span>
+                      {locked ? (
+                        <Lock size={10} strokeWidth={2.5} className="shrink-0 opacity-50 lg:ml-auto" />
+                      ) : null}
+                    </button>
+                  )
+                })}
+              </nav>
             </aside>
 
-            <div className="lg:col-span-3">
-              <div className="surface-card p-4 sm:p-6 md:p-8">
+            <div className="min-w-0 lg:col-span-3">
+              <div className="surface-card min-w-0 overflow-hidden p-4 sm:p-6 md:p-8">
                 {tab === 'summary' && localId ? (
                   <SalesSummaryTab
                     localId={localId}
