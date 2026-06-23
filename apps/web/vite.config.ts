@@ -26,7 +26,8 @@ export default defineConfig({
         theme_color: '#16A34A',
         background_color: '#F5F5F4',
         display: 'standalone',
-        display_override: ['window-controls-overlay', 'standalone'],
+        lang: 'es',
+        id: '/',
         start_url: '/',
         shortcuts: [
           {
@@ -63,6 +64,7 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/preciosya\.apk$/],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
