@@ -11,6 +11,7 @@ import {
 import { useBulkUpdate } from '@/hooks/useProducts'
 import { categoryIndexLabel } from '@/lib/categoryIndex'
 import { isOfflineQueued } from '@/lib/offline'
+import { CategoryAvatar } from '@/lib/categoryUi'
 
 type BulkUpdateModalProps = {
   localId: string
@@ -37,6 +38,12 @@ export function BulkUpdateModal({
   const [resultMsg, setResultMsg] = useState<{ text: string; type: 'success' | 'warning' } | null>(null)
 
   const categoriesQuery = useCategories(localId)
+  const categoryMap = useMemo(() => {
+    const map = new Map<string, CategoryDto>()
+    categoriesQuery.data?.forEach(c => map.set(c.id, c))
+    return map
+  }, [categoriesQuery.data])
+
   const ipcBreakdownQ = useIpcBreakdownForLocal(localId)
   const usdBreakdownQ = useUsdBreakdownForLocal(localId)
   const bulkMut = useBulkUpdate(localId)
@@ -229,10 +236,17 @@ export function BulkUpdateModal({
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-border/50">
-                          {ipcBreakdownQ.data?.breakdown.map((row) => (
-                            <tr key={`${row.categoryId ?? 'none'}-${row.requestedIndexType}`} className="hover:bg-primary-50/5 transition-colors">
-                              <td className="px-5 py-4 font-bold text-text-main truncate max-w-[140px]">{row.categoryName}</td>
-                              <td className="px-5 py-4">
+                          {ipcBreakdownQ.data?.breakdown.map((row) => {
+                            const category = categoryMap.get(row.categoryId ?? '')
+                            return (
+                              <tr key={`${row.categoryId ?? 'none'}-${row.requestedIndexType}`} className="hover:bg-primary-50/5 transition-colors">
+                                <td className="px-5 py-4 font-bold text-text-main truncate max-w-[140px]">
+                                  <div className="flex items-center gap-2">
+                                    <CategoryAvatar slug={category?.templateSlug ?? null} fallbackColor={category?.colorHex} size={14} />
+                                    <span className="truncate">{row.categoryName}</span>
+                                  </div>
+                                </td>
+                                <td className="px-5 py-4">
                                 <span className="inline-flex flex-col gap-0.5">
                                   <span className="inline-flex rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-tighter border border-accent-100 bg-accent-50 text-accent-700 dark:bg-accent-900/20 dark:border-accent-800/40">
                                     {categoryIndexLabel(row.appliedIndexType)}
@@ -246,7 +260,7 @@ export function BulkUpdateModal({
                               </td>
                               <td className="px-5 py-4 font-mono font-black text-accent-600 text-right">+{row.ipcPct.toFixed(2)}%</td>
                             </tr>
-                          ))}
+                          )})}
                         </tbody>
                       </table>
                     </div>
@@ -318,19 +332,24 @@ export function BulkUpdateModal({
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-border/50">
-                            {usdBreakdownQ.data?.breakdown.map((row) => (
-                              <tr key={row.categoryId} className="hover:bg-primary-50/5 transition-colors">
-                                <td className="px-5 py-4 font-bold text-text-main truncate max-w-[180px]">
-                                  {row.categoryName}
-                                </td>
-                                <td className="px-5 py-4 font-mono text-right text-text-muted">
+                            {usdBreakdownQ.data?.breakdown.map((row) => {
+                              const category = categoryMap.get(row.categoryId ?? '')
+                              return (
+                                <tr key={row.categoryId} className="hover:bg-primary-50/5 transition-colors">
+                                  <td className="px-5 py-4 font-bold text-text-main truncate max-w-[180px]">
+                                    <div className="flex items-center gap-2">
+                                      <CategoryAvatar slug={category?.templateSlug ?? null} fallbackColor={category?.colorHex} size={14} />
+                                      <span className="truncate">{row.categoryName}</span>
+                                    </div>
+                                  </td>
+                                  <td className="px-5 py-4 font-mono text-right text-text-muted">
                                   {row.productCount}
                                 </td>
-                                <td className="px-5 py-4 font-mono font-black text-primary-700 text-right">
-                                  {usdPct !== null ? `${usdPct >= 0 ? '+' : ''}${usdPct.toFixed(2)}%` : '—'}
-                                </td>
-                              </tr>
-                            ))}
+                                  <td className="px-5 py-4 font-mono font-black text-primary-700 text-right">
+                                    {usdPct !== null ? `${usdPct >= 0 ? '+' : ''}${usdPct.toFixed(2)}%` : '—'}
+                                  </td>
+                                </tr>
+                              )})}
                           </tbody>
                         </table>
                       </div>

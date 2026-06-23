@@ -120,23 +120,27 @@ export default function SalesPage() {
         {selectedLocal ? (
           <section className="grid gap-6 lg:grid-cols-4">
             <aside className="lg:col-span-1">
-              <nav className="flex flex-row gap-1 overflow-x-auto rounded-2xl border border-border bg-surface-soft p-1 scrollbar-hide lg:flex-col">
-                {TABS.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => selectTab(item.id)}
-                    className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest transition-all lg:w-full ${
-                      tab === item.id
-                        ? 'bg-surface text-primary-600 shadow-sm'
-                        : 'text-text-subtle hover:text-text-main'
-                    }`}
-                  >
-                    <item.icon size={16} strokeWidth={tab === item.id ? 2.5 : 2} />
-                    {item.label}
-                  </button>
-                ))}
-              </nav>
+              <div className="relative group lg:block">
+                <nav className="flex flex-row gap-1 overflow-x-auto rounded-2xl border border-border bg-surface-soft p-1.5 scrollbar-hide lg:flex-col snap-x snap-mandatory">
+                  {TABS.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => selectTab(item.id)}
+                      className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest transition-all snap-start lg:w-full min-h-[48px] ${
+                        tab === item.id
+                          ? 'bg-surface text-primary-600 shadow-sm ring-1 ring-border-strong/10'
+                          : 'text-text-subtle hover:text-text-main hover:bg-surface/50'
+                      }`}
+                    >
+                      <item.icon size={16} strokeWidth={tab === item.id ? 2.5 : 2} />
+                      <span className="whitespace-nowrap">{item.label}</span>
+                    </button>
+                  ))}
+                </nav>
+                {/* Visual fade for mobile scroll indication */}
+                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-surface-soft to-transparent pointer-events-none lg:hidden rounded-r-2xl" />
+              </div>
             </aside>
 
             <div className="lg:col-span-3">

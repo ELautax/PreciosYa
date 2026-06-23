@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Tags, ChevronLeft, Store, Info } from 'lucide-react'
+import { ChevronLeft, Store, Info, Tags } from 'lucide-react'
 
 import { LocalSelector } from '@/components/locals/LocalSelector'
 import { useCategories, usePatchCategory } from '@/hooks/useCategories'
@@ -8,6 +8,7 @@ import { useSelectedLocal } from '@/hooks/useSelectedLocal'
 import type { CategoryDto } from '@/types/category'
 import type { LocalDto } from '@/types/local'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { CategoryAvatar } from '@/lib/categoryUi'
 
 function indexLabel(preferredIndex: string): string {
   if (preferredIndex.startsWith('BCRA_')) return 'USD BCRA'
@@ -39,12 +40,12 @@ function CategoryToggleRow({
       }`}
     >
       <div className="flex min-w-0 items-center gap-4">
-        <div
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl shadow-inner"
-          style={{ backgroundColor: `${category.colorHex}15`, color: category.colorHex }}
-        >
-          <Tags size={24} strokeWidth={2.5} />
-        </div>
+        <CategoryAvatar 
+          slug={category.templateSlug} 
+          fallbackColor={category.colorHex} 
+          size={24} 
+          className="rounded-2xl"
+        />
         <div className="min-w-0">
           <h3 className="truncate text-base font-extrabold uppercase tracking-tighter text-text-main">
             {category.name}

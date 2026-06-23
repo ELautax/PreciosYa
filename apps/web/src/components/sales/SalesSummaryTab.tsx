@@ -98,7 +98,7 @@ export function SalesSummaryTab({
           ) : null}
 
           {dashQ.data.categoryBreakdown.length > 0 ? (
-            <SalesByCategoryChart items={dashQ.data.categoryBreakdown} />
+            <SalesByCategoryChart localId={localId} items={dashQ.data.categoryBreakdown} />
           ) : null}
         </>
       )}

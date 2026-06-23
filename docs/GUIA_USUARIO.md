@@ -45,8 +45,10 @@
 ---
 
 ## Rubros: IPC vs USD
+ 
+ Cada rubro tiene ahora su propia **identidad visual** (icono y color) según la clasificación COICOP oficial, facilitando su identificación en el catálogo y reportes.
 
-| Configuración | Qué significa | Ejemplo de productos |
+ | Configuración | Qué significa | Ejemplo de productos |
 |---------------|---------------|----------------------|
 | Rubro activo, sin USD | Ajuste por IPC de esa división INDEC | Pan, limpieza local |
 | Rubro activo + Indexar USD | Ajuste por variación diaria USD BCRA | Celulares, insumos importados |

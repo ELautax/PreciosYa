@@ -2,14 +2,17 @@ import { Edit3, Trash2, Tag, Package2, BadgeDollarSign } from 'lucide-react'
 import type { ProductDto } from '@/types/product'
 import { categoryIndexBadgeClass } from '@/lib/categoryIndex'
 import { MarginBadge } from './MarginBadge'
+import { CategoryAvatar } from '@/lib/categoryUi'
+import type { CategoryDto } from '@/types/category'
 
 type ProductCardProps = {
   product: ProductDto
+  category?: CategoryDto
   onEdit: (p: ProductDto) => void
   onDelete: (p: ProductDto) => void
 }
 
-export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
+export function ProductCard({ product, category, onEdit, onDelete }: ProductCardProps) {
   return (
     <article className="surface-card group relative flex flex-col h-full overflow-hidden p-5 sm:p-6 animate-fade-in transition-all duration-300 hover:border-primary-600/30">
       {/* Visual Accent */}
@@ -31,13 +34,20 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
                    <span className="font-mono">{product.barcode}</span>
                 </div>
              )}
-             {product.categoryName && (
-                <span
-                  className={`inline-flex rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-tighter ${categoryIndexBadgeClass(product.categoryPreferredIndex)}`}
-                >
-                  {product.categoryName}
-                </span>
-             )}
+              {product.categoryName && (
+                 <div className="flex items-center gap-1.5">
+                   <CategoryAvatar 
+                     slug={category?.templateSlug ?? null} 
+                     fallbackColor={category?.colorHex} 
+                     size={10} 
+                   />
+                   <span
+                     className={`inline-flex rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-tighter ${categoryIndexBadgeClass(product.categoryPreferredIndex)}`}
+                   >
+                     {product.categoryName}
+                   </span>
+                 </div>
+              )}
           </div>
         </div>
         <MarginBadge
