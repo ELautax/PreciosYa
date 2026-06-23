@@ -26,10 +26,10 @@ export function SalesPeriodFilter({ value, onChange, isPro }: SalesPeriodFilterP
           key={p}
           type="button"
           onClick={() => onChange(p)}
-          className={`shrink-0 rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
+          className={`shrink-0 rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all min-h-[40px] active:scale-95 ${
             value === p
-              ? 'bg-surface text-primary-600 shadow-sm'
-              : 'text-text-subtle hover:text-text-main'
+              ? 'bg-surface text-primary-600 shadow-sm ring-1 ring-border/50'
+              : 'text-text-subtle hover:text-text-main hover:bg-surface/60'
           }`}
         >
           {LABELS[p]}

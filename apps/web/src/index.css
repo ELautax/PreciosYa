@@ -189,7 +189,7 @@ html.dark,
 
 @layer components {
   .page-shell {
-    @apply flex-1 animate-fade-in px-4 py-8 md:px-8;
+    @apply flex-1 animate-fade-in px-4 py-4 md:py-8 md:px-8;
   }
 
   .page-wrap {

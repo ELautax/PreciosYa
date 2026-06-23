@@ -5,6 +5,7 @@ import {
   ClipboardList,
   History,
   LineChart,
+  Lock,
   Receipt,
   Store,
 } from 'lucide-react'
@@ -23,11 +24,11 @@ import { useMe } from '@/hooks/useMe'
 
 type TabId = 'summary' | 'register' | 'history' | 'analysis'
 
-const TABS: { id: TabId; label: string; icon: typeof Receipt }[] = [
+const TABS: { id: TabId; label: string; icon: typeof Receipt; proOnly?: boolean }[] = [
   { id: 'summary', label: 'Resumen', icon: BarChart3 },
   { id: 'register', label: 'Registrar', icon: Receipt },
   { id: 'history', label: 'Historial', icon: History },
-  { id: 'analysis', label: 'Análisis', icon: LineChart },
+  { id: 'analysis', label: 'Análisis', icon: LineChart, proOnly: true },
 ]
 
 export default function SalesPage() {
@@ -100,14 +101,14 @@ export default function SalesPage() {
 
   return (
     <div className="page-shell">
-      <div className="page-wrap max-w-5xl space-y-8 animate-fade-in">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="page-wrap max-w-5xl space-y-4 sm:space-y-8 animate-fade-in">
+        <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary-700 dark:bg-primary-900/20">
               <ClipboardList size={12} />
               Gestor de ventas
             </div>
-            <h1 className="heading-xl">Ventas</h1>
+            <h1 className="text-3xl font-black tracking-tight text-text-main sm:text-4xl">Ventas</h1>
             <p className="text-small mt-1">
               Registrá ventas rápido y mirá qué productos te dejan más ganancia.
             </p>
@@ -118,25 +119,32 @@ export default function SalesPage() {
         </header>
 
         {selectedLocal ? (
-          <section className="grid gap-6 lg:grid-cols-4">
+          <section className="grid gap-3 lg:gap-6 lg:grid-cols-4">
             <aside className="lg:col-span-1">
               <div className="relative group lg:block">
                 <nav className="flex flex-row gap-1 overflow-x-auto rounded-2xl border border-border bg-surface-soft p-1.5 scrollbar-hide lg:flex-col snap-x snap-mandatory">
-                  {TABS.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => selectTab(item.id)}
-                      className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest transition-all snap-start lg:w-full min-h-[48px] ${
-                        tab === item.id
-                          ? 'bg-surface text-primary-600 shadow-sm ring-1 ring-border-strong/10'
-                          : 'text-text-subtle hover:text-text-main hover:bg-surface/50'
-                      }`}
-                    >
-                      <item.icon size={16} strokeWidth={tab === item.id ? 2.5 : 2} />
-                      <span className="whitespace-nowrap">{item.label}</span>
-                    </button>
-                  ))}
+                  {TABS.map((item) => {
+                    const locked = item.proOnly && !isPro
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => selectTab(item.id)}
+                        aria-label={locked ? `${item.label} (requiere Pro)` : item.label}
+                        className={`relative flex shrink-0 items-center gap-2 rounded-xl px-3 py-3 text-[10px] font-black uppercase tracking-widest transition-all snap-start lg:w-full min-h-[48px] ${
+                          tab === item.id
+                            ? 'bg-surface text-primary-600 shadow-sm ring-1 ring-border-strong/10'
+                            : 'text-text-subtle hover:text-text-main hover:bg-surface/50'
+                        }`}
+                      >
+                        <item.icon size={16} strokeWidth={tab === item.id ? 2.5 : 2} />
+                        <span className="whitespace-nowrap">{item.label}</span>
+                        {locked && (
+                          <Lock size={10} strokeWidth={2.5} className="ml-auto shrink-0 opacity-50" />
+                        )}
+                      </button>
+                    )
+                  })}
                 </nav>
                 {/* Visual fade for mobile scroll indication */}
                 <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-surface-soft to-transparent pointer-events-none lg:hidden rounded-r-2xl" />
@@ -144,7 +152,7 @@ export default function SalesPage() {
             </aside>
 
             <div className="lg:col-span-3">
-              <div className="surface-card p-5 sm:p-8">
+              <div className="surface-card p-4 sm:p-6 md:p-8">
                 {tab === 'summary' && localId ? (
                   <SalesSummaryTab
                     localId={localId}
