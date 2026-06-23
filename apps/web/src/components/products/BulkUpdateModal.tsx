@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { X, Zap, TrendingUp, Info, AlertTriangle, CheckCircle2, DollarSign } from 'lucide-react'
 
 import { useCategories } from '@/hooks/useCategories'
@@ -12,6 +12,7 @@ import { useBulkUpdate } from '@/hooks/useProducts'
 import { categoryIndexLabel } from '@/lib/categoryIndex'
 import { isOfflineQueued } from '@/lib/offline'
 import { CategoryAvatar } from '@/lib/categoryUi'
+import type { CategoryDto } from '@/types/category'
 
 type BulkUpdateModalProps = {
   localId: string
