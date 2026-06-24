@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "app.preciosya.twa",
-        "sha256_cert_fingerprints": ["5F:5A:F7:A1:1F:90:40:E1:3B:32:EF:AB:D7:C7:F4:FF:E7:40:63:F5:E8:3F:29:C8:45:82:30:7C:DC:D3:C7:00"]
+        "sha256_cert_fingerprints": ["ED:2E:26:C3:6D:DF:BB:AA:34:F7:10:51:CB:E6:79:AD:17:51:65:43:FE:F3:11:F7:96:7E:68:B6:2A:80:79:94"]
       }
     }]

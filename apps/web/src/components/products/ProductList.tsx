@@ -2,14 +2,17 @@ import { Edit3, Trash2, Package2, DollarSign, Percent } from 'lucide-react'
 import type { ProductDto } from '@/types/product'
 import { ProductCard } from './ProductCard'
 import { MarginBadge } from './MarginBadge'
+import { CategoryAvatar } from '@/lib/categoryUi'
+import type { CategoryDto } from '@/types/category'
 
 type ProductListProps = {
   products: ProductDto[]
+  categoryMap?: Map<string, CategoryDto>
   onEdit: (p: ProductDto) => void
   onDelete: (p: ProductDto) => void
 }
 
-export function ProductList({ products, onEdit, onDelete }: ProductListProps) {
+export function ProductList({ products, categoryMap, onEdit, onDelete }: ProductListProps) {
   if (products.length === 0) {
     return null
   }
@@ -54,9 +57,18 @@ export function ProductList({ products, onEdit, onDelete }: ProductListProps) {
               {products.map((p) => (
                 <tr key={p.id} className="group hover:bg-primary-50/10 transition-colors">
                   <td className="px-6 py-5">
-                    <div>
-                      <p className="font-extrabold text-text-main group-hover:text-primary-600 transition-colors">{p.name}</p>
-                      {p.barcode && <p className="mt-1 font-mono text-[10px] font-bold text-text-subtle tracking-tighter opacity-70">{p.barcode}</p>}
+                    <div className="flex items-center gap-3">
+                      {p.categoryId && categoryMap?.has(p.categoryId) && (
+                        <CategoryAvatar 
+                          slug={categoryMap.get(p.categoryId)?.templateSlug ?? null} 
+                          fallbackColor={categoryMap.get(p.categoryId)?.colorHex} 
+                          size={16}
+                        />
+                      )}
+                      <div>
+                        <p className="font-extrabold text-text-main group-hover:text-primary-600 transition-colors">{p.name}</p>
+                        {p.barcode && <p className="mt-1 font-mono text-[10px] font-bold text-text-subtle tracking-tighter opacity-70">{p.barcode}</p>}
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-5">
@@ -108,7 +120,12 @@ export function ProductList({ products, onEdit, onDelete }: ProductListProps) {
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:hidden">
         {products.map((p) => (
           <li key={p.id} className="h-full">
-            <ProductCard product={p} onEdit={onEdit} onDelete={onDelete} />
+            <ProductCard 
+              product={p} 
+              category={p.categoryId ? categoryMap?.get(p.categoryId) : undefined} 
+              onEdit={onEdit} 
+              onDelete={onDelete} 
+            />
           </li>
         ))}
       </ul>

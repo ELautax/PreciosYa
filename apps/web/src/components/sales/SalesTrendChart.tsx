@@ -26,9 +26,9 @@ export function SalesTrendChart({ title, points }: SalesTrendChartProps) {
   })
 
   return (
-    <div className="surface-card p-4">
+    <div className="min-w-0 rounded-2xl border border-border bg-surface-soft/30 p-4">
       <h3 className="text-sm font-extrabold text-text-main">{title}</h3>
-      <div className="mt-3 h-56 sm:h-64">
+      <div className="relative mt-3 h-48 min-w-0 sm:h-64">
         <Line
           data={{
             labels,

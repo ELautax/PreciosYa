@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { 
   Plus, 
@@ -35,6 +35,7 @@ import {
   type CsvImportResult,
 } from '@/hooks/useProducts'
 import type { LocalDto } from '@/types/local'
+import type { CategoryDto } from '@/types/category'
 import type { ProductDto } from '@/types/product'
 import { EmptyState } from '@/components/feedback/EmptyState'
 
@@ -96,6 +97,12 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   const deleteMut = useDeleteProduct(localId)
   const importMut = useImportProductsCsv(localId)
   const selectedLocal = locals.find((l) => l.id === localId) ?? locals[0]
+  const categoriesQuery = useCategories(localId)
+  const categoryMap = useMemo(() => {
+    const map = new Map<string, CategoryDto>()
+    categoriesQuery.data?.forEach(c => map.set(c.id, c))
+    return map
+  }, [categoriesQuery.data])
 
   useEffect(() => {
     if (searchParams.get('new') === '1') {
@@ -233,19 +240,22 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
            </div>
 
            {/* Links Bar - Scrollable Chips */}
-           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
-              <Link to="/categories" className="btn-secondary h-10 px-4 gap-2 whitespace-nowrap rounded-full snap-start text-xs font-black uppercase tracking-widest shadow-sm">
-                <Tags size={16} />
-                Categorías
-              </Link>
-              <Link to="/history" className="btn-secondary h-10 px-4 gap-2 whitespace-nowrap rounded-full snap-start text-xs font-black uppercase tracking-widest shadow-sm">
-                <History size={16} />
-                Historial
-              </Link>
-              <Link to="/locals" className="btn-secondary h-10 px-4 gap-2 whitespace-nowrap rounded-full snap-start text-xs font-black uppercase tracking-widest shadow-sm">
-                <Store size={16} />
-                Locales
-              </Link>
+           <div className="relative group">
+             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+                <Link to="/categories" className="btn-secondary h-11 px-4 gap-2 whitespace-nowrap rounded-xl snap-start text-[10px] font-black uppercase tracking-widest shadow-sm border-border-strong/20 bg-surface">
+                  <Tags size={16} className="text-primary-600" />
+                  Categorías
+                </Link>
+                <Link to="/history" className="btn-secondary h-11 px-4 gap-2 whitespace-nowrap rounded-xl snap-start text-[10px] font-black uppercase tracking-widest shadow-sm border-border-strong/20 bg-surface">
+                  <History size={16} className="text-primary-600" />
+                  Historial
+                </Link>
+                <Link to="/locals" className="btn-secondary h-11 px-4 gap-2 whitespace-nowrap rounded-xl snap-start text-[10px] font-black uppercase tracking-widest shadow-sm border-border-strong/20 bg-surface">
+                  <Store size={16} className="text-primary-600" />
+                  Locales
+                </Link>
+             </div>
+             <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-canvas to-transparent pointer-events-none sm:hidden" />
            </div>
         </section>
 
@@ -332,8 +342,9 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                     {productsQuery.data.total} {productsQuery.data.total === 1 ? 'PRODUCTO ENCONTRADO' : 'PRODUCTOS ENCONTRADOS'}
                  </p>
               </div>
-              <ProductList
+               <ProductList
                 products={productsQuery.data.items}
+                categoryMap={categoryMap}
                 onEdit={(p) => {
                   setEditing(p)
                   setFormOpen(true)

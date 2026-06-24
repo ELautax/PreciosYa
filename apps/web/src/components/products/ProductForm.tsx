@@ -27,6 +27,7 @@ import { useCreateProduct, useUpdateProduct } from '@/hooks/useProducts'
 import { categoryIndexBadgeClass, categoryIndexLabel } from '@/lib/categoryIndex'
 import { appToast } from '@/lib/toast'
 import type { ProductDto } from '@/types/product'
+import { CategoryAvatar } from '@/lib/categoryUi'
 
 const schema = z.object({
   name: z.string().min(1, 'Nombre obligatorio'),
@@ -309,21 +310,23 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
                 </p>
               )}
               {selectedCategory ? (
-                <div className="flex items-start gap-2 rounded-xl border border-border bg-surface-soft/80 p-3">
-                   <Info size={16} className="shrink-0 text-primary-600 mt-0.5" />
-                   <p className="text-[10px] font-bold leading-relaxed text-text-muted">
-                    Este producto se actualiza con{' '}
-                    <span
-                      className={`inline-flex rounded-md border px-1.5 py-0.5 font-black uppercase tracking-tighter ${categoryIndexBadgeClass(selectedCategory.preferredIndex)}`}
-                    >
-                      {categoryIndexLabel(selectedCategory.preferredIndex)}
-                    </span>
-                    . Cambiá el índice en{' '}
-                    <Link to="/categories" className="text-primary-600 underline" onClick={onClose}>
-                      Rubros
-                    </Link>
-                    , no acá.
-                  </p>
+                <div className="flex items-start gap-3 rounded-xl border border-border bg-surface-soft/80 p-3">
+                   <CategoryAvatar slug={selectedCategory.templateSlug} fallbackColor={selectedCategory.colorHex} size={16} />
+                   <div className="flex-1">
+                     <p className="text-[10px] font-bold leading-relaxed text-text-muted">
+                      Este producto se actualiza con{' '}
+                      <span
+                        className={`inline-flex rounded-md border px-1.5 py-0.5 font-black uppercase tracking-tighter ${categoryIndexBadgeClass(selectedCategory.preferredIndex)}`}
+                      >
+                        {categoryIndexLabel(selectedCategory.preferredIndex)}
+                      </span>
+                      . Cambiá el índice en{' '}
+                      <Link to="/categories" className="text-primary-600 underline" onClick={onClose}>
+                        Rubros
+                      </Link>
+                      , no acá.
+                    </p>
+                   </div>
                 </div>
               ) : (
                 <p className="text-[10px] font-bold text-text-subtle leading-tight px-1">
