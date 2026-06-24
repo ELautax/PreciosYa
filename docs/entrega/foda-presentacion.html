@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PreciosYa — Análisis FODA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e8e4df;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      padding: 24px;
+    }
+
+    .slide {
+      width: 1280px;
+      height: 720px;
+      background: #f8f7f4;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 24px 64px rgba(28, 25, 23, 0.14);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px 36px;
+      background: #0f3d22;
+      border-bottom: 3px solid #16a34a;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      padding: 7px 12px 7px 9px;
+      border-radius: 11px;
+    }
+
+    .brand img { width: 28px; height: 28px; object-fit: contain; }
+
+    .brand-word {
+      font-size: 17px;
+      font-weight: 800;
+      color: #1c1917;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-word .ya { color: #d97706; }
+
+    .header-title {
+      text-align: center;
+      flex: 1;
+    }
+
+    .header-title .label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #bbf7d0;
+    }
+
+    .header-title h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      margin-top: 2px;
+      letter-spacing: -0.02em;
+    }
+
+    .header-tag {
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(0,0,0,0.2);
+      padding: 7px 11px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.12);
+      text-align: right;
+      line-height: 1.35;
+    }
+
+    .matrix-wrap {
+      flex: 1;
+      padding: 16px 28px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    .axis-labels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 0 4px;
+    }
+
+    .axis-labels span {
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #78716c;
+      text-align: center;
+    }
+
+    .matrix {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 12px;
+      min-height: 0;
+    }
+
+    .quad {
+      background: #fff;
+      border: 1px solid #e8e4df;
+      border-radius: 14px;
+      padding: 12px 14px 10px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      box-shadow: 0 4px 14px rgba(28, 25, 23, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quad::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+    }
+
+    .quad.f::before { background: #16a34a; }
+    .quad.d::before { background: #d97706; }
+    .quad.o::before { background: #0284c7; }
+    .quad.a::before { background: #dc2626; }
+
+    .quad-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    .quad-head h2 {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .quad.f h2 { color: #15803d; }
+    .quad.d h2 { color: #b45309; }
+    .quad.o h2 { color: #0369a1; }
+    .quad.a h2 { color: #b91c1c; }
+
+    .badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 8px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 6px;
+      border-radius: 5px;
+    }
+
+    .quad.f .badge { background: #dcfce7; color: #166534; }
+    .quad.d .badge { background: #fef3c7; color: #92400e; }
+    .quad.o .badge { background: #e0f2fe; color: #075985; }
+    .quad.a .badge { background: #fee2e2; color: #991b1b; }
+
+    .quad ul {
+      list-style: none;
+      padding-left: 4px;
+      overflow: hidden;
+    }
+
+    .quad li {
+      font-size: 10.5px;
+      line-height: 1.38;
+      color: #44403c;
+      font-weight: 500;
+      padding-left: 11px;
+      position: relative;
+      margin-bottom: 5px;
+    }
+
+    .quad li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+    }
+
+    .quad.f li::before { background: #16a34a; }
+    .quad.d li::before { background: #d97706; }
+    .quad.o li::before { background: #0284c7; }
+    .quad.a li::before { background: #dc2626; }
+
+    .quad li:last-child { margin-bottom: 0; }
+
+    .footer {
+      margin: 0 28px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #14532d;
+      color: #fff;
+      border-radius: 11px;
+      padding: 10px 14px;
+    }
+
+    .footer-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .footer-text {
+      font-size: 10.5px;
+      line-height: 1.42;
+      font-weight: 500;
+    }
+
+    .footer-text strong {
+      font-weight: 800;
+      color: #fbbf24;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide" id="slide">
+    <header class="header">
+      <div class="brand">
+        <img src="../../apps/landing/assets/preciosya-logo.png" alt="" width="28" height="28" />
+        <span class="brand-word">Precios<span class="ya">Ya</span></span>
+      </div>
+      <div class="header-title">
+        <div class="label">Diagnóstico estratégico</div>
+        <h1>Análisis FODA</h1>
+      </div>
+      <div class="header-tag">Kioscos y almacenes · GBA<br/>Junio 2026</div>
+    </header>
+
+    <div class="matrix-wrap">
+      <div class="axis-labels">
+        <span>◆ Interno — positivo / negativo</span>
+        <span>◆ Interno — positivo / negativo</span>
+      </div>
+
+      <div class="matrix">
+        <article class="quad f">
+          <div class="quad-head">
+            <h2>Fortalezas</h2>
+            <span class="badge">F</span>
+          </div>
+          <ul>
+            <li>Nicho hiperespecífico: margen + inflación en Argentina</li>
+            <li>IPC por rubro + USD BCRA integrados</li>
+            <li>Freemium y barrera de salida (catálogo + historial)</li>
+            <li>Infra cloud de bajo costo; MVP en producción</li>
+            <li>Validación en campo (n=4): WTP ~$5.500 &gt; Pro $4.500</li>
+          </ul>
+        </article>
+
+        <article class="quad d">
+          <div class="quad-head">
+            <h2>Debilidades</h2>
+            <span class="badge">D</span>
+          </div>
+          <ul>
+            <li>Marca nueva; sin marketing pago</li>
+            <li>Equipo de una sola persona</li>
+            <li>Dependencia de APIs (IPC, USD, cloud)</li>
+            <li>Offline limitado vs. expectativa del usuario</li>
+            <li>Muestra cualitativa reducida (conveniencia)</li>
+          </ul>
+        </article>
+
+        <article class="quad o">
+          <div class="quad-head">
+            <h2>Oportunidades</h2>
+            <span class="badge">O</span>
+          </div>
+          <ul>
+            <li>Inflación estructural sostiene la necesidad del producto</li>
+            <li>100% de la muestra ajusta rubros al dólar “a ojo”</li>
+            <li>Digitalización: WhatsApp, Mercado Pago, celular</li>
+            <li>Contenido educativo y SEO «cómo remarcar»</li>
+            <li>Alianzas con gremios (UKRA, CAME)</li>
+          </ul>
+        </article>
+
+        <article class="quad a">
+          <div class="quad-head">
+            <h2>Amenazas</h2>
+            <span class="badge">A</span>
+          </div>
+          <ul>
+            <li>Sustituto dominante: papel, Excel, calculadora</li>
+            <li>Resistencia cultural al cambio tecnológico</li>
+            <li>POS locales que agregan funciones</li>
+            <li>Nuevos entrantes con barrera técnica baja</li>
+            <li>Cambios en APIs o regulación de datos</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="axis-labels" style="margin-top: -4px;">
+        <span>◆ Externo — oportunidad</span>
+        <span>◆ Externo — amenaza</span>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-icon">→</div>
+      <p class="footer-text">
+        <strong>Estrategia:</strong> SO — índices oficiales + UX simple frente a digitalización;
+        WO — Freemium y contenido frente a marca débil;
+        ST — historial y catálogo vs. sustitutos manuales;
+        WT — no competir como POS ni facturación.
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

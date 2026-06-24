@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Blog — Guías de precios y márgenes | PreciosYa</title>
+  <meta name="description" content="Guías prácticas para kioscos y almacenes: calcular margen, aplicar IPC, listas para WhatsApp y más." />
+  <link rel="canonical" href="https://preciosya-landing.vercel.app/blog/" />
+  <link rel="icon" type="image/png" href="../assets/preciosya-logo.png" />
+  <meta name="theme-color" content="#f8f7f4" id="themeColorMeta" />
+  <script>
+    (function () {
+      var KEY = 'preciosya-theme';
+      var stored = localStorage.getItem(KEY);
+      var theme = (stored === 'light' || stored === 'dark')
+        ? stored
+        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      if (theme === 'dark') document.documentElement.classList.add('dark');
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <script src="../site-config.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/site.css" />
+  <link rel="stylesheet" href="../css/blog.css" />
+</head>
+<body>
+
+  <header class="header scrolled" id="header">
+    <div class="container header-inner">
+      <a href="../index.html" class="logo">
+        <img src="../assets/preciosya-logo.png" alt="PreciosYa" width="30" height="30" />
+        <span>Precios<span class="ya">Ya</span></span>
+      </a>
+      <nav class="nav-desktop">
+        <a href="../index.html#funcionalidades" class="nav-link">Funcionalidades</a>
+        <a href="../index.html#precios" class="nav-link">Precios</a>
+        <a href="./" class="nav-link active">Blog</a>
+        <a href="../index.html#faq" class="nav-link">FAQ</a>
+      </nav>
+      <div class="header-actions">
+        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Activar modo oscuro">
+          <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <a id="cta-header" href="#" class="btn btn-primary btn-sm" data-login-cta>Empezar gratis</a>
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span>
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="mobileMenu">
+      <a href="../index.html#funcionalidades" class="nav-link">Funcionalidades</a>
+      <a href="../index.html#precios" class="nav-link">Precios</a>
+      <a href="./" class="nav-link active">Blog</a>
+      <a href="../index.html#faq" class="nav-link">FAQ</a>
+      <a href="#" class="btn btn-primary btn-sm btn-block mobile-menu-cta" data-login-cta>Empezar gratis</a>
+    </nav>
+  </header>
+
+  <main class="page-main">
+    <div class="container blog-hero">
+      <nav class="breadcrumb" aria-label="Miga de pan">
+        <a href="../index.html">Inicio</a>
+        <span class="sep">/</span>
+        <span>Blog</span>
+      </nav>
+      <h1>Guías para kioscos y almacenes</h1>
+      <p class="lead">Consejos prácticos para calcular márgenes, entender la inflación y remarcar precios sin perder plata.</p>
+    </div>
+
+    <div class="container" style="padding-bottom: 4rem;">
+
+      <section class="blog-category">
+        <h2>Precios y márgenes</h2>
+        <div class="blog-grid">
+          <a href="./como-calcular-precio-margen-kiosco.html" class="blog-card">
+            <span class="blog-badge">Nuevo</span>
+            <h3>Cómo calcular el precio de venta con margen en un kiosco (sin Excel)</h3>
+            <p>La fórmula básica y tres pasos para no vender al costo sin darte cuenta.</p>
+          </a>
+          <div class="blog-card disabled">
+            <span class="blog-badge soon">Próximamente</span>
+            <h3>Cinco errores que hacen que vendas a pérdida sin darte cuenta</h3>
+            <p>Señales comunes en comercios chicos y cómo evitarlas.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="blog-category">
+        <h2>Inflación e índices</h2>
+        <div class="blog-grid">
+          <div class="blog-card disabled">
+            <span class="blog-badge soon">Próximamente</span>
+            <h3>Qué es el IPC del INDEC y por qué importa en tu almacén</h3>
+            <p>Explicación simple del índice oficial y cuándo conviene usarlo.</p>
+          </div>
+          <div class="blog-card disabled">
+            <span class="blog-badge soon">Próximamente</span>
+            <h3>IPC general vs IPC alimentos: qué conviene en cada rubro</h3>
+            <p>Cómo elegir el índice correcto según el tipo de producto.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="blog-category">
+        <h2>Herramientas prácticas</h2>
+        <div class="blog-grid">
+          <div class="blog-card disabled">
+            <span class="blog-badge soon">Próximamente</span>
+            <h3>Cómo armar tu lista de precios para WhatsApp en dos minutos</h3>
+            <p>Formato claro para mandar a tus clientes desde el celular.</p>
+          </div>
+          <div class="blog-card disabled">
+            <span class="blog-badge soon">Próximamente</span>
+            <h3>Cuándo conviene indexar rubros al dólar oficial (BCRA)</h3>
+            <p>Qué productos suelen seguir el dólar y cómo no hacerlo «a ojo».</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="blog-category">
+        <h2>Tu negocio digital</h2>
+        <div class="blog-grid">
+          <div class="blog-card disabled">
+            <span class="blog-badge soon">Próximamente</span>
+            <h3>Plan Free vs Pro: cuándo tiene sentido pagar por una herramienta de precios</h3>
+            <p>Señales de que tu catálogo ya superó el papel y la calculadora.</p>
+          </div>
+          <div class="blog-card disabled">
+            <span class="blog-badge soon">Próximamente</span>
+            <h3>Gestor de ventas sin POS: registrar ventas sin complicarte</h3>
+            <p>Registrar lo vendido sin caja ni facturación electrónica.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="../index.html" class="logo-footer">
+            <img src="../assets/preciosya-logo.png" alt="" width="24" height="24" />
+            <span>Precios<span class="ya">Ya</span></span>
+          </a>
+          <p style="color: var(--text-subtle); font-size: 0.875rem; max-width: 30ch;">Guías y herramientas para proteger el margen de tu comercio.</p>
+        </div>
+        <div>
+          <h4 class="footer-title">Producto</h4>
+          <ul class="footer-list">
+            <li><a href="../index.html">Inicio</a></li>
+            <li><a href="../index.html#precios">Planes</a></li>
+            <li><a href="#" data-login-cta>Probar gratis</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-title">Blog</h4>
+          <ul class="footer-list">
+            <li><a href="./">Todas las guías</a></li>
+            <li><a href="./como-calcular-precio-margen-kiosco.html">Calcular margen</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-title">Contacto</h4>
+          <ul class="footer-list">
+            <li><a href="mailto:hola@preciosya.app">hola@preciosya.app</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 PreciosYa · Hecho en Argentina</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/site.js"></script>
+</body>
+</html>

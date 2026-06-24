@@ -78,6 +78,8 @@ const schema = z
     MP_TEST_PAYER_EMAIL: z.preprocess(emptyToUndefined, z.string().email().optional()),
     /** Sandbox: username del comprador de prueba (login en checkout MP). */
     MP_TEST_PAYER_USERNAME: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    /** Plan de suscripción MP (sandbox): checkout por preapproval_plan_id. */
+    MP_PREAPPROVAL_PLAN_ID: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   })
   .superRefine((data, ctx) => {
     if (data.NODE_ENV !== 'production') return

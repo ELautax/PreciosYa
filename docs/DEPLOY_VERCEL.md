@@ -19,6 +19,7 @@ npx vercel alias set web-xxxxx-elautaxs-projects.vercel.app preciosya.vercel.app
 ## Landing (`preciosya-landing`)
 
 - URL: https://preciosya-landing.vercel.app
+- Blog / guías: https://preciosya-landing.vercel.app/blog/
 - CTAs → **`https://preciosya.vercel.app/login?from=landing`**
 - APK: sección **`#descargar`** con botón directo a **`https://preciosya.vercel.app/preciosya.apk`** (URL viene de `site-config.js` → `PRECIOSYA_APP_APK`); no se instala PWA desde la landing
 - Hero con shader WebGL (fallback CSS si no hay WebGL o `prefers-reduced-motion`); animaciones GSAP/ScrollTrigger + Lenis via CDN

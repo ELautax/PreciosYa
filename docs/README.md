@@ -7,7 +7,7 @@
 | Documento | Audiencia | Contenido |
 |-----------|-----------|-----------|
 | [PRECIOSYA.md](./PRECIOSYA.md) | Presentación / stakeholders | Qué es, problema, solución, módulos, planes |
-| [entrega/README.md](./entrega/README.md) | **Tesis — sección 2.1** | Manual, CU, CP, UML, RF Web/APK, DER, arquitectura, Gantt |
+| [entrega/README.md](./entrega/README.md) | **Tesis — sección 2.1** | Manual, CU, CP, UML, RF Web/APK, DER, arquitectura, Gantt, **modelo de negocios examen 2** |
 | [ROADMAP_TESIS.md](./ROADMAP_TESIS.md) | Defensa oral | Alcance v1, v2, demo sugerida |
 | [ROADMAP_TESIS.md](./ROADMAP_TESIS.md) | Tesis / defensa | Alcance v1 congelado, v1.1, v2 propuesto, demo sugerida |
 | [GUIA_USUARIO.md](./GUIA_USUARIO.md) | Comerciantes | Flujos: productos, rubros, IPC, USD, exportar |

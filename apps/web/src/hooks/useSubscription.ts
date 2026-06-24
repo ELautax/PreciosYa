@@ -24,7 +24,7 @@ type CheckoutResponse = {
   checkoutUrl: string
   status: string
   testMode?: boolean
-  sandboxHint?: 'sandbox_guest_checkout'
+  sandboxHint?: 'sandbox_guest_checkout' | 'sandbox_plan_checkout'
 }
 
 export function useSubscriptionStatus() {

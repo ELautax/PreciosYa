@@ -1,0 +1,246 @@
+/* Blog PreciosYa */
+
+.blog-hero {
+  padding: 3rem 0 2.5rem;
+}
+
+.blog-hero h1 {
+  font-size: clamp(1.85rem, 5vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 0.75rem;
+}
+
+.blog-hero .lead {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  max-width: 52ch;
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-subtle);
+  margin-bottom: 1.5rem;
+}
+
+.breadcrumb a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover { color: var(--primary); }
+
+.breadcrumb span.sep { opacity: 0.45; }
+
+.blog-category {
+  margin-bottom: 2.75rem;
+}
+
+.blog-category h2 {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--primary);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.blog-category h2::before {
+  content: '';
+  width: 1.25rem;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 620px) {
+  .blog-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.blog-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1.35rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  min-height: 7.5rem;
+}
+
+a.blog-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.blog-card.disabled {
+  opacity: 0.62;
+  cursor: default;
+  pointer-events: none;
+}
+
+.blog-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
+
+.blog-card p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  flex: 1;
+}
+
+.blog-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  background: #dcfce7;
+  color: #166534;
+}
+
+[data-theme='dark'] .blog-badge {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+}
+
+.blog-badge.soon {
+  background: var(--surface-soft);
+  color: var(--text-subtle);
+}
+
+/* Artículo */
+.article-wrap {
+  padding: 2rem 0 4rem;
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+.article-meta {
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  margin-bottom: 1.25rem;
+}
+
+.article-wrap h1 {
+  font-size: clamp(1.75rem, 5vw, 2.35rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  margin-bottom: 1rem;
+}
+
+.article-dek {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.article-body h2 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin: 2rem 0 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.article-body p {
+  margin-bottom: 1rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.article-body strong { color: var(--text-main); }
+
+.article-body ul,
+.article-body ol {
+  margin: 0 0 1rem 1.25rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.article-body li { margin-bottom: 0.35rem; }
+
+.article-formula {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  margin: 1rem 0 1.25rem;
+  text-align: center;
+}
+
+.checklist-cta {
+  margin-top: 2.5rem;
+  padding: 1.5rem 1.35rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.checklist-cta h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.checklist-cta > p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.checklist-print {
+  background: var(--surface-soft);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.checklist-print ol {
+  margin: 0 0 0 1.1rem;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.checklist-print li { margin-bottom: 0.5rem; }
+
+@media print {
+  .header,
+  .footer,
+  .checklist-actions,
+  .breadcrumb { display: none !important; }
+  .page-main { padding-top: 0; }
+  .checklist-cta { border: none; box-shadow: none; }
+}

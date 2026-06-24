@@ -105,13 +105,17 @@ Monorepo **pnpm**: `apps/web`, `apps/api`, `packages/shared`.
 
 ---
 
-## Modelo de negocio (borrador)
+## Modelo de negocio
 
-- **FREE:** límites de productos y locales; catálogo, rubros, escáner, export PNG; **ventas (7 días)**.
-- **PRO:** más capacidad, **IPC por rubro**, **indexar al dólar BCRA**, alertas de margen, historial, **gestor de ventas completo**, email al publicarse IPC. **Suscripción mensual $4.500** vía Mercado Pago (sandbox en tesis; producción al go-live).
-- **AGENCY:** multi-cliente / multi-local a escala; **precio a medida por contacto comercial** (sin tarifa fija publicada en la landing).
+- **FREE:** hasta 30 productos y 1 local; catálogo, rubros COICOP, escáner, export PNG; **ventas (historial 7 días)**.
+- **PRO ($4.500 ARS/mes):** productos ilimitados, hasta 3 locales, **IPC por rubro**, **indexar al dólar BCRA**, alertas de margen, historial completo, **gestor de ventas** (dashboard 30/90 días), email al publicarse IPC. Cobro vía **Mercado Pago Suscripciones**.
+- **AGENCY:** multi-local ilimitado; **precio a medida** por contacto comercial (mailto en landing).
 
-**Pagos Pro:** checkout hospedado Mercado Pago (Suscripciones). Agency sigue por mailto. Ver `docs/RAILWAY_ENV.md` (variables MP).
+**Viabilidad:** punto de equilibrio estimado en ~10 suscriptores Pro (infra ~$40.000 ARS/mes). Ver [entrega/anexos-examen2/COSTOS_VIABILIDAD.md](./entrega/anexos-examen2/COSTOS_VIABILIDAD.md).
+
+**Pagos Pro:** checkout hospedado Mercado Pago. En **tesis/sandbox** el cobro E2E puede no completarse por limitación de MP; activación Pro vía **Admin** para la demo. Agency sigue por mailto. Ver `docs/RAILWAY_ENV.md`.
+
+**Documento académico completo:** [entrega/MODELO_NEGOCIOS_EXAMEN2.md](./entrega/MODELO_NEGOCIOS_EXAMEN2.md) (2.º parcial Modelos Estratégicos de Negocios, 2026).
 
 ---
 

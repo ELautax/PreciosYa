@@ -36,6 +36,7 @@ export type CreatePreapprovalInput = {
   autoRecurring: MpAutoRecurring
   backUrl: string
   notificationUrl?: string
+  preapprovalPlanId?: string
 }
 
 function mpHeaders(): HeadersInit {
@@ -68,7 +69,6 @@ async function parseMpError(res: Response): Promise<never> {
 }
 
 export function mpCheckoutUrl(preapproval: MpPreapproval): string {
-  // Preapproval suele traer solo init_point; sandbox_init_point es más común en Preferences.
   const url = preapproval.sandbox_init_point ?? preapproval.init_point
   if (url) return url
 
@@ -81,6 +81,31 @@ export function mpCheckoutUrl(preapproval: MpPreapproval): string {
     message: 'Mercado Pago no devolvió URL de checkout',
     code: 'MP_NO_INIT_POINT',
   })
+}
+
+/** Checkout por plan (recomendado en sandbox): MP crea la suscripción al pagar. */
+export function buildPlanCheckoutUrl(planId: string, userId: string): string {
+  const params = new URLSearchParams({
+    preapproval_plan_id: planId,
+    external_reference: userId,
+  })
+  return `https://www.mercadopago.com.ar/subscriptions/checkout?${params.toString()}`
+}
+
+type PreapprovalSearchResponse = {
+  results?: Array<{ id: string; status: string; external_reference?: string }>
+}
+
+export async function findPreapprovalsByExternalReference(
+  externalReference: string,
+): Promise<Array<{ id: string; status: string }>> {
+  const res = await fetch(
+    `${MP_API_BASE}/preapproval/search?external_reference=${encodeURIComponent(externalReference)}`,
+    { headers: mpHeaders() },
+  )
+  if (!res.ok) await parseMpError(res)
+  const body = (await res.json()) as PreapprovalSearchResponse
+  return (body.results ?? []).map((row) => ({ id: row.id, status: row.status }))
 }
 
 export async function resolvePreapprovalCheckoutUrl(

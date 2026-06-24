@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PreciosYa — Ecosistema Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e8e4df;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      padding: 24px;
+    }
+
+    .slide {
+      width: 1280px;
+      height: 720px;
+      background: #f8f7f4;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(28, 25, 23, 0.14);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 14px 32px;
+      background: #0f3d22;
+      border-bottom: 3px solid #16a34a;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      padding: 6px 12px 6px 9px;
+      border-radius: 11px;
+    }
+
+    .brand img { width: 26px; height: 26px; object-fit: contain; }
+
+    .brand-word {
+      font-size: 16px;
+      font-weight: 800;
+      color: #1c1917;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-word .ya { color: #d97706; }
+
+    .header-title { text-align: center; flex: 1; }
+
+    .header-title .label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #bbf7d0;
+    }
+
+    .header-title h1 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      margin-top: 1px;
+    }
+
+    .header-tag {
+      font-size: 9px;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(0,0,0,0.2);
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.12);
+      text-align: right;
+      line-height: 1.35;
+    }
+
+    .diagram-wrap {
+      flex: 1;
+      padding: 10px 24px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .legend span {
+      font-size: 7.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #78716c;
+    }
+
+    .legend i {
+      width: 9px;
+      height: 9px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .legend .earned i { background: #d97706; }
+    .legend .owned i { background: #16a34a; }
+    .legend .paid i { background: #0284c7; }
+    .legend .product i { background: #14532d; }
+
+    .eco-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: auto 18px auto 18px auto 18px auto 18px auto auto;
+      gap: 6px 10px;
+      align-items: center;
+      min-height: 0;
+    }
+
+    .row-label {
+      grid-column: 1 / -1;
+      font-family: 'DM Mono', monospace;
+      font-size: 7px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #a8a29e;
+      text-align: center;
+      margin-bottom: -2px;
+    }
+
+    .node {
+      background: #fff;
+      border: 1px solid #e8e4df;
+      border-radius: 10px;
+      padding: 7px 8px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(28, 25, 23, 0.05);
+      position: relative;
+      min-height: 0;
+    }
+
+    .node::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 10px 10px 0 0;
+    }
+
+    .node.earned::before { background: #d97706; }
+    .node.owned::before { background: #16a34a; }
+    .node.paid::before { background: #0284c7; }
+    .node.product::before { background: #14532d; }
+
+    .node.hub {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      padding: 9px 12px;
+    }
+
+    .node.hub.product {
+      background: #14532d;
+      border-color: #166534;
+      color: #fff;
+      grid-column: 2 / 4;
+    }
+
+    .node.hub.landing {
+      grid-column: 2 / 4;
+    }
+
+    .node-title {
+      font-size: 9px;
+      font-weight: 800;
+      color: #1c1917;
+      line-height: 1.2;
+    }
+
+    .node.hub.product .node-title { color: #fff; }
+
+    .node-sub {
+      font-size: 7px;
+      font-weight: 600;
+      color: #78716c;
+      margin-top: 2px;
+      line-height: 1.25;
+    }
+
+    .node.hub.product .node-sub { color: #bbf7d0; }
+
+    .node.paid { opacity: 0.8; }
+
+    .arrow-down {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: #16a34a;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .arrow-pair {
+      grid-column: 2 / 4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .arrow-pair .nodes {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .arrow-pair .nodes .node { flex: 1; max-width: 140px; }
+
+    .arrow-h {
+      color: #d97706;
+      font-size: 11px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .retention {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .retention .node { padding: 5px 7px; min-width: 88px; }
+    .retention .node-title { font-size: 8px; }
+    .retention .node-sub { font-size: 6.5px; }
+
+    .retention .arr {
+      color: #16a34a;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .analytics {
+      grid-column: 1 / -1;
+      background: #fff;
+      border: 1px dashed #bae6fd;
+      border-radius: 10px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .analytics::before {
+      content: '';
+      position: absolute;
+      display: none;
+    }
+
+    .analytics h3 {
+      font-size: 8px;
+      font-weight: 800;
+      color: #0369a1;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .analytics ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+      justify-content: center;
+    }
+
+    .analytics li {
+      font-size: 7px;
+      font-weight: 600;
+      color: #44403c;
+    }
+
+    .analytics li::before {
+      content: '·';
+      color: #0284c7;
+      margin-right: 3px;
+    }
+
+    .footer-flow {
+      text-align: center;
+      font-size: 8px;
+      font-weight: 600;
+      color: #57534e;
+      background: #fff;
+      border: 1px solid #e8e4df;
+      border-radius: 8px;
+      padding: 6px 12px;
+      line-height: 1.4;
+    }
+
+    .footer-flow strong { color: #0f3d22; }
+
+    .converge-svg {
+      grid-column: 1 / -1;
+      height: 20px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide" id="slide">
+    <header class="header">
+      <div class="brand">
+        <img src="../../apps/landing/assets/preciosya-logo.png" alt="" width="26" height="26" />
+        <span class="brand-word">Precios<span class="ya">Ya</span></span>
+      </div>
+      <div class="header-title">
+        <div class="label">Marketing digital</div>
+        <h1>Ecosistema Digital</h1>
+      </div>
+      <div class="header-tag">Owned-first<br/>Junio 2026</div>
+    </header>
+
+    <div class="diagram-wrap">
+      <div class="legend">
+        <span class="earned"><i></i> Medios ganados</span>
+        <span class="owned"><i></i> Medios propios</span>
+        <span class="paid"><i></i> SEM planificado</span>
+        <span class="product"><i></i> Producto</span>
+      </div>
+
+      <div class="eco-grid">
+        <div class="row-label">Atracción — canales paralelos</div>
+
+        <div class="node earned">
+          <div class="node-title">Instagram</div>
+          <div class="node-sub">Tips · carruseles</div>
+        </div>
+        <div class="node earned">
+          <div class="node-title">WhatsApp</div>
+          <div class="node-sub">Status · grupos</div>
+        </div>
+        <div class="node owned">
+          <div class="node-title">SEO Google</div>
+          <div class="node-sub">Orgánico</div>
+        </div>
+        <div class="node paid">
+          <div class="node-title">Google Ads</div>
+          <div class="node-sub">Post-MVE</div>
+        </div>
+
+        <svg class="converge-svg" viewBox="0 0 800 24" aria-hidden="true">
+          <path d="M100 2 L400 20 M250 2 L400 20 M550 2 L400 20 M700 2 L400 20" stroke="#16a34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <polygon points="400,22 395,16 405,16" fill="#16a34a"/>
+        </svg>
+
+        <div class="node hub landing owned">
+          <div class="node-title">Landing</div>
+          <div class="node-sub">preciosya-landing.vercel.app</div>
+        </div>
+
+        <div class="arrow-down">↓</div>
+
+        <div class="arrow-pair">
+          <div class="nodes">
+            <div class="node owned">
+              <div class="node-title">Blog</div>
+              <div class="node-sub">/blog · educación</div>
+            </div>
+            <span class="arrow-h">↔</span>
+            <div class="node owned">
+              <div class="node-title">Keywords</div>
+              <div class="node-sub">margen · IPC</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="arrow-down">↓</div>
+
+        <div class="node hub product">
+          <div class="node-title">App PWA</div>
+          <div class="node-sub">preciosya.vercel.app · login Google</div>
+        </div>
+
+        <div class="row-label">Retención y monetización</div>
+
+        <div class="retention">
+          <div class="node product">
+            <div class="node-title">Plan Free</div>
+            <div class="node-sub">Registro</div>
+          </div>
+          <span class="arr">→</span>
+          <div class="node owned">
+            <div class="node-title">Notificaciones</div>
+            <div class="node-sub">IPC · alertas</div>
+          </div>
+          <span class="arr">→</span>
+          <div class="node owned">
+            <div class="node-title">Email Pro</div>
+            <div class="node-sub">Resend</div>
+          </div>
+          <span class="arr">→</span>
+          <div class="node product">
+            <div class="node-title">Upgrade Pro</div>
+            <div class="node-sub">Mercado Pago</div>
+          </div>
+          <span class="arr">→</span>
+          <div class="node earned">
+            <div class="node-title">PNG WhatsApp</div>
+            <div class="node-sub">Fidelización</div>
+          </div>
+        </div>
+
+        <div class="analytics">
+          <h3>Analítica</h3>
+          <ul>
+            <li>Vercel Analytics</li>
+            <li>Sesiones landing</li>
+            <li>Registros OAuth</li>
+            <li>Activación Free</li>
+            <li>Conv. Pro</li>
+            <li>Tiempo en blog</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="footer-flow">
+        <strong>Flujo:</strong> redes y SEO atraen → landing explica → blog educa → app entrega valor → notificaciones fidelizan → Pro monetiza
+      </p>
+    </div>
+  </div>
+</body>
+</html>

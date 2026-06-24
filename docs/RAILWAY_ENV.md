@@ -67,15 +67,9 @@ En el panel MP → **Webhooks**, topic `subscription_preapproval` (también conf
 
 **Sandbox URL webhook:** `callback_sandbox` → `https://api-production-3626.up.railway.app/api/webhooks/mercadopago`
 
-**Tesis / sandbox — flujo correcto:**
+**Limitación sandbox (tesis — Plan D):** el checkout de suscripciones en credenciales `TEST-` suele fallar con *«Una de las partes con la que intentás hacer el pago es de prueba»* al mezclar cuenta vendedora de desarrollo con comprador test. La integración (API, webhooks, redirect) queda demostrada; para **activar Pro en la demo** usar **Admin** → usuario → plan **PRO** (manual, como acordado en producto v1).
 
-1. PreciosYa con Google → **Suscribirme a Pro** → redirect a MP.
-2. **Incógnito.** Si MP muestra tu cuenta real → **cerrar sesión**.
-3. **No** iniciar sesión con `TESTUSER3869021386766079933` (la suscripción queda ligada a un payer invitado distinto y MP responde *«Una de las partes es de prueba»*).
-4. Tarjeta de prueba **nueva** (no guardada): `5031 7557 3453 0604`, titular **`APRO`**, CVV `123`, DNI `12345678`.
-5. Tras confirmar, volver a PreciosYa → Plan → sincronizar, o esperar webhook `subscription_preapproval`.
-
-**Producción:** reemplazar tokens TEST por PROD y revalidar webhook.
+**Producción:** reemplazar tokens TEST por PROD, revalidar webhook y cobro real end-to-end.
 
 ## Migraciones en producción
 

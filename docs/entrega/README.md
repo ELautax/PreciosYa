@@ -15,8 +15,26 @@ Fuente en Markdown; exportar a PDF/Word desde el editor o con Pandoc.
 | 8 | Diseño de arquitectura | [DISENO_ARQUITECTURA.md](./DISENO_ARQUITECTURA.md) |
 | 9 | Diagrama de componentes | [DIAGRAMA_COMPONENTES.md](./DIAGRAMA_COMPONENTES.md) |
 | 10 | Gantt | [GANTT.md](./GANTT.md) |
+| 11 | **Modelo de negocios (2.º parcial)** | [MODELO_NEGOCIOS_EXAMEN2.md](./MODELO_NEGOCIOS_EXAMEN2.md) |
+| 12 | Carátula examen 2 | [CARATULA_EXAMEN2.md](./CARATULA_EXAMEN2.md) |
+| — | Parcial 1 actualizado (jun 2026) | [PARCIAL1_ACTUALIZADO.md](./PARCIAL1_ACTUALIZADO.md) |
 
-## Trazabilidad
+## Anexos — Examen 2 (Modelos Estratégicos de Negocios)
+
+Carpeta [anexos-examen2/](./anexos-examen2/):
+
+| Anexo | Archivo |
+|-------|---------|
+| Guía de entrevistas | [GUIA_ENTREVISTAS.md](./anexos-examen2/GUIA_ENTREVISTAS.md) |
+| Plantilla por entrevista | [PLANTILLA_ENTREVISTA.md](./anexos-examen2/PLANTILLA_ENTREVISTA.md) |
+| Síntesis de campo | [SINTESIS_ENTREVISTAS.md](./anexos-examen2/SINTESIS_ENTREVISTAS.md) |
+| Costos y viabilidad | [COSTOS_VIABILIDAD.md](./anexos-examen2/COSTOS_VIABILIDAD.md) |
+| Piezas de contenido (2) | [PIEZAS_CONTENIDO.md](./anexos-examen2/PIEZAS_CONTENIDO.md) |
+| Blog — 8 temas + nota 1 | [BLOG_PRIMERA_NOTA.md](./anexos-examen2/BLOG_PRIMERA_NOTA.md) |
+| Bibliografía | [BIBLIOGRAFIA.md](./anexos-examen2/BIBLIOGRAFIA.md) |
+
+**PDF único Moodle:** carátula → desarrollo (`MODELO_NEGOCIOS_EXAMEN2.md`) → anexos en el orden de la tabla anterior.
+
 
 ```
 RF-W / RF-A  →  Casos de uso (CU)  →  Casos de prueba (CP)  →  Tests / demo manual

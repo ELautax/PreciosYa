@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Cómo calcular el precio de venta con margen en un kiosco | PreciosYa Blog</title>
+  <meta name="description" content="Aprendé a calcular el precio de venta con margen real en un kiosco o almacén, sin Excel ni cuentas a ojo." />
+  <link rel="canonical" href="https://preciosya-landing.vercel.app/blog/como-calcular-precio-margen-kiosco.html" />
+  <link rel="icon" type="image/png" href="../assets/preciosya-logo.png" />
+  <meta name="theme-color" content="#f8f7f4" id="themeColorMeta" />
+  <script>
+    (function () {
+      var KEY = 'preciosya-theme';
+      var stored = localStorage.getItem(KEY);
+      var theme = (stored === 'light' || stored === 'dark')
+        ? stored
+        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      if (theme === 'dark') document.documentElement.classList.add('dark');
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <script src="../site-config.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/site.css" />
+  <link rel="stylesheet" href="../css/blog.css" />
+</head>
+<body>
+
+  <header class="header scrolled" id="header">
+    <div class="container header-inner">
+      <a href="../index.html" class="logo">
+        <img src="../assets/preciosya-logo.png" alt="PreciosYa" width="30" height="30" />
+        <span>Precios<span class="ya">Ya</span></span>
+      </a>
+      <nav class="nav-desktop">
+        <a href="../index.html#funcionalidades" class="nav-link">Funcionalidades</a>
+        <a href="../index.html#precios" class="nav-link">Precios</a>
+        <a href="./" class="nav-link active">Blog</a>
+        <a href="../index.html#faq" class="nav-link">FAQ</a>
+      </nav>
+      <div class="header-actions">
+        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Activar modo oscuro">
+          <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <a id="cta-header" href="#" class="btn btn-primary btn-sm" data-login-cta>Empezar gratis</a>
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span>
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="mobileMenu">
+      <a href="../index.html#funcionalidades" class="nav-link">Funcionalidades</a>
+      <a href="../index.html#precios" class="nav-link">Precios</a>
+      <a href="./" class="nav-link active">Blog</a>
+      <a href="../index.html#faq" class="nav-link">FAQ</a>
+      <a href="#" class="btn btn-primary btn-sm btn-block mobile-menu-cta" data-login-cta>Empezar gratis</a>
+    </nav>
+  </header>
+
+  <main class="page-main">
+    <article class="container article-wrap">
+      <nav class="breadcrumb" aria-label="Miga de pan">
+        <a href="../index.html">Inicio</a>
+        <span class="sep">/</span>
+        <a href="./">Blog</a>
+        <span class="sep">/</span>
+        <span>Margen en kiosco</span>
+      </nav>
+
+      <p class="article-meta">Precios y márgenes · Lectura: 6 min</p>
+
+      <h1>Cómo calcular el precio de venta con margen en un kiosco (sin Excel)</h1>
+
+      <p class="article-dek">Si cada vez que sube un proveedor tachás precios a mano, este artículo es para vos. En pocos minutos vas a tener una regla clara para no vender al costo sin darte cuenta.</p>
+
+      <div class="article-body">
+        <p>Si tenés un kiosco o almacén, cuando llega la lista nueva del proveedor hacés lo de siempre: mirás el costo, le sumás «un poquito» y anotás el número. A veces funciona. Otras, con la inflación que corre, <strong>regalás margen</strong> sin saberlo.</p>
+
+        <h2>1. La fórmula que tenés que usar siempre</h2>
+        <p>El precio de venta no es «costo + $50 porque sí». Es:</p>
+        <p class="article-formula">Precio de venta = Costo × (1 + Margen% ÷ 100)</p>
+        <p>Ejemplo: una gaseosa que te entra a <strong>$800</strong> con <strong>30% de margen sobre costo</strong>:</p>
+        <p>$800 × 1,30 = <strong>$1.040</strong></p>
+        <p>Redondeá a un número legible en góndola ($1.040 o $1.050). Lo importante es <strong>siempre partir del costo nuevo</strong>, no del precio viejo tachado.</p>
+
+        <h2>2. Margen no es «lo que me queda a ojo»</h2>
+        <p>Si comprás a $100 y vendés a $130, el margen sobre venta es <strong>23%</strong>, no 30%. Elegí una regla por rubro (golosinas 25%, bebidas 20%, etc.) y sé consistente en todo el local.</p>
+
+        <h2>3. Por qué el «aumento a ojo» falla</h2>
+        <p>Si el costo sube <strong>12%</strong>, no alcanza con sumar $20 a cada producto. Un costo de $800 pasa a $896; con 30% de margen el precio correcto es <strong>$1.165</strong>, no $1.060.</p>
+        <p>Hacer eso producto por producto en papel lleva horas. Por eso muchos comercios pierden tiempo cada semana solo en remarcar — y aun así quedan dudas.</p>
+
+        <h2>4. Tres pasos para aplicar hoy</h2>
+        <ol>
+          <li><strong>Separá por rubro</strong> (bebidas, golosinas, limpieza). No todos tienen el mismo margen.</li>
+          <li><strong>Anotá costo + margen objetivo</strong>, no solo el precio final.</li>
+          <li><strong>Recalculá desde el costo</strong> cada vez que haya un aumento del proveedor.</li>
+        </ol>
+        <p>Cuando salga el IPC del mes, repetí el ejercicio rubro por rubro: alimentos y bebidas no siempre suben igual.</p>
+
+        <h2>5. Qué sigue</h2>
+        <p>Hay herramientas que automatizan este cálculo desde el celular, pero la lógica es siempre la misma: <strong>costo + margen + índice correcto por tipo de producto</strong>. Dominar la fórmula manual te sirve aunque sigas con papel por un tiempo.</p>
+        <p>PreciosYa aplica esta misma lógica: cargás costo y margen, y el sistema calcula el precio. También podés aplicar el IPC por rubro o indexar al dólar los productos que lo necesiten. No es facturación ni caja: es solo gestión de precios.</p>
+
+        <aside class="checklist-cta" id="checklist">
+          <h2>Checklist: 5 pasos antes de subir un precio</h2>
+          <p>Imprimí esta lista y pegala en el depósito del local. Usala cada vez que llegue un aumento del proveedor o salga un IPC nuevo.</p>
+          <div class="checklist-print" id="checklistPrint">
+            <ol>
+              <li>¿Tengo el <strong>costo nuevo</strong> confirmado (remito o lista del proveedor)?</li>
+              <li>¿Sé qué <strong>margen %</strong> corresponde a este rubro?</li>
+              <li>¿Calculé con la fórmula <strong>costo × (1 + margen/100)</strong>?</li>
+              <li>¿Redondeé a un precio <strong>legible en góndola</strong>?</li>
+              <li>¿Revisé que ningún producto similar quedó <strong>más barato que otro equivalente</strong>?</li>
+            </ol>
+          </div>
+          <div class="checklist-actions">
+            <button type="button" class="btn btn-primary" onclick="window.print()">Imprimir checklist</button>
+            <a href="mailto:hola@preciosya.app?subject=Checklist%20remarcación%20%E2%80%94%20PreciosYa&amp;body=Hola%2C%20quiero%20recibir%20novedades%20sobre%20gu%C3%ADas%20de%20precios%20para%20mi%20comercio." class="btn btn-secondary" style="margin-top: 0.75rem; width: 100%;">Pedir más guías por email</a>
+          </div>
+        </aside>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom" style="border: none; padding-top: 0;">
+        <p><a href="./" class="nav-link" style="font-size: 0.875rem;">← Volver al blog</a></p>
+        <p style="color: var(--text-subtle); font-size: 0.875rem;">© 2026 PreciosYa</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/site.js"></script>
+</body>
+</html>

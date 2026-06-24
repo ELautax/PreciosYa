@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PreciosYa — Buyer Persona</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e8e4df;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      padding: 24px;
+    }
+
+    .slide {
+      width: 1280px;
+      height: 720px;
+      background: #f8f7f4;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 24px 64px rgba(28, 25, 23, 0.14);
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    /* Decoración — solo en el cuerpo, no en el header */
+    .body::after {
+      content: '';
+      position: absolute;
+      top: 40px;
+      right: 80px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(22, 163, 74, 0.2);
+      box-shadow:
+        160px 60px 0 0 rgba(217, 119, 6, 0.18),
+        280px 20px 0 3px rgba(22, 163, 74, 0.12);
+      pointer-events: none;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 18px 36px;
+      background: #0f3d22;
+      border-bottom: 3px solid #16a34a;
+      position: relative;
+      z-index: 3;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+      padding: 8px 14px 8px 10px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .brand img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+    }
+
+    .brand-word {
+      font-size: 19px;
+      font-weight: 800;
+      color: #1c1917;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-word .ya { color: #d97706; }
+
+    .header-title {
+      text-align: center;
+      flex: 1;
+      padding: 0 16px;
+    }
+
+    .header-title .label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #bbf7d0;
+    }
+
+    .header-title h1 {
+      font-size: 25px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      margin-top: 3px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    }
+
+    .header-title h1 em {
+      font-style: normal;
+      color: #fde047;
+    }
+
+    .header-segment {
+      font-size: 11px;
+      font-weight: 700;
+      color: #ffffff;
+      text-align: right;
+      max-width: 210px;
+      line-height: 1.4;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .header-segment span {
+      display: block;
+      color: #bbf7d0;
+      font-weight: 600;
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    .body {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 20px;
+      padding: 20px 32px 28px 0;
+      position: relative;
+      z-index: 1;
+      min-height: 0;
+      background: #f8f7f4;
+    }
+
+    .body-left {
+      background: linear-gradient(180deg, #15803d 0%, #16a34a 100%);
+      margin-left: 0;
+      padding: 12px 28px 0 36px;
+      border-radius: 0 24px 0 0;
+    }
+
+    /* ——— FOTO: reemplazá en Canva ——— */
+    .photo-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding-top: 8px;
+    }
+
+    .photo-frame {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      border: 4px dashed rgba(255, 255, 255, 0.85);
+      background: rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Si querés probar con imagen local, descomentá en HTML el <img> dentro */
+    .photo-frame img.persona {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: none; /* oculto: en Canva reemplazás este círculo */
+    }
+
+    .photo-frame.has-image img.persona { display: block; }
+    .photo-frame.has-image .photo-placeholder { display: none; }
+
+    .photo-placeholder svg {
+      width: 48px;
+      height: 48px;
+      opacity: 0.55;
+      margin-bottom: 8px;
+    }
+
+    .photo-placeholder .hint-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    .photo-placeholder .hint-sub {
+      font-size: 10px;
+      font-weight: 600;
+      color: #ecfdf5;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    .photo-caption {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #ecfdf5;
+      text-align: center;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 14px;
+      min-height: 0;
+      padding-right: 32px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e8e4df;
+      border-radius: 14px;
+      padding: 12px 14px 14px;
+      box-shadow: 0 6px 18px rgba(28, 25, 23, 0.07);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .card-label {
+      display: inline-block;
+      align-self: flex-start;
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .card:nth-child(1) .card-label,
+    .card:nth-child(4) .card-label { background: #dcfce7; color: #166534; }
+
+    .card ul {
+      list-style: none;
+      flex: 1;
+    }
+
+    .card li {
+      font-size: 11px;
+      line-height: 1.42;
+      color: #44403c;
+      font-weight: 500;
+      padding-left: 12px;
+      position: relative;
+      margin-bottom: 5px;
+    }
+
+    .card li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #16a34a;
+    }
+
+    .card li:last-child { margin-bottom: 0; }
+
+    .card.wide-note {
+      grid-column: span 1;
+    }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .slide { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide" id="slide">
+    <header class="header">
+      <div class="brand">
+        <img src="../../apps/landing/assets/preciosya-logo.png" alt="" width="32" height="32" />
+        <span class="brand-word">Precios<span class="ya">Ya</span></span>
+      </div>
+      <div class="header-title">
+        <div class="label">Segmento 1 · Kiosqueros y almaceneros</div>
+        <h1>Buyer Persona — José <em>«Pepe»</em> García</h1>
+      </div>
+      <div class="header-segment">
+        Gran Buenos Aires
+        <span>Inflación · Mobile-first</span>
+      </div>
+    </header>
+
+    <div class="body">
+      <aside class="photo-zone body-left">
+        <div class="photo-frame" id="photoFrame">
+          <!-- Opcional: agregá src con tu foto para previsualizar -->
+          <!-- <img class="persona" src="tu-foto.jpg" alt="Pepe García" /> -->
+          <div class="photo-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" aria-hidden="true">
+              <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
+            <div class="hint-title">Tu foto aquí</div>
+            <div class="hint-sub">Reemplazá este círculo en Canva<br/>220 × 220 px</div>
+          </div>
+        </div>
+        <p class="photo-caption">Foto del persona</p>
+      </aside>
+
+      <div class="cards">
+        <article class="card">
+          <span class="card-label">¿Quién es?</span>
+          <ul>
+            <li>Hombre de 47 años. Secundario completo.</li>
+            <li>Dueño y encargado único de un kiosco tradicional hace 20 años.</li>
+            <li>Pragmático, trabajador, resistente a lo complicado.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="card-label">¿Dónde se encuentra?</span>
+          <ul>
+            <li>Lomas de Zamora, GBA.</li>
+            <li>90% del día detrás del mostrador.</li>
+            <li>Señal WiFi y datos irregular en el fondo del local.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="card-label">¿Por qué lo hace?</span>
+          <ul>
+            <li>Pierde 2–4 h/semana tachando carteles y calculando precios.</li>
+            <li>Miedo real de vender a pérdida por no actualizar a tiempo.</li>
+            <li>Rechaza funciones de «supermercado» o facturación compleja.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="card-label">¿Cuáles son sus intereses?</span>
+          <ul>
+            <li>Proteger rentabilidad y márgenes frente a la inflación.</li>
+            <li>Simplificar la carga administrativa manual.</li>
+            <li>Controlar los números sin depender de contador ni de terceros.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="card-label">¿En qué momentos?</span>
+          <ul>
+            <li>Cuando el proveedor deja remitos con listas de precios nuevas.</li>
+            <li>Cuando en WhatsApp le avisan que una marca subió costos.</li>
+            <li>Al publicarse el IPC del INDEC — y en rubros que «van con el dólar».</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="card-label">¿Qué hace en digital?</span>
+          <ul>
+            <li>Solo celular. No usa computadora.</li>
+            <li>WhatsApp para pedidos y Mercado Pago para cobros.</li>
+            <li>Rechaza apps pesadas; busca curva de aprendizaje cero.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Previsualizar foto local: descomentá el <img> y ejecutá:
+    // document.getElementById('photoFrame').classList.add('has-image');
+  </script>
+</body>
+</html>

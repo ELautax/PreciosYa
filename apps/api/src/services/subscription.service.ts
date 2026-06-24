@@ -3,7 +3,9 @@ import { PlanType, SubStatus } from '@prisma/client'
 import { env } from '../config/env.js'
 import { prisma } from '../lib/prisma.js'
 import {
+  buildPlanCheckoutUrl,
   createPreapproval,
+  findPreapprovalsByExternalReference,
   getPreapproval,
   getPreapprovalSafe,
   isMpConfigured,
@@ -114,7 +116,30 @@ export async function createProCheckout(userId: string, email: string) {
   const notificationUrl = mpNotificationUrl()
   const payerEmail = resolvePayerEmail(email)
 
-  // En sandbox siempre checkout nuevo (evita preapprovals ligados al email real de Google).
+  // Sandbox: checkout por plan MP (evita payer pre-asignado que rompe login test)
+  const planId = env.MP_PREAPPROVAL_PLAN_ID?.trim()
+  if (isMpTestMode() && planId) {
+    await prisma.subscription.create({
+      data: {
+        userId,
+        plan: PlanType.PRO,
+        status: SubStatus.PENDING,
+        mpSubscriptionId: null,
+        amountArs: env.MP_PRO_AMOUNT_ARS,
+        billingCycle: 'monthly',
+      },
+    })
+    return {
+      preapprovalId: planId,
+      checkoutUrl: buildPlanCheckoutUrl(planId, userId),
+      status: 'pending',
+      payerEmail,
+      testMode: true,
+      sandboxHint: 'sandbox_plan_checkout',
+    }
+  }
+
+  // En sandbox sin plan: checkout directo (legacy)
   if (!isMpTestMode()) {
     const existingPending = await prisma.subscription.findFirst({
       where: { userId, status: SubStatus.PENDING, mpSubscriptionId: { not: null } },
@@ -204,11 +229,30 @@ async function activateProFromPreapproval(
 
 export async function syncPendingSubscription(userId: string) {
   const pending = await prisma.subscription.findFirst({
-    where: { userId, status: SubStatus.PENDING, mpSubscriptionId: { not: null } },
+    where: { userId, status: SubStatus.PENDING },
     orderBy: { createdAt: 'desc' },
   })
 
-  if (!pending?.mpSubscriptionId) {
+  if (!pending) {
+    return getSubscriptionStatus(userId)
+  }
+
+  // Plan checkout: buscar suscripción creada por MP con external_reference = userId
+  if (!pending.mpSubscriptionId) {
+    const matches = await findPreapprovalsByExternalReference(userId)
+    const authorized = matches.find((row) => row.status === 'authorized')
+    const latest = matches[0]
+    const mpId = authorized?.id ?? latest?.id
+    if (mpId) {
+      await prisma.subscription.update({
+        where: { id: pending.id },
+        data: { mpSubscriptionId: mpId },
+      })
+      pending.mpSubscriptionId = mpId
+    }
+  }
+
+  if (!pending.mpSubscriptionId) {
     return getSubscriptionStatus(userId)
   }
 

@@ -34,16 +34,15 @@ export function PlanPricingCards({ currentPlan, onCheckoutError }: PlanPricingCa
     setLocalError(null)
     try {
       const data = await checkoutM.mutateAsync()
-      if (data.testMode || data.sandboxHint === 'sandbox_guest_checkout') {
+      if (data.testMode || data.sandboxHint === 'sandbox_plan_checkout') {
         const ok = window.confirm(
-          'Modo prueba Mercado Pago\n\n' +
-            '1. Abrí el checkout en ventana incógnito si podés.\n' +
-            '2. NO inicies sesión con tu cuenta real de Mercado Pago.\n' +
-            '3. NO uses el usuario TESTUSER… (provoca error "parte de prueba").\n' +
-            '4. Pagá con tarjeta de prueba NUEVA:\n' +
-            '   5031 7557 3453 0604 · Titular APRO · CVV 123 · DNI 12345678\n' +
-            '5. Si ves otra cuenta logueada, cerrá sesión antes de pagar.\n\n' +
-            '¿Continuar al checkout de Mercado Pago?',
+          'Modo prueba Mercado Pago (plan sandbox)\n\n' +
+            '1. Incógnito → checkout de MP.\n' +
+            '2. Elegí "Ingresar con mi cuenta".\n' +
+            '3. Usuario test del panel MP (Comprador), ej. TESTUSER3869021386766079933.\n' +
+            '4. Pagá con Dinero disponible o tarjeta de prueba (titular APRO).\n' +
+            '5. NO uses tu cuenta real de Mercado Pago.\n\n' +
+            '¿Continuar al checkout?',
         )
         if (!ok) return
       }
@@ -64,8 +63,8 @@ export function PlanPricingCards({ currentPlan, onCheckoutError }: PlanPricingCa
       ) : null}
       {mpTestMode ? (
         <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <span className="font-semibold">Modo prueba (TEST).</span> Al pagar en Mercado Pago, no uses tu
-          cuenta real ni el usuario TESTUSER. Completá con la tarjeta de prueba (APRO · 5031…0604).
+          <span className="font-semibold">Modo prueba (TEST).</span> Checkout por plan MP: iniciá sesión
+          con el <strong>comprador de prueba</strong> del panel (TESTUSER…), no con tu cuenta real.
         </p>
       ) : null}
       <div className="grid gap-4 md:grid-cols-3 md:items-stretch">
