@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { 
   Plus, 
@@ -20,6 +20,7 @@ import {
 import { ExportModal } from '@/components/exports/ExportModal'
 import { LocalSelector } from '@/components/locals/LocalSelector'
 import { BulkUpdateModal } from '@/components/products/BulkUpdateModal'
+import { BarcodeScanner } from '@/components/products/BarcodeScanner'
 import { IndexStatusBanner } from '@/components/products/IndexStatusBanner'
 import { ProductForm } from '@/components/products/ProductForm'
 import { ProductImportModal } from '@/components/products/ProductImportModal'
@@ -85,6 +86,8 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   const [editing, setEditing] = useState<ProductDto | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<ProductDto | null>(null)
   const [isActionsOpen, setIsActionsOpen] = useState(false)
+  const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false)
+  const barcodeHandlerRef = useRef<((code: string) => void) | null>(null)
 
   const ipcQuery = useIpcLatest()
   const waitingForLocal = locals.length > 0 && !localId
@@ -364,8 +367,24 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
             setFormOpen(false)
             setEditing(null)
           }}
+          onOpenBarcodeScanner={(onDetected) => {
+            barcodeHandlerRef.current = onDetected
+            setBarcodeScannerOpen(true)
+          }}
         />
       ) : null}
+      <BarcodeScanner
+        open={barcodeScannerOpen}
+        onClose={() => {
+          setBarcodeScannerOpen(false)
+          barcodeHandlerRef.current = null
+        }}
+        onDetected={(code) => {
+          barcodeHandlerRef.current?.(code)
+          setBarcodeScannerOpen(false)
+          barcodeHandlerRef.current = null
+        }}
+      />
       {bulkOpen ? (
         <BulkUpdateModal
           localId={localId}

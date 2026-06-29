@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -18,7 +18,6 @@ import {
 } from 'lucide-react'
 import { PRODUCT_UNITS, getMarginStatus } from 'shared'
 
-import { BarcodeScanner } from '@/components/products/BarcodeScanner'
 import { MarginBadge } from '@/components/products/MarginBadge'
 import { useBarcodeLookup } from '@/hooks/useBarcodeLookup'
 import { useCategories } from '@/hooks/useCategories'
@@ -45,10 +44,10 @@ type ProductFormProps = {
   localId: string
   product?: ProductDto | null
   onClose: () => void
+  onOpenBarcodeScanner: (onDetected: (code: string) => void) => void
 }
 
-export function ProductForm({ localId, product, onClose }: ProductFormProps) {
-  const [scannerOpen, setScannerOpen] = useState(false)
+export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }: ProductFormProps) {
   const categoriesQuery = useCategories(localId, true, { refetchOnMount: true })
   const { data: locals } = useLocals()
   const local = locals?.find((l) => l.id === localId)
@@ -146,7 +145,6 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
   const pending = createMut.isPending || updateMut.isPending
 
   async function handleBarcodeDetected(code: string): Promise<void> {
-    setScannerOpen(false)
     setValue('barcode', code, { shouldDirty: true })
 
     try {
@@ -202,14 +200,6 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
   }
 
   return (
-    <>
-    <BarcodeScanner
-      open={scannerOpen}
-      onClose={() => setScannerOpen(false)}
-      onDetected={(code) => {
-        void handleBarcodeDetected(code)
-      }}
-    />
     <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4 animate-fade-in backdrop-blur-sm">
       <div
         className="surface-card flex flex-col max-h-[92vh] w-full max-w-lg overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
@@ -395,7 +385,7 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
                   />
                   <button
                     type="button"
-                    onClick={() => setScannerOpen(true)}
+                    onClick={() => onOpenBarcodeScanner((code) => void handleBarcodeDetected(code))}
                     className="btn-secondary shrink-0 px-3"
                     title="Escanear con cámara"
                   >
@@ -450,6 +440,5 @@ export function ProductForm({ localId, product, onClose }: ProductFormProps) {
         </div>
       </div>
     </div>
-    </>
   )
 }

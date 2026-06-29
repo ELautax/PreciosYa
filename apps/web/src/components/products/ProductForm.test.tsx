@@ -31,10 +31,11 @@ describe('ProductForm', () => {
     const onClose = vi.fn()
     const user = userEvent.setup()
 
-    const { container } = render(
+    const { container } =     render(
       <ProductForm
         localId="11111111-1111-4111-8111-111111111111"
         onClose={onClose}
+        onOpenBarcodeScanner={vi.fn()}
       />,
     )
 
