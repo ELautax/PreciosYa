@@ -359,7 +359,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
         </div>
       </div>
 
-      {formOpen ? (
+      {formOpen && !barcodeScannerOpen ? (
         <ProductForm
           localId={localId}
           product={editing}

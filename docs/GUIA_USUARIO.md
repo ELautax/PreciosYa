@@ -22,6 +22,14 @@
 3. Ingresá **costo** y **margen %**; el precio de venta se calcula solo.
 4. Opcional: código de barras (escáner o teclado).
 
+### Escanear código de barras (móvil)
+
+1. En **Nuevo producto**, tocá el ícono de escáner junto a **Código de barras**.
+2. Aceptá el permiso de **cámara** si Chrome lo solicita.
+3. Se abre una **pantalla negra** con la cámara en vivo; centrá el código en el recuadro blanco.
+4. Al leerlo, volvés al formulario con el código cargado (y datos sugeridos si existen en catálogo).
+5. Si no ves la cámara: **Configuración del sitio** → Cámara → Permitir; cerrá y volvé a abrir la pestaña (o reinstalá la PWA si la tenés en el inicio).
+
 > No hace falta elegir IPC o USD en cada producto: eso se configura una vez por rubro en **Categorías**.
 
 ---

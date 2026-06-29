@@ -378,14 +378,15 @@ html.dark,
 .barcode-scanner-region #qr-shaded-region {
   width: 100% !important;
   height: 100% !important;
-  min-height: 100% !important;
+  min-height: 50dvh !important;
 }
 
-.barcode-scanner-region video {
+.barcode-scanner-region video,
+.barcode-scanner-video {
   display: block !important;
   width: 100% !important;
   height: 100% !important;
-  min-height: 240px !important;
+  min-height: 50dvh !important;
   object-fit: cover !important;
   background: #000;
 }
@@ -396,13 +397,6 @@ html.dark,
   object-fit: cover !important;
 }
 
-#scanner-portal {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  pointer-events: none;
-}
-
-#scanner-portal > * {
-  pointer-events: auto;
+body.barcode-scanner-open #root {
+  visibility: hidden;
 }
