@@ -4,11 +4,26 @@
 
 - **URL producción:** https://preciosya.vercel.app (alias secundario: https://preciosya-app.vercel.app)
 - **APK Android:** https://preciosya-landing.vercel.app/preciosya.apk (también en la app: `/preciosya.apk` tras build). Regenerar con `node scripts/build-preciosya-apk.mjs` (copia a `apps/web/public/` y `apps/landing/`). La descarga se promociona desde la **landing** (`#descargar`), no desde el login.
-- Deploy desde la raíz del monorepo (`.vercel/project.json`):
+- Deploy desde la **raíz del monorepo** (`.vercel/project.json` → proyecto `web`). **No** desde `apps/web/` ni con `--prebuilt` (rompe env y API).
 
-```bash
+```powershell
+cd "G:\Github Clones\PreciosYa"
+$env:VERCEL_OIDC_TOKEN = $null   # .env.local apunta a preciosya-landing y desvía el deploy
+$env:VERCEL_ORG_ID = "team_HnVOLFFv3g4y8yeEdpAkwGsn"
+$env:VERCEL_PROJECT_ID = "prj_6yj0HLVIxL3te17N36awiH5sOIFy"
 npx vercel deploy --prod --yes
 ```
+
+Alternativa fiable: **push a `main`** → GitHub Actions (`deploy-web-vercel`) sube el monorepo completo (~334 archivos) con `pnpm install` + `pnpm --filter web build`.
+
+### Si el deploy CLI queda en QUEUED / tarda mucho
+
+- **No es error de build:** el job ni siquiera arranca (sin logs en Vercel). Suele pasar en plan Hobby con varios deploys CLI seguidos.
+- Cancelá deploys viejos en [Vercel → web → Deployments](https://vercel.com/elautaxs-projects/web) (estado `QUEUED`).
+- **No deployar desde `apps/web`:** solo sube ~167 archivos; el `installCommand` con `cd ../..` no encuentra el monorepo y el build falla o se cuelga.
+- **No usar `vercel deploy --prebuilt`:** no corre el build en Vercel; las `VITE_*` del dashboard no se inyectan y la app queda sin API/Supabase.
+- Deploys exitosos vía GitHub muestran `Downloading 334 deployment files` y `pnpm install --frozen-lockfile` en la raíz.
+
 
 Tras el deploy, Vercel actualiza `preciosya-app.vercel.app` y `web-rho-ten-99.vercel.app`. Si **`preciosya.vercel.app`** sigue mostrando UI vieja, reasignar el alias al URL del deploy que acaba de salir (ej. `web-xxxxx-elautaxs-projects.vercel.app`):
 
@@ -36,11 +51,14 @@ Si la APK muestra arriba la URL de Vercel, compartir y menú de Chrome, **no est
 
 **Causas habituales:**
 
-1. **Deployment Protection (SSO) en `preciosya.vercel.app`** — bloquea `/.well-known/assetlinks.json` (redirect 302 a Vercel login). El dominio **`preciosya-app.vercel.app`** no debe tener SSO; el TWA debe apuntar ahí (`scripts/build-preciosya-apk.mjs` default).
-2. **Huella SHA-256 del APK ≠ `assetlinks.json`** — regenerar APK y commitear el `assetlinks.json` que genera PWABuilder; el usuario debe **reinstalar** la APK.
-3. **Regenerar APK:** `node scripts/build-preciosya-apk.mjs` → copia a `apps/web/public/` y `apps/landing/` → redeploy web + landing.
+1. **APK desactualizada** — desinstalá la app y volvé a instalar desde `https://preciosya-landing.vercel.app/preciosya.apk` (cada regeneración puede cambiar la firma).
+2. **Huella SHA-256 del APK ≠ `assetlinks.json`** — `node scripts/build-preciosya-apk.mjs` actualiza APK + `apps/web/public/.well-known/assetlinks.json` → redeploy **web** + **landing**.
+3. **Deployment Protection (SSO)** en el proyecto `web` — bloquea `/.well-known/assetlinks.json` (302 a login Vercel). Debe responder **200** en `preciosya.vercel.app` y `preciosya-app.vercel.app`.
+4. **Host TWA** — el build usa `https://preciosya.vercel.app` con `preciosya-app.vercel.app` como origen adicional de confianza (ambos con assetlinks).
 
-**Vercel:** en proyecto `web` → Settings → Deployment Protection → desactivar autenticación en **Production** (o excluir rutas públicas), si querés usar `preciosya.vercel.app` como host del TWA.
+**Regenerar APK:** `node scripts/build-preciosya-apk.mjs` → copia a `apps/web/public/` y `apps/landing/` → redeploy web + landing → **reinstalar** en el celular.
+
+**Verificar en producción:** `curl https://preciosya.vercel.app/.well-known/assetlinks.json` debe devolver JSON con `package_name: app.preciosya.twa`.
 
 
 ```

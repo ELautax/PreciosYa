@@ -541,8 +541,11 @@
     @media (max-width: 979px) { .sticky-visual { position: static; margin-top: 0; margin-bottom: 2rem; } }
 
     /* ======================= SOCIAL PROOF ======================= */
-    .proof-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+    .proof-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; align-items: stretch; }
     .proof-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
       background: color-mix(in srgb, var(--surface) 88%, transparent);
       border: 1px solid var(--border);
       border-radius: var(--radius-2xl);
@@ -552,18 +555,20 @@
       -webkit-backdrop-filter: blur(6px);
     }
     .proof-card blockquote {
+      flex: 1 1 auto;
       font-size: 1rem;
       font-weight: 600;
       color: var(--text-main);
       line-height: 1.55;
-      margin-bottom: 1.25rem;
+      margin: 0 0 1.25rem;
     }
     .proof-card blockquote em {
       font-style: normal;
       color: var(--primary);
       font-weight: 800;
     }
-    .proof-meta { display: flex; align-items: center; gap: 0.75rem; }
+    .proof-meta { display: flex; align-items: center; gap: 0.75rem; margin-top: auto; flex-shrink: 0; }
+    .proof-meta > div { min-width: 0; }
     .proof-avatar {
       width: 2.5rem;
       height: 2.5rem;
@@ -577,8 +582,8 @@
       justify-content: center;
       flex-shrink: 0;
     }
-    .proof-name { font-weight: 800; font-size: 0.88rem; color: var(--text-main); }
-    .proof-role { font-size: 0.72rem; font-weight: 600; color: var(--text-subtle); margin-top: 1px; }
+    .proof-name { font-weight: 800; font-size: 0.88rem; color: var(--text-main); line-height: 1.25; }
+    .proof-role { font-size: 0.72rem; font-weight: 600; color: var(--text-subtle); margin-top: 0.2rem; line-height: 1.35; }
 
     /* ======================= OBJECIONES ======================= */
     .objections-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
@@ -1301,7 +1306,7 @@
               <div class="proof-avatar">L</div>
               <div>
                 <div class="proof-name">Lautaro V.</div>
-                <div class="proof-role">Kiosco · Gran Buenos Aires · Usuario fundador</div>
+                <div class="proof-role">Kiosco · Gran Buenos Aires · Usuario</div>
               </div>
             </div>
           </div>
@@ -1320,8 +1325,8 @@
             <div class="proof-meta">
               <div class="proof-avatar">P</div>
               <div>
-                <div class="proof-name">Panadería de barrio</div>
-                <div class="proof-role">Productos por unidad y kg · Rosario</div>
+                <div class="proof-name">Dueño de panadería</div>
+                <div class="proof-role">Rubro panadería · Rosario</div>
               </div>
             </div>
           </div>

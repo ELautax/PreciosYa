@@ -3,8 +3,8 @@
  * Genera preciosya.apk (TWA) vía PWABuilder Cloud y lo copia a apps/web/public/ + apps/landing/.
  * Uso: node scripts/build-preciosya-apk.mjs [APP_ORIGIN]
  *
- * Host por defecto: https://preciosya-app.vercel.app
- * (Google verifica assetlinks ahí; preciosya.vercel.app puede fallar verificación → barra Chrome.)
+ * Host por defecto: https://preciosya.vercel.app (+ preciosya-app.vercel.app como origen adicional).
+ * Requiere `/.well-known/assetlinks.json` público en ambos dominios (sin SSO en Production).
  *
  * Reutiliza android-signing/signing.keystore si existe (signingMode mine).
  * Contraseñas: env PRECICIOSYA_KEYSTORE_PASSWORD / PRECICIOSYA_KEY_PASSWORD o signing-key-info.txt local.
@@ -18,16 +18,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.join(__dirname, '..')
 const keysDir = path.join(root, 'android-signing')
 
-/** Un solo origen TWA — no usar additionalTrustedOrigins (falla si un dominio no verifica). */
-const DEFAULT_TWA_HOST = 'https://preciosya-app.vercel.app'
+/** Host TWA = dominio que ve el usuario en producción (debe tener assetlinks público). */
+const DEFAULT_TWA_HOST = 'https://preciosya.vercel.app'
+/** Alias Vercel del mismo deploy; OAuth y enlaces pueden cruzar entre ambos. */
+const SECONDARY_TWA_ORIGIN = 'https://preciosya-app.vercel.app'
 const host = (process.argv[2] ?? DEFAULT_TWA_HOST).replace(/\/$/, '')
 
-if (host.includes('preciosya.vercel.app') && !host.includes('preciosya-app')) {
-  console.warn(
-    '[apk] AVISO: preciosya.vercel.app puede fallar verificación Digital Asset Links.',
-    'Recomendado: preciosya-app.vercel.app',
-  )
-}
+const additionalTrustedOrigins =
+  host === DEFAULT_TWA_HOST
+    ? [SECONDARY_TWA_ORIGIN]
+    : host === SECONDARY_TWA_ORIGIN
+      ? [DEFAULT_TWA_HOST]
+      : []
 
 function readSigningFromKeysDir() {
   const keystorePath = path.join(keysDir, 'signing.keystore')
@@ -68,9 +70,9 @@ function readSigningFromKeysDir() {
 const existingSign = readSigningFromKeysDir()
 
 const body = {
-  additionalTrustedOrigins: [],
-  appVersion: '1.0.0.2',
-  appVersionCode: 3,
+  additionalTrustedOrigins,
+  appVersion: '1.0.0.3',
+  appVersionCode: 4,
   backgroundColor: '#F5F5F4',
   display: 'standalone',
   enableNotifications: false,

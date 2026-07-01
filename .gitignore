@@ -12,5 +12,8 @@ coverage
 
 preciosya-apk.zip
 preciosya-apk-out/
+apk-inspect/
+apk-inspect.zip
 android-signing/
 .vercel
+.env*
