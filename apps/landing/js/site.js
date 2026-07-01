@@ -1,4 +1,4 @@
-/** Header, tema y menú mobile — compartido landing + blog */
+/** Header, tema, menú mobile y navegación — compartido landing + blog */
 (function () {
   const THEME_KEY = 'preciosya-theme';
 
@@ -20,9 +20,48 @@
     if (toggle) {
       toggle.setAttribute(
         'aria-label',
-        theme === 'light' ? 'Activar modo oscuro' : 'Activar modo claro'
+        theme === 'light' ? 'Activar modo oscuro' : 'Activar modo claro',
       );
     }
+  }
+
+  function resolveNavHref(item, isBlog) {
+    if (item.id === 'blog') {
+      return isBlog ? item.blogPath || './' : './blog/';
+    }
+    if (isBlog) {
+      return '../index.html' + (item.hash || '');
+    }
+    return item.hash || '#';
+  }
+
+  function initSiteNavigation() {
+    const navItems = window.PRECIOSYA_NAV;
+    if (!Array.isArray(navItems) || navItems.length === 0) return;
+
+    const isBlog = document.body.classList.contains('blog-page');
+    const activeId = document.body.dataset.navActive || (isBlog ? 'blog' : null);
+
+    function buildLinks(container, includeCta) {
+      if (!container) return;
+      const cta = container.querySelector('[data-login-cta], .mobile-menu-cta');
+      container.querySelectorAll('a.nav-link').forEach((el) => el.remove());
+
+      navItems.forEach((item) => {
+        const a = document.createElement('a');
+        a.href = resolveNavHref(item, isBlog);
+        a.className = 'nav-link' + (item.id === activeId ? ' active' : '');
+        a.textContent = item.label;
+        if (cta) {
+          container.insertBefore(a, cta);
+        } else {
+          container.appendChild(a);
+        }
+      });
+    }
+
+    buildLinks(document.querySelector('.nav-desktop'), false);
+    buildLinks(document.getElementById('mobileMenu'), true);
   }
 
   applyTheme(getStoredTheme());
@@ -35,12 +74,14 @@
     });
   }
 
+  initSiteNavigation();
+
   const header = document.getElementById('header');
   if (header) {
     window.addEventListener(
       'scroll',
       () => header.classList.toggle('scrolled', window.scrollY > 20),
-      { passive: true }
+      { passive: true },
     );
   }
 
@@ -78,7 +119,7 @@
     window.addEventListener(
       'scroll',
       () => bar.classList.toggle('visible', window.scrollY > 480),
-      { passive: true }
+      { passive: true },
     );
   }
 })();

@@ -20,6 +20,7 @@ npx vercel alias set web-xxxxx-elautaxs-projects.vercel.app preciosya.vercel.app
 
 - URL: https://preciosya-landing.vercel.app
 - Blog / guías: https://preciosya-landing.vercel.app/blog/
+- **Blog:** 4 guías publicadas, búsqueda en índice, RSS `/blog/feed.xml`, JSON-LD en artículos, imágenes en `assets/blog/` (ver `IMAGENES.md`).
 - CTAs → **`https://preciosya.vercel.app/login?from=landing`**
 - APK: sección **`#descargar`** con botón directo a **`https://preciosya-landing.vercel.app/preciosya.apk`** (`site-config.js` → `PRECIOSYA_APP_APK`); no usar la URL de la app (el rewrite SPA mandaba al login)
 - Hero con shader WebGL (fallback CSS si no hay WebGL o `prefers-reduced-motion`); animaciones GSAP/ScrollTrigger + Lenis via CDN

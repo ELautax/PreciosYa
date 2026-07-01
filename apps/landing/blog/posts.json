@@ -1,0 +1,67 @@
+{
+  "siteUrl": "https://preciosya-landing.vercel.app",
+  "posts": [
+    {
+      "slug": "como-calcular-precio-margen-kiosco",
+      "title": "Cómo calcular el precio de venta con margen en un kiosco (sin Excel)",
+      "description": "La fórmula básica y tres pasos para no vender al costo sin darte cuenta.",
+      "category": "Precios y márgenes",
+      "categoryKey": "margen",
+      "readMinutes": 6,
+      "datePublished": "2026-06-01",
+      "badge": "nuevo",
+      "cover": "../assets/blog/covers/margen-kiosco-card.jpg",
+      "hero": "../assets/blog/heroes/margen-kiosco-hero.jpg",
+      "coverVariant": "portrait",
+      "coverFallback": "../assets/app.png",
+      "heroFallback": "../assets/app.png",
+      "heroAlt": "Vista de PreciosYa calculando precio de venta con margen"
+    },
+    {
+      "slug": "cinco-errores-vender-perdida",
+      "title": "Cinco errores que hacen que vendas a pérdida sin darte cuenta",
+      "description": "Señales comunes en comercios chicos y cómo evitarlas antes de que te coman la inflación.",
+      "category": "Precios y márgenes",
+      "categoryKey": "margen",
+      "readMinutes": 5,
+      "datePublished": "2026-06-15",
+      "badge": null,
+      "cover": "../assets/blog/covers/errores-margen-card.jpg",
+      "hero": "../assets/blog/heroes/errores-margen-hero.jpg",
+      "coverVariant": "wide",
+      "coverFallback": "../assets/app.png",
+      "heroFallback": "../assets/app.png",
+      "heroAlt": "Alerta de margen bajo en un producto del catálogo"
+    },
+    {
+      "slug": "que-es-ipc-indec-almacen",
+      "title": "Qué es el IPC del INDEC y por qué importa en tu almacén",
+      "description": "Explicación simple del índice oficial y cuándo conviene usarlo para remarcar.",
+      "category": "Inflación e índices",
+      "categoryKey": "ipc",
+      "readMinutes": 7,
+      "datePublished": "2026-06-20",
+      "badge": null,
+      "cover": "../assets/blog/covers/ipc-indec-card.jpg",
+      "hero": "../assets/blog/heroes/ipc-indec-hero.jpg",
+      "coverFallback": "../assets/app.png",
+      "heroFallback": "../assets/app.png",
+      "heroAlt": "Aplicar IPC mensual por rubro en PreciosYa"
+    },
+    {
+      "slug": "lista-precios-whatsapp",
+      "title": "Cómo armar tu lista de precios para WhatsApp en dos minutos",
+      "description": "Formato claro para mandar a tus clientes desde el celular, sin diseño complicado.",
+      "category": "Herramientas prácticas",
+      "categoryKey": "tools",
+      "readMinutes": 4,
+      "datePublished": "2026-06-25",
+      "badge": null,
+      "cover": "../assets/blog/covers/lista-whatsapp-card.jpg",
+      "hero": "../assets/blog/heroes/lista-whatsapp-hero.jpg",
+      "coverFallback": "../assets/app.png",
+      "heroFallback": "../assets/app.png",
+      "heroAlt": "Lista de precios PNG lista para compartir por WhatsApp"
+    }
+  ]
+}

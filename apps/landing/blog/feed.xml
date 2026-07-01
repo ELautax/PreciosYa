@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="./feed.xsl"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blog PreciosYa</title>
+    <link>https://preciosya-landing.vercel.app/blog/</link>
+    <description>Guías prácticas para kioscos y almacenes: márgenes, IPC INDEC y listas para WhatsApp.</description>
+    <language>es-AR</language>
+    <lastBuildDate>Wed, 25 Jun 2026 12:00:00 -0300</lastBuildDate>
+    <atom:link href="https://preciosya-landing.vercel.app/blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>Cómo armar tu lista de precios para WhatsApp en dos minutos</title>
+      <link>https://preciosya-landing.vercel.app/blog/lista-precios-whatsapp.html</link>
+      <guid isPermaLink="true">https://preciosya-landing.vercel.app/blog/lista-precios-whatsapp.html</guid>
+      <pubDate>Wed, 25 Jun 2026 10:00:00 -0300</pubDate>
+      <description>Formato claro para mandar a tus clientes desde el celular, sin diseño complicado.</description>
+    </item>
+    <item>
+      <title>Qué es el IPC del INDEC y por qué importa en tu almacén</title>
+      <link>https://preciosya-landing.vercel.app/blog/que-es-ipc-indec-almacen.html</link>
+      <guid isPermaLink="true">https://preciosya-landing.vercel.app/blog/que-es-ipc-indec-almacen.html</guid>
+      <pubDate>Fri, 20 Jun 2026 10:00:00 -0300</pubDate>
+      <description>Explicación simple del índice oficial y cuándo conviene usarlo para remarcar.</description>
+    </item>
+    <item>
+      <title>Cinco errores que hacen que vendas a pérdida sin darte cuenta</title>
+      <link>https://preciosya-landing.vercel.app/blog/cinco-errores-vender-perdida.html</link>
+      <guid isPermaLink="true">https://preciosya-landing.vercel.app/blog/cinco-errores-vender-perdida.html</guid>
+      <pubDate>Sun, 15 Jun 2026 10:00:00 -0300</pubDate>
+      <description>Señales comunes en comercios chicos y cómo evitarlas antes de que te coman la inflación.</description>
+    </item>
+    <item>
+      <title>Cómo calcular el precio de venta con margen en un kiosco (sin Excel)</title>
+      <link>https://preciosya-landing.vercel.app/blog/como-calcular-precio-margen-kiosco.html</link>
+      <guid isPermaLink="true">https://preciosya-landing.vercel.app/blog/como-calcular-precio-margen-kiosco.html</guid>
+      <pubDate>Sun, 01 Jun 2026 10:00:00 -0300</pubDate>
+      <description>La fórmula básica y tres pasos para no vender al costo sin darte cuenta.</description>
+    </item>
+  </channel>
+</rss>
