@@ -204,7 +204,7 @@ export async function createNewIpcNotificationsForActiveUsers(input: {
       userId: u.id,
       type: 'NEW_IPC' as const,
       title: 'Nuevo IPC disponible',
-      body: `Se publicó IPC ${input.valuePct.toFixed(2)}% (${input.period.toISOString().slice(0, 7)}).`,
+      body: `El INDEC publicó IPC general +${input.valuePct.toFixed(2)}% para ${input.period.toISOString().slice(0, 7)}. Aplicá el ajuste a tus costos desde Productos.`,
       metadata: {
         valuePct: input.valuePct,
         period: input.period.toISOString(),

@@ -3,6 +3,7 @@ import axios from 'axios'
 import type { ApiSuccess } from 'shared'
 
 import { useApiClient } from '@/hooks/useApiClient'
+import { formatIndexMonth } from '@/lib/categoryIndex'
 import { appToast } from '@/lib/toast'
 import { formatPct, toPctNumber } from '@/lib/formatPct'
 
@@ -67,10 +68,10 @@ export function useAdminStats() {
   })
 }
 
-export function useAdminIndices() {
+export function useAdminIndices(period?: string) {
   const api = useApiClient()
   return useQuery({
-    queryKey: ['admin-indices'],
+    queryKey: ['admin-indices', period ?? 'latest'],
     queryFn: async () => {
       const res = await api.get<
         ApiSuccess<{
@@ -83,7 +84,9 @@ export function useAdminIndices() {
             fetchedAt: string
           }>
         }>
-      >('/api/admin/indices')
+      >('/api/admin/indices', {
+        params: period ? { period } : undefined,
+      })
       return res.data.data.indices.map((idx) => ({
         ...idx,
         valuePct: toPctNumber(idx.valuePct) ?? 0,
@@ -141,10 +144,7 @@ export function useAdminForceFetchIpc() {
       void qc.invalidateQueries({ queryKey: ['admin-indices'] })
       void qc.invalidateQueries({ queryKey: ['ipc-latest'] })
       void qc.invalidateQueries({ queryKey: ['ipc-history'] })
-      const month = new Date(ipc.period).toLocaleDateString('es-AR', {
-        month: 'long',
-        year: 'numeric',
-      })
+      const month = formatIndexMonth(ipc.period)
       const seriesCount = ipc.seriesUpdated ?? ipc.indices?.length
       const seriesLabel =
         seriesCount !== undefined ? `${seriesCount} series` : 'sincronizado'
@@ -184,10 +184,7 @@ export function useAdminManualIpc() {
       void qc.invalidateQueries({ queryKey: ['admin-indices'] })
       void qc.invalidateQueries({ queryKey: ['ipc-latest'] })
       void qc.invalidateQueries({ queryKey: ['ipc-history'] })
-      const month = new Date(data.period).toLocaleDateString('es-AR', {
-        month: 'long',
-        year: 'numeric',
-      })
+      const month = formatIndexMonth(data.period)
       appToast.success(`IPC manual guardado (${month}, ${data.count} series)`)
     },
     onError: (err) => {

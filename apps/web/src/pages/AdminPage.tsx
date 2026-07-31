@@ -25,6 +25,7 @@ import {
 } from '@/hooks/useAdmin'
 import { useMe } from '@/hooks/useMe'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { formatIndexMonth, indexPeriodYearMonth } from '@/lib/categoryIndex'
 import { IPC_INDEX_LABELS, IPC_INDEX_TYPES } from '@/lib/ipcLabels'
 import { formatPct, toPctNumber } from '@/lib/formatPct'
 
@@ -42,18 +43,18 @@ export default function AdminPage() {
   const [search, setSearch] = useState('')
   const usersQ = useAdminUsers(1, search)
   const statsQ = useAdminStats()
-  const indicesQ = useAdminIndices()
-  const updatePlanMut = useAdminUpdatePlan()
-  const healthQ = useApiHealth()
-  const forceIpcMut = useAdminForceFetchIpc()
-  const manualIpcMut = useAdminManualIpc()
-  const apiOutdated = healthQ.isSuccess && healthQ.data?.ipcManualRoute !== true
   const [manualOpen, setManualOpen] = useState(false)
   const [manualPeriod, setManualPeriod] = useState(() => {
     const d = new Date()
     return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`
   })
   const [manualValues, setManualValues] = useState<Record<string, string>>({})
+  const indicesQ = useAdminIndices(manualPeriod)
+  const updatePlanMut = useAdminUpdatePlan()
+  const healthQ = useApiHealth()
+  const forceIpcMut = useAdminForceFetchIpc()
+  const manualIpcMut = useAdminManualIpc()
+  const apiOutdated = healthQ.isSuccess && healthQ.data?.ipcManualRoute !== true
 
   const indicesByType = useMemo(() => {
     const map: Record<string, number> = {}
@@ -64,24 +65,34 @@ export default function AdminPage() {
   }, [indicesQ.data])
 
   useEffect(() => {
-    if (!manualOpen || indicesQ.isLoading) return
-    setManualValues((prev) => {
-      const next = { ...prev }
-      for (const type of IPC_INDEX_TYPES) {
-        if (next[type] === undefined && indicesByType[type] !== undefined) {
-          next[type] = String(indicesByType[type])
-        }
+    if (indicesQ.isLoading) return
+    const responseYm = indicesQ.data?.[0]?.period
+      ? indexPeriodYearMonth(indicesQ.data[0].period)
+      : null
+    // Si el API no filtró (desactualizado) o no hay filas del mes, no prellenar con otro corte
+    if (responseYm && responseYm !== manualPeriod) {
+      setManualValues({})
+      return
+    }
+    const next: Record<string, string> = {}
+    for (const type of IPC_INDEX_TYPES) {
+      if (indicesByType[type] !== undefined) {
+        next[type] = String(indicesByType[type])
       }
-      return next
-    })
-  }, [manualOpen, indicesQ.isLoading, indicesByType])
+    }
+    setManualValues(next)
+  }, [manualPeriod, indicesQ.isLoading, indicesByType, indicesQ.data])
 
-  const latestPeriodLabel = indicesQ.data?.[0]?.period
-    ? new Date(indicesQ.data[0].period).toLocaleDateString('es-AR', {
-        month: 'long',
-        year: 'numeric',
-      })
+  const responsePeriodYm = indicesQ.data?.[0]?.period
+    ? indexPeriodYearMonth(indicesQ.data[0].period)
     : null
+  const periodMismatch = Boolean(responsePeriodYm && responsePeriodYm !== manualPeriod)
+
+  const latestPeriodLabel = periodMismatch
+    ? formatIndexMonth(`${manualPeriod}-01T00:00:00.000Z`)
+    : indicesQ.data?.[0]?.period
+      ? formatIndexMonth(indicesQ.data[0].period)
+      : formatIndexMonth(`${manualPeriod}-01T00:00:00.000Z`)
 
   const ipcHomogeneous =
     (indicesQ.data?.length ?? 0) > 1 &&
@@ -369,6 +380,7 @@ export default function AdminPage() {
               {latestPeriodLabel && (
                 <p className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
                   Corte: {latestPeriodLabel}
+                  {indicesQ.isFetching ? ' · …' : ''}
                 </p>
               )}
 
@@ -421,6 +433,11 @@ export default function AdminPage() {
                         onChange={(e) => setManualPeriod(e.target.value)}
                         className="w-full h-10"
                       />
+                      <p className="text-[10px] text-text-muted leading-relaxed">
+                        {periodMismatch
+                          ? 'No hay series guardadas para este mes (o el API aún no filtra por período). Completá % y guardá.'
+                          : 'Los % se cargan del período elegido. Si no hay datos, completá a mano y guardá.'}
+                      </p>
                     </label>
                     <div className="max-h-64 overflow-y-auto space-y-2 pr-1 scrollbar-hide">
                       {IPC_INDEX_TYPES.map((type) => (

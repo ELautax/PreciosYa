@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard,
   Package,
@@ -261,22 +261,38 @@ export function AppLayout() {
                 </div>
               </button>
 
-              <div className="flex items-center gap-2">
-                <div className="hidden flex-col items-end gap-1 text-right sm:flex">
-                  {loadingMe ? (
-                    <div className="skeleton h-3 w-20" />
-                  ) : (
-                    <p className="text-xs font-black leading-none text-text-main">{me?.name}</p>
-                  )}
-                  {!loadingMe && me ? <UserTierBadge user={me} /> : null}
+              {loadingMe ? (
+                <div className="flex items-center gap-2 px-2">
+                  <div className="skeleton h-3 w-20" />
+                  <div className="skeleton h-9 w-9 rounded-full" />
                 </div>
-                {!loadingMe && me ? (
+              ) : me ? (
+                <Link
+                  to="/settings?tab=account"
+                  aria-label="Ir a Mi cuenta"
+                  title="Mi cuenta"
+                  className="group flex items-center gap-2 rounded-full border border-transparent py-1 pl-2.5 pr-1 transition-all hover:border-border hover:bg-surface-soft hover:shadow-sm active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/30"
+                >
+                  <div className="hidden flex-col items-end gap-1 text-right sm:flex">
+                    <p className="text-xs font-black leading-none text-text-main transition-colors group-hover:text-primary-700">
+                      {me.name}
+                    </p>
+                    <UserTierBadge user={me} />
+                  </div>
                   <UserTierBadge user={me} className="sm:hidden" />
-                ) : null}
-                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-primary-100 bg-primary-50 font-black text-primary-700 shadow-sm transition-transform active:scale-95 dark:border-primary-800 dark:bg-primary-900/20">
-                  {me?.name?.charAt(0).toUpperCase() || '?'}
-                </div>
-              </div>
+                  {me.avatarUrl ? (
+                    <img
+                      src={me.avatarUrl}
+                      alt=""
+                      className="h-9 w-9 rounded-full border border-primary-100 object-cover shadow-sm transition-transform group-hover:scale-105 dark:border-primary-800"
+                    />
+                  ) : (
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full border border-primary-100 bg-primary-50 font-black text-primary-700 shadow-sm transition-transform group-hover:scale-105 dark:border-primary-800 dark:bg-primary-900/20">
+                      {me.name?.charAt(0).toUpperCase() || '?'}
+                    </div>
+                  )}
+                </Link>
+              ) : null}
             </div>
           </div>
         </header>

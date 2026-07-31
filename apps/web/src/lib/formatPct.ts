@@ -9,3 +9,13 @@ export function toPctNumber(value: unknown): number | null {
   const n = typeof value === 'number' ? value : Number(value)
   return Number.isFinite(n) ? n : null
 }
+
+/** Cotización ARS (ej. dólar BCRA) con decimales visibles en es-AR. */
+export function formatArsRate(value: unknown, digits = 2): string {
+  const n = typeof value === 'number' ? value : Number(value)
+  if (!Number.isFinite(n)) return '—'
+  return n.toLocaleString('es-AR', {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  })
+}

@@ -1,14 +1,16 @@
-import { useState, useRef, useEffect } from 'react'
-import { 
-  Bell, 
-  Check, 
-  BellOff, 
-  TrendingUp, 
-  AlertTriangle, 
-  CalendarClock, 
-  Lock, 
+import { useState, useRef, useEffect, type ComponentType } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import {
+  Bell,
+  Check,
+  BellOff,
+  TrendingUp,
+  AlertTriangle,
+  CalendarClock,
+  Lock,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  DollarSign,
 } from 'lucide-react'
 
 import {
@@ -18,9 +20,13 @@ import {
   useNotificationsRealtimeSync,
   useUnreadNotificationsCount,
 } from '@/hooks/useNotifications'
+import { formatIndexMonth } from '@/lib/categoryIndex'
+import { formatArsRate, formatPct, toPctNumber } from '@/lib/formatPct'
+import type { NotificationDto } from '@/types/notification'
 
-const NOTIF_ICONS: Record<string, any> = {
+const NOTIF_ICONS: Record<string, ComponentType<{ size?: number; strokeWidth?: number }>> = {
   NEW_IPC: TrendingUp,
+  BCRA_USD_ALERT: DollarSign,
   MARGIN_ALERT: AlertTriangle,
   PLAN_EXPIRING: CalendarClock,
   PLAN_EXPIRED: Lock,
@@ -28,7 +34,8 @@ const NOTIF_ICONS: Record<string, any> = {
 }
 
 const NOTIF_COLORS: Record<string, string> = {
-  NEW_IPC: 'text-primary-600 bg-primary-50 dark:bg-primary-900/20',
+  NEW_IPC: 'text-accent-700 bg-accent-50 dark:bg-accent-900/20',
+  BCRA_USD_ALERT: 'text-primary-700 bg-primary-50 dark:bg-primary-900/20',
   MARGIN_ALERT: 'text-danger-600 bg-danger-50 dark:bg-danger-900/20',
   PLAN_EXPIRING: 'text-accent-600 bg-accent-50 dark:bg-accent-900/20',
   PLAN_EXPIRED: 'text-danger-700 bg-danger-100 dark:bg-danger-900/40',
@@ -46,10 +53,70 @@ function formatDate(iso: string): string {
   })
 }
 
+function asMetaRecord(metadata: unknown): Record<string, unknown> | null {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return null
+  return metadata as Record<string, unknown>
+}
+
+function notificationHref(type: string): string | null {
+  if (type === 'NEW_IPC' || type === 'BCRA_USD_ALERT') return '/products'
+  if (type === 'MARGIN_ALERT') return '/products?filter=alert'
+  if (type === 'PLAN_EXPIRING' || type === 'PLAN_EXPIRED') return '/settings?tab=plan'
+  return null
+}
+
+function NotificationMetaChips({ n }: { n: NotificationDto }) {
+  const meta = asMetaRecord(n.metadata)
+  if (!meta) return null
+
+  if (n.type === 'NEW_IPC') {
+    const pct = toPctNumber(meta.valuePct)
+    const period = typeof meta.period === 'string' ? meta.period : null
+    if (pct === null && !period) return null
+    return (
+      <div className="mt-2.5 flex flex-wrap gap-1.5">
+        {pct !== null ? (
+          <span className="inline-flex items-center rounded-lg border border-accent-200 bg-accent-50 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-accent-800 dark:border-accent-800/40 dark:bg-accent-900/20 dark:text-accent-100">
+            IPC general +{formatPct(pct)}%
+          </span>
+        ) : null}
+        {period ? (
+          <span className="inline-flex items-center rounded-lg border border-border bg-surface-soft px-2 py-1 text-[10px] font-black uppercase tracking-wide text-text-muted">
+            {formatIndexMonth(period)}
+          </span>
+        ) : null}
+      </div>
+    )
+  }
+
+  if (n.type === 'BCRA_USD_ALERT') {
+    const pct = toPctNumber(meta.valuePct)
+    const rate = toPctNumber(meta.usdRate)
+    return (
+      <div className="mt-2.5 flex flex-wrap gap-1.5">
+        {rate !== null ? (
+          <span className="inline-flex items-center rounded-lg border border-primary-200 bg-primary-50 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-primary-800 dark:border-primary-800/40 dark:bg-primary-900/20 dark:text-primary-100">
+            USD ${formatArsRate(rate)}
+          </span>
+        ) : null}
+        {pct !== null ? (
+          <span className="inline-flex items-center rounded-lg border border-border bg-surface-soft px-2 py-1 text-[10px] font-black uppercase tracking-wide text-text-muted">
+            {pct >= 0 ? '+' : ''}
+            {formatPct(pct)}% vs ayer
+          </span>
+        ) : null}
+      </div>
+    )
+  }
+
+  return null
+}
+
 export function NotificationCenter() {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
-  
+  const navigate = useNavigate()
+
   useNotificationsRealtimeSync()
   const listQ = useNotifications(1)
   const unreadQ = useUnreadNotificationsCount()
@@ -75,15 +142,17 @@ export function NotificationCenter() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={`relative flex h-11 w-11 items-center justify-center rounded-full transition-all active:scale-90 ${
-          open 
-            ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20' 
+          open
+            ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20'
             : 'bg-surface-soft/80 text-text-muted hover:bg-border/50'
         }`}
         aria-label="Notificaciones"
       >
         <Bell size={22} strokeWidth={open ? 2.5 : 2} />
         {unread > 0 ? (
-          <span className={`absolute -right-0.5 -top-0.5 flex h-5 min-w-5 animate-scale-in items-center justify-center rounded-full bg-danger-600 px-1 text-[10px] font-black text-white ring-2 ${open ? 'ring-primary-600' : 'ring-surface'}`}>
+          <span
+            className={`absolute -right-0.5 -top-0.5 flex h-5 min-w-5 animate-scale-in items-center justify-center rounded-full bg-danger-600 px-1 text-[10px] font-black text-white ring-2 ${open ? 'ring-primary-600' : 'ring-surface'}`}
+          >
             {unread > 9 ? '9+' : unread}
           </span>
         ) : null}
@@ -124,13 +193,16 @@ export function NotificationCenter() {
                   <BellOff size={40} strokeWidth={1.5} />
                 </div>
                 <p className="text-base font-black text-text-main">Todo al día</p>
-                <p className="mt-1 text-sm text-text-subtle text-balance">No tenés notificaciones nuevas.</p>
+                <p className="mt-1 text-sm text-text-subtle text-balance">
+                  No tenés notificaciones nuevas.
+                </p>
               </div>
             ) : (
               items.map((n) => {
                 const Icon = NOTIF_ICONS[n.type] || Bell
                 const colorClass = NOTIF_COLORS[n.type] || 'text-text-muted bg-surface-soft'
-                
+                const href = notificationHref(n.type)
+
                 return (
                   <article
                     key={n.id}
@@ -141,44 +213,66 @@ export function NotificationCenter() {
                     {!n.isRead && (
                       <div className="absolute left-0 top-0 h-full w-1.5 bg-primary-600" />
                     )}
-                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${colorClass}`}>
+                    <div
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${colorClass}`}
+                    >
                       <Icon size={20} strokeWidth={2.5} />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
-                        <p className={`text-sm leading-tight transition-colors ${n.isRead ? 'font-bold text-text-muted' : 'font-black text-text-main'}`}>
+                        <p
+                          className={`text-sm leading-tight transition-colors ${n.isRead ? 'font-bold text-text-muted' : 'font-black text-text-main'}`}
+                        >
                           {n.title}
                         </p>
                         <span className="shrink-0 text-[10px] font-bold text-text-subtle">
                           {formatDate(n.createdAt)}
                         </span>
                       </div>
-                      <p className="mt-1.5 text-xs text-text-muted line-clamp-2 leading-relaxed">
-                        {n.body}
-                      </p>
-                      {!n.isRead && (
-                        <div className="mt-4 flex items-center justify-between">
+                      <p className="mt-1.5 text-xs leading-relaxed text-text-muted">{n.body}</p>
+                      <NotificationMetaChips n={n} />
+                      <div className="mt-3 flex items-center justify-between gap-2">
+                        {!n.isRead ? (
                           <button
                             type="button"
                             onClick={() => void markOne.mutateAsync(n.id)}
-                            className="text-[10px] font-black uppercase tracking-widest text-primary-600 hover:text-primary-700 active:scale-95 transition-all"
+                            className="text-[10px] font-black uppercase tracking-widest text-primary-600 transition-all hover:text-primary-700 active:scale-95"
                           >
                             Marcar como leída
                           </button>
-                          <ChevronRight size={12} className="text-primary-600/50" />
-                        </div>
-                      )}
+                        ) : (
+                          <span />
+                        )}
+                        {href ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!n.isRead) void markOne.mutateAsync(n.id)
+                              setOpen(false)
+                              void navigate(href)
+                            }}
+                            className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-accent-700 transition-colors hover:text-accent-800"
+                          >
+                            Ver
+                            <ChevronRight size={12} />
+                          </button>
+                        ) : null}
+                      </div>
                     </div>
                   </article>
                 )
               })
             )}
           </div>
-          
-          <div className="bg-surface-soft/50 p-4 text-center border-t border-border">
-             <button className="text-[10px] font-black uppercase tracking-widest text-text-subtle hover:text-text-main transition-all">
-                Historial completo
-             </button>
+
+          <div className="border-t border-border bg-surface-soft/50 p-4 text-center">
+            <Link
+              to="/history"
+              onClick={() => setOpen(false)}
+              className="text-[10px] font-black uppercase tracking-widest text-text-subtle transition-all hover:text-primary-700"
+            >
+              Ver historial de índices
+            </Link>
           </div>
         </div>
       ) : null}

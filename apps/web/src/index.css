@@ -357,7 +357,7 @@ html.dark,
 }
 
 @utility kpi-value {
-  @apply font-mono text-2xl font-black truncate text-text-main;
+  @apply font-mono text-xl font-black leading-tight text-text-main sm:text-2xl;
 }
 
 @layer base {

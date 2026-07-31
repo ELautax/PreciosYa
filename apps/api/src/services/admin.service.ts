@@ -80,16 +80,40 @@ export async function getAdminStats() {
   return { users, locals, products, alerts }
 }
 
-export async function getAdminIndices() {
-  const latestGeneral = await prisma.economicIndex.findFirst({
-    where: { type: IndexType.IPC_INDEC },
-    orderBy: { period: 'desc' },
-  })
-  if (!latestGeneral) return []
+export async function getAdminIndices(periodYm?: string) {
+  let periodDate: Date | null = null
+
+  if (periodYm) {
+    const match = /^(\d{4})-(\d{2})$/.exec(periodYm.trim())
+    if (!match) {
+      throw new AppError({
+        statusCode: 400,
+        message: 'period debe ser YYYY-MM',
+        code: 'INVALID_PERIOD',
+      })
+    }
+    const year = Number(match[1])
+    const month = Number(match[2])
+    if (month < 1 || month > 12) {
+      throw new AppError({
+        statusCode: 400,
+        message: 'Mes inválido en period',
+        code: 'INVALID_PERIOD',
+      })
+    }
+    periodDate = new Date(Date.UTC(year, month - 1, 1))
+  } else {
+    const latestGeneral = await prisma.economicIndex.findFirst({
+      where: { type: IndexType.IPC_INDEC },
+      orderBy: { period: 'desc' },
+    })
+    if (!latestGeneral) return []
+    periodDate = latestGeneral.period
+  }
 
   const rows = await prisma.economicIndex.findMany({
     where: {
-      period: latestGeneral.period,
+      period: periodDate,
       type: { in: IPC_INDEX_TYPES },
     },
     orderBy: { type: 'asc' },

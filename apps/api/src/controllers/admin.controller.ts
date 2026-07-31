@@ -51,8 +51,16 @@ export async function adminGetStats(_req: Request, res: Response): Promise<void>
   sendSuccess(res, { stats })
 }
 
-export async function adminGetIndices(_req: Request, res: Response): Promise<void> {
-  const indices = await getAdminIndices()
+const indicesQuery = z.object({
+  period: z
+    .string()
+    .regex(/^\d{4}-(0[1-9]|1[0-2])$/)
+    .optional(),
+})
+
+export async function adminGetIndices(req: Request, res: Response): Promise<void> {
+  const q = indicesQuery.parse(req.query)
+  const indices = await getAdminIndices(q.period)
   sendSuccess(res, { indices })
 }
 

@@ -34,6 +34,14 @@
 
 ---
 
+## Panel de control y cuenta
+
+1. En el **header**, tocá tu **nombre / avatar** para ir a **Mi cuenta** (perfil y plan).
+2. El panel muestra productos, alertas, IPC del mes, **dólar oficial** (cotización completa + variación) y atajos.
+3. La **campanita** muestra el detalle del IPC (porcentaje y período) o del salto USD; desde ahí podés ir a Productos o al historial de índices.
+
+---
+
 ## Cuando sale un nuevo IPC
 
 1. En **Productos** verás un aviso **IPC pendiente** (o un mensaje verde si ya lo aplicaste este mes).

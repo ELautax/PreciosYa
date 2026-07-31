@@ -32,7 +32,7 @@ export function IndexStatusBanner({
   const periodLabel =
     variant === 'ipc' && indexPeriod
       ? formatIndexMonth(indexPeriod)
-      : new Date(indexPeriod).toLocaleDateString('es-AR')
+      : new Date(indexPeriod).toLocaleDateString('es-AR', { timeZone: 'UTC' })
 
   if (applied) {
     return (

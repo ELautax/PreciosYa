@@ -39,6 +39,7 @@ import type { LocalDto } from '@/types/local'
 import type { CategoryDto } from '@/types/category'
 import type { ProductDto } from '@/types/product'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { formatArsRate, formatPct } from '@/lib/formatPct'
 
 function CategoryFilterSelect({
   localId,
@@ -281,7 +282,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
           indexPeriod={ipcQuery.data?.bcra?.period ?? null}
           indexValueLabel={
             ipcQuery.data?.bcra?.usdRateArs != null
-              ? `$${ipcQuery.data.bcra.usdRateArs.toLocaleString('es-AR')} (${ipcQuery.data.bcra.valuePct >= 0 ? '+' : ''}${ipcQuery.data.bcra.valuePct.toFixed(2)}%)`
+              ? `$${formatArsRate(ipcQuery.data.bcra.usdRateArs)} (${ipcQuery.data.bcra.valuePct >= 0 ? '+' : ''}${formatPct(ipcQuery.data.bcra.valuePct)}%)`
               : ipcQuery.isFetching
                 ? 'Sincronizando…'
                 : 'Cotización no disponible — se actualiza automáticamente cada día'

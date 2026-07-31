@@ -81,8 +81,8 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const tabParam = searchParams.get('tab')
-    if (tabParam === 'plan') {
-      setTab('plan')
+    if (tabParam === 'plan' || tabParam === 'account' || tabParam === 'business') {
+      setTab(tabParam)
     }
     if (tabParam === 'plan' && searchParams.get('planes') === '1') {
       setPlanModalOpen(true)
@@ -165,7 +165,7 @@ export default function SettingsPage() {
                      active={tab === 'account'} 
                      onClick={() => setTab('account')} 
                      icon={User} 
-                     label="Cuenta" 
+                     label="Mi cuenta" 
                   />
                   <TabButton 
                      active={tab === 'plan'} 

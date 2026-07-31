@@ -10,6 +10,7 @@ import { useLocals } from '@/hooks/useLocals'
 import { useSelectedLocal } from '@/hooks/useSelectedLocal'
 import { useProductHistory, useProducts } from '@/hooks/useProducts'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { formatIndexMonth } from '@/lib/categoryIndex'
 
 export default function HistoryPage() {
   const { data: locals, isLoading: loadingLocals } = useLocals()
@@ -227,7 +228,7 @@ export default function HistoryPage() {
                             <Calendar size={16} strokeWidth={2.5} />
                          </div>
                          <span className="text-[10px] font-black text-text-muted uppercase tracking-widest leading-none">
-                            {new Date(row.period).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })}
+                            {formatIndexMonth(row.period)}
                          </span>
                       </div>
                       <div className="flex items-center gap-1.5 rounded-full bg-accent-50 px-3 py-1 text-accent-700 dark:bg-accent-900/20 shadow-xs border border-accent-100/50">
