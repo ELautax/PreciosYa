@@ -244,7 +244,7 @@ export default function DashboardPage() {
                 <h3 className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
                   Estado operativo
                 </h3>
-                <span className="rounded-full bg-primary-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-primary-700 dark:bg-primary-900/30">
+                <span className="rounded-full border border-primary-200 bg-primary-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-primary-800 dark:border-primary-200 dark:text-primary-600">
                   Local
                 </span>
               </div>

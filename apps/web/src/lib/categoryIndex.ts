@@ -12,9 +12,9 @@ export function categoryIndexLabel(preferredIndex: string | null | undefined): s
 
 export function categoryIndexBadgeClass(preferredIndex: string | null | undefined): string {
   if (isUsdIndex(preferredIndex)) {
-    return 'border-primary-200 bg-primary-50 text-primary-800 dark:bg-primary-900/20 dark:border-primary-800/40'
+    return 'border-primary-200 bg-primary-50 text-primary-800 dark:border-primary-200 dark:text-primary-600'
   }
-  return 'border-accent-200 bg-accent-50 text-accent-800 dark:bg-accent-900/20 dark:border-accent-800/40'
+  return 'border-accent-200 bg-accent-50 text-accent-700 dark:border-accent-200 dark:text-accent-500'
 }
 
 /** IPC mensual: mismo mes calendario (UTC). USD: mismo día (UTC). */

@@ -33,13 +33,14 @@ const NOTIF_ICONS: Record<string, ComponentType<{ size?: number; strokeWidth?: n
   WELCOME: Sparkles,
 }
 
+/** En dark, *-50/*-100 son fondos oscuros: el texto debe usar *-500/*-600 claros. */
 const NOTIF_COLORS: Record<string, string> = {
-  NEW_IPC: 'text-accent-700 bg-accent-50 dark:bg-accent-900/20',
-  BCRA_USD_ALERT: 'text-primary-700 bg-primary-50 dark:bg-primary-900/20',
-  MARGIN_ALERT: 'text-danger-600 bg-danger-50 dark:bg-danger-900/20',
-  PLAN_EXPIRING: 'text-accent-600 bg-accent-50 dark:bg-accent-900/20',
-  PLAN_EXPIRED: 'text-danger-700 bg-danger-100 dark:bg-danger-900/40',
-  WELCOME: 'text-primary-600 bg-primary-50 dark:bg-primary-900/20',
+  NEW_IPC: 'bg-accent-50 text-accent-700 dark:text-accent-500',
+  BCRA_USD_ALERT: 'bg-primary-50 text-primary-700 dark:text-primary-600',
+  MARGIN_ALERT: 'bg-danger-50 text-danger-700 dark:text-danger-600',
+  PLAN_EXPIRING: 'bg-accent-50 text-accent-700 dark:text-accent-500',
+  PLAN_EXPIRED: 'bg-danger-100 text-danger-700 dark:bg-danger-50 dark:text-danger-600',
+  WELCOME: 'bg-primary-50 text-primary-700 dark:text-primary-600',
 }
 
 function formatDate(iso: string): string {
@@ -76,12 +77,12 @@ function NotificationMetaChips({ n }: { n: NotificationDto }) {
     return (
       <div className="mt-2.5 flex flex-wrap gap-1.5">
         {pct !== null ? (
-          <span className="inline-flex items-center rounded-lg border border-accent-200 bg-accent-50 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-accent-800 dark:border-accent-800/40 dark:bg-accent-900/20 dark:text-accent-100">
+          <span className="inline-flex items-center rounded-lg border border-accent-200 bg-accent-50 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-accent-700 dark:border-accent-200 dark:text-accent-500">
             IPC general +{formatPct(pct)}%
           </span>
         ) : null}
         {period ? (
-          <span className="inline-flex items-center rounded-lg border border-border bg-surface-soft px-2 py-1 text-[10px] font-black uppercase tracking-wide text-text-muted">
+          <span className="inline-flex items-center rounded-lg border border-border-strong/40 bg-surface-soft px-2 py-1 text-[10px] font-black uppercase tracking-wide text-text-main">
             {formatIndexMonth(period)}
           </span>
         ) : null}
@@ -95,12 +96,12 @@ function NotificationMetaChips({ n }: { n: NotificationDto }) {
     return (
       <div className="mt-2.5 flex flex-wrap gap-1.5">
         {rate !== null ? (
-          <span className="inline-flex items-center rounded-lg border border-primary-200 bg-primary-50 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-primary-800 dark:border-primary-800/40 dark:bg-primary-900/20 dark:text-primary-100">
+          <span className="inline-flex items-center rounded-lg border border-primary-200 bg-primary-50 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-primary-800 dark:border-primary-200 dark:text-primary-600">
             USD ${formatArsRate(rate)}
           </span>
         ) : null}
         {pct !== null ? (
-          <span className="inline-flex items-center rounded-lg border border-border bg-surface-soft px-2 py-1 text-[10px] font-black uppercase tracking-wide text-text-muted">
+          <span className="inline-flex items-center rounded-lg border border-border-strong/40 bg-surface-soft px-2 py-1 text-[10px] font-black uppercase tracking-wide text-text-main">
             {pct >= 0 ? '+' : ''}
             {formatPct(pct)}% vs ayer
           </span>
@@ -163,7 +164,7 @@ export function NotificationCenter() {
           <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-5">
             <div>
               <h3 className="text-sm font-black text-text-main leading-none">Notificaciones</h3>
-              <p className="mt-1.5 text-[10px] font-extrabold text-text-subtle uppercase tracking-widest leading-none">
+              <p className="mt-1.5 text-[10px] font-extrabold uppercase tracking-widest leading-none text-text-muted">
                 {unread} pendientes
               </p>
             </div>
@@ -172,7 +173,7 @@ export function NotificationCenter() {
                 type="button"
                 onClick={() => void markAll.mutateAsync()}
                 disabled={markAll.isPending || unread === 0}
-                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary-600 hover:text-primary-700 disabled:opacity-30 transition-all"
+                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary-700 transition-all hover:text-primary-800 disabled:opacity-40 dark:text-primary-600 dark:hover:text-primary-600"
               >
                 <Check size={14} strokeWidth={3} />
                 Leer todo
@@ -206,8 +207,8 @@ export function NotificationCenter() {
                 return (
                   <article
                     key={n.id}
-                    className={`group relative flex gap-4 p-5 transition-all hover:bg-surface-soft/50 ${
-                      n.isRead ? 'bg-surface' : 'bg-primary-50/20 dark:bg-primary-900/5'
+                    className={`group relative flex gap-4 p-5 transition-all hover:bg-surface-soft ${
+                      n.isRead ? 'bg-surface' : 'bg-primary-50/60 dark:bg-primary-50/40'
                     }`}
                   >
                     {!n.isRead && (
@@ -225,18 +226,22 @@ export function NotificationCenter() {
                         >
                           {n.title}
                         </p>
-                        <span className="shrink-0 text-[10px] font-bold text-text-subtle">
+                        <span className="shrink-0 text-[10px] font-bold text-text-muted">
                           {formatDate(n.createdAt)}
                         </span>
                       </div>
-                      <p className="mt-1.5 text-xs leading-relaxed text-text-muted">{n.body}</p>
+                      <p
+                        className={`mt-1.5 text-xs leading-relaxed ${n.isRead ? 'text-text-muted' : 'text-text-main/80'}`}
+                      >
+                        {n.body}
+                      </p>
                       <NotificationMetaChips n={n} />
                       <div className="mt-3 flex items-center justify-between gap-2">
                         {!n.isRead ? (
                           <button
                             type="button"
                             onClick={() => void markOne.mutateAsync(n.id)}
-                            className="text-[10px] font-black uppercase tracking-widest text-primary-600 transition-all hover:text-primary-700 active:scale-95"
+                            className="text-[10px] font-black uppercase tracking-widest text-primary-700 transition-all hover:text-primary-800 active:scale-95 dark:text-primary-600"
                           >
                             Marcar como leída
                           </button>
@@ -251,7 +256,7 @@ export function NotificationCenter() {
                               setOpen(false)
                               void navigate(href)
                             }}
-                            className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-accent-700 transition-colors hover:text-accent-800"
+                            className="inline-flex items-center gap-1 rounded-lg bg-primary-50 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-primary-800 transition-colors hover:bg-primary-100 dark:text-primary-600"
                           >
                             Ver
                             <ChevronRight size={12} />
@@ -265,11 +270,11 @@ export function NotificationCenter() {
             )}
           </div>
 
-          <div className="border-t border-border bg-surface-soft/50 p-4 text-center">
+          <div className="border-t border-border bg-surface-soft p-4 text-center">
             <Link
               to="/history"
               onClick={() => setOpen(false)}
-              className="text-[10px] font-black uppercase tracking-widest text-text-subtle transition-all hover:text-primary-700"
+              className="text-[10px] font-black uppercase tracking-widest text-text-muted transition-all hover:text-primary-700 dark:hover:text-primary-600"
             >
               Ver historial de índices
             </Link>

@@ -27,8 +27,8 @@ export function getUserTierLabel(tier: UserTier): string {
 }
 
 export const userTierBadgeClass: Record<UserTier, string> = {
-  free: 'border-border bg-surface-soft text-text-subtle',
-  pro: 'border-primary-200 bg-primary-50 text-primary-700 dark:border-primary-800 dark:bg-primary-900/30 dark:text-primary-400',
-  agency: 'border-accent-200 bg-accent-50 text-accent-700 dark:border-accent-800 dark:bg-accent-900/30 dark:text-accent-400',
-  admin: 'border-accent-500 bg-accent-500 text-white',
+  free: 'border-border-strong bg-surface-soft text-text-muted',
+  pro: 'border-primary-200 bg-primary-50 text-primary-800 dark:border-primary-200 dark:text-primary-600',
+  agency: 'border-accent-200 bg-accent-50 text-accent-700 dark:border-accent-200 dark:text-accent-500',
+  admin: 'border-accent-600 bg-accent-600 text-white dark:border-accent-500 dark:bg-accent-500 dark:text-text-main',
 }

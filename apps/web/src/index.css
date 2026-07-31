@@ -20,6 +20,7 @@
   --py-accent-500: #f59e0b;
   --py-accent-600: #d97706;
   --py-accent-700: #b45309;
+  --py-accent-800: #92400e;
 
   --py-danger-50: #fef2f2;
   --py-danger-100: #fee2e2;
@@ -60,6 +61,7 @@ html.dark,
   --py-accent-500: #fbbf24;
   --py-accent-600: #fbbf24;
   --py-accent-700: #f59e0b;
+  --py-accent-800: #fcd34d;
 
   --py-danger-50: #450a0a;
   --py-danger-100: #7f1d1d;
@@ -102,6 +104,7 @@ html.dark,
   --color-accent-500: var(--py-accent-500);
   --color-accent-600: var(--py-accent-600);
   --color-accent-700: var(--py-accent-700);
+  --color-accent-800: var(--py-accent-800);
 
   --color-warning-50: var(--py-accent-50);
   --color-warning-600: var(--py-accent-600);
