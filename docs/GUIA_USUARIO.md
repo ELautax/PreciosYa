@@ -105,13 +105,13 @@ En **Configuración → Plan** ves tu uso (productos y locales) y vencimiento. T
 
 | Plan | Para quién | Lo principal |
 |------|------------|--------------|
-| **Free** | Probar sin tarjeta | Hasta 30 productos, 1 local, rubros, escáner, export PNG, **ventas 7 días** |
-| **Pro** | Comercio activo | Productos ilimitados, 3 locales, **IPC**, **USD BCRA**, alertas, historial, **gestor de ventas completo** |
-| **Agency** | Estudios, contadores, cadenas | Locales ilimitados, multi-cliente; **precio a medida** — botón «Contactar ventas» abre un mail a hola@preciosya.app |
+| **Free** | Probar sin tarjeta | Hasta 30 productos, 1 local, **IPC/USD**, alertas, PNG, escáner, **ventas 7 días** |
+| **Pro** | Comercio activo | Productos ilimitados, 3 locales, **analytics de ventas** (períodos extendidos), email al publicarse IPC |
+| **Agency** | Estudios, contadores, cadenas | Locales ilimitados, multi-cliente; **precio a medida** — botón «Contactar ventas» abre un mail a sales@preciosya.com |
 
 Para pasar a **Pro**, tocá **Suscribirme a Pro** en el modal o en la landing: te lleva a iniciar sesión y luego al checkout de **Mercado Pago** (tarjeta en entorno seguro de MP). Al confirmar, el plan se activa automáticamente.
 
-Para **Agency**, el botón «Contactar ventas» abre un mail a hola@preciosya.app. La landing tiene la misma información en [preciosya-landing.vercel.app/#precios](https://preciosya-landing.vercel.app/#precios).
+Para **Agency**, el botón «Contactar ventas» abre un mail a sales@preciosya.com. La landing tiene la misma información en [preciosya-landing.vercel.app/#precios](https://preciosya-landing.vercel.app/#precios).
 
 **Modo prueba (tesis):** en sandbox usá tarjetas de test de Mercado Pago; no se debita dinero real.
 

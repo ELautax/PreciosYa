@@ -9,8 +9,8 @@
 
 | Plan | Precio | Límite clave | Canal de cobro |
 |------|--------|--------------|----------------|
-| FREE | $0 | 30 productos, 1 local, ventas 7 días | — |
-| PRO | **$4.500/mes** | Productos ilimitados, 3 locales, IPC/USD completo, ventas dashboard | Mercado Pago Suscripciones (sandbox tesis; Admin para demo) |
+| FREE | $0 | 30 productos, 1 local, IPC/USD, ventas 7 días | — |
+| PRO | **$4.500/mes** | Productos ilimitados, 3 locales, analytics ventas, email IPC | Mercado Pago Suscripciones (sandbox tesis; Admin para demo) |
 | AGENCY | A medida | Multi-local ilimitado | Contacto comercial (mailto) |
 
 **Supuesto de conversión (año 1):** 2% FREE → PRO sobre base de 500 usuarios registrados → 10 Pro activos.

@@ -1,0 +1,12 @@
+flowchart TB
+  User[Usuario mobile/desktop]
+  VercelWeb[Vercel web]
+  VercelLand[Vercel landing]
+  Railway[Railway API]
+  Supa[(Supabase)]
+
+  User --> VercelWeb
+  User --> VercelLand
+  VercelWeb --> Railway
+  Railway --> Supa
+  VercelWeb --> Supa

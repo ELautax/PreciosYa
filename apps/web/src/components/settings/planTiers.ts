@@ -21,10 +21,10 @@ export type PlanTier = {
 export const LANDING_PRICING_URL = 'https://preciosya-landing.vercel.app/#precios'
 
 export const AGENCY_MAIL =
-  'mailto:hola@preciosya.app?subject=Consulta%20plan%20Agency%20%E2%80%94%20PreciosYa&body=Hola%2C%20quiero%20una%20propuesta%20para%20el%20plan%20Agency.%0A%0AEmpresa%20%2F%20rubro%3A%20%0ACantidad%20de%20locales%20o%20clientes%3A%20%0A%C2%BFC%C3%B3mo%20nos%20conociste%3F%20%0A'
+  'mailto:sales@preciosya.com?subject=Consulta%20plan%20Agency%20%E2%80%94%20PreciosYa&body=Hola%2C%20quiero%20una%20propuesta%20para%20el%20plan%20Agency.%0A%0AEmpresa%20%2F%20rubro%3A%20%0ACantidad%20de%20locales%20o%20clientes%3A%20%0A%C2%BFC%C3%B3mo%20nos%20conociste%3F%20%0A'
 
 export const PRO_MAIL =
-  'mailto:hola@preciosya.app?subject=Consulta%20plan%20Pro%20%E2%80%94%20PreciosYa&body=Hola%2C%20quiero%20pasar%20al%20plan%20Pro.%0A%0ALocal%20%2F%20negocio%3A%20%0A%0A'
+  'mailto:sales@preciosya.com?subject=Consulta%20plan%20Pro%20%E2%80%94%20PreciosYa&body=Hola%2C%20quiero%20pasar%20al%20plan%20Pro.%0A%0ALocal%20%2F%20negocio%3A%20%0A%0A'
 
 /** Ruta interna para iniciar checkout Pro (requiere sesión). */
 export const PRO_CHECKOUT_PATH = '/settings?tab=plan&planes=1&checkout=start'
@@ -38,10 +38,10 @@ export const PLANS: PlanTier[] = [
     features: [
       'Hasta 30 productos y 1 local',
       'Cálculo automático de margen y precio',
-      'Rubros INDEC (activás los que uses)',
+      'IPC por rubro + indexar USD BCRA',
+      'Alertas de margen y lista PNG',
       'Escáner de código de barras',
-      'Lista de precios PNG para WhatsApp',
-      'Registro de ventas (7 días)',
+      'Registro de ventas (historial 7 días)',
     ],
     cta: {
       label: 'Empezar gratis',
@@ -58,11 +58,11 @@ export const PLANS: PlanTier[] = [
     featured: true,
     features: [
       'Productos ilimitados · 3 locales',
-      'IPC por rubro en un toque',
-      'Indexar al dólar BCRA',
-      'Alertas de margen mínimo',
-      'Historial y actualización masiva',
-      'Gestor de ventas completo',
+      'Todo lo del plan Free',
+      'Gestor de ventas completo (analytics)',
+      'Períodos de ventas extendidos',
+      'Email al publicarse IPC nuevo',
+      'Prioridad de soporte',
     ],
     cta: {
       label: 'Suscribirme a Pro',

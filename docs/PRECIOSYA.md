@@ -107,8 +107,9 @@ Monorepo **pnpm**: `apps/web`, `apps/api`, `packages/shared`.
 
 ## Modelo de negocio
 
-- **FREE:** hasta 30 productos y 1 local; catálogo, rubros COICOP, escáner, export PNG; **ventas (historial 7 días)**.
-- **PRO ($4.500 ARS/mes):** productos ilimitados, hasta 3 locales, **IPC por rubro**, **indexar al dólar BCRA**, alertas de margen, historial completo, **gestor de ventas** (dashboard 30/90 días), email al publicarse IPC. Cobro vía **Mercado Pago Suscripciones**.
+- **FREE:** hasta 30 productos y 1 local; catálogo, rubros COICOP, **IPC por rubro**, **indexar USD BCRA**, alertas, escáner, export PNG; **ventas (historial 7 días)**.
+- **PRO ($4.500 ARS/mes):** productos ilimitados, hasta 3 locales, **gestor de ventas completo** (analytics / períodos extendidos), email al publicarse IPC. Cobro vía **Mercado Pago Suscripciones** (sandbox en etapa tesis).
+- **AGENCY:** locales/productos ilimitados, multi-cliente; precio a medida (`sales@preciosya.com`).
 - **AGENCY:** multi-local ilimitado; **precio a medida** por contacto comercial (mailto en landing).
 
 **Viabilidad:** punto de equilibrio estimado en ~10 suscriptores Pro (infra ~$40.000 ARS/mes). Ver [entrega/anexos-examen2/COSTOS_VIABILIDAD.md](./entrega/anexos-examen2/COSTOS_VIABILIDAD.md).

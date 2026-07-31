@@ -1,0 +1,16 @@
+sequenceDiagram
+  participant U as Usuario
+  participant Web as apps/web
+  participant Supa as Supabase Auth
+  participant API as Express API
+  participant DB as PostgreSQL
+
+  U->>Web: Click Google Login
+  Web->>Supa: signInWithOAuth
+  Supa-->>Web: session + JWT
+  Web->>API: POST /api/auth/google
+  API->>Supa: verifyToken
+  API->>DB: findOrCreateUser
+  DB-->>API: user
+  API-->>Web: JWT app + profile
+  Web-->>U: Redirect /dashboard

@@ -223,8 +223,8 @@ Resumen; desarrollo numérico en [anexos-examen2/COSTOS_VIABILIDAD.md](./anexos-
 
 ### 6.1 Ingresos
 
-- **FREE:** adquisición y retención; límite 30 productos / 1 local.
-- **PRO:** **$4.500 ARS/mes** — catálogo ilimitado, 3 locales, IPC/USD completo, dashboard ventas, emails IPC.
+- **FREE:** adquisición y retención; límite 30 productos / 1 local; incluye apply-ipc / apply-usd, alertas y PNG.
+- **PRO:** **$4.500 ARS/mes** — catálogo ilimitado, 3 locales, analytics de ventas, emails IPC.
 - **AGENCY:** precio comercial personalizado.
 
 ### 6.2 Costos

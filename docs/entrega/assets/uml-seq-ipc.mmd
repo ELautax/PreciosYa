@@ -1,0 +1,17 @@
+sequenceDiagram
+  participant U as Comerciante
+  participant Web as Frontend
+  participant API as API
+  participant Econ as economic-index.service
+  participant DB as PostgreSQL
+
+  U->>Web: Confirmar Apply IPC
+  Web->>API: PUT /api/locals/:id/apply-ipc
+  API->>Econ: applyIPCToLocal
+  Econ->>DB: get latest IPC by rubro
+  Econ->>DB: update products cost exclude USD
+  Econ->>DB: set last_ipc_applied_period
+  DB-->>Econ: ok
+  Econ-->>API: summary
+  API-->>Web: success
+  Web-->>U: Banner verde aplicado

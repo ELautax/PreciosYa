@@ -10,7 +10,9 @@ Fuente en Markdown; exportar a PDF/Word desde el editor o con Pandoc.
 | **Carátula tesis** | [CARATULA_TESIS.md](./CARATULA_TESIS.md) | Primera página del PDF/Word |
 | **Documento maestro** | [DOCUMENTO_ENTREGA_TESIS.md](./DOCUMENTO_ENTREGA_TESIS.md) | Lectura formal para el profesor (índice + resúmenes + modelo de negocios) |
 | **Presentación HTML** | [presentacion-tesis.html](./presentacion-tesis.html) | 22 slides 1280×720 — exposición oral |
-| Casos de prueba (formal) | [CASOS_DE_PRUEBA_FORMAL.md](./CASOS_DE_PRUEBA_FORMAL.md) | Formato bloque tipo Word (CP-01 a CP-27) |
+| Casos de prueba (formal) | [CASOS_DE_PRUEBA_FORMAL.md](./CASOS_DE_PRUEBA_FORMAL.md) | Formato bloque tipo Word (CP-01 a CP-28) |
+| **Word tesis v3.1** | [PreciosYa_Documentacion_Tesis_v3.1.docx](./PreciosYa_Documentacion_Tesis_v3.1.docx) | Documento completo con diagramas (correcciones Seminario Final) |
+| Congruencia producto↔docs | [CONGRUENCIA_PRODUCTO_DOCS.md](./CONGRUENCIA_PRODUCTO_DOCS.md) | Matriz Free/Pro vs código real |
 
 ### Exportar a Word/PDF
 

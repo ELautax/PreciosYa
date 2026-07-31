@@ -1,0 +1,13 @@
+erDiagram
+  User ||--o{ Local : owns
+  User ||--o{ Notification : receives
+  User ||--o{ Subscription : has
+  Local ||--o{ Category : has
+  Local ||--o{ Product : has
+  Local ||--o{ PriceList : exports
+  Local ||--o{ Sale : records
+  CategoryTemplate ||--o{ Category : seeds
+  Category ||--o{ Product : groups
+  Product ||--o{ PriceHistory : tracks
+  Product ||--o{ SaleLine : sold_in
+  Sale ||--|{ SaleLine : contains

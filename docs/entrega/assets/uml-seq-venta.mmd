@@ -1,0 +1,17 @@
+sequenceDiagram
+  participant U as Comerciante
+  participant Web as Frontend
+  participant API as API
+  participant Sale as sale.service
+  participant DB as PostgreSQL
+
+  U->>Web: Confirmar venta N items
+  Web->>API: POST /api/sales
+  API->>Sale: createSale
+  Sale->>DB: load products active
+  Sale->>Sale: snapshot cost + salePrice
+  Sale->>DB: transaction Sale + SaleLines
+  DB-->>Sale: sale id
+  Sale-->>API: sale dto
+  API-->>Web: 201 Created
+  Web-->>U: Toast Venta registrada

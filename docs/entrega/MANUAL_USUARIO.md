@@ -1,7 +1,8 @@
 # Manual de usuario — PreciosYa
 
-**Versión:** 1.0 · **Plataforma:** Web PWA + APK Android (TWA)  
+**Versión:** 3.1 · **Plataforma:** Web PWA + APK Android (TWA)  
 **URL producción:** https://preciosya.vercel.app  
+**Alias app (Vercel):** https://preciosya-app.vercel.app  
 **Landing:** https://preciosya-landing.vercel.app
 
 ---
@@ -147,13 +148,13 @@ Mismas secciones en menú lateral colapsable. Badge de plan (Free/Pro/Agency/Adm
 
 ## 7. Planes y límites
 
-| Plan | Productos | Locales | Ventas |
-|------|-----------|---------|--------|
-| Free | 30 | 1 | Registro + resumen/historial **7 días** |
-| Pro | Ilimitado | 3 | Analytics completo |
-| Agency | Ilimitado | Ilimitado | + multi-cliente |
+| Plan | Productos | Locales | Funciones |
+|------|-----------|---------|-----------|
+| Free | 30 | 1 | IPC/USD, alertas, PNG, escáner; registro + resumen/historial ventas **7 días** |
+| Pro | Ilimitado | 3 | Todo Free + **analytics de ventas** (períodos extendidos) + email IPC |
+| Agency | Ilimitado | Ilimitado | + multi-cliente; contacto sales@preciosya.com |
 
-Contacto upgrade: hola@preciosya.app (desde modal Plan).
+Contacto upgrade: sales@preciosya.com (desde modal Plan).
 
 ---
 

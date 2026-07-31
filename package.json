@@ -13,7 +13,9 @@
     "dev": "concurrently -n web,api -c blue,green \"pnpm --filter web dev\" \"pnpm --filter api dev\""
   },
   "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.16.0",
     "@types/node": "20.19.39",
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "docx": "^9.7.1"
   }
 }

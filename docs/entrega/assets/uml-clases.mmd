@@ -1,0 +1,36 @@
+classDiagram
+  class PricingEngine {
+    +calculateSalePrice(cost, marginPct)
+    +applyIPC(cost, ipcPct)
+    +bulkUpdateCosts(products, pct)
+  }
+
+  class SalesMath {
+    +lineRevenue(price, qty)
+    +lineProfit(price, cost, qty)
+    +averageTicket(revenue, count)
+  }
+
+  class Product {
+    +UUID id
+    +Decimal cost
+    +Decimal marginPct
+    +Decimal salePrice
+  }
+
+  class Sale {
+    +UUID id
+    +DateTime soldAt
+    +SaleLine[] lines
+  }
+
+  class SaleLine {
+    +Decimal quantity
+    +Decimal unitSalePrice
+    +Decimal unitCostSnapshot
+  }
+
+  Sale "1" --> "*" SaleLine
+  SaleLine --> Product : productId
+  Product --> PricingEngine : uses
+  SaleLine --> SalesMath : uses

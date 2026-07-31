@@ -2,7 +2,7 @@ import { Download } from 'lucide-react'
 
 /** Origen público de la app; debe coincidir con el host del TWA y assetlinks.json */
 const APP_ORIGIN =
-  import.meta.env.VITE_APP_ORIGIN?.replace(/\/$/, '') ?? 'https://preciosya-app.vercel.app'
+  import.meta.env.VITE_APP_ORIGIN?.replace(/\/$/, '') ?? 'https://preciosya.vercel.app'
 const APK_URL = `${APP_ORIGIN}/preciosya.apk`
 
 export function AndroidApkDownload() {

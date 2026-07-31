@@ -841,4 +841,35 @@
 
 ---
 
-*Fin del documento formal. Total: 27 casos (CP-01 a CP-27).*
+## CP-28
+
+**ID de caso de prueba:** CP-28
+
+**Descripción/resumen:** Validar gráfico de evolución de precios de venta por producto en Historial.
+
+**Pasos de prueba:**
+1. Abrir `/history` con un producto que tenga al menos 2 entradas en `price_history`.
+2. Seleccionar el producto.
+3. Verificar gráfico Chart.js (línea de `sale_price` vs tiempo) y tabla de motivos.
+
+**Resultado esperado:** Se visualiza la evolución histórica; puntos alineados con registros de `price_history`.
+
+**Resultado real:** Implementado en `/history` con Chart.js.
+
+**Prerrequisitos:** Producto con historial de cambios.
+
+**Categoría de prueba:** Funcional / Reportes.
+
+**Autor:** Lautaro Nahuel Villanueva.
+
+**Automatización:** No.
+
+**Aprobado/reprobado:** Aprobado.
+
+**Observaciones:** Cubre RF-W025.
+
+**Trazabilidad:** CU-10 · RF-W025
+
+---
+
+*Fin del documento formal. Total: 28 casos (CP-01 a CP-28).*

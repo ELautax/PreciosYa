@@ -1,0 +1,21 @@
+flowchart TB
+  subgraph actors [Actores]
+    C[Comerciante]
+    A[Administrador]
+  end
+
+  subgraph system [PreciosYa]
+    UC1((Login))
+    UC2((Gestionar catalogo))
+    UC3((Aplicar indices))
+    UC4((Registrar ventas))
+    UC5((Exportar PNG))
+    UC6((Admin IPC))
+  end
+
+  C --> UC1
+  C --> UC2
+  C --> UC3
+  C --> UC4
+  C --> UC5
+  A --> UC6

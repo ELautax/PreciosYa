@@ -22,7 +22,7 @@ La APK de PreciosYa **no es una aplicación nativa separada**. Es un contenedor 
 | RF-A005 | Permiso cámara para escáner | Must | Escáner productos y ventas solicita cámara; fallback manual |
 | RF-A006 | Pantalla completa / sin barra URL | Must | Experiencia standalone como PWA |
 | RF-A007 | Verificación assetlinks.json | Must | `.well-known/assetlinks.json` en dominio app |
-| RF-A008 | Regeneración APK tras deploy | Should | Script con `APP_ORIGIN`; doc en DEPLOY_VERCEL |
+| RF-A008 | Regeneración APK tras deploy | Should | Script `build-preciosya-apk.mjs`; **NT-BUILD** (actor desarrollador; no CU-18) |
 | RF-A009 | Offline completo ventas | Won't v1 | Requiere outbox v2; PWA cache solo lectura |
 | RF-A010 | Push notifications nativas | Won't v1 | Notificaciones vía web + Realtime |
 

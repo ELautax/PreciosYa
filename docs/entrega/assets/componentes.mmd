@@ -1,0 +1,15 @@
+flowchart TB
+  subgraph root [preciosya monorepo]
+    subgraph apps [apps]
+      web[web React PWA]
+      api[api Express]
+      landing[landing static]
+    end
+    subgraph packages [packages]
+      shared[shared PricingEngine]
+    end
+  end
+
+  web --> shared
+  api --> shared
+  web -->|JWT REST| api

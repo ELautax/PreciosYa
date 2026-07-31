@@ -119,16 +119,43 @@ flowchart LR
 - **Postcondición:** Datos disponibles para CU-08/CU-09
 
 ### CU-18 — Instalar APK Android
-- **Actor:** Comerciante | **RF:** RF-A001 … RF-A004
-- **Flujo:** Landing descargar → instalar → abrir TWA → login
-- **Postcondición:** Misma app web en contenedor Android
+- **Actor:** Comerciante | **RF:** RF-A001 … RF-A007
+- **Flujo:** Landing descargar → instalar → abrir TWA (`preciosya.vercel.app`, alias `preciosya-app.vercel.app`) → login
+- **Postcondición:** Misma app web en contenedor Android (pantalla completa si assetlinks es válido)
+
+### CU-19 — Baja lógica de producto
+- **Actor:** Comerciante | **RF:** RF-W009
+- **Precondición:** Sesión activa; producto activo en el local
+- **Flujo:** Productos → seleccionar → desactivar / eliminar lógico → API soft-delete (`is_active = false`)
+- **Postcondición:** Producto deja de listarse y de exportarse; permanece en `price_history` y ventas históricas
+- **Excepciones:** E1: producto con líneas de venta — no se borra físicamente (RESTRICT / soft delete)
+
+### CU-20 — Notificaciones in-app
+- **Actor:** Comerciante | **RF:** RF-W020
+- **Precondición:** Sesión activa; Realtime habilitado
+- **Flujo:** Evento (nuevo IPC, alerta margen, etc.) → API crea `notifications` → Supabase Realtime → campana in-app
+- **Postcondición:** Usuario ve título/cuerpo; puede marcar como leída
+- **Nota:** Sin push nativo (limitación TWA / fuera de alcance v1)
+
+### CU-21 — Modo offline limitado (lectura en caché)
+- **Actor:** Comerciante | **RF:** RF-W024
+- **Precondición:** App cargada previamente con conexión (Workbox / caché PWA)
+- **Flujo:** Pérdida de red → banner offline → lectura de datos precacheados → sin edición ni sync bidireccional
+- **Postcondición:** Usuario puede consultar catálogo en caché; al recuperar red se reanuda la API
+- **Excepciones:** E1: primera visita sin caché → no hay datos offline
+
+### NT-BUILD — Regenerar APK TWA (desarrollador)
+- **Actor:** Desarrollador / administrador técnico | **RF:** RF-A008
+- **No es CU de comerciante.** Flujo: `node scripts/build-preciosya-apk.mjs` → actualizar `assetlinks.json` → deploy web → reasignar alias `preciosya.vercel.app` si aplica
+- **Trazabilidad:** RF-A008 → NT-BUILD (sin CU-18)
 
 ---
 
 ## Matriz actor × caso de uso
 
-| CU | Comerciante | Admin | Sistema |
-|----|:-----------:|:-----:|:-------:|
-| 01-15, 18 | ✓ | | |
-| 16 | | ✓ | |
-| 17 | | | ✓ |
+| CU | Comerciante | Admin | Sistema | Desarrollador |
+|----|:-----------:|:-----:|:-------:|:-------------:|
+| 01-15, 18-21 | ✓ | | | |
+| 16 | | ✓ | | |
+| 17 | | | ✓ | |
+| NT-BUILD | | | | ✓ |

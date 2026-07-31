@@ -45,7 +45,7 @@
 
 **URLs:** App `preciosya.vercel.app` · Landing `preciosya-landing.vercel.app` · API Railway.
 
-**Planes:** FREE (30 productos, 1 local) · PRO ($4.500/mes) · AGENCY (a medida).
+**Planes:** FREE (30 productos, 1 local; IPC/USD incluidos; ventas 7 días) · PRO ($4.500/mes; capacidad + analytics ventas) · AGENCY (a medida).
 
 **Validación de negocio:** 4 entrevistas en GBA confirman dolor de remarcación, uso del dólar «a ojo» y disposición a pagar $4.000–$7.000/mes. Estrategia de **enfoque** en nicho hiperlocal; viabilidad económica con ~10 suscriptores Pro.
 
@@ -72,7 +72,7 @@ Checklist de entrega académica. Estado general: **Completo** (fuente en Markdow
 
 ### 2.1 Manual de usuario
 
-**Documento:** Manual de usuario — PreciosYa v1.0
+**Documento:** Manual de usuario — PreciosYa v3.1
 
 **Descripción:** Guía operativa para el comerciante: instalación PWA/APK, primeros pasos, navegación, módulos (productos, rubros, índices, ventas, export), planes y solución de problemas.
 
