@@ -38,6 +38,7 @@ El INDEC publica **un % distinto por división** (Alimentos ~1,5%, Transporte ~4
 
 - Fuente: INDEC vía Alphacast/Argly o carga manual admin.
 - Almacenado en `economic_indices` por `IndexType` (general, alimentos, etc.).
+- **UI:** campanita → **Ver rubros** abre pop-up con las 13 series (ícono COICOP + %). API: `GET /api/ipc/series?period=YYYY-MM`. Las notificaciones `NEW_IPC` guardan `metadata.series`.
 - **Aplicar IPC** multiplica costos según el % del rubro de cada producto.
 - Productos **sin rubro** usan IPC nivel general.
 - Rubros con **Indexar USD** quedan **excluidos** del IPC masivo.

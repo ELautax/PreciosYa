@@ -698,7 +698,7 @@ Todas las tareas TASK-001 … TASK-044 están implementadas en el monorepo (mayo
   - `src/services/economic-index.service.ts` — `saveEconomicIndex()` (upsert), `getLatestIndex()`, `applyIPCToLocal()`
 
 - [x] **TASK-024** IPC routes (backend)
-  - `GET /api/ipc/latest`, `GET /api/ipc/history`, `PUT /api/locals/:id/apply-ipc`
+  - `GET /api/ipc/latest`, `GET /api/ipc/history`, `GET /api/ipc/series?period=YYYY-MM`, `PUT /api/locals/:id/apply-ipc`
 
 - [x] **TASK-025** Scheduler setup (backend)
   - `src/jobs/ipc-scheduler.ts` — both cron jobs (monthly IPC, daily BCRA)

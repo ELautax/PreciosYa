@@ -38,7 +38,7 @@
 
 1. En el **header**, tocá tu **nombre / avatar** para ir a **Mi cuenta** (perfil y plan).
 2. El panel muestra productos, alertas, IPC del mes, **dólar oficial** (cotización completa + variación) y atajos.
-3. La **campanita** muestra el detalle del IPC (porcentaje y período) o del salto USD; desde ahí podés ir a Productos o al historial de índices.
+3. La **campanita** muestra el detalle del IPC (porcentaje y período) o del salto USD; en notificaciones de IPC tocá **Ver rubros** para abrir el desglose de las **13 divisiones COICOP** (ícono + %) y desde ahí aplicar a Productos.
 
 ---
 

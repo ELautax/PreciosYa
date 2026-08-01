@@ -17,6 +17,23 @@ export const IPC_INDEX_LABELS: Record<string, string> = {
 
 export const IPC_INDEX_TYPES = Object.keys(IPC_INDEX_LABELS)
 
+/** Slug de categoryUi / plantillas COICOP por IndexType. */
+export const IPC_INDEX_CATEGORY_SLUG: Record<string, string | null> = {
+  IPC_INDEC: null,
+  IPC_INDEC_ALIMENTOS: 'alimentos',
+  IPC_INDEC_BEBIDAS: 'bebidas-tabaco',
+  IPC_INDEC_VESTIMENTA: 'vestimenta',
+  IPC_INDEC_VIVIENDA: 'vivienda',
+  IPC_INDEC_HOGAR: 'hogar',
+  IPC_INDEC_SALUD: 'salud',
+  IPC_INDEC_TRANSPORTE: 'transporte',
+  IPC_INDEC_COMUNICACION: 'comunicacion',
+  IPC_INDEC_RECREACION: 'recreacion',
+  IPC_INDEC_EDUCACION: 'educacion',
+  IPC_INDEC_RESTAURANTES: 'restaurantes',
+  IPC_INDEC_VARIOS: 'varios',
+}
+
 export const BCRA_INDEX_LABELS: Record<string, string> = {
   BCRA_USD_OFICIAL: 'Dólar oficial BCRA',
   BCRA_USD_MEP: 'Dólar MEP (referencia)',

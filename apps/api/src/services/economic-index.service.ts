@@ -310,6 +310,58 @@ export async function getIpcHistory(months = 12) {
   })
 }
 
+const IPC_SERIES_ORDER = Object.values(IndexType).filter((t) => t.startsWith('IPC_'))
+
+/** Series IPC (nivel general + divisiones COICOP) de un mes YYYY-MM, o el último disponible. */
+export async function getIpcSeriesForPeriod(periodYm?: string) {
+  let periodDate: Date | null = null
+
+  if (periodYm) {
+    const match = /^(\d{4})-(\d{2})$/.exec(periodYm.trim())
+    if (!match) {
+      throw new AppError({
+        statusCode: 400,
+        message: 'period debe ser YYYY-MM',
+        code: 'INVALID_PERIOD',
+      })
+    }
+    const year = Number(match[1])
+    const month = Number(match[2])
+    if (month < 1 || month > 12) {
+      throw new AppError({
+        statusCode: 400,
+        message: 'Mes inválido en period',
+        code: 'INVALID_PERIOD',
+      })
+    }
+    periodDate = new Date(Date.UTC(year, month - 1, 1))
+  } else {
+    const latest = await prisma.economicIndex.findFirst({
+      where: { type: IndexType.IPC_INDEC },
+      orderBy: { period: 'desc' },
+    })
+    if (!latest) return { period: null as string | null, series: [] as ReturnType<typeof serializeEconomicIndex>[] }
+    periodDate = latest.period
+  }
+
+  const rows = await prisma.economicIndex.findMany({
+    where: {
+      period: periodDate,
+      type: { in: IPC_SERIES_ORDER },
+    },
+  })
+
+  const byType = new Map(rows.map((r) => [r.type, r]))
+  const ordered = IPC_SERIES_ORDER.map((t) => byType.get(t)).filter(
+    (r): r is NonNullable<typeof r> => Boolean(r),
+  )
+
+  return {
+    period: periodDate.toISOString(),
+    series: ordered.map(serializeEconomicIndex),
+  }
+}
+
 export type IpcCategoryBreakdown = {
   categoryId: string | null
   categoryName: string

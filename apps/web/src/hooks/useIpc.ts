@@ -38,3 +38,23 @@ export function useIpcHistory() {
     },
   })
 }
+
+export function useIpcSeries(options: { periodYm?: string | null; enabled: boolean }) {
+  const api = useApiClient()
+  const periodYm = options.periodYm ?? undefined
+  return useQuery({
+    queryKey: ['ipc-series', periodYm ?? 'latest'],
+    enabled: options.enabled,
+    queryFn: async () => {
+      const res = await api.get<
+        ApiSuccess<{
+          period: string | null
+          series: EconomicIndexDto[]
+        }>
+      >('/api/ipc/series', {
+        params: periodYm ? { period: periodYm } : undefined,
+      })
+      return res.data.data
+    },
+  })
+}

@@ -13,6 +13,7 @@ import {
   DollarSign,
 } from 'lucide-react'
 
+import { IpcBreakdownModal, type IpcSeriesItem } from '@/components/notifications/IpcBreakdownModal'
 import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
@@ -59,8 +60,22 @@ function asMetaRecord(metadata: unknown): Record<string, unknown> | null {
   return metadata as Record<string, unknown>
 }
 
+function parseIpcSeriesFromMeta(meta: Record<string, unknown> | null): IpcSeriesItem[] {
+  if (!meta || !Array.isArray(meta.series)) return []
+  const out: IpcSeriesItem[] = []
+  for (const row of meta.series) {
+    if (!row || typeof row !== 'object' || Array.isArray(row)) continue
+    const item = row as Record<string, unknown>
+    const type = typeof item.type === 'string' ? item.type : null
+    const valuePct = toPctNumber(item.valuePct)
+    if (!type || valuePct === null) continue
+    out.push({ type, valuePct })
+  }
+  return out
+}
+
 function notificationHref(type: string): string | null {
-  if (type === 'NEW_IPC' || type === 'BCRA_USD_ALERT') return '/products'
+  if (type === 'BCRA_USD_ALERT') return '/products'
   if (type === 'MARGIN_ALERT') return '/products?filter=alert'
   if (type === 'PLAN_EXPIRING' || type === 'PLAN_EXPIRED') return '/settings?tab=plan'
   return null
@@ -73,6 +88,7 @@ function NotificationMetaChips({ n }: { n: NotificationDto }) {
   if (n.type === 'NEW_IPC') {
     const pct = toPctNumber(meta.valuePct)
     const period = typeof meta.period === 'string' ? meta.period : null
+    const seriesCount = parseIpcSeriesFromMeta(meta).length
     if (pct === null && !period) return null
     return (
       <div className="mt-2.5 flex flex-wrap gap-1.5">
@@ -84,6 +100,11 @@ function NotificationMetaChips({ n }: { n: NotificationDto }) {
         {period ? (
           <span className="inline-flex items-center rounded-lg border border-border-strong/40 bg-surface-soft px-2 py-1 text-[10px] font-black uppercase tracking-wide text-text-main">
             {formatIndexMonth(period)}
+          </span>
+        ) : null}
+        {seriesCount > 0 ? (
+          <span className="inline-flex items-center rounded-lg border border-border-strong/40 bg-surface-soft px-2 py-1 text-[10px] font-black uppercase tracking-wide text-text-muted">
+            {seriesCount} rubros
           </span>
         ) : null}
       </div>
@@ -113,8 +134,15 @@ function NotificationMetaChips({ n }: { n: NotificationDto }) {
   return null
 }
 
+type IpcModalState = {
+  periodIso: string
+  series: IpcSeriesItem[]
+  generalPct: number | null
+}
+
 export function NotificationCenter() {
   const [open, setOpen] = useState(false)
+  const [ipcModal, setIpcModal] = useState<IpcModalState | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
 
@@ -129,13 +157,28 @@ export function NotificationCenter() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (ipcModal) return
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setOpen(false)
       }
     }
     document.addEventListener('pointerdown', handleClickOutside)
     return () => document.removeEventListener('pointerdown', handleClickOutside)
-  }, [])
+  }, [ipcModal])
+
+  function openIpcBreakdown(n: NotificationDto) {
+    const meta = asMetaRecord(n.metadata)
+    const period = typeof meta?.period === 'string' ? meta.period : n.createdAt
+    const series = parseIpcSeriesFromMeta(meta)
+    const generalPct = toPctNumber(meta?.valuePct)
+    if (!n.isRead) void markOne.mutateAsync(n.id)
+    setOpen(false)
+    setIpcModal({
+      periodIso: period,
+      series,
+      generalPct,
+    })
+  }
 
   return (
     <div className="relative" ref={containerRef}>
@@ -160,10 +203,10 @@ export function NotificationCenter() {
       </button>
 
       {open ? (
-        <div className="absolute right-0 z-50 mt-4 w-[calc(100vw-2rem)] sm:w-[400px] overflow-hidden animate-slide-down rounded-3xl border border-border bg-surface shadow-2xl">
+        <div className="absolute right-0 z-50 mt-4 w-[calc(100vw-2rem)] overflow-hidden animate-slide-down rounded-3xl border border-border bg-surface shadow-2xl sm:w-[400px]">
           <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-5">
             <div>
-              <h3 className="text-sm font-black text-text-main leading-none">Notificaciones</h3>
+              <h3 className="text-sm font-black leading-none text-text-main">Notificaciones</h3>
               <p className="mt-1.5 text-[10px] font-extrabold uppercase tracking-widest leading-none text-text-muted">
                 {unread} pendientes
               </p>
@@ -189,12 +232,12 @@ export function NotificationCenter() {
                 <div className="skeleton h-16 w-full" />
               </div>
             ) : items.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+              <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
                 <div className="mb-4 rounded-3xl bg-surface-soft p-5 text-text-subtle">
                   <BellOff size={40} strokeWidth={1.5} />
                 </div>
                 <p className="text-base font-black text-text-main">Todo al día</p>
-                <p className="mt-1 text-sm text-text-subtle text-balance">
+                <p className="mt-1 text-sm text-balance text-text-subtle">
                   No tenés notificaciones nuevas.
                 </p>
               </div>
@@ -203,6 +246,7 @@ export function NotificationCenter() {
                 const Icon = NOTIF_ICONS[n.type] || Bell
                 const colorClass = NOTIF_COLORS[n.type] || 'text-text-muted bg-surface-soft'
                 const href = notificationHref(n.type)
+                const isIpc = n.type === 'NEW_IPC'
 
                 return (
                   <article
@@ -212,7 +256,7 @@ export function NotificationCenter() {
                     }`}
                   >
                     {!n.isRead && (
-                      <div className="absolute left-0 top-0 h-full w-1.5 bg-primary-600" />
+                      <div className="absolute top-0 left-0 h-full w-1.5 bg-primary-600" />
                     )}
                     <div
                       className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${colorClass}`}
@@ -248,7 +292,16 @@ export function NotificationCenter() {
                         ) : (
                           <span />
                         )}
-                        {href ? (
+                        {isIpc ? (
+                          <button
+                            type="button"
+                            onClick={() => openIpcBreakdown(n)}
+                            className="inline-flex items-center gap-1 rounded-lg bg-accent-50 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-accent-700 transition-colors hover:bg-accent-100 dark:text-accent-500"
+                          >
+                            Ver rubros
+                            <ChevronRight size={12} />
+                          </button>
+                        ) : href ? (
                           <button
                             type="button"
                             onClick={() => {
@@ -281,6 +334,14 @@ export function NotificationCenter() {
           </div>
         </div>
       ) : null}
+
+      <IpcBreakdownModal
+        open={Boolean(ipcModal)}
+        periodIso={ipcModal?.periodIso ?? null}
+        initialSeries={ipcModal?.series ?? null}
+        generalPct={ipcModal?.generalPct ?? null}
+        onClose={() => setIpcModal(null)}
+      />
     </div>
   )
 }

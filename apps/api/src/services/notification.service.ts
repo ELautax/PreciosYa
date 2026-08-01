@@ -1,6 +1,8 @@
-import { Prisma, type Notification, type NotifType } from '@prisma/client'
+import { Prisma, type Notification, type NotifType, IndexType } from '@prisma/client'
 
 import { prisma } from '../lib/prisma.js'
+
+const IPC_SERIES_TYPES = Object.values(IndexType).filter((t) => String(t).startsWith('IPC_'))
 
 export function serializeNotification(n: Notification) {
   return {
@@ -199,15 +201,38 @@ export async function createNewIpcNotificationsForActiveUsers(input: {
   })
   if (users.length === 0) return 0
 
+  const periodYm = input.period.toISOString().slice(0, 7)
+  const ipcRows = await prisma.economicIndex.findMany({
+    where: {
+      period: input.period,
+      type: { in: IPC_SERIES_TYPES },
+    },
+    orderBy: { type: 'asc' },
+    select: { type: true, valuePct: true },
+  })
+  const series = ipcRows.map((r) => ({
+    type: r.type,
+    valuePct: Number(r.valuePct),
+  }))
+
+  const topDivision = series
+    .filter((s) => s.type !== 'IPC_INDEC')
+    .sort((a, b) => b.valuePct - a.valuePct)[0]
+
+  const topHint = topDivision
+    ? ` La división que más subió: ${topDivision.valuePct.toFixed(2)}%.`
+    : ''
+
   return createBulkNotifications(
     users.map((u: { id: string }) => ({
       userId: u.id,
       type: 'NEW_IPC' as const,
       title: 'Nuevo IPC disponible',
-      body: `El INDEC publicó IPC general +${input.valuePct.toFixed(2)}% para ${input.period.toISOString().slice(0, 7)}. Aplicá el ajuste a tus costos desde Productos.`,
+      body: `El INDEC publicó IPC general +${input.valuePct.toFixed(2)}% (${periodYm}).${topHint} Tocá para ver el desglose por rubro.`,
       metadata: {
         valuePct: input.valuePct,
         period: input.period.toISOString(),
+        series,
       },
     })),
   )
