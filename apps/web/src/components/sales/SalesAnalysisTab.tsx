@@ -114,7 +114,32 @@ export function SalesAnalysisTab({
   const categoryQ = useCategoryPerformance(periodParams)
 
   if (!isPro) {
-    return <PlanUpgradeBanner />
+    return (
+      <div className="space-y-4">
+        <PlanUpgradeBanner
+          title="Análisis de ventas (Pro)"
+          message="Con Pro ves top productos, estancados, promociones y ventas por rubro. En Free podés registrar ventas y ver el resumen de 7 días."
+        />
+        <div className="relative overflow-hidden rounded-2xl border border-border">
+          <div className="pointer-events-none select-none blur-[2px] opacity-60" aria-hidden>
+            <AnalysisTable
+              title="Más vendidos (ejemplo)"
+              headers={['Producto', 'Unidades']}
+              rows={[
+                ['Gaseosa 2.25L', 42],
+                ['Yerba 1kg', 28],
+                ['Aceite 900ml', 19],
+              ]}
+            />
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center bg-canvas/40 px-4 backdrop-blur-[1px]">
+            <p className="rounded-full border border-border bg-surface px-4 py-2 text-center text-xs font-bold text-text-main shadow-sm">
+              Vista previa · disponible en Pro
+            </p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   const loading =

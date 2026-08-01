@@ -89,7 +89,7 @@ Mismas secciones en menú lateral colapsable. Badge de plan (Free/Pro/Agency/Adm
 - **Nuevo:** rubro, nombre, costo, margen %, barcode opcional.
 - **Escáner:** botón cámara en formulario.
 - **Actualizar:** pestañas Porcentaje e IPC/USD.
-- **Exportar:** genera PNG de lista de precios.
+- **Exportar:** PNG con todos los productos del filtro (Productos → Exportar; también desde el panel).
 
 ### 5.2 Rubros (Categorías)
 
@@ -98,7 +98,7 @@ Mismas secciones en menú lateral colapsable. Badge de plan (Free/Pro/Agency/Adm
 
 ### 5.3 IPC y USD
 
-- **IPC pendiente:** banner amarillo → Aplicar → confirmar desglose.
+- **IPC pendiente:** banner amarillo → Aplicar → confirmar desglose. Desde la campanita (**Ver rubros**) se ve el gráfico de variación por división COICOP.
 - **USD:** cotización del día; aplicar solo rubros USD.
 - Tras aplicar: banner verde hasta nuevo período.
 

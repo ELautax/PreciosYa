@@ -7,13 +7,13 @@ import {
   Share2,
   PlusCircle,
   Zap,
-  History,
   Store,
   ArrowUpRight,
   Activity,
   CheckCircle2,
   DollarSign,
   Receipt,
+  Tags,
 } from 'lucide-react'
 
 import { LocalSelector } from '@/components/locals/LocalSelector'
@@ -151,7 +151,7 @@ export default function DashboardPage() {
             color="text-accent-600"
             bg="bg-accent-50 dark:bg-accent-900/20"
             hint={ipcPeriodLabel ? `Corte ${ipcPeriodLabel}` : undefined}
-            to="/products"
+            to="/products?bulk=ipc"
           />
           <KPICard
             label="USD oficial"
@@ -167,7 +167,7 @@ export default function DashboardPage() {
             color="text-primary-700"
             bg="bg-primary-50 dark:bg-primary-900/20"
             hint={usdVariation ?? undefined}
-            to="/products"
+            to="/products?bulk=usd"
           />
           <div className="col-span-2 lg:col-span-1 xl:col-span-1">
             <KPICard
@@ -181,7 +181,7 @@ export default function DashboardPage() {
               icon={Share2}
               color="text-primary-700"
               bg="bg-primary-100/50 dark:bg-primary-900/30"
-              to="/products"
+              to="/products?export=1"
             />
           </div>
         </div>
@@ -208,24 +208,24 @@ export default function DashboardPage() {
                 color="primary"
               />
               <QuickActionCard
-                title="Actualización IPC"
-                desc="Ajuste masivo por inflación"
+                title="Aplicar IPC"
+                desc="Ajuste por inflación INDEC"
                 icon={Zap}
-                to="/products"
+                to="/products?bulk=ipc"
                 color="warning"
               />
               <QuickActionCard
                 title="Exportar lista"
                 desc="Catálogo PNG para WhatsApp"
                 icon={Share2}
-                to="/products"
+                to="/products?export=1"
                 color="primary"
               />
               <QuickActionCard
-                title="Historial"
-                desc="Cambios de costos e índices"
-                icon={History}
-                to="/history"
+                title="Rubros"
+                desc="IPC o USD por categoría"
+                icon={Tags}
+                to="/categories"
                 color="secondary"
               />
               <QuickActionCard
@@ -241,33 +241,28 @@ export default function DashboardPage() {
           <aside className="space-y-4 animate-slide-up sm:space-y-5">
             <div className="surface-card overflow-hidden">
               <div className="flex items-center justify-between border-b border-border bg-surface-soft/60 px-5 py-4">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
-                  Estado operativo
+                <h3 className="text-xs font-bold text-text-subtle">
+                  Estado del local
                 </h3>
-                <span className="rounded-full border border-primary-200 bg-primary-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-primary-800 dark:border-primary-200 dark:text-primary-600">
-                  Local
+                <span className="rounded-full border border-primary-200 bg-primary-50 px-2 py-0.5 text-[10px] font-bold text-primary-800 dark:border-primary-700 dark:text-primary-400">
+                  Activo
                 </span>
               </div>
               <div className="space-y-5 p-5">
                 {selectedLocal ? (
                   <>
-                    <div className="space-y-2">
-                      <div className="flex items-end justify-between">
-                        <span className="text-[10px] font-black uppercase text-text-subtle">
-                          Margen mínimo
+                    <div className="space-y-1.5">
+                      <div className="flex items-end justify-between gap-2">
+                        <span className="text-xs font-semibold text-text-subtle">
+                          Margen mínimo de alerta
                         </span>
                         <span className="font-mono text-sm font-black text-primary-600">
                           {selectedLocal.minMarginPct}%
                         </span>
                       </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full border border-border bg-surface-soft">
-                        <div
-                          className="h-full bg-primary-600 transition-all duration-1000"
-                          style={{
-                            width: `${Math.min(100, selectedLocal.minMarginPct * 2)}%`,
-                          }}
-                        />
-                      </div>
+                      <p className="text-xs font-medium leading-snug text-text-muted">
+                        Si un producto queda por debajo, aparece como alerta en el catálogo.
+                      </p>
                     </div>
 
                     <div className="flex items-start gap-3 rounded-xl border border-border/70 bg-surface-soft/80 p-3">
@@ -275,10 +270,10 @@ export default function DashboardPage() {
                         <Store size={16} />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-black uppercase leading-none text-text-muted">
+                        <p className="text-xs font-semibold leading-none text-text-muted">
                           Local activo
                         </p>
-                        <p className="mt-1 truncate text-xs font-bold text-text-main">
+                        <p className="mt-1 truncate text-sm font-bold text-text-main">
                           {selectedLocal.name}
                         </p>
                       </div>
@@ -287,9 +282,9 @@ export default function DashboardPage() {
                     <button
                       type="button"
                       onClick={() => navigate('/locals')}
-                      className="btn-secondary h-11 w-full text-xs font-black uppercase tracking-widest"
+                      className="btn-secondary h-11 w-full text-xs font-bold"
                     >
-                      Ajustes del local
+                      Editar local
                     </button>
                   </>
                 ) : (
@@ -308,7 +303,7 @@ export default function DashboardPage() {
                   <div className="rounded-full bg-surface p-2 shadow-sm dark:bg-danger-900/20">
                     <AlertTriangle size={20} strokeWidth={2.5} />
                   </div>
-                  <h3 className="text-sm font-black uppercase tracking-widest">Alerta de margen</h3>
+                  <h3 className="text-sm font-black text-danger-700">Alerta de margen</h3>
                 </div>
                 <p className="mb-5 text-xs font-bold leading-relaxed text-danger-900/80">
                   Tenés{' '}
@@ -317,7 +312,7 @@ export default function DashboardPage() {
                 </p>
                 <Link
                   to="/products?filter=alert"
-                  className="btn-danger h-11 w-full text-[10px] font-black uppercase tracking-widest"
+                  className="btn-danger h-11 w-full text-xs font-bold"
                 >
                   Corregir márgenes
                 </Link>
@@ -326,9 +321,9 @@ export default function DashboardPage() {
               <div className="surface-card border-primary-100 bg-primary-50/30 p-5">
                 <div className="mb-2 flex items-center gap-3 text-primary-600">
                   <CheckCircle2 size={18} strokeWidth={2.5} />
-                  <h3 className="text-xs font-black uppercase tracking-widest">Todo en orden</h3>
+                  <h3 className="text-sm font-bold text-primary-700">Todo en orden</h3>
                 </div>
-                <p className="text-[10px] font-bold leading-relaxed text-text-subtle">
+                <p className="text-xs font-medium leading-relaxed text-text-subtle">
                   No hay alertas de margen en el local actual.
                 </p>
               </div>
@@ -360,7 +355,7 @@ function KPICard({ label, value, loading, icon: Icon, color, bg, alert, hint, to
       >
         <Icon size={20} strokeWidth={2.5} />
       </div>
-      <p className="text-[10px] font-black uppercase tracking-widest leading-none text-text-subtle">
+      <p className="text-xs font-bold leading-none text-text-subtle">
         {label}
       </p>
       {loading ? (
@@ -426,7 +421,7 @@ function QuickActionCard({ title, desc, icon: Icon, to, color }: QuickActionCard
         <h3 className="text-base font-black leading-tight text-text-main transition-colors group-hover:text-primary-600">
           {title}
         </h3>
-        <p className="mt-1.5 text-[10px] font-bold uppercase tracking-widest text-text-subtle">
+        <p className="mt-1.5 text-xs font-medium text-text-subtle">
           {desc}
         </p>
       </div>

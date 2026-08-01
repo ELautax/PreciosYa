@@ -12,10 +12,10 @@ export function OfflineBanner() {
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-warning-600 shadow-sm dark:bg-black/20">
           <WifiOff size={22} strokeWidth={2.5} />
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-black text-warning-700 leading-none">Sin Conexión</p>
-          <p className="mt-1 text-[10px] font-bold text-warning-800/80 leading-tight uppercase tracking-tight">
-            Modo solo lectura activado
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-black leading-none text-warning-700">Sin conexión</p>
+          <p className="mt-1.5 text-xs font-semibold leading-snug text-warning-800/90">
+            Podés seguir cargando productos; se sincronizan al reconectar.
           </p>
         </div>
       </div>

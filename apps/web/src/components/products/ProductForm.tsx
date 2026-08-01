@@ -16,8 +16,9 @@ import {
   Info,
   ScanLine,
 } from 'lucide-react'
-import { PRODUCT_UNITS, getMarginStatus } from 'shared'
+import { PRODUCT_UNITS, calculateSalePrice, getMarginStatus } from 'shared'
 
+import { CategorySelect } from '@/components/products/CategorySelect'
 import { MarginBadge } from '@/components/products/MarginBadge'
 import { useBarcodeLookup } from '@/hooks/useBarcodeLookup'
 import { useCategories } from '@/hooks/useCategories'
@@ -45,6 +46,17 @@ type ProductFormProps = {
   product?: ProductDto | null
   onClose: () => void
   onOpenBarcodeScanner: (onDetected: (code: string) => void) => void
+}
+
+function previewSalePrice(cost: number, marginPct: number): number | null {
+  if (!Number.isFinite(cost) || cost <= 0 || !Number.isFinite(marginPct) || marginPct < 0) {
+    return null
+  }
+  try {
+    return calculateSalePrice(cost, marginPct)
+  } catch {
+    return null
+  }
 }
 
 export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }: ProductFormProps) {
@@ -80,7 +92,7 @@ export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }:
   const watchedMargin = watch('marginPct') || 0
   const watchedCategoryId = watch('categoryId')?.trim() ?? ''
   const selectedCategory = categoriesQuery.data?.find((c) => c.id === watchedCategoryId)
-  const salePricePreview = watchedCost * (1 + watchedMargin / 100)
+  const salePricePreview = previewSalePrice(watchedCost, watchedMargin)
   const marginStatus = getMarginStatus(watchedMargin, minMarginPct)
 
   useEffect(() => {
@@ -98,6 +110,14 @@ export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }:
       })
     }
   }, [product, reset])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [onClose])
 
   async function onSubmit(values: FormValues): Promise<void> {
     if (!localId) {
@@ -202,167 +222,179 @@ export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }:
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4 animate-fade-in backdrop-blur-sm">
       <div
-        className="surface-card flex flex-col max-h-[92vh] w-full max-w-lg overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
+        className="surface-card flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
         role="dialog"
         aria-modal="true"
+        aria-labelledby="product-form-title"
       >
-        {/* Mobile Drag Handle */}
         <div className="mx-auto my-3 h-1.5 w-12 shrink-0 rounded-full bg-border-strong/40 sm:hidden" />
 
-        {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-4 sm:py-5">
+        <div className="flex items-center justify-between border-b border-border bg-surface px-5 py-4 sm:px-6 sm:py-5">
           <div className="flex items-center gap-3">
-             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 text-white shadow-lg shadow-primary-600/20">
-                <Box size={20} strokeWidth={2.5} />
-             </div>
-             <div className="flex flex-col">
-                <h2 className="text-lg font-black tracking-tight text-text-main leading-none">
-                  {product ? 'Editar Producto' : 'Nuevo Producto'}
-                </h2>
-                <p className="mt-1.5 text-[10px] font-black text-text-subtle uppercase tracking-widest leading-none">
-                   Módulo de Inventario
-                </p>
-             </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 text-white shadow-lg shadow-primary-600/20">
+              <Box size={20} strokeWidth={2.5} />
+            </div>
+            <div className="flex flex-col">
+              <h2
+                id="product-form-title"
+                className="text-lg font-black leading-none tracking-tight text-text-main"
+              >
+                {product ? 'Editar producto' : 'Nuevo producto'}
+              </h2>
+              <p className="mt-1.5 text-xs font-semibold leading-none text-text-subtle">
+                Costo, margen y rubro IPC/USD
+              </p>
+            </div>
           </div>
-          <button 
-            onClick={onClose} 
+          <button
+            type="button"
+            onClick={onClose}
             className="rounded-full bg-surface-soft p-2 text-text-subtle transition-all hover:bg-border active:scale-90"
-            aria-label="Cerrar modal"
+            aria-label="Cerrar"
           >
             <X size={20} strokeWidth={3} />
           </button>
         </div>
 
-        <form 
-          onSubmit={(e) => void handleSubmit(onSubmit)(e)} 
-          className="flex-1 overflow-y-auto overscroll-contain p-6 pt-2 space-y-6 scrollbar-hide"
+        <form
+          onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+          className="flex-1 space-y-5 overflow-y-auto overscroll-contain p-5 pt-3 scrollbar-hide sm:space-y-6 sm:p-6 sm:pt-2"
         >
-          {/* Price Preview Card */}
           <div className="relative overflow-hidden rounded-2xl border border-primary-100 bg-primary-50/30 p-5 dark:border-primary-800/30 dark:bg-primary-900/10">
-             <div className="absolute right-0 top-0 -translate-y-4 translate-x-4 opacity-10 text-primary-600">
-                <BadgeDollarSign size={80} />
-             </div>
-             <div className="relative flex items-center justify-between">
-                <div>
-                   <p className="text-[10px] font-black uppercase tracking-widest text-primary-700 leading-none">Sugerencia de Venta</p>
-                   <p className="mt-2 text-4xl font-black text-primary-600 font-mono tracking-tighter">
-                      ${salePricePreview.toFixed(2)}
-                   </p>
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                   <MarginBadge marginPct={watchedMargin} marginStatus={marginStatus} />
-                   <span className="inline-flex rounded-lg bg-white/50 px-2 py-1 text-[10px] font-black text-primary-700 dark:bg-black/20">
-                      CALCULADO
-                   </span>
-                </div>
-             </div>
+            <div className="absolute right-0 top-0 -translate-y-4 translate-x-4 text-primary-600 opacity-10">
+              <BadgeDollarSign size={80} />
+            </div>
+            <div className="relative flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold leading-none text-primary-700">Precio de venta</p>
+                <p className="mt-2 font-mono text-4xl font-black tracking-tighter text-primary-600">
+                  {salePricePreview != null ? `$${salePricePreview.toFixed(0)}` : '—'}
+                </p>
+                <p className="mt-1.5 text-[11px] font-medium text-primary-800/70">
+                  Redondeado a decenas (igual que al guardar)
+                </p>
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <MarginBadge marginPct={watchedMargin} marginStatus={marginStatus} />
+              </div>
+            </div>
           </div>
 
           <div className="space-y-5">
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-muted">
-                 <FileText size={14} className="text-primary-600" />
-                 Nombre del Producto
+              <label className="flex items-center gap-2 text-xs font-bold text-text-muted">
+                <FileText size={14} className="text-primary-600" />
+                Nombre
               </label>
               <input
                 className={`w-full ${errors.name ? 'border-danger-600 ring-4 ring-danger-600/10' : ''}`}
                 placeholder="Ej. Coca Cola 500ml"
+                autoFocus={!product}
                 {...register('name')}
               />
-              {errors.name && (
-                <p className="mt-1 text-[10px] font-bold text-danger-600 uppercase tracking-tight">{errors.name.message}</p>
-              )}
+              {errors.name ? (
+                <p className="mt-1 text-xs font-bold text-danger-600">{errors.name.message}</p>
+              ) : null}
             </div>
 
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-muted">
-                 <Layout size={14} className="text-primary-600" />
-                 Categoría
+              <label className="flex items-center gap-2 text-xs font-bold text-text-muted">
+                <Layout size={14} className="text-primary-600" />
+                Rubro
               </label>
-              <select
-                className="w-full"
+              <CategorySelect
+                value={watchedCategoryId}
+                onChange={(id) => setValue('categoryId', id, { shouldDirty: true })}
+                categories={categoriesQuery.data ?? []}
                 disabled={categoriesQuery.isLoading}
-                {...register('categoryId')}
-              >
-                <option value="">Sin categoría asignada</option>
-                {categoriesQuery.data?.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-              {!categoriesQuery.isLoading && (categoriesQuery.data?.length ?? 0) === 0 && (
-                <p className="text-[10px] font-bold text-text-subtle leading-tight">
+                loading={categoriesQuery.isLoading}
+              />
+              <input type="hidden" {...register('categoryId')} />
+              {!categoriesQuery.isLoading && (categoriesQuery.data?.length ?? 0) === 0 ? (
+                <p className="text-xs font-medium leading-snug text-text-subtle">
                   No hay rubros activos.{' '}
-                  <Link to="/categories" className="text-primary-600 underline" onClick={onClose}>
-                    Activá rubros en Categorías
-                  </Link>
+                  <Link
+                    to="/categories"
+                    className="font-bold text-primary-600 underline"
+                    onClick={onClose}
+                  >
+                    Activá rubros
+                  </Link>{' '}
+                  para que el IPC se aplique bien.
                 </p>
-              )}
+              ) : null}
               {selectedCategory ? (
                 <div className="flex items-start gap-3 rounded-xl border border-border bg-surface-soft/80 p-3">
-                   <CategoryAvatar slug={selectedCategory.templateSlug} fallbackColor={selectedCategory.colorHex} size={16} />
-                   <div className="flex-1">
-                     <p className="text-[10px] font-bold leading-relaxed text-text-muted">
-                      Este producto se actualiza con{' '}
-                      <span
-                        className={`inline-flex rounded-md border px-1.5 py-0.5 font-black uppercase tracking-tighter ${categoryIndexBadgeClass(selectedCategory.preferredIndex)}`}
-                      >
-                        {categoryIndexLabel(selectedCategory.preferredIndex)}
-                      </span>
-                      . Cambiá el índice en{' '}
-                      <Link to="/categories" className="text-primary-600 underline" onClick={onClose}>
-                        Rubros
-                      </Link>
-                      , no acá.
-                    </p>
-                   </div>
+                  <CategoryAvatar
+                    slug={selectedCategory.templateSlug}
+                    fallbackColor={selectedCategory.colorHex}
+                    size={16}
+                  />
+                  <p className="flex-1 text-xs font-medium leading-relaxed text-text-muted">
+                    Se actualiza con{' '}
+                    <span
+                      className={`inline-flex rounded-md border px-1.5 py-0.5 text-[10px] font-black uppercase tracking-tighter ${categoryIndexBadgeClass(selectedCategory.preferredIndex)}`}
+                    >
+                      {categoryIndexLabel(selectedCategory.preferredIndex)}
+                    </span>
+                    . El índice se cambia en{' '}
+                    <Link
+                      to="/categories"
+                      className="font-bold text-primary-600 underline"
+                      onClick={onClose}
+                    >
+                      Rubros
+                    </Link>
+                    .
+                  </p>
                 </div>
               ) : (
-                <p className="text-[10px] font-bold text-text-subtle leading-tight px-1">
-                  Sin rubro: al aplicar IPC usa el índice general; no entra en ajustes USD.
+                <p className="px-1 text-xs font-medium leading-snug text-text-subtle">
+                  Sin rubro: al aplicar IPC usa el nivel general; no entra en ajustes USD.
                 </p>
               )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-muted">
-                   <DollarSign size={14} className="text-primary-600" />
-                   Costo de Compra
+                <label className="flex items-center gap-2 text-xs font-bold text-text-muted">
+                  <DollarSign size={14} className="text-primary-600" />
+                  Costo
                 </label>
                 <input
                   type="number"
                   step="0.01"
+                  inputMode="decimal"
                   className={`w-full font-mono ${errors.cost ? 'border-danger-600 ring-4 ring-danger-600/10' : ''}`}
                   {...register('cost', { valueAsNumber: true })}
                 />
-                {errors.cost && (
-                  <p className="mt-1 text-[10px] font-bold text-danger-600 uppercase tracking-tight">{errors.cost.message}</p>
-                )}
+                {errors.cost ? (
+                  <p className="mt-1 text-xs font-bold text-danger-600">{errors.cost.message}</p>
+                ) : null}
               </div>
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-muted">
-                   <Percent size={14} className="text-primary-600" />
-                   Margen (%)
+                <label className="flex items-center gap-2 text-xs font-bold text-text-muted">
+                  <Percent size={14} className="text-primary-600" />
+                  Margen %
                 </label>
                 <input
                   type="number"
                   step="0.1"
+                  inputMode="decimal"
                   className={`w-full font-mono ${errors.marginPct ? 'border-danger-600 ring-4 ring-danger-600/10' : ''}`}
                   {...register('marginPct', { valueAsNumber: true })}
                 />
-                {errors.marginPct && (
-                  <p className="mt-1 text-[10px] font-bold text-danger-600 uppercase tracking-tight">{errors.marginPct.message}</p>
-                )}
+                {errors.marginPct ? (
+                  <p className="mt-1 text-xs font-bold text-danger-600">{errors.marginPct.message}</p>
+                ) : null}
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-muted">
-                   <Box size={14} className="text-primary-600" />
-                   Unidad
+                <label className="flex items-center gap-2 text-xs font-bold text-text-muted">
+                  <Box size={14} className="text-primary-600" />
+                  Unidad
                 </label>
                 <select className="w-full" {...register('unit')}>
                   {PRODUCT_UNITS.map((u) => (
@@ -373,9 +405,9 @@ export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }:
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-muted">
-                   <Tag size={14} className="text-primary-600" />
-                   Código de Barras
+                <label className="flex items-center gap-2 text-xs font-bold text-text-muted">
+                  <Tag size={14} className="text-primary-600" />
+                  Código
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -388,6 +420,7 @@ export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }:
                     onClick={() => onOpenBarcodeScanner((code) => void handleBarcodeDetected(code))}
                     className="btn-secondary shrink-0 px-3"
                     title="Escanear con cámara"
+                    aria-label="Escanear código de barras"
                   >
                     <ScanLine size={18} />
                   </button>
@@ -396,33 +429,32 @@ export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }:
             </div>
 
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-muted">
-                 <FileText size={14} className="text-primary-600" />
-                 Notas e Información Adicional
+              <label className="flex items-center gap-2 text-xs font-bold text-text-muted">
+                <FileText size={14} className="text-primary-600" />
+                Notas
               </label>
               <textarea
                 rows={2}
                 className="w-full resize-none scrollbar-hide"
-                placeholder="Proveedor, ubicación en góndola, etc."
+                placeholder="Proveedor, góndola, etc. (opcional)"
                 {...register('notes')}
               />
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2 rounded-xl bg-surface-soft p-3">
-             <Info size={16} className="text-primary-600 shrink-0" />
-             <p className="text-[10px] font-bold text-text-subtle leading-tight">
-                El precio de venta se actualiza automáticamente al cambiar el costo o el margen de ganancia.
-             </p>
+            <Info size={16} className="shrink-0 text-primary-600" />
+            <p className="text-xs font-medium leading-snug text-text-subtle">
+              El precio de venta se calcula solo al cambiar costo o margen.
+            </p>
           </div>
         </form>
 
-        {/* Modal Footer */}
-        <div className="flex items-center gap-3 border-t border-border bg-surface px-6 py-6 pb-safe sm:pb-6">
+        <div className="flex items-center gap-3 border-t border-border bg-surface px-5 py-5 pb-safe sm:px-6 sm:pb-6">
           <button
             type="button"
             onClick={onClose}
-            className="btn-secondary flex-1 h-12 text-xs font-black uppercase tracking-widest"
+            className="btn-secondary h-12 flex-1 text-xs font-bold"
           >
             Cancelar
           </button>
@@ -430,11 +462,11 @@ export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }:
             type="submit"
             disabled={pending}
             onClick={() => void handleSubmit(onSubmit)()}
-            className="btn-primary flex-[1.5] h-12 gap-2 shadow-xl shadow-primary-600/20 active:scale-95 transition-all"
+            className="btn-primary h-12 flex-[1.5] gap-2 shadow-xl shadow-primary-600/20 transition-all active:scale-95"
           >
             <Save size={18} strokeWidth={3} />
-            <span className="text-xs font-black uppercase tracking-widest">
-               {product ? 'Guardar Cambios' : 'Registrar'}
+            <span className="text-xs font-bold">
+              {product ? 'Guardar' : 'Registrar'}
             </span>
           </button>
         </div>

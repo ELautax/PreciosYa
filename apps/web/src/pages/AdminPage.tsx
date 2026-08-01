@@ -123,25 +123,7 @@ export default function AdminPage() {
   }
 
   if (indicesQ.isError) {
-    return (
-      <div className="page-shell">
-        <div className="page-wrap max-w-lg py-12">
-          <div className="surface-card p-6 text-center">
-            <p className="font-bold text-text-main">No se pudieron cargar los índices IPC</p>
-            <p className="mt-2 text-sm text-text-muted">
-              {indicesQ.error instanceof Error ? indicesQ.error.message : 'Error de red o sesión'}
-            </p>
-            <button
-              type="button"
-              className="btn-primary mt-4 h-11 px-6"
-              onClick={() => void indicesQ.refetch()}
-            >
-              Reintentar
-            </button>
-          </div>
-        </div>
-      </div>
-    )
+    // No bloquear todo el panel admin: el resto (usuarios, sync) sigue usable
   }
 
   if (!me?.isAdmin) {
@@ -209,6 +191,27 @@ export default function AdminPage() {
             </p>
           </div>
         )}
+
+        {indicesQ.isError ? (
+          <div
+            role="alert"
+            className="flex flex-col gap-3 rounded-2xl border border-warning-200 bg-warning-50/80 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div>
+              <p className="font-bold text-text-main">No se pudieron cargar los índices IPC</p>
+              <p className="mt-1 text-sm text-text-muted">
+                {indicesQ.error instanceof Error ? indicesQ.error.message : 'Error de red o sesión'}
+              </p>
+            </div>
+            <button
+              type="button"
+              className="btn-secondary h-10 shrink-0 px-4 text-xs font-bold"
+              onClick={() => void indicesQ.refetch()}
+            >
+              Reintentar índices
+            </button>
+          </div>
+        ) : null}
 
         {/* Global Stats Grid */}
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">

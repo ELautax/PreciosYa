@@ -453,15 +453,17 @@ HTTP status codes used:
 ```
 /                   → redirect to /dashboard if logged in, else /login
 /login              → LoginPage (Google OAuth button)
-/dashboard          → DashboardPage (summary cards + margin alerts)
-/products           → ProductsPage (full product list)
-/sales              → SalesPage (gestor de ventas: resumen, registrar, historial, análisis)
-/categories         → CategoriesPage
-/price-list         → PriceListPage (generate + share PNG)
-/history            → HistoryPage (IPC history + per-product charts)
-/settings           → SettingsPage (local config, account, plan)
+/dashboard          → DashboardPage (KPIs + deep-links a Productos)
+/products           → ProductsPage (?new=1, ?bulk=ipc|usd|percentage, ?export=1, ?filter=alert)
+/sales              → SalesPage (resumen, registrar, historial, análisis)
+/categories         → CategoriesPage (rubros COICOP; Indexar USD)
+/history            → HistoryPage (IPC + historial por producto)
+/settings           → SettingsPage (negocio → editar en /locals; cuenta; plan MP)
+/locals             → LocalsPage (crear/editar local)
 /admin              → AdminPage (only if user.is_admin)
 ```
+
+Export PNG: modal desde Productos (`ExportModal`). No hay ruta `/price-list` separada.
 
 All routes under `/dashboard` and below are wrapped in `ProtectedRoute`.
 
@@ -864,15 +866,16 @@ Todas las tareas TASK-001 … TASK-044 están implementadas en el monorepo (mayo
 
 ## 16. What is NOT in scope
 
-- Mercado Pago automático (suscripciones manuales)
-- APK nativa / React Native
+- APK nativa / React Native (sí hay TWA/APK empaquetada de la PWA)
 - Multi-usuario por negocio
-- PDF export (solo PNG)
-- Sync offline bidireccional completo
-- WhatsApp Business API
+- PDF export (solo PNG desde Productos → Exportar)
+- Sync offline bidireccional completo (sí hay cola parcial de productos + lectura en caché)
+- WhatsApp Business API (sí: Web Share / descarga PNG)
 - Recomendación de precios con IA
 
-**Ya no está fuera de alcance (v2):** escaneo de código de barras; IPC multi-división; categorías predefinidas INDEC.
+**Pagos Pro:** checkout hospedado Mercado Pago (sandbox en etapa tesis; activación Pro vía Admin si el cobro E2E no completa). No es “suscripción 100% automática sin intervención” en todos los entornos.
+
+**Ya no está fuera de alcance (v2):** escaneo de código de barras; IPC multi-división; categorías predefinidas INDEC; gestor de ventas.
 
 ---
 

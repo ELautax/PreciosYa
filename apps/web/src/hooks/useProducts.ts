@@ -1,5 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import axios, { type AxiosError } from 'axios'
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
+import axios, { type AxiosError, type AxiosInstance } from 'axios'
 import type { ApiSuccess } from 'shared'
 
 import { useApiClient } from '@/hooks/useApiClient'
@@ -25,15 +30,59 @@ export type ProductListResult = {
   limit: number
 }
 
+type ProductListFilters = {
+  search?: string
+  page?: number
+  limit?: number
+  isAlert?: boolean
+  categoryId?: string
+}
+
+async function requestProductPage(
+  api: AxiosInstance,
+  localId: string,
+  opts: ProductListFilters,
+): Promise<ProductListResult> {
+  const page = opts.page ?? 1
+  const limit = opts.limit ?? 20
+  const res = await api.get<ApiSuccess<ProductListResult>>('/api/products', {
+    params: {
+      localId,
+      search: opts.search || undefined,
+      page,
+      limit,
+      ...(opts.isAlert ? { isAlert: 'true' as const } : {}),
+      ...(opts.categoryId ? { categoryId: opts.categoryId } : {}),
+    },
+  })
+  return res.data.data
+}
+
+/** Trae todas las páginas (máx. 100 por request en API) para export / historial. */
+export async function fetchAllLocalProducts(
+  api: AxiosInstance,
+  localId: string,
+  opts?: Omit<ProductListFilters, 'page' | 'limit'>,
+): Promise<ProductListResult> {
+  const limit = 100
+  let page = 1
+  const items: ProductDto[] = []
+  let total = 0
+
+  while (page <= 50) {
+    const data = await requestProductPage(api, localId, { ...opts, page, limit })
+    total = data.total
+    items.push(...data.items)
+    if (items.length >= total || data.items.length === 0) break
+    page += 1
+  }
+
+  return { items, total, page: 1, limit: items.length }
+}
+
 export function useProducts(
   localId: string | undefined,
-  opts?: {
-    search?: string
-    page?: number
-    limit?: number
-    isAlert?: boolean
-    categoryId?: string
-  },
+  opts?: ProductListFilters,
 ) {
   const api = useApiClient()
   const search = opts?.search ?? ''
@@ -46,23 +95,65 @@ export function useProducts(
     queryKey: ['products', localId, search, categoryId, isAlert, page, limit],
     enabled: Boolean(localId),
     queryFn: async () => {
+      if (!localId) throw new Error('localId requerido')
       try {
-        const res = await api.get<ApiSuccess<ProductListResult>>('/api/products', {
-          params: {
-            localId,
-            search: search || undefined,
-            page,
-            limit,
-            ...(isAlert ? { isAlert: 'true' as const } : {}),
-            ...(categoryId ? { categoryId } : {}),
-          },
+        const data = await requestProductPage(api, localId, {
+          search,
+          categoryId: categoryId || undefined,
+          isAlert,
+          page,
+          limit,
         })
-        const data = res.data.data
         void saveOfflineSnapshot(snapshotKey, data)
         return data
       } catch (error) {
         const cached = await readOfflineSnapshot<ProductListResult>(snapshotKey)
         if (cached) return cached
+        throw error
+      }
+    },
+  })
+}
+
+/** Catálogo con «cargar más» (páginas de 30). */
+export function useInfiniteProducts(
+  localId: string | undefined,
+  opts?: Omit<ProductListFilters, 'page' | 'limit'> & { limit?: number },
+) {
+  const api = useApiClient()
+  const search = opts?.search ?? ''
+  const categoryId = opts?.categoryId ?? ''
+  const isAlert = opts?.isAlert ?? false
+  const limit = opts?.limit ?? 30
+  const snapshotKey = `products:${localId ?? 'none'}:${categoryId}:${search}`
+
+  return useInfiniteQuery({
+    queryKey: ['products', localId, 'infinite', search, categoryId, isAlert, limit] as const,
+    enabled: Boolean(localId),
+    initialPageParam: 1,
+    getNextPageParam: (last: ProductListResult) => {
+      const loaded = last.page * last.limit
+      return loaded < last.total ? last.page + 1 : undefined
+    },
+    queryFn: async ({ pageParam }): Promise<ProductListResult> => {
+      if (!localId) throw new Error('localId requerido')
+      try {
+        const data = await requestProductPage(api, localId, {
+          search,
+          categoryId: categoryId || undefined,
+          isAlert,
+          page: pageParam,
+          limit,
+        })
+        if (pageParam === 1) {
+          void saveOfflineSnapshot(snapshotKey, data)
+        }
+        return data
+      } catch (error) {
+        if (pageParam === 1) {
+          const cached = await readOfflineSnapshot<ProductListResult>(snapshotKey)
+          if (cached) return cached
+        }
         throw error
       }
     },

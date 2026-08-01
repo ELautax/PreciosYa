@@ -9,28 +9,30 @@
 
 1. Iniciá sesión con Google.
 2. Creá tu **primer local** (nombre del negocio).
-3. Entrá a **Rubros** y activá los que vendés (Lácteos, Bebidas, etc.).
+3. Entrá a **Rubros** (barra inferior o menú) y activá los que vendés.
 4. En rubros importados o dolarizados, activá **Indexar USD**.
-5. Cargá productos en **Catálogo** (manual o escáner de código de barras).
+5. Cargá productos en **Productos** (manual o escáner). Asigná un rubro a cada uno para que el IPC/USD se aplique bien.
+
+Atajos del panel: **Aplicar IPC**, **Exportar lista** y **Nuevo producto** abren directamente la acción en Productos (`?bulk=ipc`, `?export=1`, `?new=1`).
 
 ---
 
 ## Cargar un producto
 
 1. **Nuevo producto**.
-2. Elegí **rubro** (recomendado): define si el producto sigue **IPC** o **USD** en actualizaciones masivas.
-3. Ingresá **costo** y **margen %**; el precio de venta se calcula solo.
+2. Elegí **rubro** en el selector con íconos COICOP (recomendado): define si el producto sigue **IPC** o **USD**.
+3. Ingresá **costo** y **margen %**; el precio de venta se calcula solo (redondeo a decenas, igual que al guardar).
 4. Opcional: código de barras (escáner o teclado).
 
 ### Escanear código de barras (móvil)
 
-1. En **Nuevo producto**, tocá el ícono de escáner junto a **Código de barras**.
+1. En **Nuevo producto**, tocá el ícono de escáner junto a **Código**.
 2. Aceptá el permiso de **cámara** si Chrome lo solicita.
 3. Se abre una **pantalla negra** con la cámara en vivo; centrá el código en el recuadro blanco.
 4. Al leerlo, volvés al formulario con el código cargado (y datos sugeridos si existen en catálogo).
 5. Si no ves la cámara: **Configuración del sitio** → Cámara → Permitir; cerrá y volvé a abrir la pestaña (o reinstalá la PWA si la tenés en el inicio).
 
-> No hace falta elegir IPC o USD en cada producto: eso se configura una vez por rubro en **Categorías**.
+> No hace falta elegir IPC o USD en cada producto: eso se configura una vez por rubro en **Rubros**.
 
 ---
 
@@ -38,7 +40,7 @@
 
 1. En el **header**, tocá tu **nombre / avatar** para ir a **Mi cuenta** (perfil y plan).
 2. El panel muestra productos, alertas, IPC del mes, **dólar oficial** (cotización completa + variación) y atajos.
-3. La **campanita** muestra el detalle del IPC (porcentaje y período) o del salto USD; en notificaciones de IPC tocá **Ver rubros** para abrir el desglose de las **13 divisiones COICOP** (ícono + %) y desde ahí aplicar a Productos.
+3. La **campanita** muestra el detalle del IPC (porcentaje y período) o del salto USD; en notificaciones de IPC tocá **Ver rubros** para abrir el **desglose gráfico** de las **13 divisiones COICOP** (barras horizontales por rubro + leyenda con íconos) y desde ahí aplicar a Productos.
 
 ---
 
@@ -90,7 +92,9 @@ Si tenés un aumento puntual (proveedor, promoción):
 
 ## Exportar lista
 
-**Exportar** genera un PNG con tus productos y precios de venta para clientes.
+En **Productos → Exportar** se genera un PNG con **todos** los productos del filtro actual (no solo la primera página). El modal indica cuántos se exportan. Podés abrir el mismo flujo desde el panel (`Exportar lista` o KPI «Último PNG»).
+
+Sin conexión: podés seguir cargando productos; se sincronizan al reconectar (no es sync offline total).
 
 ---
 

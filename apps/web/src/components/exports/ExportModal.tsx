@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { X, Download, Share2, Eye, FileImage, AlertTriangle, CheckCircle2 } from 'lucide-react'
 
 import {
@@ -14,6 +14,10 @@ import { PriceListTemplate } from './PriceListTemplate'
 type ExportModalProps = {
   local: LocalDto
   products: ProductDto[]
+  /** Total del filtro actual (puede coincidir con products.length). */
+  matchedTotal?: number
+  loading?: boolean
+  filterActive?: boolean
   onClose: () => void
 }
 
@@ -28,16 +32,24 @@ function downloadBlob(blob: Blob, fileName: string): void {
   URL.revokeObjectURL(url)
 }
 
-export function ExportModal({ local, products, onClose }: ExportModalProps) {
+export function ExportModal({
+  local,
+  products,
+  matchedTotal,
+  loading = false,
+  filterActive = false,
+  onClose,
+}: ExportModalProps) {
   const exportTemplateRef = useRef<HTMLDivElement | null>(null)
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
   const exportMut = useExportPriceList(local.id)
+  const total = matchedTotal ?? products.length
 
   async function generateAndUpload(sharedVia?: string): Promise<{
     blob: Blob
     fileName: string
   } | null> {
-    if (!exportTemplateRef.current) return null
+    if (!exportTemplateRef.current || products.length === 0) return null
     setMessage(null)
     try {
       const res = await exportMut.mutateAsync({
@@ -65,111 +77,142 @@ export function ExportModal({ local, products, onClose }: ExportModalProps) {
     const shared = await sharePngIfSupported(out.blob, out.fileName)
     if (!shared) {
       downloadBlob(out.blob, out.fileName)
-      setMessage({ text: 'Tu navegador no soporta compartir directamente. Se descargó el PNG.', type: 'success' })
+      setMessage({
+        text: 'Tu navegador no soporta compartir directamente. Se descargó el PNG.',
+        type: 'success',
+      })
     }
   }
+
+  useEffect(() => {
+    setMessage(null)
+  }, [products])
 
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4 animate-fade-in backdrop-blur-sm">
       <div
-        className="surface-card flex flex-col max-h-[92vh] w-full max-w-4xl overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
+        className="surface-card flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
         role="dialog"
         aria-modal="true"
       >
-        {/* Mobile Drag Handle */}
         <div className="mx-auto my-3 h-1.5 w-12 shrink-0 rounded-full bg-border-strong/40 sm:hidden" />
 
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-4 sm:py-5">
           <div className="flex items-center gap-3">
-             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 text-white shadow-lg shadow-primary-600/20">
-                <FileImage size={20} strokeWidth={2.5} />
-             </div>
-             <div className="flex flex-col">
-                <h2 className="text-lg font-black tracking-tight text-text-main leading-none">Exportar Catálogo</h2>
-                <p className="mt-1.5 text-[10px] font-black text-text-subtle uppercase tracking-widest leading-none">Generador de PNG</p>
-             </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 text-white shadow-lg shadow-primary-600/20">
+              <FileImage size={20} strokeWidth={2.5} />
+            </div>
+            <div className="flex flex-col">
+              <h2 className="text-lg font-black leading-none tracking-tight text-text-main">
+                Exportar lista
+              </h2>
+              <p className="mt-1.5 text-xs font-semibold text-text-subtle">
+                PNG listo para WhatsApp o imprimir
+              </p>
+            </div>
           </div>
-          <button onClick={onClose} className="rounded-full bg-surface-soft p-2 text-text-subtle transition-all hover:bg-border active:scale-90">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full bg-surface-soft p-2 text-text-subtle transition-all hover:bg-border active:scale-90"
+          >
             <X size={20} strokeWidth={3} />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto overscroll-contain p-6 pt-2 space-y-6 scrollbar-hide">
+        <div className="flex-1 space-y-6 overflow-y-auto overscroll-contain p-6 pt-2 scrollbar-hide">
           <div className="flex items-start justify-between gap-4 px-1">
-             <div>
-                <p className="text-sm font-bold text-text-main">Vista Previa del Diseño</p>
-                <p className="mt-1 text-xs font-medium text-text-subtle leading-relaxed">
-                   Se generará una imagen con los {products.length} productos visibles.
+            <div>
+              <p className="text-sm font-bold text-text-main">Vista previa</p>
+              {loading ? (
+                <p className="mt-1 text-xs font-medium text-text-subtle">
+                  Cargando todos los productos del filtro…
                 </p>
-             </div>
-             <div className="hidden sm:flex items-center gap-1.5 rounded-lg bg-surface-soft px-3 py-1.5 border border-border shrink-0">
-                <Eye size={14} className="text-primary-600" />
-                <span className="text-[10px] font-black text-text-muted uppercase tracking-tighter">Previsualización</span>
-             </div>
+              ) : (
+                <p className="mt-1 text-xs font-medium leading-relaxed text-text-subtle">
+                  Se exportarán{' '}
+                  <span className="font-bold text-text-main">
+                    {products.length} de {total}
+                  </span>{' '}
+                  productos
+                  {filterActive ? ' (según búsqueda o filtros activos)' : ' del catálogo'}.
+                </p>
+              )}
+            </div>
+            <div className="hidden shrink-0 items-center gap-1.5 rounded-lg border border-border bg-surface-soft px-3 py-1.5 sm:flex">
+              <Eye size={14} className="text-primary-600" />
+              <span className="text-xs font-bold text-text-muted">Previsualización</span>
+            </div>
           </div>
 
-          <div className="relative rounded-[2rem] border border-border bg-surface-soft p-4 sm:p-8 shadow-inner overflow-hidden group">
-            <div className="mx-auto max-w-full overflow-x-auto scrollbar-hide animate-scale-in">
-              <div className="min-w-[320px] shadow-2xl rounded-lg overflow-hidden bg-white mx-auto">
-                 <PriceListTemplate local={local} products={products} variant="preview" />
+          {loading ? (
+            <div className="skeleton h-64 w-full rounded-[2rem]" />
+          ) : products.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border p-8 text-center">
+              <p className="text-sm font-bold text-text-muted">
+                No hay productos para exportar con el filtro actual.
+              </p>
+            </div>
+          ) : (
+            <div className="relative overflow-hidden rounded-[2rem] border border-border bg-surface-soft p-4 shadow-inner group sm:p-8">
+              <div className="mx-auto max-w-full overflow-x-auto scrollbar-hide animate-scale-in">
+                <div className="mx-auto min-w-[320px] overflow-hidden rounded-lg bg-white shadow-2xl">
+                  <PriceListTemplate local={local} products={products} variant="preview" />
+                </div>
               </div>
             </div>
-            <div className="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-               <span className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl border border-border text-text-main">
-                  Diseño Optimizado
-               </span>
-            </div>
-          </div>
+          )}
 
-          {message && (
-            <div className={`rounded-2xl border p-4 animate-scale-in flex items-start gap-3 ${
-              message.type === 'success' ? 'border-primary-100 bg-primary-50/50 text-primary-800' : 'border-danger-100 bg-danger-50/50 text-danger-800'
-            }`}>
-              {message.type === 'success' ? <CheckCircle2 size={18} className="shrink-0 mt-0.5" /> : <AlertTriangle size={18} className="shrink-0 mt-0.5" />}
+          {message ? (
+            <div
+              className={`flex animate-scale-in items-start gap-3 rounded-2xl border p-4 ${
+                message.type === 'success'
+                  ? 'border-primary-100 bg-primary-50/50 text-primary-800'
+                  : 'border-danger-100 bg-danger-50/50 text-danger-800'
+              }`}
+            >
+              {message.type === 'success' ? (
+                <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
+              ) : (
+                <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+              )}
               <p className="text-sm font-bold leading-tight">{message.text}</p>
             </div>
-          )}
+          ) : null}
         </div>
 
-        {/* Footer */}
-        <div className="border-t border-border bg-surface px-6 py-6 pb-safe sm:pb-6 flex flex-col sm:flex-row items-center gap-3">
+        <div className="flex flex-col items-center gap-3 border-t border-border bg-surface px-6 py-6 pb-safe sm:flex-row sm:pb-6">
           <button
             type="button"
             onClick={onClose}
-            className="btn-secondary w-full sm:w-32 h-12 text-xs font-black uppercase tracking-widest shadow-none border-none bg-surface-soft hover:bg-border/30"
+            className="btn-secondary h-12 w-full border-none bg-surface-soft text-xs font-bold shadow-none hover:bg-border/30 sm:w-32"
           >
             Cerrar
           </button>
           <div className="flex-1" />
-          <div className="flex w-full sm:w-auto gap-3">
+          <div className="flex w-full gap-3 sm:w-auto">
             <button
               type="button"
-              disabled={exportMut.isPending || products.length === 0}
+              disabled={exportMut.isPending || loading || products.length === 0}
               onClick={() => void handleDownload()}
-              className="btn-secondary flex-1 sm:px-6 h-12 gap-2"
+              className="btn-secondary h-12 flex-1 gap-2 sm:px-6"
             >
               <Download size={18} strokeWidth={3} />
-              <span className="text-xs font-black uppercase tracking-widest">Descargar</span>
+              <span className="text-xs font-bold">Descargar</span>
             </button>
             <button
               type="button"
-              disabled={exportMut.isPending || products.length === 0}
+              disabled={exportMut.isPending || loading || products.length === 0}
               onClick={() => void handleShare()}
-              className="btn-primary flex-1 sm:px-8 h-12 gap-2 shadow-xl shadow-primary-600/20"
+              className="btn-primary h-12 flex-1 gap-2 shadow-xl shadow-primary-600/20 sm:px-8"
             >
               <Share2 size={18} strokeWidth={3} />
-              <span className="text-xs font-black uppercase tracking-widest">Compartir</span>
+              <span className="text-xs font-bold">Compartir</span>
             </button>
           </div>
         </div>
 
-        {/* Hidden template for capture */}
-        <div
-          className="pointer-events-none fixed left-[-10000px] top-0 opacity-0"
-          aria-hidden
-        >
+        <div className="pointer-events-none fixed left-[-10000px] top-0 opacity-0" aria-hidden>
           <div ref={exportTemplateRef}>
             <PriceListTemplate local={local} products={products} variant="export" />
           </div>

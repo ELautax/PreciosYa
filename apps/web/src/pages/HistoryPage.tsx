@@ -16,12 +16,17 @@ export default function HistoryPage() {
   const { data: locals, isLoading: loadingLocals } = useLocals()
   const [localId, setLocalId] = useSelectedLocal(locals)
   const [productId, setProductId] = useState('')
+  const [productSearch, setProductSearch] = useState('')
 
-  const productsQ = useProducts(localId, { limit: 100 })
+  const productsQ = useProducts(localId, {
+    limit: 100,
+    search: productSearch.trim() || undefined,
+  })
   const historyQ = useProductHistory(productId || undefined)
   const ipcHistoryQ = useIpcHistory()
 
   const products = productsQ.data?.items ?? []
+  const productsTotal = productsQ.data?.total ?? 0
   const selectedProduct = useMemo(
     () => products.find((p) => p.id === productId) ?? null,
     [products, productId],
@@ -111,7 +116,13 @@ export default function HistoryPage() {
               <div className="h-px w-full bg-border lg:h-12 lg:w-px" />
 
               <div className="flex-[2] flex flex-col gap-2">
-                 <label className="text-[10px] font-black uppercase tracking-widest text-text-subtle px-1">Producto a analizar</label>
+                 <label className="text-xs font-bold text-text-subtle px-1">Producto a analizar</label>
+                 <input
+                   value={productSearch}
+                   onChange={(e) => setProductSearch(e.target.value)}
+                   placeholder="Buscar por nombre o código…"
+                   className="h-11 w-full"
+                 />
                  <div className="relative group">
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-subtle group-focus-within:text-primary-600 transition-colors">
                        <Package size={18} />
@@ -123,7 +134,7 @@ export default function HistoryPage() {
                       disabled={products.length === 0}
                     >
                       {products.length === 0 ? (
-                        <option>Sin productos registrados</option>
+                        <option>Sin productos {productSearch.trim() ? 'para esta búsqueda' : 'registrados'}</option>
                       ) : (
                         products.map((p) => (
                           <option key={p.id} value={p.id}>
@@ -133,6 +144,11 @@ export default function HistoryPage() {
                       )}
                     </select>
                  </div>
+                 {productsTotal > products.length ? (
+                   <p className="px-1 text-xs font-medium text-text-muted">
+                     Mostrando {products.length} de {productsTotal}. Refiná la búsqueda para encontrar el resto.
+                   </p>
+                 ) : null}
               </div>
            </div>
         </section>

@@ -34,7 +34,7 @@ export function ProductCard({ product, category, onEdit, onDelete }: ProductCard
                    <span className="font-mono">{product.barcode}</span>
                 </div>
              )}
-              {product.categoryName && (
+              {product.categoryName ? (
                  <div className="flex items-center gap-1.5">
                    <CategoryAvatar 
                      slug={category?.templateSlug ?? null} 
@@ -47,6 +47,10 @@ export function ProductCard({ product, category, onEdit, onDelete }: ProductCard
                      {product.categoryName}
                    </span>
                  </div>
+              ) : (
+                <span className="inline-flex rounded-lg border border-warning-200 bg-warning-50 px-2 py-0.5 text-[9px] font-bold text-warning-800 dark:border-warning-800/40 dark:bg-warning-900/20 dark:text-warning-300">
+                  Sin rubro
+                </span>
               )}
           </div>
         </div>

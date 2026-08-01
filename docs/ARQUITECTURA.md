@@ -56,9 +56,11 @@ Migraciones en `apps/api/prisma/migrations/`. Producción: `pnpm --filter api ru
 
 ## Frontend
 
-- **TanStack Query** para cache (`ipc-latest`, `locals`, `products`, `sales`).
-- Tokens CSS `--py-*` + clase `dark` para tema.
-- PWA con Workbox.
+- **TanStack Query** para cache (`ipc-latest`, `locals`, `products` / infinite list, `sales`).
+- Tokens CSS + clase `dark` para tema.
+- PWA con Workbox; offline: lectura en caché + cola parcial de writes de productos (banner aclara sync al reconectar).
+- Deep-links de panel: `/products?bulk=ipc|usd`, `?export=1`, `?new=1`, `?filter=alert`.
+- Export PNG: modal en Productos (trae todas las páginas del filtro); no hay ruta `/price-list`.
 
 ## Deploy
 

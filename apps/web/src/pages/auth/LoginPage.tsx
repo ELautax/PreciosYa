@@ -90,15 +90,27 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-canvas px-6 py-12 animate-fade-in">
-      <div className="w-full max-w-md text-center">
-        <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-surface-soft px-3 py-1.5 text-xs font-semibold text-text-muted">
+    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-12 animate-fade-in">
+      <div
+        className="pointer-events-none absolute inset-0 bg-canvas"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-90"
+        style={{
+          background:
+            'radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb, var(--color-primary-600) 18%, transparent), transparent), radial-gradient(ellipse 60% 40% at 100% 100%, color-mix(in srgb, var(--color-accent-600) 14%, transparent), transparent)',
+        }}
+        aria-hidden
+      />
+      <div className="relative z-10 w-full max-w-md text-center">
+        <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-3 py-1.5 text-xs font-semibold text-text-muted backdrop-blur-sm">
           Hecho en Argentina para kioscos y almacenes
         </div>
 
         <div className="mb-8 flex items-center justify-center gap-3">
-          <img src={preciosYaLogo} alt="PreciosYa" className="h-10 w-10" />
-          <span className="text-2xl font-extrabold tracking-tight text-text-main">
+          <img src={preciosYaLogo} alt="PreciosYa" className="h-12 w-12 drop-shadow-sm" />
+          <span className="text-3xl font-extrabold tracking-tight text-text-main">
             Precios<span className="text-primary-600">Ya</span>
           </span>
         </div>
@@ -106,15 +118,15 @@ export default function LoginPage() {
         <h1 className="heading-xl text-balance">
           {upgradePro
             ? 'Suscribite a Pro con Mercado Pago'
-            : 'Dejá la libreta: actualizá precios con IPC y cuidá tu margen.'}
+            : 'Actualizá precios con el IPC y cuidá tu margen'}
         </h1>
         <p className="mt-4 text-base text-text-muted text-balance leading-relaxed">
           {upgradePro
             ? 'Iniciá sesión para completar el pago seguro de $4.500/mes con tarjeta.'
-            : 'Iniciá sesión para automatizar tus precios con los índices oficiales del INDEC.'}
+            : 'Catálogo, inflación INDEC, dólar BCRA y lista para WhatsApp — en el celular.'}
         </p>
 
-        <div className="surface-card mt-10 w-full p-6 text-left">
+        <div className="surface-card mt-10 w-full p-6 text-left shadow-warm-lg">
           {!supabaseConfigured ? (
             <div className="rounded-xl border border-danger-100 bg-danger-50 p-4 text-sm text-danger-700">
               Faltan <code className="font-mono text-xs">VITE_SUPABASE_URL</code> y{' '}

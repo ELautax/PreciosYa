@@ -29,12 +29,15 @@ import { useCategories } from '@/hooks/useCategories'
 import { useIpcLatest } from '@/hooks/useIpc'
 import { useCreateLocal, useLocals } from '@/hooks/useLocals'
 import { useSelectedLocal } from '@/hooks/useSelectedLocal'
+import { useApiClient } from '@/hooks/useApiClient'
 import {
+  fetchAllLocalProducts,
   useDeleteProduct,
   useImportProductsCsv,
-  useProducts,
+  useInfiniteProducts,
   type CsvImportResult,
 } from '@/hooks/useProducts'
+import { appToast } from '@/lib/toast'
 import type { LocalDto } from '@/types/local'
 import type { CategoryDto } from '@/types/category'
 import type { ProductDto } from '@/types/product'
@@ -84,29 +87,50 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   const [importOpen, setImportOpen] = useState(false)
   const [importResult, setImportResult] = useState<CsvImportResult | null>(null)
   const [exportOpen, setExportOpen] = useState(false)
+  const [exportLoading, setExportLoading] = useState(false)
+  const [exportProducts, setExportProducts] = useState<ProductDto[]>([])
+  const [exportMatchedTotal, setExportMatchedTotal] = useState(0)
   const [editing, setEditing] = useState<ProductDto | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<ProductDto | null>(null)
   const [isActionsOpen, setIsActionsOpen] = useState(false)
   const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false)
   const barcodeHandlerRef = useRef<((code: string) => void) | null>(null)
+  const api = useApiClient()
 
   const ipcQuery = useIpcLatest()
   const waitingForLocal = locals.length > 0 && !localId
   const filterParam = searchParams.get('filter')
-  const productsQuery = useProducts(localId, {
-    search: search.trim() || undefined,
-    ...(categoryFilter ? { categoryId: categoryFilter } : {}),
-    ...(filterParam === 'alert' ? { isAlert: true } : {}),
-  })
+  const listFilters = useMemo(
+    () => ({
+      search: search.trim() || undefined,
+      ...(categoryFilter ? { categoryId: categoryFilter } : {}),
+      ...(filterParam === 'alert' ? { isAlert: true as const } : {}),
+    }),
+    [search, categoryFilter, filterParam],
+  )
+  const productsQuery = useInfiniteProducts(localId, listFilters)
+  const products = useMemo(
+    () => productsQuery.data?.pages.flatMap((p) => p.items) ?? [],
+    [productsQuery.data],
+  )
+  const productsTotal = productsQuery.data?.pages[0]?.total ?? 0
+  const withoutCategoryCount = useMemo(
+    () => products.filter((p) => !p.categoryId).length,
+    [products],
+  )
   const deleteMut = useDeleteProduct(localId)
   const importMut = useImportProductsCsv(localId)
   const selectedLocal = locals.find((l) => l.id === localId) ?? locals[0]
   const categoriesQuery = useCategories(localId)
+  const activeRubros = categoriesQuery.data?.length ?? 0
   const categoryMap = useMemo(() => {
     const map = new Map<string, CategoryDto>()
-    categoriesQuery.data?.forEach(c => map.set(c.id, c))
+    categoriesQuery.data?.forEach((c) => map.set(c.id, c))
     return map
   }, [categoriesQuery.data])
+  const filterActive = Boolean(
+    search.trim() || categoryFilter || filterParam === 'alert',
+  )
 
   useEffect(() => {
     if (searchParams.get('new') === '1') {
@@ -117,6 +141,44 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
       setSearchParams(next, { replace: true })
     }
   }, [searchParams, setSearchParams])
+
+  useEffect(() => {
+    const bulk = searchParams.get('bulk')
+    if (bulk === 'ipc' || bulk === 'usd' || bulk === 'percentage') {
+      setBulkInitialTab(bulk)
+      setBulkOpen(true)
+      const next = new URLSearchParams(searchParams)
+      next.delete('bulk')
+      setSearchParams(next, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
+
+  async function openExport(): Promise<void> {
+    if (!localId) return
+    setExportOpen(true)
+    setExportLoading(true)
+    setExportProducts([])
+    try {
+      const data = await fetchAllLocalProducts(api, localId, listFilters)
+      setExportProducts(data.items)
+      setExportMatchedTotal(data.total)
+    } catch {
+      appToast.error('No se pudo cargar el catálogo para exportar')
+      setExportOpen(false)
+    } finally {
+      setExportLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (searchParams.get('export') !== '1' || !localId) return
+    const next = new URLSearchParams(searchParams)
+    next.delete('export')
+    setSearchParams(next, { replace: true })
+    void openExport()
+    // Abrir export solo cuando llega ?export=1
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localId, searchParams.get('export')])
 
   useEffect(() => {
     const canUseKeyboardShortcuts =
@@ -219,7 +281,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                    title="Actualización Masiva"
                  >
                     <Zap size={18} className="text-accent-600" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Actualizar</span>
+                    <span className="text-xs font-bold">Actualizar</span>
                  </button>
                  <button
                    type="button"
@@ -228,17 +290,17 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                    title="Importar CSV"
                  >
                     <Upload size={18} className="text-primary-600" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Importar</span>
+                    <span className="text-xs font-bold">Importar</span>
                  </button>
                  <button
                    type="button"
-                   onClick={() => setExportOpen(true)}
+                   onClick={() => void openExport()}
                    className="btn-secondary flex-1 sm:flex-none h-11 px-4"
-                   disabled={!productsQuery.data?.items?.length}
+                   disabled={productsTotal === 0 && !productsQuery.isLoading}
                    title="Exportar PNG"
                  >
                     <Download size={18} className="text-primary-600" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Exportar</span>
+                    <span className="text-xs font-bold">Exportar</span>
                  </button>
               </div>
            </div>
@@ -246,15 +308,15 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
            {/* Links Bar - Scrollable Chips */}
            <div className="relative group">
              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
-                <Link to="/categories" className="btn-secondary h-11 px-4 gap-2 whitespace-nowrap rounded-xl snap-start text-[10px] font-black uppercase tracking-widest shadow-sm border-border-strong/20 bg-surface">
+                <Link to="/categories" className="btn-secondary h-11 px-4 gap-2 whitespace-nowrap rounded-xl snap-start text-xs font-bold shadow-sm border-border-strong/20 bg-surface">
                   <Tags size={16} className="text-primary-600" />
-                  Categorías
+                  Rubros
                 </Link>
-                <Link to="/history" className="btn-secondary h-11 px-4 gap-2 whitespace-nowrap rounded-xl snap-start text-[10px] font-black uppercase tracking-widest shadow-sm border-border-strong/20 bg-surface">
+                <Link to="/history" className="btn-secondary h-11 px-4 gap-2 whitespace-nowrap rounded-xl snap-start text-xs font-bold shadow-sm border-border-strong/20 bg-surface">
                   <History size={16} className="text-primary-600" />
                   Historial
                 </Link>
-                <Link to="/locals" className="btn-secondary h-11 px-4 gap-2 whitespace-nowrap rounded-xl snap-start text-[10px] font-black uppercase tracking-widest shadow-sm border-border-strong/20 bg-surface">
+                <Link to="/locals" className="btn-secondary h-11 px-4 gap-2 whitespace-nowrap rounded-xl snap-start text-xs font-bold shadow-sm border-border-strong/20 bg-surface">
                   <Store size={16} className="text-primary-600" />
                   Locales
                 </Link>
@@ -295,29 +357,62 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
           }}
         />
 
+        {!categoriesQuery.isLoading && activeRubros === 0 ? (
+          <div className="flex flex-col gap-3 rounded-2xl border border-accent-200/80 bg-accent-50/40 p-4 sm:flex-row sm:items-center sm:justify-between dark:bg-accent-900/10">
+            <div>
+              <p className="text-sm font-black text-text-main">Activá tus rubros</p>
+              <p className="mt-1 text-xs font-medium text-text-muted">
+                Sin rubros activos, el IPC se aplica solo como índice general. En Categorías elegí los
+                que vendés (y «Indexar USD» si aplica).
+              </p>
+            </div>
+            <Link to="/categories" className="btn-secondary h-11 shrink-0 px-4 text-xs font-bold">
+              <Tags size={16} />
+              Ir a Categorías
+            </Link>
+          </div>
+        ) : null}
+
+        {withoutCategoryCount > 0 ? (
+          <p className="text-xs font-semibold text-text-muted">
+            {withoutCategoryCount} producto{withoutCategoryCount === 1 ? '' : 's'} sin rubro en esta
+            vista — al aplicar IPC usan el nivel general.
+          </p>
+        ) : null}
+
         <div className="min-h-[400px]">
           {waitingForLocal || productsQuery.isLoading ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="skeleton h-48 w-full" />)}
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="skeleton h-48 w-full" />
+              ))}
             </div>
-          ) : productsQuery.data?.items.length === 0 ? (
+          ) : products.length === 0 ? (
              <div className="py-12">
                 <EmptyState 
                   icon={Package}
-                  title={search || categoryFilter ? "Sin coincidencias" : "No hay productos"}
-                  description={search || categoryFilter 
+                  title={search || categoryFilter || filterParam === 'alert' ? "Sin coincidencias" : "No hay productos"}
+                  description={search || categoryFilter || filterParam === 'alert'
                     ? "Probá con otros términos o limpiá los filtros para ver más resultados." 
-                    : "Empezá a cargar tus artículos para automatizar tus precios y márgenes."}
-                  action={!(search || categoryFilter) ? (
+                    : activeRubros === 0
+                      ? "Primero activá rubros en Categorías y después cargá tu primer producto."
+                      : "Empezá a cargar tus artículos para automatizar precios y márgenes."}
+                  action={!(search || categoryFilter || filterParam === 'alert') ? (
+                    activeRubros === 0 ? (
+                      <Link to="/categories" className="btn-primary">
+                        Activar rubros
+                      </Link>
+                    ) : (
                     <button onClick={() => setFormOpen(true)} className="btn-primary">
                        Crear mi primer producto
                     </button>
+                    )
                   ) : (
                     <button 
                       onClick={() => { setSearch(''); setCategoryFilter(''); }}
                       className="btn-secondary"
                     >
-                       Limpiar Filtros
+                       Limpiar filtros
                     </button>
                   )}
                 />
@@ -339,15 +434,16 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                   }
                 />
              </div>
-          ) : productsQuery.data ? (
+          ) : (
             <div className="space-y-6 animate-fade-in">
               <div className="flex items-center justify-between border-b border-border pb-4">
-                 <p className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
-                    {productsQuery.data.total} {productsQuery.data.total === 1 ? 'PRODUCTO ENCONTRADO' : 'PRODUCTOS ENCONTRADOS'}
+                 <p className="text-xs font-bold text-text-subtle">
+                    Mostrando {products.length} de {productsTotal}{' '}
+                    {productsTotal === 1 ? 'producto' : 'productos'}
                  </p>
               </div>
                <ProductList
-                products={productsQuery.data.items}
+                products={products}
                 categoryMap={categoryMap}
                 onEdit={(p) => {
                   setEditing(p)
@@ -355,8 +451,20 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                 }}
                 onDelete={handleDelete}
               />
+              {productsQuery.hasNextPage ? (
+                <div className="flex justify-center pb-4">
+                  <button
+                    type="button"
+                    className="btn-secondary h-11 px-6 text-xs font-bold"
+                    disabled={productsQuery.isFetchingNextPage}
+                    onClick={() => void productsQuery.fetchNextPage()}
+                  >
+                    {productsQuery.isFetchingNextPage ? 'Cargando…' : 'Cargar más productos'}
+                  </button>
+                </div>
+              ) : null}
             </div>
-          ) : null}
+          )}
         </div>
       </div>
 
@@ -412,11 +520,17 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
           }}
         />
       ) : null}
-      {exportOpen && selectedLocal && productsQuery.data ? (
+      {exportOpen && selectedLocal ? (
         <ExportModal
           local={selectedLocal}
-          products={productsQuery.data.items}
-          onClose={() => setExportOpen(false)}
+          products={exportProducts}
+          matchedTotal={exportMatchedTotal}
+          loading={exportLoading}
+          filterActive={filterActive}
+          onClose={() => {
+            setExportOpen(false)
+            setExportProducts([])
+          }}
         />
       ) : null}
       {deleteTarget ? (

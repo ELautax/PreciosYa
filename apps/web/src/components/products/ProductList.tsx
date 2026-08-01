@@ -68,6 +68,9 @@ export function ProductList({ products, categoryMap, onEdit, onDelete }: Product
                       <div>
                         <p className="font-extrabold text-text-main group-hover:text-primary-600 transition-colors">{p.name}</p>
                         {p.barcode && <p className="mt-1 font-mono text-[10px] font-bold text-text-subtle tracking-tighter opacity-70">{p.barcode}</p>}
+                        {!p.categoryId ? (
+                          <p className="mt-1 text-[10px] font-bold text-warning-700 dark:text-warning-400">Sin rubro</p>
+                        ) : null}
                       </div>
                     </div>
                   </td>

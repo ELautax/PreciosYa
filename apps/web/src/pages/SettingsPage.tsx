@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 import type { ApiSuccess } from 'shared'
-import { User, CreditCard, Store, Info, ShieldCheck, Clock, Activity } from 'lucide-react'
-import { useSearchParams } from 'react-router-dom'
+import { User, CreditCard, Store, Info, ShieldCheck, Clock, Activity, Pencil } from 'lucide-react'
+import { Link, useSearchParams } from 'react-router-dom'
 
 import { LocalSelector } from '@/components/locals/LocalSelector'
 import { PlanPricingModal } from '@/components/settings/PlanPricingModal'
@@ -201,11 +201,20 @@ export default function SettingsPage() {
                          </div>
 
                          {selectedLocal ? (
+                           <div className="space-y-4">
                            <div className="grid gap-6 sm:grid-cols-2 p-6 rounded-[2rem] bg-surface-soft border border-border/50">
-                              <DetailItem label="Nombre Fiscal" value={selectedLocal.name} />
+                              <DetailItem label="Nombre" value={selectedLocal.name} />
                               <DetailItem label="Dirección" value={selectedLocal.address || 'Sin especificar'} />
-                              <DetailItem label="Moneda Base" value={selectedLocal.currency} />
-                              <DetailItem label="Margen Alerta" value={`${selectedLocal.minMarginPct.toFixed(2)}%`} />
+                              <DetailItem label="Moneda" value={selectedLocal.currency} />
+                              <DetailItem label="Margen de alerta" value={`${selectedLocal.minMarginPct.toFixed(2)}%`} />
+                           </div>
+                           <Link
+                             to="/locals"
+                             className="btn-primary inline-flex h-11 items-center gap-2 px-5 text-xs font-bold"
+                           >
+                             <Pencil size={16} strokeWidth={2.5} />
+                             Editar local
+                           </Link>
                            </div>
                          ) : (
                            <div className="skeleton h-40 w-full rounded-[2rem]" />
@@ -213,8 +222,8 @@ export default function SettingsPage() {
                          
                          <div className="bg-primary-50/20 border border-primary-100 p-5 rounded-2xl flex items-start gap-4">
                             <Info size={20} className="text-primary-600 shrink-0 mt-0.5" />
-                            <p className="text-[10px] font-bold text-text-muted leading-relaxed uppercase tracking-tight">
-                               Los cambios en los parámetros del local afectan el cálculo automático de márgenes.
+                            <p className="text-xs font-medium text-text-muted leading-relaxed">
+                               El margen mínimo del local define cuándo un producto aparece en alerta. Los cambios se hacen en Locales.
                             </p>
                          </div>
                       </div>

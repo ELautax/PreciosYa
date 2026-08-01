@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Barcode, Search } from 'lucide-react'
+import { Barcode, ChevronDown, ChevronUp, Search } from 'lucide-react'
 
 import { fromDatetimeLocalValue, toDatetimeLocalValue } from '@/components/sales/format'
 import { SaleDateTimeField } from '@/components/sales/SaleDateTimeField'
@@ -8,6 +8,7 @@ import { BarcodeScanner } from '@/components/products/BarcodeScanner'
 import { useApiClient } from '@/hooks/useApiClient'
 import { useCreateSale } from '@/hooks/useSales'
 import { useProducts, type ProductListResult } from '@/hooks/useProducts'
+import { appToast } from '@/lib/toast'
 import type { ApiSuccess } from 'shared'
 import type { ProductDto } from '@/types/product'
 import type { SaleDraftItem } from '@/types/sales'
@@ -32,6 +33,7 @@ export function SaleRegisterTab({ localId }: SaleRegisterTabProps) {
   const [draft, setDraft] = useState<SaleDraftItem[]>([])
   const [soldAtLocal, setSoldAtLocal] = useState(toDatetimeLocalValue())
   const [note, setNote] = useState('')
+  const [showWhen, setShowWhen] = useState(false)
 
   const productsQ = useProducts(localId, { search, limit: 8, page: 1 })
   const createMut = useCreateSale(localId)
@@ -59,15 +61,21 @@ export function SaleRegisterTab({ localId }: SaleRegisterTabProps) {
     setScannerOpen(false)
     void api
       .get<ApiSuccess<ProductListResult>>('/api/products', {
-        params: { localId, search: code, limit: 5, page: 1 },
+        params: { localId, search: code, limit: 10, page: 1 },
       })
       .then((res) => {
         const exact = res.data.data.items.find((p) => p.barcode === code)
-        const match = exact ?? res.data.data.items[0]
-        if (match) addProduct(match)
-        else setSearch(code)
+        if (exact) {
+          addProduct(exact)
+          return
+        }
+        setSearch(code)
+        appToast.info('No encontramos ese código exacto en el catálogo')
       })
-      .catch(() => setSearch(code))
+      .catch(() => {
+        setSearch(code)
+        appToast.error('No se pudo buscar el producto')
+      })
   }
 
   async function confirmSale() {
@@ -80,10 +88,11 @@ export function SaleRegisterTab({ localId }: SaleRegisterTabProps) {
     setDraft([])
     setNote('')
     setSoldAtLocal(toDatetimeLocalValue())
+    setShowWhen(false)
   }
 
   return (
-    <div className="space-y-6 pb-36 sm:pb-0">
+    <div className="space-y-6 pb-28 sm:pb-0">
       <div className="flex flex-col gap-3 sm:flex-row">
         <button type="button" onClick={() => setScannerOpen(true)} className="btn-primary flex-1">
           <Barcode size={18} strokeWidth={2.5} />
@@ -101,7 +110,7 @@ export function SaleRegisterTab({ localId }: SaleRegisterTabProps) {
         />
       </div>
 
-      {search && productsQ.data && productsQ.data.items.length > 0 && (
+      {search && productsQ.data && productsQ.data.items.length > 0 ? (
         <div className="space-y-2 rounded-2xl border border-border bg-surface p-2">
           {productsQ.data.items.map((p) => (
             <button
@@ -117,7 +126,7 @@ export function SaleRegisterTab({ localId }: SaleRegisterTabProps) {
             </button>
           ))}
         </div>
-      )}
+      ) : null}
 
       <SaleRegisterDraft
         items={draft}
@@ -127,12 +136,26 @@ export function SaleRegisterTab({ localId }: SaleRegisterTabProps) {
         onRemove={(productId) => setDraft((prev) => prev.filter((i) => i.productId !== productId))}
       />
 
-      <SaleDateTimeField value={soldAtLocal} onChange={setSoldAtLocal} />
+      <div className="rounded-2xl border border-border bg-surface-soft/40">
+        <button
+          type="button"
+          onClick={() => setShowWhen((v) => !v)}
+          className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left"
+        >
+          <span className="text-xs font-bold text-text-muted">
+            Fecha y hora · {showWhen ? 'personalizada' : 'ahora'}
+          </span>
+          {showWhen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+        {showWhen ? (
+          <div className="border-t border-border px-4 pb-4 pt-2">
+            <SaleDateTimeField value={soldAtLocal} onChange={setSoldAtLocal} />
+          </div>
+        ) : null}
+      </div>
 
       <div className="space-y-1.5">
-        <label className="text-[10px] font-black uppercase tracking-widest text-text-subtle px-1">
-          Nota (opcional)
-        </label>
+        <label className="px-1 text-xs font-bold text-text-subtle">Nota (opcional)</label>
         <input
           value={note}
           onChange={(e) => setNote(e.target.value)}
@@ -141,12 +164,13 @@ export function SaleRegisterTab({ localId }: SaleRegisterTabProps) {
         />
       </div>
 
-      <div className="fixed bottom-16 left-0 right-0 z-40 border-t border-border bg-surface/95 p-4 shadow-warm-lg backdrop-blur-md pb-safe sm:static sm:z-auto sm:border-none sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none sm:pb-0">
+      {/* bottom-nav ~4rem + safe-area: CTA encima sin taparse */}
+      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-40 border-t border-border bg-surface/95 p-3 shadow-warm-lg backdrop-blur-md sm:static sm:z-auto sm:border-none sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
         <button
           type="button"
           disabled={draft.length === 0 || createMut.isPending}
           onClick={() => void confirmSale()}
-          className="btn-primary w-full shadow-xl shadow-primary-600/20 active:scale-95 transition-all"
+          className="btn-primary w-full shadow-xl shadow-primary-600/20 transition-all active:scale-95"
         >
           {createMut.isPending
             ? 'Guardando…'

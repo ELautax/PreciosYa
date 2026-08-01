@@ -133,8 +133,8 @@ flowchart LR
 ### CU-20 — Notificaciones in-app
 - **Actor:** Comerciante | **RF:** RF-W020
 - **Precondición:** Sesión activa; Realtime habilitado
-- **Flujo:** Evento (nuevo IPC, alerta margen, etc.) → API crea `notifications` → Supabase Realtime → campana in-app
-- **Postcondición:** Usuario ve título/cuerpo; puede marcar como leída
+- **Flujo:** Evento (nuevo IPC, alerta margen, etc.) → API crea `notifications` (en `NEW_IPC`: `metadata.series` con las 13 series COICOP) → Supabase Realtime → campana in-app → en IPC: **Ver rubros** abre desglose gráfico (barras horizontales Chart.js + leyenda con íconos) vía `metadata` o `GET /api/ipc/series`
+- **Postcondición:** Usuario ve título/cuerpo; puede marcar como leída; puede ir a Productos a aplicar IPC
 - **Nota:** Sin push nativo (limitación TWA / fuera de alcance v1)
 
 ### CU-21 — Modo offline limitado (lectura en caché)

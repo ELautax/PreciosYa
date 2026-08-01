@@ -40,8 +40,8 @@ const baseNavItems: NavItem[] = [
   { to: '/dashboard', label: 'Panel', icon: LayoutDashboard },
   { to: '/products', label: 'Productos', icon: Package },
   { to: '/sales', label: 'Ventas', icon: Receipt },
+  { to: '/categories', label: 'Rubros', icon: Tags },
   { to: '/history', label: 'Historial', icon: History },
-  { to: '/categories', label: 'Categorías', icon: Tags },
   { to: '/locals', label: 'Locales', icon: Store },
   { to: '/settings', label: 'Ajustes', icon: Settings },
 ]

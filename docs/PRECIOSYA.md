@@ -61,7 +61,7 @@ Cada cambio de costo queda en `price_history` con motivo (manual, IPC, USD, impo
 
 ### 7. Exportación
 
-Lista de precios en **PNG** para compartir (WhatsApp, redes). PDF planificado.
+Lista de precios en **PNG** desde **Productos → Exportar** (modal; no hay ruta `/price-list`). Incluye todos los productos del filtro. Pensada para WhatsApp o impresión. PDF fuera de alcance.
 
 ### 8. Administración
 
