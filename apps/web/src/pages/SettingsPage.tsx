@@ -89,6 +89,18 @@ export default function SettingsPage() {
     }
   }, [searchParams])
 
+  function selectTab(next: TabId) {
+    setTab(next)
+    setSearchParams(
+      (prev) => {
+        const n = new URLSearchParams(prev)
+        n.set('tab', next)
+        return n
+      },
+      { replace: true },
+    )
+  }
+
   useEffect(() => {
     const checkout = searchParams.get('checkout')
     if (checkout !== 'success') return
@@ -157,19 +169,19 @@ export default function SettingsPage() {
                <nav className="flex flex-row md:flex-col gap-1 p-1 rounded-2xl bg-surface-soft border border-border overflow-x-auto scrollbar-hide snap-x">
                   <TabButton 
                      active={tab === 'business'} 
-                     onClick={() => setTab('business')} 
+                     onClick={() => selectTab('business')} 
                      icon={Store} 
                      label="Negocio" 
                   />
                   <TabButton 
                      active={tab === 'account'} 
-                     onClick={() => setTab('account')} 
+                     onClick={() => selectTab('account')} 
                      icon={User} 
                      label="Mi cuenta" 
                   />
                   <TabButton 
                      active={tab === 'plan'} 
-                     onClick={() => setTab('plan')} 
+                     onClick={() => selectTab('plan')} 
                      icon={CreditCard} 
                      label="Plan" 
                   />
@@ -251,11 +263,14 @@ export default function SettingsPage() {
                       <div className="rounded-2xl border border-danger-200 bg-danger-50/30 p-6 space-y-4">
                          <div className="flex items-center gap-3 text-danger-600">
                             <ShieldCheck size={20} strokeWidth={2.5} />
-                            <h3 className="text-sm font-black uppercase tracking-widest">Error</h3>
+                            <h3 className="text-sm font-black">Error</h3>
                          </div>
-                         <p className="text-xs font-bold text-danger-950/70 leading-relaxed uppercase tracking-tight">
+                         <p className="text-xs font-medium text-danger-950/70 leading-relaxed">
                             No pudimos recuperar los datos de tu cuenta.
                          </p>
+                         <button type="button" className="btn-secondary h-10 px-4 text-xs font-bold" onClick={refreshUser}>
+                           Reintentar
+                         </button>
                       </div>
                     ) : user ? (
                       <div className="grid gap-6 sm:grid-cols-2 p-6 rounded-[2rem] bg-surface-soft border border-border/50">

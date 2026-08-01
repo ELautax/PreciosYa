@@ -102,12 +102,14 @@ Sin conexión: podés seguir cargando productos; se sincronizan al reconectar (n
 
 Menú **Ventas** → pestañas:
 
-1. **Resumen** — KPIs (hoy, período, ticket promedio). En Pro: ganancia estimada y gráficos.
-2. **Registrar** — escaneá o buscá productos, armá una lista (carga rápida del día) y confirmá. Podés elegir **fecha y hora** de la venta.
-3. **Historial** — ventas registradas con detalle de ítems.
-4. **Análisis** (Pro) — más vendidos, más rentables, estancados, para promocionar, estrellas y por rubro.
+1. **Registrar** (por defecto) — escaneá o buscá productos, tipiá cantidades y confirmá. Fecha/hora opcional (colapsada: «ahora»).
+2. **Resumen** — KPIs del período elegido (Free: hoy / 7 días). «Hoy» usa el día calendario en Argentina (hasta el momento actual). En Pro: ganancia estimada y gráficos.
+3. **Mis ventas** — tickets del local (Free: últimos 7 días).
+4. **Análisis** (Pro) — más vendidos, rentables, estancados, promocionar, estrellas y por rubro; el período se elige en la misma pestaña.
 
-No hay cobro ni ticket: solo registrás qué vendiste para estadísticas y márgenes.
+No hay cobro ni ticket fiscal: solo registrás qué vendiste para estadísticas y márgenes.
+
+El menú **Precios** (antes «Historial») es el historial de costos/precios por producto, distinto de «Mis ventas».
 
 ---
 

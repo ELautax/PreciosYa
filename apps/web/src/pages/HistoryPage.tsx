@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { History, Package, Store, ChevronLeft, TrendingUp, Calendar, Info, LineChart } from 'lucide-react'
 
 import { LocalSelector } from '@/components/locals/LocalSelector'
@@ -13,6 +13,7 @@ import { EmptyState } from '@/components/feedback/EmptyState'
 import { formatIndexMonth } from '@/lib/categoryIndex'
 
 export default function HistoryPage() {
+  const [searchParams] = useSearchParams()
   const { data: locals, isLoading: loadingLocals } = useLocals()
   const [localId, setLocalId] = useSelectedLocal(locals)
   const [productId, setProductId] = useState('')
@@ -32,18 +33,14 @@ export default function HistoryPage() {
     [products, productId],
   )
   const historyRows = historyQ.data ?? []
-  const marginTrendMonths = useMemo(() => {
-    const months = new Set<string>()
-    historyRows.forEach((row) => {
-      const d = new Date(row.recordedAt)
-      if (!Number.isNaN(d.getTime())) {
-        months.add(`${d.getFullYear()}-${d.getMonth() + 1}`)
-      }
-    })
-    return months.size
-  }, [historyRows])
+  const canShowChart = historyRows.length >= 2
 
   useEffect(() => {
+    const fromUrl = searchParams.get('product')
+    if (fromUrl && products.some((p) => p.id === fromUrl)) {
+      setProductId(fromUrl)
+      return
+    }
     if (!products.length) {
       setProductId('')
       return
@@ -51,7 +48,7 @@ export default function HistoryPage() {
     if (!products.some((p) => p.id === productId)) {
       setProductId(products[0].id)
     }
-  }, [products, productId])
+  }, [products, productId, searchParams])
 
   if (loadingLocals) {
     return (
@@ -96,7 +93,7 @@ export default function HistoryPage() {
               <ChevronLeft size={14} strokeWidth={3} className="transition-transform group-hover:-translate-x-0.5" />
               Volver al Panel
             </Link>
-            <h1 className="heading-xl">Historial de Precios</h1>
+            <h1 className="heading-xl">Historial de precios</h1>
           </div>
           <div className="flex items-center gap-2">
              <Link to="/products" className="btn-secondary h-11 px-4 gap-2">
@@ -186,19 +183,19 @@ export default function HistoryPage() {
                      <h2 className="heading-lg">Gráfico de Evolución</h2>
                      <div className="h-px flex-1 bg-border" />
                   </div>
-                  {marginTrendMonths < 2 ? (
+                  {canShowChart ? (
+                    <div className="animate-scale-in">
+                       <PriceHistoryChart rows={historyRows} />
+                    </div>
+                  ) : (
                     <div className="surface-card p-12 flex flex-col items-center justify-center text-center animate-fade-in border-dashed">
                        <div className="rounded-3xl bg-surface-soft p-6 text-text-subtle mb-6">
                           <TrendingUp size={40} strokeWidth={1.5} />
                        </div>
-                       <p className="text-base font-black text-text-main leading-none">Historial insuficiente</p>
+                       <p className="text-base font-black text-text-main leading-none">Aún no hay curva</p>
                        <p className="mt-3 text-sm font-medium text-text-subtle max-w-xs leading-relaxed">
-                          La visualización aparecerá cuando realices cambios en los costos o márgenes a lo largo del tiempo.
+                          El gráfico aparece cuando hay al menos dos cambios de precio registrados.
                        </p>
-                    </div>
-                  ) : (
-                    <div className="animate-scale-in">
-                       <PriceHistoryChart rows={historyRows} />
                     </div>
                   )}
                </div>

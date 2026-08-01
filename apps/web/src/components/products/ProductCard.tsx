@@ -1,4 +1,5 @@
-import { Edit3, Trash2, Tag, Package2, BadgeDollarSign } from 'lucide-react'
+import { Edit3, Trash2, Tag, Package2, BadgeDollarSign, History } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import type { ProductDto } from '@/types/product'
 import { categoryIndexBadgeClass } from '@/lib/categoryIndex'
 import { MarginBadge } from './MarginBadge'
@@ -82,15 +83,23 @@ export function ProductCard({ product, category, onEdit, onDelete }: ProductCard
         </div>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-2">
         <button
           type="button"
           onClick={() => onEdit(product)}
           className="btn-secondary flex-1 h-12 gap-2 shadow-sm border-border-strong/50 hover:border-primary-600 hover:text-primary-600 active:scale-95"
         >
           <Edit3 size={16} strokeWidth={2.5} />
-          <span className="text-[10px] font-black uppercase tracking-widest">Gestionar</span>
+          <span className="text-xs font-bold">Editar</span>
         </button>
+        <Link
+          to={`/history?product=${product.id}`}
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-soft text-text-muted transition-all hover:border-primary-300 hover:text-primary-600 active:scale-95"
+          aria-label="Ver historial de precios"
+          title="Historial de precios"
+        >
+          <History size={18} strokeWidth={2.5} />
+        </Link>
         <button
           type="button"
           onClick={() => onDelete(product)}

@@ -5,12 +5,18 @@ import { Store, Plus, Save, ChevronLeft, MapPin, Percent, Edit3, Info, AlertTria
 import { LocalSelector } from '@/components/locals/LocalSelector'
 import { useCreateLocal, useLocals, useUpdateLocal } from '@/hooks/useLocals'
 import { useSelectedLocal } from '@/hooks/useSelectedLocal'
+import { useMe } from '@/hooks/useMe'
 import { EmptyState } from '@/components/feedback/EmptyState'
 
 export default function LocalsPage() {
   const { data: locals, isLoading } = useLocals()
+  const { data: me } = useMe()
   const createMut = useCreateLocal()
   const updateMut = useUpdateLocal()
+  const plan = me?.plan === 'PRO' || me?.plan === 'AGENCY' ? me.plan : 'FREE'
+  const localLimit = plan === 'FREE' ? 1 : plan === 'PRO' ? 3 : null
+  const atLocalLimit =
+    localLimit != null && (locals?.length ?? 0) >= localLimit
 
   const [selectedLocalId, setSelectedLocalId] = useSelectedLocal(locals)
   const selectedLocal = useMemo(
@@ -123,13 +129,21 @@ export default function LocalsPage() {
                           className="w-full h-12"
                        />
                     </div>
+                    {atLocalLimit ? (
+                      <div className="rounded-xl border border-accent-200 bg-accent-50/50 p-3 text-xs font-medium text-text-muted">
+                        Plan {plan}: hasta {localLimit} local{localLimit === 1 ? '' : 'es'}.{' '}
+                        <Link to="/settings?tab=plan&planes=1" className="font-bold text-primary-600 underline">
+                          Mejorar plan
+                        </Link>
+                      </div>
+                    ) : null}
                     <button
                        type="submit"
-                       disabled={createMut.isPending || !newName.trim()}
+                       disabled={createMut.isPending || !newName.trim() || atLocalLimit}
                        className="btn-primary w-full h-14 shadow-xl shadow-primary-600/20 active:scale-95 transition-all mt-2"
                     >
                        <Store size={20} strokeWidth={2.5} className="mr-2" />
-                       <span className="text-sm font-black uppercase tracking-widest">Registrar Nuevo Local</span>
+                       <span className="text-sm font-bold">Registrar nuevo local</span>
                     </button>
                  </form>
               </div>
@@ -138,8 +152,8 @@ export default function LocalsPage() {
                  <div className="rounded-full bg-white p-2 shadow-sm text-primary-600 shrink-0 mt-0.5">
                     <Info size={16} />
                  </div>
-                 <p className="text-[10px] font-bold text-text-muted leading-relaxed uppercase tracking-tight">
-                    Podés gestionar múltiples puntos de venta de forma independiente, cada uno con sus propios productos, márgenes y categorías.
+                 <p className="text-xs font-medium text-text-muted leading-relaxed">
+                    Podés gestionar varios locales (según tu plan), cada uno con productos, márgenes y rubros propios.
                  </p>
               </div>
            </section>
@@ -180,17 +194,18 @@ export default function LocalsPage() {
                               />
                            </div>
                            <div className="space-y-2">
-                              <label className="text-[10px] font-black uppercase tracking-widest text-text-subtle px-1">Moneda</label>
-                              <input
-                                 value={editCurrency}
+                              <label className="text-xs font-bold text-text-subtle px-1">Moneda</label>
+                              <select
+                                 value={editCurrency || 'ARS'}
                                  onChange={(e) => setEditCurrency(e.target.value)}
-                                 className="w-full h-11 font-mono font-bold uppercase"
-                                 placeholder="ARS"
-                              />
+                                 className="w-full h-11 font-mono font-bold"
+                              >
+                                <option value="ARS">ARS</option>
+                              </select>
                            </div>
                         </div>
                         <div className="space-y-2">
-                           <label className="text-[10px] font-black uppercase tracking-widest text-text-subtle px-1">Dirección</label>
+                           <label className="text-xs font-bold text-text-subtle px-1">Dirección</label>
                            <input
                               value={editAddress}
                               onChange={(e) => setEditAddress(e.target.value)}
@@ -198,9 +213,9 @@ export default function LocalsPage() {
                            />
                         </div>
                         <div className="space-y-2">
-                           <label className="text-[10px] font-black uppercase tracking-widest text-text-subtle px-1 flex items-center gap-1.5 leading-none mb-1">
+                           <label className="text-xs font-bold text-text-subtle px-1 flex items-center gap-1.5 leading-none mb-1">
                               <Percent size={12} className="text-accent-600" />
-                              Margen de Alerta Mínimo (%)
+                              Margen de alerta mínimo (%)
                            </label>
                            <input
                               type="number"
@@ -209,6 +224,9 @@ export default function LocalsPage() {
                               onChange={(e) => setEditMinMargin(e.target.value)}
                               className="w-full h-11 font-mono font-black text-accent-600 text-lg"
                            />
+                           <p className="px-1 text-xs font-medium text-text-subtle">
+                             Ejemplo: si ponés 20%, cualquier producto con margen menor aparece en alerta.
+                           </p>
                         </div>
 
                         <button

@@ -25,16 +25,16 @@ import { useMe } from '@/hooks/useMe'
 type TabId = 'summary' | 'register' | 'history' | 'analysis'
 
 const TABS: { id: TabId; label: string; icon: typeof Receipt; proOnly?: boolean }[] = [
-  { id: 'summary', label: 'Resumen', icon: BarChart3 },
   { id: 'register', label: 'Registrar', icon: Receipt },
-  { id: 'history', label: 'Historial', icon: History },
+  { id: 'summary', label: 'Resumen', icon: BarChart3 },
+  { id: 'history', label: 'Mis ventas', icon: History },
   { id: 'analysis', label: 'Análisis', icon: LineChart, proOnly: true },
 ]
 
 export default function SalesPage() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [tab, setTab] = useState<TabId>('summary')
-  const [period, setPeriod] = useState<SalesPeriod>('7d')
+  const [tab, setTab] = useState<TabId>('register')
+  const [period, setPeriod] = useState<SalesPeriod>('today')
   const [customFrom, setCustomFrom] = useState('')
   const [customTo, setCustomTo] = useState('')
 
@@ -52,12 +52,33 @@ export default function SalesPage() {
     const t = searchParams.get('tab')
     if (t === 'register' || t === 'summary' || t === 'history' || t === 'analysis') {
       setTab(t)
+    } else if (!searchParams.get('tab')) {
+      setSearchParams({ tab: 'register' }, { replace: true })
     }
-  }, [searchParams])
+
+    const p = searchParams.get('period')
+    if (
+      p === 'today' ||
+      p === '7d' ||
+      p === '30d' ||
+      p === '90d' ||
+      p === 'month' ||
+      p === 'custom'
+    ) {
+      setPeriod(p)
+    }
+  }, [searchParams, setSearchParams])
 
   function selectTab(next: TabId) {
     setTab(next)
-    setSearchParams({ tab: next }, { replace: true })
+    setSearchParams(
+      (prev) => {
+        const n = new URLSearchParams(prev)
+        n.set('tab', next)
+        return n
+      },
+      { replace: true },
+    )
   }
 
   function handlePeriodChange(next: SalesPeriod) {
@@ -67,6 +88,14 @@ export default function SalesPage() {
       setCustomTo(defaults.to)
     }
     setPeriod(next)
+    setSearchParams(
+      (prev) => {
+        const n = new URLSearchParams(prev)
+        n.set('period', next)
+        return n
+      },
+      { replace: true },
+    )
   }
 
   if (loadingLocals) {
@@ -168,14 +197,21 @@ export default function SalesPage() {
                 ) : null}
                 {tab === 'register' && localId ? <SaleRegisterTab localId={localId} /> : null}
                 {tab === 'history' && localId ? (
-                  <SalesHistoryTab localId={localId} isPro={isPro} />
+                  <SalesHistoryTab
+                    localId={localId}
+                    isPro={isPro}
+                    onRegister={() => selectTab('register')}
+                  />
                 ) : null}
                 {tab === 'analysis' && localId ? (
                   <SalesAnalysisTab
                     localId={localId}
                     period={period}
+                    onPeriodChange={handlePeriodChange}
                     customFrom={customFrom}
                     customTo={customTo}
+                    onCustomFromChange={setCustomFrom}
+                    onCustomToChange={setCustomTo}
                     isPro={isPro}
                   />
                 ) : null}

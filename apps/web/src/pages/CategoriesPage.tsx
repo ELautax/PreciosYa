@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import { ChevronLeft, Store, Info, Tags } from 'lucide-react'
 
 import { LocalSelector } from '@/components/locals/LocalSelector'
@@ -63,8 +64,8 @@ function CategoryToggleRow({
       </div>
       <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-4 sm:justify-end">
         <label className="flex cursor-pointer items-center justify-between gap-4 h-12 px-3 rounded-xl border border-border bg-surface-soft/30 hover:bg-surface-soft active:scale-95 transition-all sm:border-none sm:bg-transparent sm:h-auto sm:px-0">
-          <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
-            USD
+          <span className="text-xs font-bold text-text-subtle">
+            Indexar USD
           </span>
           <input
             type="checkbox"
@@ -76,8 +77,8 @@ function CategoryToggleRow({
           />
         </label>
         <label className="flex cursor-pointer items-center justify-between gap-4 h-12 px-3 rounded-xl border border-border bg-surface-soft/30 hover:bg-surface-soft active:scale-95 transition-all sm:border-none sm:bg-transparent sm:h-auto sm:px-0">
-          <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">
-            {category.isActive ? 'ON' : 'OFF'}
+          <span className="text-xs font-bold text-text-subtle">
+            {category.isActive ? 'Activo' : 'Inactivo'}
           </span>
           <input
             type="checkbox"
@@ -95,15 +96,27 @@ function CategoryToggleRow({
 
 function CategoriesMain({ locals }: { locals: LocalDto[] }) {
   const [localId, setLocalId] = useSelectedLocal(locals)
+  const [pendingId, setPendingId] = useState<string | null>(null)
   const listQuery = useCategories(localId)
   const patchMut = usePatchCategory(localId)
+  const activeCount = listQuery.data?.filter((c) => c.isActive).length ?? 0
 
-  function handleToggleActive(c: CategoryDto, isActive: boolean): void {
-    void patchMut.mutateAsync({ id: c.id, isActive })
+  async function handleToggleActive(c: CategoryDto, isActive: boolean): Promise<void> {
+    setPendingId(c.id)
+    try {
+      await patchMut.mutateAsync({ id: c.id, isActive })
+    } finally {
+      setPendingId(null)
+    }
   }
 
-  function handleToggleUsd(c: CategoryDto, indexByUsd: boolean): void {
-    void patchMut.mutateAsync({ id: c.id, indexByUsd })
+  async function handleToggleUsd(c: CategoryDto, indexByUsd: boolean): Promise<void> {
+    setPendingId(c.id)
+    try {
+      await patchMut.mutateAsync({ id: c.id, indexByUsd })
+    } finally {
+      setPendingId(null)
+    }
   }
 
   return (
@@ -112,7 +125,7 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
         <header className="space-y-1">
           <Link
             to="/dashboard"
-            className="group mb-1 inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest leading-none text-primary-600 transition-all hover:text-primary-700"
+            className="group mb-1 inline-flex items-center gap-1.5 text-xs font-bold leading-none text-primary-600 transition-all hover:text-primary-700"
           >
             <ChevronLeft
               size={14}
@@ -128,7 +141,7 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
         </header>
 
         <div className="surface-card space-y-4 p-6">
-          <label className="px-1 text-[10px] font-black uppercase tracking-widest text-text-subtle">
+          <label className="px-1 text-xs font-bold text-text-subtle">
             Local activo
           </label>
           <LocalSelector locals={locals} value={localId} onChange={setLocalId} />
@@ -136,8 +149,8 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
 
         <div className="surface-card flex items-start gap-3 border-primary-100 bg-primary-50/20 p-5">
           <Info size={18} className="mt-0.5 shrink-0 text-primary-600" />
-          <p className="text-[10px] font-bold uppercase leading-relaxed tracking-tight text-text-muted">
-            Marcá &quot;USD&quot; en rubros sensibles al dólar (importados, tecnología). El resto sigue con IPC.
+          <p className="text-xs font-medium leading-relaxed text-text-muted">
+            Marcá &quot;Indexar USD&quot; en rubros sensibles al dólar (importados, tecnología). El resto sigue con IPC.
           </p>
         </div>
 
@@ -155,16 +168,21 @@ function CategoriesMain({ locals }: { locals: LocalDto[] }) {
             compact
           />
         ) : (
-          <div className="grid animate-fade-in gap-3">
-            {listQuery.data?.map((c) => (
-              <CategoryToggleRow
-                key={c.id}
-                category={c}
-                pending={patchMut.isPending}
-                onToggleActive={handleToggleActive}
-                onToggleUsd={handleToggleUsd}
-              />
-            ))}
+          <div className="space-y-3">
+            <p className="px-1 text-xs font-bold text-text-subtle">
+              {activeCount} activos de {listQuery.data?.length ?? 0}
+            </p>
+            <div className="grid animate-fade-in gap-3">
+              {listQuery.data?.map((c) => (
+                <CategoryToggleRow
+                  key={c.id}
+                  category={c}
+                  pending={pendingId === c.id}
+                  onToggleActive={(cat, active) => void handleToggleActive(cat, active)}
+                  onToggleUsd={(cat, usd) => void handleToggleUsd(cat, usd)}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -196,8 +214,8 @@ export default function CategoriesPage() {
             title="Primero creá un local"
             description="Para gestionar rubros, necesitás al menos un local registrado."
             action={
-              <Link to="/products" className="btn-primary">
-                Ir a Productos
+              <Link to="/locals" className="btn-primary">
+                Ir a Locales
               </Link>
             }
           />

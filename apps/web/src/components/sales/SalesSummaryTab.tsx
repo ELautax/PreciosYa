@@ -84,7 +84,7 @@ export function SalesSummaryTab({
         </div>
       ) : (
         <>
-          <SalesKpiGrid data={dashQ.data} isPro={isPro} />
+          <SalesKpiGrid data={dashQ.data} isPro={isPro} period={period} />
 
           <SalesTrendChart title="Ventas en el período" points={dashQ.data.revenueTrend} />
 

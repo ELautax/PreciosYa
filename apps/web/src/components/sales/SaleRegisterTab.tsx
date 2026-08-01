@@ -80,11 +80,15 @@ export function SaleRegisterTab({ localId }: SaleRegisterTabProps) {
 
   async function confirmSale() {
     if (draft.length === 0) return
-    await createMut.mutateAsync({
-      soldAt: fromDatetimeLocalValue(soldAtLocal).toISOString(),
+    const payload = {
       note: note.trim() || null,
       items: draft.map((i) => ({ productId: i.productId, quantity: i.quantity })),
-    })
+      // «Ahora»: no mandar soldAt → el servidor usa new Date() (día Argentina correcto)
+      ...(showWhen
+        ? { soldAt: fromDatetimeLocalValue(soldAtLocal).toISOString() }
+        : {}),
+    }
+    await createMut.mutateAsync(payload)
     setDraft([])
     setNote('')
     setSoldAtLocal(toDatetimeLocalValue())

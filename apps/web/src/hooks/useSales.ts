@@ -93,6 +93,8 @@ export function useSalesDashboard(params: PeriodParams) {
   return useQuery({
     queryKey: ['sales', 'dashboard', params.localId, params.period, params.from, params.to],
     enabled: isPeriodQueryReady(params),
+    staleTime: 0,
+    refetchOnMount: 'always',
     queryFn: async () => {
       const res = await api.get<ApiSuccess<SalesDashboardDto>>('/api/sales/dashboard', {
         params: periodParams(params),
@@ -186,9 +188,9 @@ export function useCreateSale(localId: string | undefined) {
       })
       return res.data.data.sale
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       appToast.success('Venta registrada')
-      void qc.invalidateQueries({ queryKey: ['sales'] })
+      await qc.invalidateQueries({ queryKey: ['sales'], refetchType: 'all' })
     },
     onError: () => {
       appToast.error('No pudimos registrar la venta')

@@ -79,8 +79,10 @@ Variables críticas: ver `RAILWAY_ENV.md`, `SUPABASE_ENV.md`.
 | POST | `/` | Free+ |
 | GET | `/` | Free+ (historial máx. 7 días en Free) |
 | GET | `/:id` | Free+ |
-| GET | `/dashboard` | Free parcial / Pro completo |
+| GET | `/dashboard` | Free parcial / Pro completo — período `today` = día calendario ART (UTC−3) hasta ahora |
 | GET | `/top-products`, `/stagnant-products`, `/promote-products`, `/star-products`, `/category-performance` | Pro+ |
+
+`sales.sold_at` es `timestamptz`. Los bounds de período viven en `apps/api/src/utils/argentinaTime.ts` (ART fijo UTC−3). Las respuestas API usan `Cache-Control: no-store` (sin ETag) para no cachear KPIs en 304.
 
 ## Rutas API — Suscripciones (`/api/subscriptions`)
 

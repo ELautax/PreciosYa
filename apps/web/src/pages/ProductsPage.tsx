@@ -65,7 +65,7 @@ function CategoryFilterSelect({
         disabled={q.isLoading}
         className="w-full min-w-[160px] pl-10 pr-4"
       >
-        <option value="">Todas las categorías</option>
+        <option value="">Todos los rubros</option>
         {q.data?.map((c) => (
           <option key={c.id} value={c.id}>
             {c.name}
@@ -122,7 +122,8 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
   const importMut = useImportProductsCsv(localId)
   const selectedLocal = locals.find((l) => l.id === localId) ?? locals[0]
   const categoriesQuery = useCategories(localId)
-  const activeRubros = categoriesQuery.data?.length ?? 0
+  const activeRubrosQuery = useCategories(localId, true)
+  const activeRubros = activeRubrosQuery.data?.length ?? 0
   const categoryMap = useMemo(() => {
     const map = new Map<string, CategoryDto>()
     categoriesQuery.data?.forEach((c) => map.set(c.id, c))
@@ -332,7 +333,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
             ipcQuery.data?.ipc != null ? `${ipcQuery.data.ipc.valuePct.toFixed(2)}%` : '—'
           }
           lastAppliedPeriod={selectedLocal?.lastIpcAppliedPeriod ?? null}
-          description="Actualizá los costos de rubros con IPC (no incluye rubros marcados como USD en Categorías)."
+          description="Actualizá los costos de rubros con IPC (no incluye rubros marcados como USD en Rubros)."
           onOpenBulk={() => {
             setBulkInitialTab('ipc')
             setBulkOpen(true)
@@ -350,26 +351,46 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                 : 'Cotización no disponible — se actualiza automáticamente cada día'
           }
           lastAppliedPeriod={selectedLocal?.lastUsdAppliedPeriod ?? null}
-          description="Solo afecta productos en rubros con «Indexar USD» activo. Configuralo en Categorías."
+          description="Solo afecta productos en rubros con «Indexar USD» activo. Configuralo en Rubros."
           onOpenBulk={() => {
             setBulkInitialTab('usd')
             setBulkOpen(true)
           }}
         />
 
-        {!categoriesQuery.isLoading && activeRubros === 0 ? (
+        {!activeRubrosQuery.isLoading && activeRubros === 0 ? (
           <div className="flex flex-col gap-3 rounded-2xl border border-accent-200/80 bg-accent-50/40 p-4 sm:flex-row sm:items-center sm:justify-between dark:bg-accent-900/10">
             <div>
               <p className="text-sm font-black text-text-main">Activá tus rubros</p>
               <p className="mt-1 text-xs font-medium text-text-muted">
-                Sin rubros activos, el IPC se aplica solo como índice general. En Categorías elegí los
+                Sin rubros activos, el IPC se aplica solo como índice general. En Rubros elegí los
                 que vendés (y «Indexar USD» si aplica).
               </p>
             </div>
             <Link to="/categories" className="btn-secondary h-11 shrink-0 px-4 text-xs font-bold">
               <Tags size={16} />
-              Ir a Categorías
+              Ir a Rubros
             </Link>
+          </div>
+        ) : null}
+
+        {filterParam === 'alert' ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-danger-200 bg-danger-50 px-3 py-1.5 text-xs font-bold text-danger-800">
+              Solo alertas de margen
+              <button
+                type="button"
+                className="rounded-full px-1.5 hover:bg-danger-100"
+                aria-label="Quitar filtro de alertas"
+                onClick={() => {
+                  const next = new URLSearchParams(searchParams)
+                  next.delete('filter')
+                  setSearchParams(next, { replace: true })
+                }}
+              >
+                ×
+              </button>
+            </span>
           </div>
         ) : null}
 
@@ -395,7 +416,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                   description={search || categoryFilter || filterParam === 'alert'
                     ? "Probá con otros términos o limpiá los filtros para ver más resultados." 
                     : activeRubros === 0
-                      ? "Primero activá rubros en Categorías y después cargá tu primer producto."
+                      ? "Primero activá rubros en Rubros y después cargá tu primer producto."
                       : "Empezá a cargar tus artículos para automatizar precios y márgenes."}
                   action={!(search || categoryFilter || filterParam === 'alert') ? (
                     activeRubros === 0 ? (
@@ -409,7 +430,13 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                     )
                   ) : (
                     <button 
-                      onClick={() => { setSearch(''); setCategoryFilter(''); }}
+                      onClick={() => {
+                        setSearch('')
+                        setCategoryFilter('')
+                        const next = new URLSearchParams(searchParams)
+                        next.delete('filter')
+                        setSearchParams(next, { replace: true })
+                      }}
                       className="btn-secondary"
                     >
                        Limpiar filtros

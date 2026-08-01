@@ -3,6 +3,13 @@ import { FREE_SALES_HISTORY_DAYS } from 'shared'
 
 const TZ = 'America/Argentina/Buenos_Aires'
 
+/**
+ * Offset ART → UTC. Argentina no usa DST desde 2009 (siempre UTC−3).
+ * Evita bugs de Intl (`hour: 24` a medianoche) que corrían el día y
+ * excluían ventas reales del filtro «Hoy».
+ */
+const ART_OFFSET_HOURS = 3
+
 /** Partes de fecha/hora en Argentina para un instante UTC. */
 export function getArgentinaParts(date: Date): {
   year: number
@@ -19,36 +26,32 @@ export function getArgentinaParts(date: Date): {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
+    hourCycle: 'h23',
   })
   const parts = fmt.formatToParts(date)
   const get = (type: Intl.DateTimeFormatPartTypes) =>
     Number(parts.find((p) => p.type === type)?.value ?? '0')
 
+  let hour = get('hour')
+  // Algunos runtimes aún reportan 24 a las 00:00; normalizar.
+  if (hour === 24) hour = 0
+
   return {
     year: get('year'),
     month: get('month'),
     day: get('day'),
-    hour: get('hour'),
+    hour,
     minute: get('minute'),
   }
 }
 
-/** Offset en ms entre UTC y hora Argentina en un instante dado. */
-function argentinaOffsetMs(at: Date): number {
-  const p = getArgentinaParts(at)
-  const asUtc = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, 0, 0)
-  return asUtc - at.getTime()
-}
-
-/** Inicio del día calendario en Argentina (00:00 AR) como Date UTC. */
+/** Inicio del día calendario en Argentina (00:00 ART) como Date UTC. */
 export function startOfArgentinaDay(date: Date = new Date()): Date {
   const p = getArgentinaParts(date)
-  const guess = new Date(Date.UTC(p.year, p.month - 1, p.day, 3, 0, 0, 0))
-  const offset = argentinaOffsetMs(guess)
-  return new Date(Date.UTC(p.year, p.month - 1, p.day, 0, 0, 0, 0) - offset)
+  return new Date(Date.UTC(p.year, p.month - 1, p.day, ART_OFFSET_HOURS, 0, 0, 0))
 }
 
-/** Fin del día calendario en Argentina (23:59:59.999 AR). */
+/** Fin del día calendario en Argentina (23:59:59.999 ART). */
 export function endOfArgentinaDay(date: Date = new Date()): Date {
   const start = startOfArgentinaDay(date)
   return new Date(start.getTime() + 24 * 60 * 60 * 1000 - 1)
@@ -56,9 +59,7 @@ export function endOfArgentinaDay(date: Date = new Date()): Date {
 
 export function startOfArgentinaMonth(date: Date = new Date()): Date {
   const p = getArgentinaParts(date)
-  const first = new Date(Date.UTC(p.year, p.month - 1, 1, 12, 0, 0, 0))
-  const offset = argentinaOffsetMs(first)
-  return new Date(Date.UTC(p.year, p.month - 1, 1, 0, 0, 0, 0) - offset)
+  return new Date(Date.UTC(p.year, p.month - 1, 1, ART_OFFSET_HOURS, 0, 0, 0))
 }
 
 export function validateSoldAt(soldAt: Date): void {
@@ -89,7 +90,8 @@ export function resolvePeriodBounds(
 
   switch (period) {
     case 'today':
-      return { from: startOfArgentinaDay(now), to: endOfArgentinaDay(now) }
+      // Hasta «ahora» (no fin de día): coherente con 7d/30d y evita bordes.
+      return { from: startOfArgentinaDay(now), to: now }
     case '7d':
       return {
         from: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),

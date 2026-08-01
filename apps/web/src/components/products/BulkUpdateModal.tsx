@@ -179,7 +179,7 @@ export function BulkUpdateModal({
                   onChange={(e) => setCategoryId(e.target.value)}
                   className="w-full h-12"
                 >
-                  <option value="">Todas las categorías</option>
+                  <option value="">Todos los rubros</option>
                   {categoriesQuery.data?.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}

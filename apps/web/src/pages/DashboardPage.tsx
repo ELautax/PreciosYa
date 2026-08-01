@@ -171,7 +171,7 @@ export default function DashboardPage() {
           />
           <div className="col-span-2 lg:col-span-1 xl:col-span-1">
             <KPICard
-              label="Último PNG"
+              label="Última lista"
               value={
                 latestExportQ.data?.priceList
                   ? new Date(latestExportQ.data.priceList.createdAt).toLocaleDateString('es-AR')
@@ -223,9 +223,16 @@ export default function DashboardPage() {
               />
               <QuickActionCard
                 title="Rubros"
-                desc="IPC o USD por categoría"
+                desc="IPC o USD por rubro"
                 icon={Tags}
                 to="/categories"
+                color="secondary"
+              />
+              <QuickActionCard
+                title="Ventas de hoy"
+                desc="Resumen del día"
+                icon={Receipt}
+                to="/sales?tab=summary&period=today"
                 color="secondary"
               />
               <QuickActionCard
@@ -244,9 +251,6 @@ export default function DashboardPage() {
                 <h3 className="text-xs font-bold text-text-subtle">
                   Estado del local
                 </h3>
-                <span className="rounded-full border border-primary-200 bg-primary-50 px-2 py-0.5 text-[10px] font-bold text-primary-800 dark:border-primary-700 dark:text-primary-400">
-                  Activo
-                </span>
               </div>
               <div className="space-y-5 p-5">
                 {selectedLocal ? (

@@ -9,6 +9,7 @@ import type { SaleDto } from '@/types/sales'
 type SalesHistoryTabProps = {
   localId: string
   isPro?: boolean
+  onRegister?: () => void
 }
 
 function formatSoldAt(iso: string) {
@@ -38,7 +39,7 @@ function SaleDetail({ sale }: { sale: SaleDto }) {
   )
 }
 
-export function SalesHistoryTab({ localId, isPro = false }: SalesHistoryTabProps) {
+export function SalesHistoryTab({ localId, isPro = false, onRegister }: SalesHistoryTabProps) {
   const [page, setPage] = useState(1)
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const listQ = useSalesList(localId, { page, limit: 15 })
@@ -49,8 +50,13 @@ export function SalesHistoryTab({ localId, isPro = false }: SalesHistoryTabProps
 
   if (!listQ.data?.items.length) {
     return (
-      <div className="rounded-2xl border border-dashed border-border py-12 text-center">
+      <div className="rounded-2xl border border-dashed border-border py-12 text-center space-y-4">
         <p className="text-sm font-bold text-text-subtle">Todavía no hay ventas registradas</p>
+        {onRegister ? (
+          <button type="button" onClick={onRegister} className="btn-primary h-11 px-5 text-xs font-bold">
+            Registrar venta
+          </button>
+        ) : null}
       </div>
     )
   }
@@ -59,7 +65,9 @@ export function SalesHistoryTab({ localId, isPro = false }: SalesHistoryTabProps
     <div className="space-y-3">
       {!isPro ? (
         <PlanUpgradeBanner message="En plan Free el historial muestra ventas de los últimos 7 días." />
-      ) : null}
+      ) : (
+        <p className="text-xs font-medium text-text-subtle">Listado de ventas del local.</p>
+      )}
       {listQ.data.items.map((sale) => {
         const open = expandedId === sale.id
         return (

@@ -11,11 +11,20 @@ import { AppError } from './utils/AppError.js'
 
 export const app: Express = express()
 
+// Evitar 304/ETag en JSON: tras registrar una venta el cliente reutilizaba
+// el cuerpo vacío del resumen «Hoy» y seguía mostrando $0.
+app.set('etag', false)
+
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   }),
 )
+
+app.use((_req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store')
+  next()
+})
 
 // En desarrollo Vite puede cambiar de puerto (5173, 5174…); origin fijo rompe fetch desde el browser.
 // En producción: FRONTEND_URL en .env es lista comma-separated (ej. https://app.vercel.app,https://www.midominio.com).

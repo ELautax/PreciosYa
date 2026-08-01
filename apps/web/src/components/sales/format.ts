@@ -11,8 +11,25 @@ export function toDatetimeLocalValue(date: Date = new Date()): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
+/** Interpreta `datetime-local` siempre como hora local del navegador (no UTC). */
 export function fromDatetimeLocalValue(value: string): Date {
-  return new Date(value)
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/.exec(value.trim())
+  if (!match) {
+    const fallback = new Date(value)
+    if (Number.isNaN(fallback.getTime())) {
+      throw new Error('Fecha/hora inválida')
+    }
+    return fallback
+  }
+  return new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+    Number(match[4]),
+    Number(match[5]),
+    match[6] ? Number(match[6]) : 0,
+    0,
+  )
 }
 
 export function toDateInputValue(date: Date = new Date()): string {
