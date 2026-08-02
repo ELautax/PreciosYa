@@ -1,6 +1,6 @@
 # Manual de usuario — PreciosYa
 
-**Versión:** 3.1 · **Plataforma:** Web PWA + APK Android (TWA)  
+**Versión:** 3.1 · **Plataforma:** Web PWA + APK Android  
 **URL producción:** https://preciosya.vercel.app  
 **Alias app (Vercel):** https://preciosya-app.vercel.app  
 **Landing:** https://preciosya-landing.vercel.app
@@ -45,7 +45,7 @@ PreciosYa ayuda a comercios minoristas argentinos a:
 2. Descargá **PreciosYa.apk** e instalá (permitir orígenes desconocidos si el sistema lo pide).
 3. Abrí la app → mismo login Google que la web.
 
-> La APK es un acceso directo a la web optimizada (TWA), no una app nativa distinta.
+> La APK es un acceso directo a la web optimizada, no una app nativa distinta.
 
 ### iPhone
 
@@ -180,7 +180,7 @@ Contacto upgrade: sales@preciosya.com (desde modal Plan).
 | **COICOP** | Clasificación de rubros de consumo |
 | **Margen** | `(precio - costo) / costo × 100` |
 | **Snapshot venta** | Costo/precio guardados al registrar venta |
-| **TWA** | Trusted Web Activity — APK que abre la PWA |
+| **ART** | Hora de Argentina (UTC−3) usada por los cron de índices |
 | **PWA** | Progressive Web App — instalable desde navegador |
 
 ---

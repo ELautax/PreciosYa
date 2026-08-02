@@ -41,7 +41,7 @@
 - Alerta cuando el margen cae bajo el mínimo del local.
 - Escanea códigos de barras; exporta listas **PNG** para WhatsApp.
 - Registra ventas con snapshot de rentabilidad (gestor lite, sin caja ni stock).
-- Opera como **PWA** en producción con APK Android (TWA).
+- Opera como **PWA** en producción con APK Android.
 
 **URLs:** App `preciosya.vercel.app` · Landing `preciosya-landing.vercel.app` · API Railway.
 
@@ -96,7 +96,7 @@ Checklist de entrega académica. Estado general: **Completo** (fuente en Markdow
 
 **Archivo fuente:** [CASOS_DE_USO.md](./CASOS_DE_USO.md)
 
-**Resumen:** 18 casos de uso desde CU-01 (Login) hasta CU-18 (APK TWA). Incluye gestión de catálogo, aplicación IPC/USD, ventas, export PNG, notificaciones y panel admin. Cada CU define precondiciones, flujo principal y postcondiciones.
+**Resumen:** 18 casos de uso desde CU-01 (Login) hasta CU-18 (APK Android). Incluye gestión de catálogo, aplicación IPC/USD, ventas, export PNG, notificaciones y panel admin. Cada CU define precondiciones, flujo principal y postcondiciones.
 
 **Trazabilidad:** Base para RF-W/RF-A y casos de prueba CP-XX.
 
@@ -153,9 +153,9 @@ Checklist de entrega académica. Estado general: **Completo** (fuente en Markdow
 
 ### 2.6 Requisitos funcionales APK
 
-**Documento:** Requisitos funcionales — APK (TWA)
+**Documento:** Requisitos funcionales — APK Android
 
-**Descripción:** RF-A001 a RF-A010 para contenedor Android Trusted Web Activity.
+**Descripción:** RF-A001 a RF-A010 para la APK Android (misma PWA empaquetada).
 
 **Estado:** Completo
 
@@ -209,7 +209,7 @@ Checklist de entrega académica. Estado general: **Completo** (fuente en Markdow
 
 **Archivo fuente:** [DIAGRAMA_COMPONENTES.md](./DIAGRAMA_COMPONENTES.md)
 
-**Resumen:** Frontend: pages, hooks TanStack Query, AuthContext, export html2canvas. Backend: product.service, economic-index.service, ipc-fetch/, sales, notification, export. Jobs: IPC mensual + BCRA diario 03:30 AR.
+**Resumen:** Frontend: pages, hooks TanStack Query, AuthContext, export html2canvas. Backend: product.service, economic-index.service, ipc-fetch/, sales, notification, export. Jobs: IPC diario 03:00 ART + BCRA diario 03:30 ART.
 
 **Trazabilidad:** Implementación de RF-W y CU.
 

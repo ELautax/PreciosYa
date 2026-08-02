@@ -116,10 +116,36 @@
 
   const bar = document.getElementById('mobileCtaBar');
   if (bar) {
+    let pastHero = false;
+    let nearFooter = false;
+
+    function syncBar() {
+      const show = pastHero && !nearFooter;
+      bar.classList.toggle('visible', show);
+      bar.setAttribute('aria-hidden', show ? 'false' : 'true');
+    }
+
     window.addEventListener(
       'scroll',
-      () => bar.classList.toggle('visible', window.scrollY > 480),
+      () => {
+        pastHero = window.scrollY > 480;
+        syncBar();
+      },
       { passive: true },
     );
+
+    const footer = document.querySelector('footer.footer');
+    const finalCta = document.querySelector('.cta-final-container');
+    if ('IntersectionObserver' in window && (footer || finalCta)) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          nearFooter = entries.some((e) => e.isIntersecting);
+          syncBar();
+        },
+        { root: null, threshold: 0.05, rootMargin: '0px 0px -8% 0px' },
+      );
+      if (footer) io.observe(footer);
+      if (finalCta) io.observe(finalCta);
+    }
   }
 })();

@@ -1,15 +1,43 @@
 flowchart TB
-  subgraph root [preciosya monorepo]
-    subgraph apps [apps]
-      web[web React PWA]
-      api[api Express]
-      landing[landing static]
+  subgraph monorepo [preciosya monorepo pnpm]
+    subgraph apps_web [apps/web]
+      UI[Pages Dashboard Products Sales]
+      AuthCtx[AuthContext Supabase anon]
+      Hooks[TanStack Query hooks]
+      PWA[vite-plugin-pwa Workbox]
     end
-    subgraph packages [packages]
-      shared[shared PricingEngine]
+
+    subgraph apps_api [apps/api]
+      Routes[Express routes /api]
+      MW[authMiddleware ownerGuard planGuard]
+      Svcs[Services product sale economic-index export auth]
+      Jobs[ipc-scheduler cron 03:00 / 03:30 ART]
+      Prisma[Prisma Client]
+    end
+
+    subgraph pkgs [packages/shared]
+      PE[PricingEngine]
+      SM[SalesMath types]
+    end
+
+    subgraph apps_land [apps/landing]
+      Land[Landing estatica Vercel]
     end
   end
 
-  web --> shared
-  api --> shared
-  web -->|JWT REST| api
+  Ext[(Supabase Auth DB Storage Realtime)]
+  APIs[INDEC Alphacast / BCRA / Resend / MP]
+
+  UI --> Hooks
+  Hooks -->|Bearer JWT| Routes
+  AuthCtx --> Ext
+  Routes --> MW
+  MW --> Svcs
+  Svcs --> Prisma
+  Svcs --> PE
+  Svcs --> SM
+  UI --> PE
+  Jobs --> Svcs
+  Prisma --> Ext
+  Svcs --> APIs
+  Land -->|enlace| UI

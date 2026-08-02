@@ -494,7 +494,7 @@
 
 **Aprobado/reprobado:** Pendiente.
 
-**Observaciones:** Probar también en APK TWA (CP-27).
+**Observaciones:** Probar también en APK Android (CP-27).
 
 **Trazabilidad:** CU-04 · RF-W021
 
@@ -773,7 +773,7 @@
 
 **Aprobado/reprobado:** Pendiente.
 
-**Observaciones:** TWA, no app nativa.
+**Observaciones:** APK empaquetada, no app nativa distinta.
 
 **Trazabilidad:** CU-18 · RF-A001
 

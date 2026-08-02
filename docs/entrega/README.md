@@ -1,29 +1,21 @@
 # Documentación de entrega — PreciosYa (Tesis)
 
-Material académico sección **2.1 Material documental entregado**.  
-Fuente en Markdown; exportar a PDF/Word desde el editor o con Pandoc.
+Material académico sección **2.1 Material documental entregado**.
 
 ## Entrega principal (tesis)
 
 | Documento | Archivo | Uso |
 |-----------|---------|-----|
-| **Carátula tesis** | [CARATULA_TESIS.md](./CARATULA_TESIS.md) | Primera página del PDF/Word |
-| **Documento maestro** | [DOCUMENTO_ENTREGA_TESIS.md](./DOCUMENTO_ENTREGA_TESIS.md) | Lectura formal para el profesor (índice + resúmenes + modelo de negocios) |
-| **Presentación HTML** | [presentacion-tesis.html](./presentacion-tesis.html) | 22 slides 1280×720 — exposición oral |
-| Casos de prueba (formal) | [CASOS_DE_PRUEBA_FORMAL.md](./CASOS_DE_PRUEBA_FORMAL.md) | Formato bloque tipo Word (CP-01 a CP-28) |
-| **Word tesis v3.1** | [PreciosYa_Documentacion_Tesis_v3.1.docx](./PreciosYa_Documentacion_Tesis_v3.1.docx) | Documento completo con diagramas (correcciones Seminario Final) |
-| Congruencia producto↔docs | [CONGRUENCIA_PRODUCTO_DOCS.md](./CONGRUENCIA_PRODUCTO_DOCS.md) | Matriz Free/Pro vs código real |
+| **Word tesis v3.1** | [PreciosYa_Documentacion_Tesis_v3.1.docx](./PreciosYa_Documentacion_Tesis_v3.1.docx) | Documento completo con diagramas embebidos |
+| Fuentes Mermaid + PNG | [assets/](./assets/) | Regenerar figuras: `pnpm docs:render-diagrams` luego `pnpm docs:tesis-docx` |
 
-### Exportar a Word/PDF
-
-Desde la raíz del repo (requiere [Pandoc](https://pandoc.org/)):
+### Regenerar diagramas y Word
 
 ```bash
-cd docs/entrega
-pandoc CARATULA_TESIS.md DOCUMENTO_ENTREGA_TESIS.md -o PreciosYa_Entrega_Tesis.docx
+# Requiere Chrome en el path (ver assets/puppeteer-mmdc.json)
+pnpm docs:render-diagrams
+pnpm docs:tesis-docx
 ```
-
-Para PDF: abrir el `.docx` en Word y exportar, o usar `pandoc ... -o PreciosYa_Entrega_Tesis.pdf`.
 
 ### Presentación HTML
 
@@ -35,9 +27,8 @@ Diagramas complementarios: `porter-diagram-presentacion.html`, `foda-presentacio
 
 ### Cómo presentar al profesor (orden sugerido)
 
-1. Entregar **documento Word/PDF** (`DOCUMENTO_ENTREGA_TESIS.md` exportado).
-2. Exponer con **presentacion-tesis.html** + diagramas HTML individuales.
-3. **Demo en vivo** siguiendo [CHECKLIST_DEMO.md](./CHECKLIST_DEMO.md) y suite CP en [CASOS_DE_PRUEBA.md](./CASOS_DE_PRUEBA.md).
+1. Entregar `PreciosYa_Documentacion_Tesis_v3.1.docx`.
+2. Exponer con **presentacion-tesis.html** + demo en vivo.
 
 ---
 

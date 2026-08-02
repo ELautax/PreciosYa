@@ -70,7 +70,7 @@ La API en Railway no requiere redeploy para estos cambios (solo front + docs).
 
 - [ ] 10 archivos en `docs/entrega/` exportados a PDF/Word
 - [ ] Trazabilidad RF → CU → CP verificada
-- [ ] Limitaciones honestas en oral (no POS, ventas online, TWA)
+- [ ] Limitaciones honestas en oral (no POS, ventas online; APK = misma PWA)
 
 ## Plan B
 

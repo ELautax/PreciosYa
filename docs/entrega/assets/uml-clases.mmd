@@ -1,14 +1,30 @@
 classDiagram
   class PricingEngine {
     +calculateSalePrice(cost, marginPct)
+    +calculateMarginPct(cost, salePrice)
+    +applyPercentageIncrease(cost, pct)
     +applyIPC(cost, ipcPct)
+    +isMarginAlert(marginPct, minMargin)
     +bulkUpdateCosts(products, pct)
   }
 
   class SalesMath {
     +lineRevenue(price, qty)
     +lineProfit(price, cost, qty)
-    +averageTicket(revenue, count)
+    +averageTicket(revenue, saleCount)
+  }
+
+  class Local {
+    +UUID id
+    +Decimal minMarginPct
+    +DateTime lastIpcAppliedPeriod
+    +DateTime lastUsdAppliedPeriod
+  }
+
+  class Category {
+    +UUID id
+    +IndexType preferredIndex
+    +Boolean isActive
   }
 
   class Product {
@@ -16,12 +32,13 @@ classDiagram
     +Decimal cost
     +Decimal marginPct
     +Decimal salePrice
+    +MarginStatus marginStatus
+    +Boolean isMarginAlert
   }
 
   class Sale {
     +UUID id
     +DateTime soldAt
-    +SaleLine[] lines
   }
 
   class SaleLine {
@@ -30,7 +47,18 @@ classDiagram
     +Decimal unitCostSnapshot
   }
 
+  class EconomicIndex {
+    +IndexType type
+    +DateTime period
+    +Decimal valuePct
+  }
+
+  Local "1" --> "*" Category
+  Local "1" --> "*" Product
+  Local "1" --> "*" Sale
+  Category "0..1" --> "*" Product
+  Product "1" --> "*" SaleLine
   Sale "1" --> "*" SaleLine
-  SaleLine --> Product : productId
-  Product --> PricingEngine : uses
-  SaleLine --> SalesMath : uses
+  Product ..> PricingEngine : calcula precios
+  SaleLine ..> SalesMath : KPIs
+  Category ..> EconomicIndex : preferred_index

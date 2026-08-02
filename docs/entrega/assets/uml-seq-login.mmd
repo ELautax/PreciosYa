@@ -1,16 +1,17 @@
 sequenceDiagram
   participant U as Usuario
-  participant Web as apps/web
+  participant Web as apps/web PWA
   participant Supa as Supabase Auth
-  participant API as Express API
+  participant API as Express API Railway
   participant DB as PostgreSQL
 
-  U->>Web: Click Google Login
-  Web->>Supa: signInWithOAuth
-  Supa-->>Web: session + JWT
-  Web->>API: POST /api/auth/google
-  API->>Supa: verifyToken
+  U->>Web: Click Iniciar con Google
+  Web->>Supa: signInWithOAuth Google
+  Supa-->>Web: session access_token JWT
+  Web->>API: POST /api/auth/google Bearer JWT
+  API->>Supa: verifyToken service_role
   API->>DB: findOrCreateUser
-  DB-->>API: user
-  API-->>Web: JWT app + profile
+  Note over API,DB: Sin RLS — auth en Express
+  DB-->>API: user plan Free Pro Agency
+  API-->>Web: profile + ok
   Web-->>U: Redirect /dashboard

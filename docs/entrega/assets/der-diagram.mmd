@@ -11,3 +11,142 @@ erDiagram
   Product ||--o{ PriceHistory : tracks
   Product ||--o{ SaleLine : sold_in
   Sale ||--|{ SaleLine : contains
+
+  User {
+    uuid id PK
+    string email UK
+    string name
+    string avatar_url
+    string google_id UK
+    enum plan
+    datetime plan_expires_at
+    datetime created_at
+    datetime updated_at
+  }
+
+  Local {
+    uuid id PK
+    uuid user_id FK
+    string name
+    string address
+    decimal min_margin_pct
+    string currency
+    datetime last_ipc_applied_period
+    datetime last_usd_applied_period
+    boolean is_active
+    datetime created_at
+    datetime updated_at
+  }
+
+  CategoryTemplate {
+    uuid id PK
+    string slug UK
+    string name
+    string color_hex
+    enum preferred_index
+    int sort_order
+    datetime created_at
+  }
+
+  Category {
+    uuid id PK
+    uuid local_id FK
+    uuid template_id FK
+    string name
+    string color_hex
+    enum preferred_index
+    boolean is_active
+    datetime created_at
+  }
+
+  Product {
+    uuid id PK
+    uuid local_id FK
+    uuid category_id FK
+    string name
+    string barcode
+    enum unit
+    decimal cost
+    decimal margin_pct
+    decimal sale_price
+    enum margin_status
+    boolean is_margin_alert
+    string notes
+    boolean is_active
+    datetime created_at
+    datetime updated_at
+  }
+
+  PriceHistory {
+    uuid id PK
+    uuid product_id FK
+    decimal cost
+    decimal margin_pct
+    decimal sale_price
+    enum change_reason
+    decimal ipc_reference
+    string note
+    datetime recorded_at
+  }
+
+  EconomicIndex {
+    uuid id PK
+    enum type
+    datetime period
+    decimal value_pct
+    string source_url
+    datetime fetched_at
+  }
+
+  PriceList {
+    uuid id PK
+    uuid local_id FK
+    enum format
+    string file_url
+    string shared_via
+    datetime created_at
+  }
+
+  Notification {
+    uuid id PK
+    uuid user_id FK
+    enum type
+    string title
+    string body
+    boolean is_read
+    json metadata
+    datetime created_at
+  }
+
+  Subscription {
+    uuid id PK
+    uuid user_id FK
+    enum plan
+    enum status
+    string mp_subscription_id
+    decimal amount_ars
+    string billing_cycle
+    datetime started_at
+    datetime expires_at
+    datetime cancelled_at
+    datetime created_at
+  }
+
+  Sale {
+    uuid id PK
+    uuid local_id FK
+    timestamptz sold_at
+    string note
+    datetime created_at
+    datetime updated_at
+  }
+
+  SaleLine {
+    uuid id PK
+    uuid sale_id FK
+    uuid product_id FK
+    decimal quantity
+    decimal unit_sale_price
+    decimal unit_cost_snapshot
+    datetime created_at
+  }

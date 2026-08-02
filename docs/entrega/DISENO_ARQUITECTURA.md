@@ -12,7 +12,7 @@ flowchart TB
   Google[Google OAuth]
   Supabase[(Supabase Postgres + Auth + Storage)]
 
-  Comerciante -->|Web PWA / APK TWA| PreciosYa
+  Comerciante -->|Web PWA / APK Android| PreciosYa
   Admin --> PreciosYa
   PreciosYa --> Google
   PreciosYa --> Supabase
@@ -33,7 +33,7 @@ flowchart LR
   subgraph client [Cliente]
     WebApp[apps/web React PWA]
     Landing[apps/landing HTML]
-    APK[APK TWA Android]
+    APK[APK Android]
   end
 
   subgraph cloud [Cloud]
@@ -71,7 +71,7 @@ flowchart LR
 | Ventas | Snapshots en `sale_lines` | Rentabilidad histórica aunque cambie IPC después |
 | IPC | Multi-serie por rubro COICOP | Alineado INDEC; fallback Argly |
 | TZ ventas | `America/Argentina/Buenos_Aires` | KPIs “hoy” correctos |
-| APK | TWA, no React Native | Mismo código web; menor costo tesis |
+| APK | Empaqueta la PWA, no React Native | Mismo código web; menor costo tesis |
 | Offline | Cache PWA lectura; ventas online v1 | Complejidad outbox postergada v2 |
 
 ---
@@ -83,7 +83,7 @@ routes/ → controllers/ → services/ → prisma
                 ↓
          middlewares: auth, ownerGuard, planGuard, admin
                 ↓
-         jobs/: ipc-scheduler (cron IPC mensual + BCRA diario)
+         jobs/: ipc-scheduler (cron IPC diario 03:00 ART + BCRA diario 03:30 ART)
 ```
 
 Servicios clave: `product.service`, `economic-index.service`, `sale.service`, `sale-analytics.service`, `ipc-fetch/`.

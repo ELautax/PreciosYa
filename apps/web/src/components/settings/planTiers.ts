@@ -21,7 +21,7 @@ export type PlanTier = {
 export const LANDING_PRICING_URL = 'https://preciosya-landing.vercel.app/#precios'
 
 export const AGENCY_MAIL =
-  'mailto:sales@preciosya.com?subject=Consulta%20plan%20Agency%20%E2%80%94%20PreciosYa&body=Hola%2C%20quiero%20una%20propuesta%20para%20el%20plan%20Agency.%0A%0AEmpresa%20%2F%20rubro%3A%20%0ACantidad%20de%20locales%20o%20clientes%3A%20%0A%C2%BFC%C3%B3mo%20nos%20conociste%3F%20%0A'
+  'mailto:sales@preciosya.com?subject=Consulta%20plan%20Agency%20%E2%80%94%20PreciosYa&body=Hola%2C%20quiero%20una%20cotizaci%C3%B3n%20del%20plan%20Agency.%0A%0AEmpresa%20%2F%20rubro%3A%20%0ACantidad%20de%20locales%20%2F%20sucursales%3A%20%0ACantidad%20aproximada%20de%20productos%3A%20%0A%C2%BFC%C3%B3mo%20nos%20conociste%3F%20%0A'
 
 export const PRO_MAIL =
   'mailto:sales@preciosya.com?subject=Consulta%20plan%20Pro%20%E2%80%94%20PreciosYa&body=Hola%2C%20quiero%20pasar%20al%20plan%20Pro.%0A%0ALocal%20%2F%20negocio%3A%20%0A%0A'
@@ -75,17 +75,17 @@ export const PLANS: PlanTier[] = [
     id: 'AGENCY',
     name: 'Agency',
     price: 'A medida',
-    subtitle: 'Para estudios, contadores y redes con varios negocios o clientes',
+    subtitle: 'Cotización según cantidad de locales/sucursales y productos',
     features: [
       'Locales y productos ilimitados',
-      'Multi-negocio y multi-cliente',
-      'IPC + dólar BCRA en todos los rubros',
+      'Ideal para cadenas, estudios y varios puntos de venta',
+      'Todo lo de Pro (IPC, USD, analytics)',
       'Análisis de ventas y rentabilidad',
       'Soporte prioritario',
-      'Onboarding y configuración asistida',
+      'Ayuda al armar locales y catálogo (por mail, al contratar)',
     ],
     footerNote:
-      'Sin precio fijo publicado. Te respondemos con una propuesta según volumen y necesidades, sin compromiso.',
+      'Sin precio fijo. Escribinos indicando locales y volumen de productos; armamos un precio que sea rentable para ambos, sin compromiso.',
     cta: {
       label: 'Contactar ventas',
       href: AGENCY_MAIL,

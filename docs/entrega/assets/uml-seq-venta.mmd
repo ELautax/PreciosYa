@@ -1,17 +1,21 @@
 sequenceDiagram
   participant U as Comerciante
   participant Web as Frontend
-  participant API as API
+  participant API as Express API
   participant Sale as sale.service
   participant DB as PostgreSQL
 
-  U->>Web: Confirmar venta N items
-  Web->>API: POST /api/sales
+  U->>Web: Agregar items + confirmar
+  Note over Web: soldAt omitido = ahora servidor ART
+  Web->>API: POST /api/sales localId items
   API->>Sale: createSale
-  Sale->>DB: load products active
-  Sale->>Sale: snapshot cost + salePrice
-  Sale->>DB: transaction Sale + SaleLines
+  Sale->>DB: load products active del local
+  Sale->>Sale: snapshot unit_sale_price + unit_cost
+  Sale->>DB: tx INSERT sales + sale_lines
+  Note over DB: sold_at timestamptz
   DB-->>Sale: sale id
   Sale-->>API: sale dto
   API-->>Web: 201 Created
+  Web->>Web: invalidateQueries sales
   Web-->>U: Toast Venta registrada
+  Note over Web: Resumen Hoy usa dia calendario ART

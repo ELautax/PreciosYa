@@ -115,13 +115,21 @@ flowchart LR
 
 ### CU-17 — Sincronizar índices (automático)
 - **Actor:** Sistema (cron) | **RF:** RF-W030
-- **Flujo:** Scheduler → fetch Alphacast/BCRA → upsert `economic_indices`
-- **Postcondición:** Datos disponibles para CU-08/CU-09
+- **Precondición:** Railway activo; fuentes Alphacast/BCRA disponibles
+- **Flujo:**
+  1. node-cron (timezone `America/Argentina/Buenos_Aires`)
+  2. IPC: fetch diario **03:00 ART** (idempotente por período)
+  3. USD BCRA: fetch diario **03:30 ART**
+  4. Upsert en `economic_indices` (`type`, `value_pct`, `period`, `source_url`)
+  5. Notificaciones in-app (`NEW_IPC` / `BCRA_USD_ALERT` según umbral)
+- **Alternativa:** Fallback/cache; si no hay dato → admin CU-16
+- **Postcondición:** Índices listos para CU-08/CU-09; banners pendientes en locales
+- **Excepciones:** E1 fuente caída (log + cache); E2 período ya cargado (omitir)
 
 ### CU-18 — Instalar APK Android
 - **Actor:** Comerciante | **RF:** RF-A001 … RF-A007
-- **Flujo:** Landing descargar → instalar → abrir TWA (`preciosya.vercel.app`, alias `preciosya-app.vercel.app`) → login
-- **Postcondición:** Misma app web en contenedor Android (pantalla completa si assetlinks es válido)
+- **Flujo:** Landing descargar → instalar → abrir APK (`preciosya.vercel.app`, alias `preciosya-app.vercel.app`) → login
+- **Postcondición:** Misma app web empaquetada en Android (pantalla completa si assetlinks es válido)
 
 ### CU-19 — Baja lógica de producto
 - **Actor:** Comerciante | **RF:** RF-W009
@@ -135,7 +143,7 @@ flowchart LR
 - **Precondición:** Sesión activa; Realtime habilitado
 - **Flujo:** Evento (nuevo IPC, alerta margen, etc.) → API crea `notifications` (en `NEW_IPC`: `metadata.series` con las 13 series COICOP) → Supabase Realtime → campana in-app → en IPC: **Ver rubros** abre desglose gráfico (barras horizontales Chart.js + leyenda con íconos) vía `metadata` o `GET /api/ipc/series`
 - **Postcondición:** Usuario ve título/cuerpo; puede marcar como leída; puede ir a Productos a aplicar IPC
-- **Nota:** Sin push nativo (limitación TWA / fuera de alcance v1)
+- **Nota:** Sin push nativo (fuera de alcance v1)
 
 ### CU-21 — Modo offline limitado (lectura en caché)
 - **Actor:** Comerciante | **RF:** RF-W024
@@ -144,7 +152,7 @@ flowchart LR
 - **Postcondición:** Usuario puede consultar catálogo en caché; al recuperar red se reanuda la API
 - **Excepciones:** E1: primera visita sin caché → no hay datos offline
 
-### NT-BUILD — Regenerar APK TWA (desarrollador)
+### NT-BUILD — Regenerar APK Android (desarrollador)
 - **Actor:** Desarrollador / administrador técnico | **RF:** RF-A008
 - **No es CU de comerciante.** Flujo: `node scripts/build-preciosya-apk.mjs` → actualizar `assetlinks.json` → deploy web → reasignar alias `preciosya.vercel.app` si aplica
 - **Trazabilidad:** RF-A008 → NT-BUILD (sin CU-18)

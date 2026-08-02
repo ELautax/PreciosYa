@@ -37,7 +37,7 @@ gantt
   section Junio · Ventas v1 y cierre MVP
   Integración USD BCRA oficial           :done, jun1, 2026-06-02, 2026-06-04
   IPC 12 divisiones + fallback fuentes   :done, jun2, 2026-06-03, 2026-06-08
-  Landing v2 + APK Android (TWA)         :done, jun3, 2026-06-07, 2026-06-10
+  Landing v2 + APK Android         :done, jun3, 2026-06-07, 2026-06-10
   Gestor de ventas v1 (sales/sale_lines) :done, jun4, 2026-06-13, 2026-06-16
   UX ventas mobile + planes en app       :done, jun5, 2026-06-13, 2026-06-20
   Pulido v1.1 (sidebar, badges, KPIs)    :done, jun6, 2026-06-13, 2026-06-18
@@ -98,7 +98,7 @@ gantt
 | **Abr–May — Modelo negocios** | 15 abr – 25 jun | Examen Modelos Estratégicos (17 slides, PDF entregado) | ✓ Hecho |
 | **May — Renovar stack** | 03–28 may | Redeploy cloud, landing dark/light, COICOP + Alphacast/Argly, escáner, CSV, admin | ✓ Hecho |
 | **Jun 1ª quincena — Índices** | 02–10 jun | BCRA USD, IPC 12 series, migraciones `bcra_usd_alert`, `local_index_applied` | ✓ Hecho |
-| **Jun 2ª quincena — Ventas** | 07–20 jun | APK TWA, gestor ventas v1, migración `sales_module`, UX mobile, planes | ✓ Hecho |
+| **Jun 2ª quincena — Ventas** | 07–20 jun | APK Android, gestor ventas v1, migración `sales_module`, UX mobile, planes | ✓ Hecho |
 | **Jun — Documentación** | 01–30 jun | Manual, CU, CP-27, UML, RF, DER (completo), arquitectura, Gantt, HTML presentación | ◐ En curso |
 | **Jun — Presentaciones** | 10–30 jun | Canva Modelo Negocios ✓ · Canva Seminario Final (slides 1–10+) | ◐ En curso |
 | **Jul 1 — Hito documental** | **01 jul** | **10/10 entregables `docs/entrega/` cerrados + DER sincronizado con Prisma** | ○ Planificado |
@@ -116,7 +116,7 @@ gantt
 | Abr–jun 2026 | Validación campo n = 4 | `anexos-examen2/SINTESIS_ENTREVISTAS.md` |
 | 24 may 2026 | Rubros COICOP + escáner en app | Migración `20260520120000_v2_categories_ipc_margin` |
 | 02 jun 2026 | USD BCRA integrado | Migración `20260602120000_bcra_usd_alert_notif` |
-| 07 jun 2026 | APK Android (TWA) + landing v2 | Commits `preciosya-app`, landing |
+| 07 jun 2026 | APK Android + landing v2 | Commits `preciosya-app`, landing |
 | **13 jun 2026** | **Gestor de ventas v1 en producción** | Migración `20260613120000_sales_module`, módulo `/sales` |
 | 14 jun 2026 | Análisis docs + fixes dashboard ventas | Commit `9adc0d9f` |
 | 25 jun 2026 | Presentación Modelo de Negocios lista | Examen Parcial 2 |
@@ -155,7 +155,7 @@ Formato alineado al template de cronograma por fases (Iniciación → Cierre):
 |-------|--------|-----|--------|
 | BCRA USD + alertas | 02/06 | 04/06 | ✓ |
 | IPC 12 divisiones + fallback | 03/06 | 08/06 | ✓ |
-| APK TWA + landing comercial | 07/06 | 10/06 | ✓ |
+| APK Android + landing comercial | 07/06 | 10/06 | ✓ |
 | Gestor ventas v1 | 13/06 | 16/06 | ✓ |
 | Pulido mobile ventas y planes | 13/06 | 20/06 | ✓ |
 | DER + CP-27 + docs 2.1 | 01/06 | 30/06 | ◐ |

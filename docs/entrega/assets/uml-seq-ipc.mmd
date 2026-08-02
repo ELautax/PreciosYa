@@ -1,17 +1,22 @@
 sequenceDiagram
   participant U as Comerciante
   participant Web as Frontend
-  participant API as API
+  participant API as Express API
   participant Econ as economic-index.service
   participant DB as PostgreSQL
 
-  U->>Web: Confirmar Apply IPC
+  U->>Web: Abrir desglose IPC / Confirmar
+  Web->>API: GET /api/locals/:id/ipc-breakdown
+  API-->>Web: IPC por rubro COICOP
+  U->>Web: Aplicar IPC al local
   Web->>API: PUT /api/locals/:id/apply-ipc
   API->>Econ: applyIPCToLocal
-  Econ->>DB: get latest IPC by rubro
-  Econ->>DB: update products cost exclude USD
+  Econ->>DB: latest IPC_INDEC por preferred_index
+  Note over Econ: Excluye rubros BCRA_USD
+  Econ->>DB: update products cost + sale_price
+  Econ->>DB: price_history change_reason IPC_INDEC
   Econ->>DB: set last_ipc_applied_period
   DB-->>Econ: ok
-  Econ-->>API: summary
+  Econ-->>API: summary affected
   API-->>Web: success
-  Web-->>U: Banner verde aplicado
+  Web-->>U: Banner IPC aplicado

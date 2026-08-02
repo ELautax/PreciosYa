@@ -2,7 +2,7 @@
 
 **Fuente de verdad:** [`apps/api/prisma/schema.prisma`](../../apps/api/prisma/schema.prisma)  
 **Motor:** PostgreSQL 15 (Supabase) · **ORM:** Prisma 5  
-**Última sincronización:** junio 2026 (v2: rubros COICOP, ventas, `margin_status`, `category_templates`)
+**Última sincronización:** agosto 2026 · Fuente canónica PNG: [`assets/der-diagram.mmd`](./assets/der-diagram.mmd) → figura 6.1 del Word tesis.
 
 ---
 

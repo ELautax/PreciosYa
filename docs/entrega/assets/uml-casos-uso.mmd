@@ -1,21 +1,65 @@
 flowchart TB
-  subgraph actors [Actores]
+  subgraph actores [Actores]
     C[Comerciante]
     A[Administrador]
+    S[Sistema externo cron]
   end
 
-  subgraph system [PreciosYa]
-    UC1((Login))
-    UC2((Gestionar catalogo))
-    UC3((Aplicar indices))
-    UC4((Registrar ventas))
-    UC5((Exportar PNG))
-    UC6((Admin IPC))
+  subgraph auth [Acceso]
+    CU01((CU-01 Login Google))
+    CU18((CU-18 Instalar APK))
+    CU21((CU-21 Offline lectura))
   end
 
-  C --> UC1
-  C --> UC2
-  C --> UC3
-  C --> UC4
-  C --> UC5
-  A --> UC6
+  subgraph catalogo [Catalogo y precios]
+    CU02((CU-02 Crear local))
+    CU03((CU-03 Activar rubros))
+    CU04((CU-04 Alta producto escanner))
+    CU05((CU-05 Editar producto))
+    CU06((CU-06 Alertas margen))
+    CU07((CU-07 Bulk porcentaje))
+    CU10((CU-10 Historial precios))
+    CU19((CU-19 Baja logica producto))
+  end
+
+  subgraph indices [Indices economicos]
+    CU08((CU-08 Aplicar IPC))
+    CU09((CU-09 Aplicar USD))
+    CU17((CU-17 Sync indices))
+    CU20((CU-20 Notificaciones))
+  end
+
+  subgraph ventas [Ventas]
+    CU11((CU-11 Resumen ventas))
+    CU12((CU-12 Registrar venta))
+    CU13((CU-13 Historial ventas))
+  end
+
+  subgraph exportPlan [Export y plan]
+    CU14((CU-14 Exportar PNG))
+    CU15((CU-15 Plan y upgrade))
+    CU16((CU-16 Admin IPC usuarios))
+  end
+
+  C --> CU01
+  C --> CU18
+  C --> CU21
+  C --> CU02
+  C --> CU03
+  C --> CU04
+  C --> CU05
+  C --> CU06
+  C --> CU07
+  C --> CU08
+  C --> CU09
+  C --> CU10
+  C --> CU11
+  C --> CU12
+  C --> CU13
+  C --> CU14
+  C --> CU15
+  C --> CU19
+  C --> CU20
+  A --> CU16
+  S --> CU17
+  S --> CU20

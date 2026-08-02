@@ -508,18 +508,18 @@ VITE_SUPABASE_ANON_KEY=eyJ...
 
 ## 10. Scheduler Jobs
 
-### IPC Scheduler — runs monthly
-- **Cron:** `0 9 1-7 * 1-5` (first business day of the month at 9am)
+### IPC Scheduler — runs daily (AR)
+- **Cron:** `0 3 * * *` timezone `America/Argentina/Buenos_Aires` (03:00 ART)
 - **Logic:**
   1. Check if IPC for current month already exists in `economic_indices` → if yes, skip (idempotent)
-  2. Fetch from INDEC API with retry (3 attempts, exponential backoff: 1s, 2s, 4s)
+  2. Fetch from Alphacast/Argly (INDEC series) with retry
   3. Save to `economic_indices`
   4. Create `NEW_IPC` notifications for all active users
   5. Send email via Resend to Pro users
-- **Fallback:** if INDEC API is down, use last cached value from `economic_indices`
+- **Fallback:** if fuente primaria is down, use last cached value / admin manual load
 
 ### BCRA Scheduler — runs daily (AR)
-- **Cron:** `30 3 * * *` timezone `America/Argentina/Buenos_Aires` (tras job IPC 03:00)
+- **Cron:** `30 3 * * *` timezone `America/Argentina/Buenos_Aires` (03:30 ART, tras job IPC 03:00)
 - **Logic:** cotización USD oficial → `economic_indices` (`value_pct` = variación diaria %, tasa en `source_url` como `|usdRate=`)
 - **Alertas:** `BCRA_USD_ALERT` si `|variación| >= BCRA_USD_ALERT_THRESHOLD_PCT` (default 2.5)
 
@@ -866,7 +866,7 @@ Todas las tareas TASK-001 … TASK-044 están implementadas en el monorepo (mayo
 
 ## 16. What is NOT in scope
 
-- APK nativa / React Native (sí hay TWA/APK empaquetada de la PWA)
+- APK nativa / React Native (sí hay APK que empaqueta la PWA)
 - Multi-usuario por negocio
 - PDF export (solo PNG desde Productos → Exportar)
 - Sync offline bidireccional completo (sí hay cola parcial de productos + lectura en caché)

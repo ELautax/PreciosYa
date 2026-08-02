@@ -13,8 +13,8 @@
 | Ventas: top/estancados/estrellas/rubro | no (`requirePlan PRO`) | sí | Pro |
 | Email IPC (Resend) | no | sí (scheduler) | Pro |
 | Contacto | `sales@preciosya.com` | idem | landing, app, docs |
-| App URL | `preciosya.vercel.app` | — | host TWA principal |
-| Alias app | `preciosya-app.vercel.app` | — | origen TWA adicional (mismo proyecto Vercel web) |
+| App URL | `preciosya.vercel.app` | — | host principal de la APK |
+| Alias app | `preciosya-app.vercel.app` | — | origen adicional de la APK (mismo proyecto Vercel web) |
 | Cobro Pro | Mercado Pago **sandbox** (tesis) | — | Word, GUIA, RF-W022 |
 
 **Corrección aplicada (jul 2026):** la landing y `planTiers` vendían IPC/USD como exclusivos Pro, pero la API ya los permite en Free. Se alineó marketing y docs al comportamiento real.

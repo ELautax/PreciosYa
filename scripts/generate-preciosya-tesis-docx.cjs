@@ -23,10 +23,17 @@ const IMG = {
   casosUso: loadPng('uml-casos-uso.png'),
   seqLogin: loadPng('uml-seq-login.png'),
   seqIpc: loadPng('uml-seq-ipc.png'),
+  seqUsd: loadPng('uml-seq-usd.png'),
   seqVenta: loadPng('uml-seq-venta.png'),
+  seqCron: loadPng('uml-seq-cron.png'),
   clases: loadPng('uml-clases.png'),
   despliegue: loadPng('uml-despliegue.png'),
   componentes: loadPng('componentes.png'),
+  capas: loadPng('uml-arquitectura-capas.png'),
+  porter: loadPng('porter.png'),
+  foda: loadPng('foda.png'),
+  bmc: loadPng('bmc.png'),
+  gantt: loadPng('gantt.png'),
 };
 function figure(buf, caption, w = 520, h = 320) {
   if (!buf) return [p(`[FIGURA pendiente: ${caption}]`, { color: AMBER, italic: true })];
@@ -384,9 +391,9 @@ function portada() {
         fRow("Docente","Gabriel Ernesto Cavasso",false),
         fRow("Cuatrimestre","6.º Cuatrimestre — 2026 | Curso ACM6AP",true),
         fRow("Integrante","VILLANUEVA, Lautaro Nahuel",false),
-        fRow("Versión","3.1 — julio 2026 (correcciones Seminario Final; APK TWA verificada)",true),
+        fRow("Versión","3.1 — julio 2026 (correcciones Seminario Final; APK Android verificada)",true),
         fRow("App","https://preciosya.vercel.app",false),
-        fRow("Alias app (Vercel)","https://preciosya-app.vercel.app — alias secundario del proyecto web / origen TWA adicional",true),
+        fRow("Alias app (Vercel)","https://preciosya-app.vercel.app — alias secundario del proyecto web / origen adicional de la APK",true),
         fRow("Landing","https://preciosya-landing.vercel.app",false),
         fRow("API Railway","https://api-production-3626.up.railway.app",true),
         fRow("Contacto","sales@preciosya.com",false),
@@ -405,9 +412,9 @@ function seccion1() {
     p("La plataforma es un SaaS Freemium mobile-first. No es un POS, no es un sistema de facturación ni un ERP. Su función específica es la gestión de precios y márgenes."),
     space(),
     pMix("Stack tecnológico: ", "React 19 + Vite + PWA Plugin (preciosya.vercel.app) + API Express 4 / Prisma en Railway + Supabase (Auth, DB, Storage)."),
-    pMix("APK Android: ", "Trusted Web Activity (TWA). La misma PWA empaquetada, sin lógica nativa adicional (sin push nativo, sin widget, sin biometría propia, sin offline bidireccional completo). Package: app.preciosya.twa."),
+    pMix("APK Android: ", "La misma PWA empaquetada como APK Android, sin lógica nativa adicional (sin push nativo, sin widget, sin biometría propia, sin offline bidireccional completo). Paquete: app.preciosya.twa."),
     space(),
-    p("El sistema aplica el IPC del INDEC por rubro (divisiones COICOP), no un único índice mensual a todo el catálogo. Adicionalmente, permite indexar rubros sensibles al tipo de cambio oficial BCRA. La actualización de índices ocurre mediante un proceso automático (cron ~03:30 AR) con fuentes Alphacast/Argly y fallback de carga manual desde el panel de administración."),
+    p("El sistema aplica el IPC del INDEC por rubro (divisiones COICOP), no un único índice mensual a todo el catálogo. Adicionalmente, permite indexar rubros sensibles al tipo de cambio oficial BCRA. La actualización de índices ocurre mediante cron diario en Railway (IPC 03:00 ART, BCRA 03:30 ART) con fuentes Alphacast/Argly y fallback de carga manual desde el panel de administración."),
 
     h2("1.2 Problemática identificada"),
     p("De acuerdo al relevamiento de campo realizado con n = 4 comerciantes del GBA (muestra de conveniencia, método entrevista semiestructurada + observación directa):"),
@@ -431,17 +438,17 @@ function seccion1() {
     bullet("✅ Operar como PWA con soporte offline limitado (caché/lectura); sin sincronización bidireccional completa."),
     bullet("✅ Gestionar múltiples locales según plan (Free: 1, Pro: 3, Agency: ilimitado)."),
     bullet("✅ Panel de administración: usuarios, carga manual de IPC, estadísticas."),
-    bullet("✅ APK Android (TWA) verificada con Digital Asset Links y assetlinks.json. Pantalla completa sin barra de URL."),
+    bullet("✅ APK Android verificada con Digital Asset Links y assetlinks.json. Pantalla completa sin barra de URL."),
     h3("Objetivos fuera de alcance por el momento"),
     bullet("❌ Sincronización offline bidireccional completa."),
-    bullet("❌ Notificaciones push nativas en APK (TWA no soporta push nativo sin integración FCM adicional)."),
+    bullet("❌ Notificaciones push nativas en APK (fuera de alcance v1; requeriría FCM adicional)."),
     bullet("❌ Widget de pantalla de inicio Android."),
     bullet("❌ Autenticación biométrica propia."),
 
     h2("1.4 Alcance"),
     p("El sistema contempla dos superficies de entrega que comparten backend y base de datos:"),
     bulletMix("PWA (preciosya.vercel.app): ", "accesible desde cualquier navegador, mobile-first. Toda la funcionalidad del producto."),
-    bulletMix("APK Android (TWA): ", "misma PWA empaquetada como Trusted Web Activity. Agrega instalación directa, acceso a cámara nativa (EAN-13) y Digital Asset Links (assetlinks.json). No agrega push nativo, widget ni biometría."),
+    bulletMix("APK Android: ", "misma PWA empaquetada. Agrega instalación directa, acceso a cámara nativa (EAN-13) y Digital Asset Links (assetlinks.json). No agrega push nativo, widget ni biometría."),
     bulletMix("Backend: ", "API Express 4/Prisma en Railway. Supabase gestiona Auth (Google OAuth), base de datos (PostgreSQL) y Storage (imágenes PNG)."),
     noteBox("Nota técnica APK (jun. 2026): huella SHA-256 assetlinks = 09:49:6E:73:4D:68:B1:2C:A0:87:CA:01:8D:BF:6D:E1:77:94:70:68:89:B6:45:51:D1:5E:C2:2D:2E:20:73:66. Tras cada deploy en Vercel, reasignar el alias preciosya.vercel.app al deployment activo manualmente."),
     pb()
@@ -465,7 +472,7 @@ function seccion2() {
     ["RF-W012","IPC multi-serie por rubro","El sistema obtiene el IPC correspondiente a cada rubro COICOP (no índice único). Fuentes: Alphacast/Argly + fallback manual admin.","Alta","Lógica","Implementado"],
     ["RF-W013","Apply-IPC por local","Aplica IPC pendiente al local. Solo rubros sin flag indexByUsd. Banner pendiente/aplicado.","Alta","Lógica","Implementado"],
     ["RF-W014","Apply-USD por local","Aplica variación diaria USD BCRA a rubros con flag indexByUsd. Registra change_reason BCRA_RATE.","Alta","Lógica","Implementado"],
-    ["RF-W015","Cron actualización índices","Proceso automático (~03:30 AR) que actualiza IPC (mensual) y USD BCRA (diario) en economic_indices.","Alta","Sistema","Implementado"],
+    ["RF-W015","Cron actualización índices","Proceso automático diario: IPC a las 03:00 ART y USD BCRA a las 03:30 ART (timezone America/Argentina/Buenos_Aires). Upsert en economic_indices.","Alta","Sistema","Implementado"],
     ["RF-W016","Alertas de margen","Marca productos con is_margin_alert cuando margin_pct < min_margin_pct del local. Notificación in-app.","Alta","Alerta","Implementado"],
     ["RF-W017","Historial de precios append-only","Registro cronológico en price_history con change_reason: MANUAL, BULK_PCT, IPC_INDEC, BCRA_RATE, IMPORT.","Alta","Reporte","Implementado"],
     ["RF-W018","Exportación PNG","Generación de lista de precios como imagen PNG (html2canvas) guardada en Supabase Storage.","Alta","Exportación","Implementado"],
@@ -490,12 +497,12 @@ function seccion2() {
 function seccion3() {
   const rows = [
     ["RF-A001","Descarga directa APK","Distribución por archivo APK sin Google Play Store. URLs: preciosya-landing.vercel.app/preciosya.apk y preciosya.vercel.app/preciosya.apk.","Alta","Distribución","Implementado"],
-    ["RF-A002","Paridad funcional con PWA","La APK expone las mismas funcionalidades que la PWA. No agrega lógica propia de negocio.","Alta","TWA","Implementado"],
+    ["RF-A002","Paridad funcional con PWA","La APK expone las mismas funcionalidades que la PWA. No agrega lógica propia de negocio.","Alta","APK","Implementado"],
     ["RF-A003","Digital Asset Links","assetlinks.json en /.well-known/ verifica la relación entre dominio web y app Android. Huella SHA-256 verificada jun. 2026.","Alta","Seguridad","Implementado"],
     ["RF-A004","Acceso a cámara para escáner","La APK accede a la cámara nativa del dispositivo para escanear códigos EAN-13.","Alta","Lógica","Implementado"],
     ["RF-A005","Autocompletado por escaneo","Al escanear un código no registrado, el sistema precompleta nombre desde Open Food Facts.","Alta","ABM","Implementado"],
-    ["RF-A006","Pantalla completa sin barra URL","Experiencia standalone verificada: sin barra de URL ni mensaje 'Se está ejecutando en Chrome'. Requiere assetlinks.json válido.","Alta","TWA","Implementado"],
-    ["RF-A007","Notificaciones in-app (Realtime)","La APK recibe notificaciones in-app a través de Supabase Realtime. Sin push nativo (limitación TWA sin FCM).","Media","Notificación","Implementado"],
+    ["RF-A006","Pantalla completa sin barra URL","Experiencia standalone verificada: sin barra de URL ni mensaje 'Se está ejecutando en Chrome'. Requiere assetlinks.json válido.","Alta","APK","Implementado"],
+    ["RF-A007","Notificaciones in-app (Realtime)","La APK recibe notificaciones in-app a través de Supabase Realtime. Sin push nativo (fuera de alcance v1; sin FCM).","Media","Notificación","Implementado"],
     ["RF-A008","Script regeneración APK","Script scripts/build-preciosya-apk.mjs para regenerar el APK ante cambios de certificado o dominio.","Alta","Build","Implementado"],
     ["RF-A009","Push nativo APK (IPC/margen)","Notificaciones push nativas cuando el INDEC publica IPC o cuando hay alertas de margen.","Alta","Notificación","Fuera de alcance v1"],
     ["RF-A010","Offline completo con sync","Gestión offline total con sincronización automática al recuperar internet.","Alta","Offline","Fuera de alcance v1"],
@@ -503,10 +510,10 @@ function seccion3() {
     ["RF-A012","Biometría para login","Autenticación por huella dactilar o reconocimiento facial.","Baja","Seguridad","Fuera de alcance v1"],
   ];
   return [
-    h1("3. Requisitos Funcionales — APK Android (TWA)"),
-    p("La APK de PreciosYa es un Trusted Web Activity (TWA): empaqueta la misma PWA en una shell Android nativa. Comparte el backend API REST con la versión web. Package: app.preciosya.twa."),
-    pMix("Host TWA principal: ", "https://preciosya.vercel.app"),
-    pMix("Alias app (origen adicional): ", "https://preciosya-app.vercel.app — alias secundario del mismo proyecto Vercel «web». Se declara en additionalTrustedOrigins del TWA y en assetlinks; no es un producto distinto ni un typo de la landing."),
+    h1("3. Requisitos Funcionales — APK Android"),
+    p("La APK de PreciosYa empaqueta la misma PWA en una shell Android. Comparte el backend API REST con la versión web. Paquete: app.preciosya.twa."),
+    pMix("Host principal de la APK: ", "https://preciosya.vercel.app"),
+    pMix("Alias app (origen adicional): ", "https://preciosya-app.vercel.app — alias secundario del mismo proyecto Vercel «web». Se declara como origen adicional de confianza de la APK y en assetlinks; no es un producto distinto ni un typo de la landing."),
     space(),
     rfTable(rows.map((r,i) => rfRow(r[0],r[1],r[2],r[3],r[4],r[5],i%2!==0))),
     pb()
@@ -576,7 +583,7 @@ function seccion4() {
       "E1: Porcentaje = 0 → el sistema advierte que no habrá cambios."],
     ["CU-08","Aplicar IPC al local",
       "Comerciante / Sistema",
-      "El cron ~03:30 AR actualizó economic_indices con el IPC del período. El local tiene rubros activos sin flag indexByUsd.",
+      "El cron diario 03:00 ART actualizó economic_indices con el IPC del período. El local tiene rubros activos sin flag indexByUsd.",
       "1. El sistema detecta IPC pendiente (last_ipc_applied_period desactualizado) y muestra banner. 2. El comerciante hace clic en 'Aplicar IPC'. 3. La API PUT /api/locals/:id/apply-ipc invoca economic-index.service. 4. El servicio actualiza cost de productos en rubros elegibles (excluye indexByUsd). 5. Recalcula sale_price. 6. Registra change_reason IPC_INDEC en price_history. 7. Actualiza last_ipc_applied_period en el local.",
       "El comerciante puede ignorar el banner y aplicar manualmente desde el panel de índices.",
       "Todos los rubros elegibles tienen cost y sale_price actualizados. Banner cambia a 'IPC aplicado'.",
@@ -640,16 +647,16 @@ function seccion4() {
     ["CU-17","Sincronizar índices (cron automático)",
       "Cron / Scheduler",
       "El servicio Railway está activo. Las fuentes Alphacast/BCRA están disponibles.",
-      "1. El cron se ejecuta según la programación configurada con node-cron. 2. Para IPC: ipc-fetch.service consulta Alphacast/Argly el 1er día hábil del mes a las 09:00. 3. Para USD BCRA: bcra-fetch.service consulta diariamente a las 03:30 AR. 4. Los valores se insertan en economic_indices (type, value_pct, period, source_url). 5. El sistema emite notificaciones in-app a los locales con IPC/USD pendiente.",
-      "Si la fuente primaria falla, el cron intenta el fallback. Si ambos fallan, el admin puede cargar el valor manualmente (CU-16).",
-      "economic_indices contiene los últimos índices disponibles. Los locales reciben banner de actualización pendiente.",
-      "E1: Fuente no disponible → log de error + alerta a admin. E2: Valor ya insertado para el período → se ignora para evitar duplicados."],
-    ["CU-18","Instalar APK Android (TWA)",
+      "1. El cron se ejecuta según la programación configurada con node-cron (timezone America/Argentina/Buenos_Aires). 2. Para IPC: ipc-fetch consulta Alphacast/Argly todos los días a las 03:00 ART (idempotente: si el período ya existe en economic_indices, no vuelve a insertar). 3. Para USD BCRA: bcra.service consulta diariamente a las 03:30 ART. 4. Los valores se insertan o actualizan en economic_indices (type, value_pct, period, source_url). 5. El sistema emite notificaciones in-app (NEW_IPC / BCRA_USD_ALERT según umbral) a usuarios activos.",
+      "Si la fuente primaria falla, el cron intenta el fallback / cache local. Si no hay dato usable, el admin puede cargar el valor manualmente (CU-16).",
+      "economic_indices contiene los últimos índices disponibles. Los locales pueden ver banner de actualización pendiente (IPC/USD) hasta aplicar.",
+      "E1: Fuente no disponible → log de error; se mantiene cache si existe. E2: Valor ya insertado para el período → se omite (idempotencia)."],
+    ["CU-18","Instalar APK Android",
       "Comerciante (Android)",
       "El comerciante tiene un dispositivo Android 8+ con el permiso 'instalar apps desconocidas' habilitado.",
-      "1. El comerciante accede a preciosya-landing.vercel.app. 2. Descarga preciosya.apk. 3. Instala y abre desde el launcher. 4. El TWA carga preciosya.vercel.app (alias preciosya-app.vercel.app como origen adicional). 5. Login Google (CU-01).",
+      "1. El comerciante accede a preciosya-landing.vercel.app. 2. Descarga preciosya.apk. 3. Instala y abre desde el launcher. 4. La APK carga preciosya.vercel.app (alias preciosya-app.vercel.app como origen adicional). 5. Login Google (CU-01).",
       "Si assetlinks falla, la app abre con barra Chrome (estético; reasignar alias Vercel).",
-      "App instalada como TWA standalone con paridad funcional PWA.",
+      "App instalada en modo standalone con paridad funcional PWA.",
       "E1: Android < 8 → incompatibilidad. E2: assetlinks inválido → Custom Tabs."],
     ["CU-19","Baja lógica de producto",
       "Comerciante",
@@ -663,7 +670,7 @@ function seccion4() {
       "Sesión activa; Realtime habilitado.",
       "1. Evento (IPC nuevo, alerta margen). 2. API crea notifications (NEW_IPC incluye metadata.series con 13 series COICOP). 3. Supabase Realtime → campana in-app. 4. En IPC: Ver rubros abre desglose gráfico (barras Chart.js + leyenda íconos) vía metadata o GET /api/ipc/series. 5. Usuario marca leída / aplica desde Productos.",
       "—",
-      "Usuario ve título/cuerpo y, en IPC, comparativa gráfica por división; sin push nativo (fuera de alcance TWA v1).",
+      "Usuario ve título/cuerpo y, en IPC, comparativa gráfica por división; sin push nativo (fuera de alcance v1).",
       "E1: Realtime caído → lista al refrescar /api/notifications. E2: sin metadata.series → carga GET /api/ipc/series."],
     ["CU-21","Modo offline limitado (lectura en caché)",
       "Comerciante",
@@ -682,7 +689,7 @@ function seccion4() {
     h2("4.2 Detalle de casos de uso (CU-01 a CU-21)"),
     ...cus.flatMap(cu => cuBlock(cu[0], cu[1], [cu[2],cu[3],cu[4],cu[5],cu[6],cu[7]])),
     space(),
-    h3("NT-BUILD — Regenerar APK TWA (desarrollador)"),
+    h3("NT-BUILD — Regenerar APK Android (desarrollador)"),
     p("Actor: Desarrollador / administrador técnico. RF: RF-A008. No es un caso de uso del comerciante (no se vincula a CU-18). Flujo: node scripts/build-preciosya-apk.mjs → actualizar assetlinks.json → deploy web → reasignar alias preciosya.vercel.app si aplica."),
     pb()
   ];
@@ -693,29 +700,37 @@ function seccionUML() {
   return [
     h1("4b. Diagramas UML"),
 
-    h2("4b.1 Diagrama de casos de uso (resumen)"),
-    p("El siguiente diagrama muestra los actores principales y sus relaciones con los casos de uso del sistema."),
-    ...figure(IMG.casosUso, "Figura 4b.1 — Diagrama de casos de uso (resumen)", 480, 340),
+    h2("4b.1 Diagrama de casos de uso"),
+    p("Actores: Comerciante, Administrador y Sistema externo (cron). Incluye CU-01 a CU-21 alineados a la sección 4."),
+    ...figure(IMG.casosUso, "Figura 4b.1 — Diagrama de casos de uso (CU-01 a CU-21)", 520, 420),
 
     h2("4b.2 Diagrama de secuencia — Login Google OAuth"),
-    p("Flujo: el usuario inicia OAuth en el frontend; Supabase Auth valida el token y la API crea o encuentra el usuario en PostgreSQL."),
-    ...figure(IMG.seqLogin, "Figura 4b.2 — Secuencia Login Google OAuth", 500, 380),
+    p("Flujo: OAuth en el frontend vía Supabase Auth; la API verifica el JWT (sin RLS) y crea o encuentra el usuario en PostgreSQL."),
+    ...figure(IMG.seqLogin, "Figura 4b.2 — Secuencia Login Google OAuth", 500, 360),
 
     h2("4b.3 Diagrama de secuencia — Aplicar IPC"),
-    p("Flujo: el comerciante aplica el IPC pendiente; el servicio actualiza costos por rubro (excluye indexByUsd) y registra el cambio en price_history."),
+    p("Flujo: desglose por rubro COICOP → PUT apply-ipc. Actualiza costos excluyendo rubros BCRA_USD; setea last_ipc_applied_period."),
     ...figure(IMG.seqIpc, "Figura 4b.3 — Secuencia Aplicar IPC", 500, 400),
 
-    h2("4b.4 Diagrama de secuencia — Registrar venta"),
-    p("Flujo: sale.service ejecuta la transacción creando Sale y SaleLines con snapshot de costo/precio."),
-    ...figure(IMG.seqVenta, "Figura 4b.4 — Secuencia Registrar venta", 500, 380),
+    h2("4b.4 Diagrama de secuencia — Aplicar USD"),
+    p("Flujo: desglose USD → PUT apply-usd. Solo rubros con preferred_index BCRA_*; setea last_usd_applied_period."),
+    ...figure(IMG.seqUsd, "Figura 4b.4 — Secuencia Aplicar USD", 500, 380),
 
-    h2("4b.5 Diagrama de clases (dominio simplificado)"),
-    p("Los componentes de negocio residen en packages/shared. PricingEngine concentra el cálculo de precios."),
-    ...figure(IMG.clases, "Figura 4b.5 — Diagrama de clases (dominio)", 480, 360),
+    h2("4b.5 Diagrama de secuencia — Registrar venta"),
+    p("Flujo: POST /api/sales crea Sale + SaleLines con snapshot de costo/precio. sold_at es timestamptz; el resumen «Hoy» usa día calendario ART."),
+    ...figure(IMG.seqVenta, "Figura 4b.5 — Secuencia Registrar venta", 500, 400),
 
-    h2("4b.6 Diagrama de despliegue"),
-    p("Usuario → Vercel (web + landing) → Railway API → Supabase (Auth, Postgres, Storage)."),
-    ...figure(IMG.despliegue, "Figura 4b.6 — Diagrama de despliegue", 420, 280),
+    h2("4b.6 Diagrama de secuencia — Sync índices (cron)"),
+    p("Jobs en Railway (timezone America/Argentina/Buenos_Aires): IPC diario a las 03:00 ART (multi-serie, idempotente) y USD BCRA a las 03:30 ART, con alertas de salto."),
+    ...figure(IMG.seqCron, "Figura 4b.6 — Secuencia Sync índices (cron IPC 03:00 / BCRA 03:30 ART)", 500, 420),
+
+    h2("4b.7 Diagrama de clases (dominio)"),
+    p("Dominio en packages/shared (PricingEngine, SalesMath) y entidades Prisma usadas por la API."),
+    ...figure(IMG.clases, "Figura 4b.7 — Diagrama de clases (dominio)", 500, 380),
+
+    h2("4b.8 Diagrama de despliegue"),
+    p("Usuario → Vercel (preciosya.vercel.app + landing) → Railway API → Supabase (Auth, Postgres, Storage, Realtime). Integraciones: Alphacast/INDEC (cron IPC 03:00 ART), BCRA (cron 03:30 ART), Mercado Pago sandbox, Resend."),
+    ...figure(IMG.despliegue, "Figura 4b.8 — Diagrama de despliegue", 500, 400),
     pb()
   ];
 }
@@ -746,15 +761,15 @@ function seccion5() {
     // IPC / USD
     ["CP-18","Aplicar IPC — rubros USD excluidos","3 rubros activos: 2 IPC, 1 con indexByUsd=true","El IPC se aplica solo a los 2 rubros IPC. El rubro USD no cambia.","Correcto.","Aprobado"],
     ["CP-19","Aplicar USD BCRA — solo rubros USD","2 rubros: 1 IPC, 1 USD | variación BCRA 1.5%","Solo el rubro USD se actualiza. price_history change_reason BCRA_RATE.","Correcto.","Aprobado"],
-    ["CP-20","Scheduler IPC — ejecución automática ~03:30 AR","Cron job en Railway activo","economic_indices se actualiza con el último IPC. Banner 'IPC pendiente' en locales.","Cron ejecutado correctamente en Railway.","Aprobado"],
+    ["CP-20","Scheduler IPC — ejecución automática 03:00 ART","Cron job en Railway activo","economic_indices se actualiza con el último IPC (idempotente). Banner 'IPC pendiente' en locales.","Cron ejecutado correctamente en Railway.","Aprobado"],
     ["CP-21","Fallback manual de IPC por admin","Fuente automática no disponible; admin carga IPC manualmente","El índice queda registrado y disponible para aplicar en locales.","Panel admin permite carga manual.","Aprobado"],
     // Ventas
     ["CP-22","Registro de venta — gestor lite","2 productos seleccionados; precios registrados","Venta guardada en sales/sale_lines; margin_snapshot calculado.","Venta registrada correctamente. Sin ticket ni stock.","Aprobado"],
     ["CP-23","Activación plan Pro desde panel admin","Admin activa plan Pro en usuario específico","El usuario pasa a plan Pro; límites actualizados.","Correcto.","Aprobado"],
     ["CP-24","Modo offline — lectura en caché","Dispositivo en modo avión; app previamente cargada","La app muestra productos desde caché sin error.","Lectura offline funciona. Sin edición offline con sync.","Aprobado"],
-    // APK TWA (nuevos)
+    // APK Android (nuevos)
     ["CP-25","Descarga APK desde landing","Usuario en preciosya-landing.vercel.app/#descargar","El archivo preciosya.apk se descarga correctamente.","APK descargable desde ambas URLs de landing y app.","Aprobado"],
-    ["CP-26","Apertura APK con paridad funcional y pantalla completa","Instalar APK → abrir desde launcher → login Google → navegar Dashboard y Productos","Misma UX que PWA; sin barra de URL ni mensaje 'Se está ejecutando en Chrome' (TWA verificado vía Digital Asset Links).","Verificado en producción junio 2026. Pantalla completa standalone confirmada. Trazabilidad: CU-18 · RF-A003 · RF-A006.","Aprobado"],
+    ["CP-26","Apertura APK con paridad funcional y pantalla completa","Instalar APK → abrir desde launcher → login Google → navegar Dashboard y Productos","Misma UX que PWA; sin barra de URL ni mensaje 'Se está ejecutando en Chrome' (verificado vía Digital Asset Links).","Verificado en producción junio 2026. Pantalla completa standalone confirmada. Trazabilidad: CU-18 · RF-A003 · RF-A006.","Aprobado"],
     ["CP-27","Escáner de barras en APK","Formulario producto → permiso cámara → escanear EAN-13","Código detectado; autocompletado Open Food Facts si el producto existe.","Escáner funciona vía cámara nativa Android. Trazabilidad: CU-04 · RF-A004 · RF-A005.","Aprobado"],
     ["CP-28","Gráfico evolución de precios (/history)","Producto con ≥2 entradas en price_history","Chart.js muestra evolución de sale_price; tabla con change_reason.","Implementado en /history. Trazabilidad: CU-10 · RF-W025.","Aprobado"],
   ];
@@ -778,7 +793,7 @@ function seccion5() {
     h2("5.5 Módulo de ventas y admin (CP-22 a CP-24)"),
     ...all.slice(21,24).flatMap(r => cpBlock(r[0],r[1],r[2],r[3],r[4],r[5])),
 
-    h2("5.6 APK Android / TWA (CP-25 a CP-27)"),
+    h2("5.6 APK Android (CP-25 a CP-27)"),
     ...all.slice(24,27).flatMap(r => cpBlock(r[0],r[1],r[2],r[3],r[4],r[5])),
 
     h2("5.7 Reportes (CP-28)"),
@@ -825,11 +840,11 @@ function seccion6() {
     h1("6. Modelo de Datos — DER"),
 
     h2("6.1 Diagrama entidad-relación"),
-    p("El siguiente diagrama refleja el schema Prisma desplegado en Supabase PostgreSQL. Los nombres de atributos corresponden al schema real."),
+    p("El siguiente diagrama refleja el schema Prisma desplegado en Supabase PostgreSQL (incluye EconomicIndex, ventas, suscripciones y last_ipc/usd_applied_period)."),
     space(),
-    ...figure(DER_BUF, "Figura 6.1 — DER PreciosYa (schema Prisma)", 480, 520),
+    ...figure(DER_BUF, "Figura 6.1 — DER PreciosYa (schema Prisma)", 520, 560),
     space(),
-    noteBox("Nota nomenclatura v3.1: margin_pct, sale_price, change_reason (MANUAL | BULK_PCT | IPC_INDEC | BCRA_RATE | IMPORT). Alias preciosya-app.vercel.app = alias secundario del proyecto web / origen TWA adicional."),
+    noteBox("Nota nomenclatura v3.1: margin_pct, sale_price, change_reason (MANUAL | BULK_PCT | IPC_INDEC | BCRA_RATE | IMPORT). Alias preciosya-app.vercel.app = alias secundario del proyecto web / origen adicional de la APK."),
 
     h2("6.2 Entidades principales"),
     table2(["Entidad","Atributos y notas"], entidades, [2400, 7400]),
@@ -845,13 +860,13 @@ function seccion6() {
 function seccion7() {
   const arqRows = [
     ["Presentación Web","React 19 + Vite + PWA Plugin","Interfaz mobile-first, service worker, caché offline (lectura). Workbox para estrategias de caché."],
-    ["Presentación Mobile","TWA (Trusted Web Activity)","Shell Android que empaqueta la PWA. Acceso a cámara nativa (escáner EAN-13). Pantalla completa standalone."],
+    ["Presentación Mobile","APK Android","Shell Android que empaqueta la PWA. Acceso a cámara nativa (escáner EAN-13). Pantalla completa standalone."],
     ["Lógica de negocio","Node.js + Express 4 + Prisma 5","API REST, validaciones, PricingEngine, scheduler de índices (node-cron), alertas, exportación PNG."],
     ["Autenticación","Google OAuth 2.0 (Supabase Auth) + JWT","Tokens gestionados por Supabase. Sin passwords propias."],
     ["Base de datos","PostgreSQL (Supabase)","Persistencia principal. Triggers para historial y updated_at."],
     ["Almacenamiento","Supabase Storage","Imágenes PNG exportadas (price lists)."],
     ["Realtime","Supabase Realtime","Notificaciones in-app (IPC pendiente, alertas de margen)."],
-    ["Hosting API","Railway","API Express + cron jobs IPC (~1er día hábil del mes 09:00) y USD BCRA (~03:30 AR diario)."],
+    ["Hosting API","Railway","API Express + cron jobs IPC (diario 03:00 ART) y USD BCRA (diario 03:30 ART)."],
     ["Hosting Frontend","Vercel","PWA preciosya.vercel.app (+ alias preciosya-app.vercel.app) + Landing preciosya-landing.vercel.app."],
     ["Índices económicos","Alphacast / Argly + API BCRA","Fuentes primarias del cron. Fallback: carga manual admin."],
     ["Email transaccional","Resend","Emails de bienvenida y resumen IPC para usuarios Pro."],
@@ -916,7 +931,9 @@ function seccion7() {
     h1("7. Diseño de Arquitectura"),
 
     h2("7.1 Patrón arquitectónico"),
-    p("PreciosYa utiliza una arquitectura de tres capas desacopladas. El frontend (React PWA / APK TWA) se comunica exclusivamente con el backend a través de una API REST. El backend no tiene lógica de presentación. La base de datos solo es accesible desde el backend."),
+    p("PreciosYa utiliza una arquitectura de tres capas desacopladas. El frontend (React PWA / APK Android) se comunica exclusivamente con el backend a través de una API REST. El backend no tiene lógica de presentación. La base de datos solo es accesible desde el backend (excepto Auth y Realtime con la anon key)."),
+    space(),
+    ...figure(IMG.capas, "Figura 7.1 — Arquitectura en tres capas", 520, 280),
     space(),
     tableN(["Capa","Tecnología","Responsabilidad"], arqRows, [2400, 2800, 4600]),
     space(),
@@ -950,11 +967,11 @@ function seccion7() {
     space(),
 
     h3("Schedulers (node-cron en Railway)"),
-    bulletMix("IPC mensual: ", "1er día hábil del mes a las 09:00 (America/Argentina/Buenos_Aires). Fuente: Alphacast/Argly."),
-    bulletMix("BCRA diario: ", "todos los días a las 03:30 (America/Argentina/Buenos_Aires). Fuente: API pública BCRA."),
-    bulletMix("Integraciones externas: ", "Alphacast/Argly (IPC por rubro COICOP), BCRA (USD oficial), Supabase Auth/DB/Storage, Resend (emails Pro)."),
+    bulletMix("IPC diario 03:00 ART: ", "sincroniza series IPC (divisiones COICOP) vía Alphacast; idempotente si el período ya existe."),
+    bulletMix("BCRA diario 03:30 ART: ", "cotización USD oficial y alertas de salto (BCRA_USD_ALERT)."),
+    bulletMix("Integraciones externas: ", "Alphacast (IPC), BCRA (USD), Supabase Auth/DB/Storage/Realtime, Resend (emails Pro), Mercado Pago sandbox."),
     space(),
-    ...figure(IMG.componentes, "Figura 7.3 — Diagrama de componentes (monorepo)", 460, 300),
+    ...figure(IMG.componentes, "Figura 7.3 — Diagrama de componentes (monorepo)", 500, 360),
     pb()
   ];
 }
@@ -1034,6 +1051,8 @@ function seccion8() {
     h2("8.2 Análisis de las 5 Fuerzas de Porter"),
     p("Unidad de análisis: mercado de software de gestión de precios para pequeños comercios en Argentina."),
     space(),
+    ...figure(IMG.porter, "Figura 8.2 — Cinco fuerzas de Porter (PreciosYa)", 480, 360),
+    space(),
     tableN(["Fuerza","Intensidad","Análisis y táctica"], porterRows, [3200, 1600, 4900]),
     space(),
     pMix("Conclusión de viabilidad: ", "el proyecto es viable. La fuerza más exigente es la de sustitutos (hábito manual), no la rivalidad directa con otros softwares."),
@@ -1084,10 +1103,14 @@ function seccion8() {
     bullet("Bootstrap y sostenibilidad: sin financiamiento externo; se optimizan costos cloud para sostener el modelo."),
 
     h2("8.7 Diagnóstico estratégico — FODA"),
+    ...figure(IMG.foda, "Figura 8.7 — Matriz FODA", 500, 360),
+    space(),
     table2(["Cuadrante","Contenido"], fodaRows, [2000,7800]),
     space(),
 
     h2("8.8 Business Model Canvas"),
+    ...figure(IMG.bmc, "Figura 8.8 — Business Model Canvas", 500, 400),
+    space(),
     tableN(["Bloque","Contenido"],[
       ["Segmento de clientes","Principal: kiosqueros y almaceneros GBA 35–65 a. Secundario: reventa por redes 18–40 a."],
       ["Propuesta de valor","Remarcar con confianza en minutos, con el margen protegido, desde el celular."],
@@ -1152,7 +1175,7 @@ function seccion9() {
     ["11. Exportación PNG (html2canvas)","","","","","","","■","■","","","",""],
     ["12. Historial de precios (price_history)","","","","","","","■","■","","","",""],
     ["13. Gestor de ventas lite","","","","","","","","■","■","","",""],
-    ["14. APK Android (TWA) + assetlinks","","","","","","","","","■","■","",""],
+    ["14. APK Android + assetlinks","","","","","","","","","■","■","",""],
     ["15. Escáner EAN-13 (cámara nativa)","","","","","","","","","","■","",""],
     ["16. Panel admin + carga manual IPC","","","","","","","","","","■","■",""],
     ["17. Testing y corrección de bugs","","","","","","","","","","","■","■"],
@@ -1188,12 +1211,14 @@ function seccion9() {
     h1("9. Diagrama de Gantt"),
     p("Planificación del proyecto para un desarrollador trabajando solo. Duración total: 12 semanas. Inicio: semana 1 del cuatrimestre 2026."),
     space(),
+    ...figure(IMG.gantt, "Figura 9.1 — Diagrama de Gantt (12 semanas)", 520, 400),
+    space(),
     new Table({ width: { size: 9560, type: WidthType.DXA }, columnWidths: WS, rows: [headerRow, ...ganttRows] }),
     space(),
     h3("Estado junio 2026"),
-    bullet("Semanas 1–10: completadas. Producto en producción (PWA + APK TWA verificada)."),
-    bullet("Junio 2026: gestor de ventas v1, APK TWA, fix assetlinks.json, documentación v3, preparación presentación Seminario Final."),
-    bullet("Julio 2026: desglose gráfico IPC en notificaciones (Chart.js, 13 series COICOP); defensa oral + demo en vivo ante el docente."),
+    bullet("Semanas 1–10: completadas. Producto en producción (PWA + APK Android verificada)."),
+    bullet("Junio 2026: gestor de ventas v1, APK Android, fix assetlinks.json, documentación v3, preparación presentación Seminario Final."),
+    bullet("Julio–agosto 2026: desglose gráfico IPC; corrección filtro ventas «Hoy» (día ART); defensa oral + demo ante el docente."),
     pb()
   ];
 }
@@ -1215,7 +1240,7 @@ function seccion10() {
     ["RF-W012","CU-08","CP-18, CP-20","IPC multi-serie por rubro COICOP"],
     ["RF-W013","CU-08","CP-18, CP-19","Apply-IPC por local — excluye indexByUsd"],
     ["RF-W014","CU-09","CP-19","Apply-USD BCRA — solo rubros indexByUsd"],
-    ["RF-W015","CU-17","CP-20","Cron actualización índices (~03:30 AR)"],
+    ["RF-W015","CU-17","CP-20","Cron actualización índices (IPC 03:00 / BCRA 03:30 ART)"],
     ["RF-W016","CU-06","CP-09","Alertas de margen — is_margin_alert"],
     ["RF-W017","CU-10","CP-12, CP-18, CP-19","Historial append-only (price_history)"],
     ["RF-W018","CU-14","CP-15, CP-16","Exportación PNG (html2canvas + Storage)"],
@@ -1231,7 +1256,7 @@ function seccion10() {
     ["RF-A003","CU-18","CP-26","Digital Asset Links (assetlinks.json)"],
     ["RF-A004","CU-04","CP-27","Acceso a cámara nativa Android EAN-13"],
     ["RF-A005","CU-04","CP-14, CP-27","Autocompletado por escaneo (Open Food Facts)"],
-    ["RF-A006","CU-18","CP-26","Pantalla completa sin barra URL (TWA standalone)"],
+    ["RF-A006","CU-18","CP-26","Pantalla completa sin barra URL (standalone)"],
     ["RF-A007","CU-14","CP-17","Compartir PNG por WhatsApp nativo Android"],
     ["RF-A008","NT-BUILD","—","Script regeneración APK (desarrollador; no CU-18)"],
   ];
@@ -1271,7 +1296,7 @@ function seccionManual() {
     ["APK muestra barra de Chrome","El assetlinks.json puede estar desactualizado. Verificar que el alias preciosya.vercel.app apunte al deployment activo en Vercel. Desinstalar y reinstalar el APK."],
     ["Offline: no cargan datos","El modo offline solo muestra datos en caché. Si no se cargó la app previamente con conexión, no habrá datos."],
     ["Escáner no funciona","Verificar que el navegador/APK tenga permiso de cámara concedido. En iPhone, usar la PWA en Safari."],
-    ["No llega el IPC","El cron se ejecuta el 1er día hábil del mes. Si el dato no aparece, el admin puede cargarlo manualmente desde /admin."],
+    ["No llega el IPC","El cron de IPC corre diario a las 03:00 ART (idempotente). Si el dato no aparece, el admin puede cargarlo manualmente desde /admin."],
   ];
 
   const glosario = [
@@ -1280,7 +1305,6 @@ function seccionManual() {
     ["Rubro COICOP","División del catálogo de categorías del INDEC (ej. Alimentos y bebidas, Indumentaria)."],
     ["apply-ipc","Acción que aplica el IPC del período a los costos y precios de los rubros elegibles del local."],
     ["apply-usd","Acción que aplica la variación diaria del USD BCRA a los rubros con flag indexByUsd."],
-    ["TWA","Trusted Web Activity. Tecnología Android que empaqueta una PWA como app nativa sin duplicar código."],
     ["sale_price","Precio de venta calculado: cost × (1 + margin_pct/100), redondeado a la decena."],
     ["price_history","Registro append-only de cada cambio de precio con motivo (change_reason) y fecha."],
     ["Freemium","Modelo de negocio con versión gratuita (Free) y versión paga (Pro) con más funciones."],
@@ -1389,7 +1413,6 @@ function seccionRefs() {
     "Ley 25.326. (2000). Protección de los Datos Personales. Honorable Congreso de la Nación Argentina.",
     "Osterwalder, A. & Pigneur, Y. (2010). Business Model Generation. John Wiley & Sons.",
     "Porter, M. E. (2008). The Five Competitive Forces That Shape Strategy. Harvard Business Review.",
-    "Trusted Web Activities (TWA). (2024). Chrome for Android Development. https://developer.chrome.com/docs/android/trusted-web-activity",
     "PrismaJS. (2024). Prisma ORM Documentation. https://www.prisma.io/docs",
     "Supabase. (2024). Supabase Documentation. https://supabase.com/docs",
   ];

@@ -133,7 +133,7 @@ Tests Vitest en `packages/shared/src/__tests__/`.
 
 | Job | Cron | Acción |
 |-----|------|--------|
-| IPC mensual | 1er día hábil 9:00 | Fetch IPC → `economic_indices` → notif NEW_IPC |
-| BCRA diario | 03:30 AR | USD oficial → variación diaria |
+| IPC diario | 03:00 ART (`America/Argentina/Buenos_Aires`) | Fetch IPC → `economic_indices` → notif NEW_IPC (idempotente por período) |
+| BCRA diario | 03:30 ART | USD oficial → variación diaria → alertas umbral |
 
 Archivo: `apps/api/src/jobs/ipc-scheduler.ts`
