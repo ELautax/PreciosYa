@@ -11,6 +11,7 @@ import {
   supportsNativeBarcodeDetector,
   type Html5ScannerSession,
 } from '@/lib/barcodeScanEngine'
+import { playBarcodeBeep } from '@/lib/barcodeBeep'
 
 type BarcodeScannerProps = {
   open: boolean
@@ -87,6 +88,10 @@ export function BarcodeScanner({ open, onClose, onDetected }: BarcodeScannerProp
     const handleDetected = (code: string): void => {
       if (disposed || detectedRef.current) return
       detectedRef.current = true
+      playBarcodeBeep()
+      if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+        navigator.vibrate(40)
+      }
       onDetectedRef.current(code)
       onCloseRef.current()
     }
