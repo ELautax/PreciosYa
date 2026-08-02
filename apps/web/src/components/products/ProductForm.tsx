@@ -195,7 +195,13 @@ export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }:
       if (lookup.categoryId && currentCategoryId === '') {
         setValue('categoryId', lookup.categoryId, { shouldDirty: true })
       }
-      if (lookup.notes && currentNotes === '') {
+      // Notas solo desde catálogo propio (local/otro local), no desde Open Food Facts
+      if (
+        lookup.notes &&
+        currentNotes === '' &&
+        lookup.source !== 'openfoodfacts' &&
+        lookup.source != null
+      ) {
         setValue('notes', lookup.notes, { shouldDirty: true })
       }
 

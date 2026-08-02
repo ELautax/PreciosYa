@@ -51,6 +51,47 @@ function parseUnitFromQuantity(quantity: string | undefined): ProductUnit | null
   return null
 }
 
+/** Arma un nombre usable en kiosco; no usa categories de OFF (van en inglés y ensucian Notas). */
+function buildOpenFoodFactsName(product: {
+  product_name?: string
+  product_name_es?: string
+  brands?: string
+  quantity?: string
+}): string | null {
+  const brand = product.brands?.split(',')[0]?.trim() || null
+  const quantity = product.quantity?.trim() || null
+  let base =
+    product.product_name_es?.trim() ||
+    product.product_name?.trim() ||
+    null
+
+  // Si OFF no trae nombre, caemos a marca + cantidad
+  if (!base) {
+    if (brand && quantity) return `${brand} ${quantity}`
+    return brand
+  }
+
+  // Evitar "Coca-Cola Coca-Cola Zero…" si el nombre ya incluye la marca
+  if (brand) {
+    const baseLower = base.toLowerCase()
+    const brandLower = brand.toLowerCase()
+    if (!baseLower.startsWith(brandLower) && !baseLower.includes(brandLower)) {
+      base = `${brand} ${base}`
+    }
+  }
+
+  // Sumar cantidad al nombre si no está (ej. "Coca-Cola Zero Azúcar" + "330ml")
+  if (quantity) {
+    const compactName = base.replace(/\s+/g, '').toLowerCase()
+    const compactQty = quantity.replace(/\s+/g, '').toLowerCase()
+    if (!compactName.includes(compactQty)) {
+      base = `${base} ${quantity}`
+    }
+  }
+
+  return base.slice(0, 120)
+}
+
 async function fetchFromOpenFoodFacts(barcode: string): Promise<{
   name: string | null
   unit: ProductUnit | null
@@ -62,7 +103,10 @@ async function fetchFromOpenFoodFacts(barcode: string): Promise<{
   try {
     res = await fetch(url, {
       signal: AbortSignal.timeout(12_000),
-      headers: { 'User-Agent': 'PreciosYa/1.0 (barcode-lookup)' },
+      headers: {
+        'User-Agent': 'PreciosYa/1.0 (barcode-lookup; +https://preciosya.vercel.app)',
+        Accept: 'application/json',
+      },
     })
   } catch {
     return { name: null, unit: null, brand: null, notes: null }
@@ -86,16 +130,11 @@ async function fetchFromOpenFoodFacts(barcode: string): Promise<{
   }
 
   const p = json.product
-  const name =
-    p.product_name_es?.trim() ||
-    p.product_name?.trim() ||
-    null
   const brand = p.brands?.split(',')[0]?.trim() || null
+  const name = buildOpenFoodFactsName(p)
   const unit = parseUnitFromQuantity(p.quantity)
-  const notesParts = [brand, p.quantity, p.categories].filter(Boolean)
-  const notes = notesParts.length > 0 ? notesParts.join(' · ').slice(0, 500) : null
-
-  return { name, unit, brand, notes }
+  // No volcar marca/cantidad/categorías a Notas: eso es info de catálogo, no nota del comerciante
+  return { name, unit, brand, notes: null }
 }
 
 function emptyLookup(barcode: string): BarcodeLookupResult {
