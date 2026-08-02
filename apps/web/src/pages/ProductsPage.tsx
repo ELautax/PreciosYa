@@ -495,7 +495,8 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
         </div>
       </div>
 
-      {formOpen && !barcodeScannerOpen ? (
+      {/* Mantener el formulario montado al escanear: si se desmonta, se pierde el código aplicado */}
+      {formOpen ? (
         <ProductForm
           localId={localId}
           product={editing}
