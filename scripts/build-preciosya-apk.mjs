@@ -1,14 +1,4 @@
-#!/usr/bin/env node
-/**
- * Genera preciosya.apk (TWA) vía PWABuilder Cloud y lo copia a apps/web/public/ + apps/landing/.
- * Uso: node scripts/build-preciosya-apk.mjs [APP_ORIGIN]
- *
- * Host por defecto: https://preciosya.vercel.app (+ preciosya-app.vercel.app como origen adicional).
- * Requiere `/.well-known/assetlinks.json` público en ambos dominios (sin SSO en Production).
- *
- * Reutiliza android-signing/signing.keystore si existe (signingMode mine).
- * Contraseñas: env PRECICIOSYA_KEYSTORE_PASSWORD / PRECICIOSYA_KEY_PASSWORD o signing-key-info.txt local.
- */
+
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -18,7 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.join(__dirname, '..')
 const keysDir = path.join(root, 'android-signing')
 
-/** Host TWA = dominio que ve el usuario en producción (debe tener assetlinks público). */
+/** Host  = dominio que ve el usuario en producción (debe tener assetlinks público). */
 const DEFAULT_TWA_HOST = 'https://preciosya.vercel.app'
 /** Alias Vercel del mismo deploy; OAuth y enlaces pueden cruzar entre ambos. */
 const SECONDARY_TWA_ORIGIN = 'https://preciosya-app.vercel.app'

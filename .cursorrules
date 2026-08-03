@@ -872,8 +872,9 @@ Todas las tareas TASK-001 … TASK-044 están implementadas en el monorepo (mayo
 - Sync offline bidireccional completo (sí hay cola parcial de productos + lectura en caché)
 - WhatsApp Business API (sí: Web Share / descarga PNG)
 - Recomendación de precios con IA
+- Fotos de producto (Open Food Facts o cámara propia) — decisión final: no en tesis/v1
 
-**Pagos Pro:** checkout hospedado Mercado Pago (sandbox en etapa tesis; activación Pro vía Admin si el cobro E2E no completa). No es “suscripción 100% automática sin intervención” en todos los entornos.
+**Pagos Pro:** checkout hospedado Mercado Pago **en sandbox** (etapa tesis); activación Pro vía Admin si el cobro E2E no completa. No producción live de suscripciones.
 
 **Ya no está fuera de alcance (v2):** escaneo de código de barras; IPC multi-división; categorías predefinidas INDEC; gestor de ventas.
 
