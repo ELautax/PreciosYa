@@ -27,25 +27,12 @@ export function PlanPricingCards({ currentPlan, onCheckoutError }: PlanPricingCa
   const [localError, setLocalError] = useState<string | null>(null)
 
   const mpConfigured = subscriptionQ.data?.mpConfigured ?? false
-  const mpTestMode = subscriptionQ.data?.mpTestMode ?? false
   const mpLoading = subscriptionQ.isLoading
 
   async function handleSubscribePro(): Promise<void> {
     setLocalError(null)
     try {
       const data = await checkoutM.mutateAsync()
-      if (data.testMode || data.sandboxHint === 'sandbox_plan_checkout') {
-        const ok = window.confirm(
-          'Modo prueba Mercado Pago (plan sandbox)\n\n' +
-            '1. Incógnito → checkout de MP.\n' +
-            '2. Elegí "Ingresar con mi cuenta".\n' +
-            '3. Usuario test del panel MP (Comprador), ej. TESTUSER3869021386766079933.\n' +
-            '4. Pagá con Dinero disponible o tarjeta de prueba (titular APRO).\n' +
-            '5. NO uses tu cuenta real de Mercado Pago.\n\n' +
-            '¿Continuar al checkout?',
-        )
-        if (!ok) return
-      }
       window.location.href = data.checkoutUrl
     } catch (e) {
       const message = extractErrorMessage(e)
@@ -59,12 +46,6 @@ export function PlanPricingCards({ currentPlan, onCheckoutError }: PlanPricingCa
       {localError ? (
         <p className="rounded-xl border border-danger-200 bg-danger-50 px-4 py-3 text-sm font-semibold text-danger-800">
           {localError}
-        </p>
-      ) : null}
-      {mpTestMode ? (
-        <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <span className="font-semibold">Modo prueba (TEST).</span> Checkout por plan MP: iniciá sesión
-          con el <strong>comprador de prueba</strong> del panel (TESTUSER…), no con tu cuenta real.
         </p>
       ) : null}
       <div className="grid gap-4 md:grid-cols-3 md:items-stretch">
