@@ -1296,7 +1296,7 @@ function seccionManual() {
     ["APK muestra barra de Chrome","El assetlinks.json puede estar desactualizado. Verificar que el alias preciosya.vercel.app apunte al deployment activo en Vercel. Desinstalar y reinstalar el APK."],
     ["Offline: no cargan datos","El modo offline solo muestra datos en caché. Si no se cargó la app previamente con conexión, no habrá datos."],
     ["Escáner no funciona","Verificar que el navegador/APK tenga permiso de cámara concedido. En iPhone, usar la PWA en Safari."],
-    ["No llega el IPC","El cron de IPC corre diario a las 03:00 ART (idempotente). Si el dato no aparece, el admin puede cargarlo manualmente desde /admin."],
+    ["No llega el IPC","El cron de IPC corre todos los días a las 03:00 ART (idempotente). INDEC suele publicar el IPC del mes anterior hacia el 13–14; hasta entonces el job no encuentra dato nuevo. Si el dato no aparece tras la publicación, el admin puede cargarlo manualmente desde /admin."],
   ];
 
   const glosario = [

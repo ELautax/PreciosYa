@@ -22,8 +22,10 @@ Variación mensual del IPC (%) por **nivel general** y **12 divisiones COICOP**,
 
 ## Cron y notificaciones
 
-- Job diario 03:00 AR: `apps/api/src/jobs/ipc-scheduler.ts`
+- Job diario 03:00 AR: `apps/api/src/jobs/ipc-scheduler.ts` (idempotente por período).
+- INDEC suele publicar el IPC del mes anterior **hacia el 13–14** del mes en curso; el cron lo recoge cuando Alphacast/Argly ya lo tienen (no el 1er día hábil).
 - Notificación `NEW_IPC` cuando hay mes nuevo en `IPC_INDEC` general.
+- Si tras la publicación no llega: Admin → carga manual / forzar sync.
 
 ## Referencias
 

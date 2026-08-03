@@ -136,6 +136,9 @@ Para **Agency**, el botón «Contactar ventas» abre un mail a sales@preciosya.c
 **¿Por qué el USD muestra “Sin datos”?**  
 La API debe estar actualizada y con acceso al BCRA. Al abrir la app se intenta sincronizar; si persiste, contactá soporte o administrador.
 
+**¿Cuándo llega el IPC del mes?**  
+El job corre **todos los días a las 03:00 ART**, pero INDEC suele publicar el índice del mes anterior **hacia el 13–14**. Hasta que Alphacast/Argly tengan el dato, no hay “IPC nuevo”. Si ya salió y no aparece, el admin puede sincronizar o cargarlo en `/admin`.
+
 **¿Puedo aplicar IPC dos veces el mismo mes?**  
 Sí, pero el sistema ya marca el mes como aplicado para no confundirte; solo repetí si hubo un error y querés recalcular.
 
