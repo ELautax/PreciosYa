@@ -14,25 +14,46 @@ type UploadedPriceList = {
   createdAt: string
 }
 
+const PNG_CAPTURE_OPTS = {
+  pixelRatio: 2,
+  backgroundColor: '#ffffff',
+  cacheBust: true,
+} as const
+
+export async function capturePriceListPng(target: HTMLElement): Promise<{
+  blob: Blob
+  fileName: string
+}> {
+  const blob = await toBlob(target, PNG_CAPTURE_OPTS)
+  if (!blob) {
+    throw new Error('No se pudo generar PNG')
+  }
+  return { blob, fileName: `preciosya-${Date.now()}.png` }
+}
+
 export function useExportPriceList(localId: string) {
   const api = useApiClient()
 
   return useMutation({
     mutationFn: async (input: {
-      target: HTMLElement
+      target?: HTMLElement
+      blob?: Blob
+      fileName?: string
       sharedVia?: string
     }): Promise<{ uploaded: UploadedPriceList; blob: Blob; fileName: string }> => {
-      const blob = await toBlob(input.target, {
-        pixelRatio: 2,
-        backgroundColor: '#ffffff',
-        cacheBust: true,
-      })
-      if (!blob) {
-        throw new Error('No se pudo generar PNG')
-      }
-      const fileName = `preciosya-${Date.now()}.png`
-      const file = new File([blob], fileName, { type: 'image/png' })
+      let blob = input.blob
+      let fileName = input.fileName
 
+      if (!blob || !fileName) {
+        if (!input.target) {
+          throw new Error('No se pudo generar PNG')
+        }
+        const captured = await capturePriceListPng(input.target)
+        blob = captured.blob
+        fileName = captured.fileName
+      }
+
+      const file = new File([blob], fileName, { type: 'image/png' })
       const form = new FormData()
       form.append('localId', localId)
       form.append('sharedVia', input.sharedVia ?? 'web')
@@ -57,33 +78,76 @@ export function useExportPriceList(localId: string) {
   })
 }
 
+function isShareAbortError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false
+  const name = error.name
+  return name === 'AbortError' || name === 'NotAllowedError'
+}
+
+export type ShareAttemptResult = 'shared' | 'aborted' | 'unsupported'
+
+/** Intenta el sheet nativo con el PNG. Debe llamarse lo antes posible tras el tap. */
 export async function sharePngIfSupported(
   blob: Blob,
   fileName: string,
-): Promise<boolean> {
+): Promise<ShareAttemptResult> {
   if (
     typeof navigator === 'undefined' ||
     typeof navigator.share !== 'function' ||
     typeof window === 'undefined' ||
     typeof File === 'undefined'
   ) {
-    return false
+    return 'unsupported'
   }
 
   const file = new File([blob], fileName, { type: 'image/png' })
-  const canShareFiles =
-    'canShare' in navigator &&
-    typeof navigator.canShare === 'function' &&
-    navigator.canShare({ files: [file] })
-
-  if (!canShareFiles) return false
-
-  await navigator.share({
+  const payload = {
     files: [file],
     title: 'Lista de precios',
     text: 'Lista de precios generada con PreciosYa',
-  })
-  return true
+  }
+
+  if (typeof navigator.canShare === 'function' && !navigator.canShare({ files: [file] })) {
+    return 'unsupported'
+  }
+
+  try {
+    await navigator.share(payload)
+    return 'shared'
+  } catch (error) {
+    if (isShareAbortError(error)) return 'aborted'
+    return 'unsupported'
+  }
+}
+
+/** Fallback: compartir enlace público de la lista ya subida. */
+export async function shareUrlIfSupported(fileUrl: string): Promise<ShareAttemptResult> {
+  if (typeof navigator === 'undefined' || typeof navigator.share !== 'function') {
+    return 'unsupported'
+  }
+
+  const payload = {
+    title: 'Lista de precios',
+    text: 'Lista de precios generada con PreciosYa',
+    url: fileUrl,
+  }
+
+  if (typeof navigator.canShare === 'function' && !navigator.canShare(payload)) {
+    return 'unsupported'
+  }
+
+  try {
+    await navigator.share(payload)
+    return 'shared'
+  } catch (error) {
+    if (isShareAbortError(error)) return 'aborted'
+    return 'unsupported'
+  }
+}
+
+export function openWhatsAppShare(fileUrl: string): void {
+  const text = `Lista de precios PreciosYa: ${fileUrl}`
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer')
 }
 
 export function getExportErrorMessage(error: unknown): string {

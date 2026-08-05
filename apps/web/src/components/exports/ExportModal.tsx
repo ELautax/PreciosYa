@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { X, Download, Share2, Eye, FileImage, AlertTriangle, CheckCircle2 } from 'lucide-react'
 
 import {
+  capturePriceListPng,
   getExportErrorMessage,
-  useExportPriceList,
+  openWhatsAppShare,
   sharePngIfSupported,
+  useExportPriceList,
 } from '@/hooks/useExport'
 import type { LocalDto } from '@/types/local'
 import type { ProductDto } from '@/types/product'
@@ -42,50 +44,80 @@ export function ExportModal({
 }: ExportModalProps) {
   const exportTemplateRef = useRef<HTMLDivElement | null>(null)
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
+  const [pendingShareUrl, setPendingShareUrl] = useState<string | null>(null)
   const exportMut = useExportPriceList(local.id)
   const total = matchedTotal ?? products.length
+  const busy = exportMut.isPending || loading || products.length === 0
 
-  async function generateAndUpload(sharedVia?: string): Promise<{
-    blob: Blob
-    fileName: string
-  } | null> {
-    if (!exportTemplateRef.current || products.length === 0) return null
+  async function handleDownload(): Promise<void> {
+    if (!exportTemplateRef.current || products.length === 0) return
     setMessage(null)
+    setPendingShareUrl(null)
     try {
-      const res = await exportMut.mutateAsync({
-        target: exportTemplateRef.current,
-        sharedVia,
+      const captured = await capturePriceListPng(exportTemplateRef.current)
+      await exportMut.mutateAsync({
+        blob: captured.blob,
+        fileName: captured.fileName,
+        sharedVia: 'download',
       })
-      setMessage({ text: 'Lista exportada y guardada correctamente.', type: 'success' })
-      return { blob: res.blob, fileName: res.fileName }
+      downloadBlob(captured.blob, captured.fileName)
+      setMessage({ text: 'Lista descargada y guardada correctamente.', type: 'success' })
     } catch (error) {
       setMessage({ text: getExportErrorMessage(error), type: 'error' })
-      return null
     }
   }
 
-  async function handleDownload(): Promise<void> {
-    const out = await generateAndUpload('download')
-    if (!out) return
-    downloadBlob(out.blob, out.fileName)
-  }
-
   async function handleShare(): Promise<void> {
-    const out = await generateAndUpload('share')
-    if (!out) return
+    if (!exportTemplateRef.current || products.length === 0) return
+    setMessage(null)
+    setPendingShareUrl(null)
 
-    const shared = await sharePngIfSupported(out.blob, out.fileName)
-    if (!shared) {
-      downloadBlob(out.blob, out.fileName)
-      setMessage({
-        text: 'Tu navegador no soporta compartir directamente. Se descargó el PNG.',
-        type: 'success',
+    try {
+      // 1) Generar PNG ya (cerca del tap) y abrir el sheet nativo ANTES del upload,
+      //    si no Android/Chrome pierde el gesto y no muestra WhatsApp / apps.
+      const captured = await capturePriceListPng(exportTemplateRef.current)
+      // Sheet nativo YA (antes del upload): si subimos primero, Android pierde el gesto.
+      const shareResult = await sharePngIfSupported(captured.blob, captured.fileName)
+
+      const uploaded = await exportMut.mutateAsync({
+        blob: captured.blob,
+        fileName: captured.fileName,
+        sharedVia: 'share',
       })
+      const fileUrl = uploaded.uploaded.fileUrl
+
+      if (shareResult === 'shared') {
+        setMessage({ text: 'Lista compartida y guardada correctamente.', type: 'success' })
+        return
+      }
+
+      if (shareResult === 'aborted') {
+        setMessage({ text: 'Compartir cancelado. La lista igual quedó guardada.', type: 'success' })
+        return
+      }
+
+      // Sin Web Share (o falló): descarga + botones WhatsApp / copiar enlace
+      downloadBlob(captured.blob, captured.fileName)
+      if (fileUrl) {
+        setPendingShareUrl(fileUrl)
+        setMessage({
+          text: 'No se abrió el menú del sistema. Descargamos el PNG; usá WhatsApp o copiá el enlace.',
+          type: 'success',
+        })
+      } else {
+        setMessage({
+          text: 'Tu navegador no soporta compartir. Se descargó el PNG.',
+          type: 'success',
+        })
+      }
+    } catch (error) {
+      setMessage({ text: getExportErrorMessage(error), type: 'error' })
     }
   }
 
   useEffect(() => {
     setMessage(null)
+    setPendingShareUrl(null)
   }, [products])
 
   return (
@@ -176,7 +208,40 @@ export function ExportModal({
               ) : (
                 <AlertTriangle size={18} className="mt-0.5 shrink-0" />
               )}
-              <p className="text-sm font-bold leading-tight">{message.text}</p>
+              <div className="min-w-0 flex-1 space-y-3">
+                <p className="text-sm font-bold leading-tight">{message.text}</p>
+                {pendingShareUrl ? (
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={() => openWhatsAppShare(pendingShareUrl)}
+                      className="btn-primary min-h-[44px] px-4 text-xs font-bold"
+                    >
+                      Abrir WhatsApp
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void navigator.clipboard?.writeText(pendingShareUrl).then(
+                          () =>
+                            setMessage({
+                              text: 'Enlace copiado. Pegalo en WhatsApp o donde quieras.',
+                              type: 'success',
+                            }),
+                          () =>
+                            setMessage({
+                              text: pendingShareUrl,
+                              type: 'success',
+                            }),
+                        )
+                      }}
+                      className="btn-secondary min-h-[44px] px-4 text-xs font-bold"
+                    >
+                      Copiar enlace
+                    </button>
+                  </div>
+                ) : null}
+              </div>
             </div>
           ) : null}
         </div>
@@ -193,7 +258,7 @@ export function ExportModal({
           <div className="flex w-full gap-3 sm:w-auto">
             <button
               type="button"
-              disabled={exportMut.isPending || loading || products.length === 0}
+              disabled={busy}
               onClick={() => void handleDownload()}
               className="btn-secondary h-12 flex-1 gap-2 sm:px-6"
             >
@@ -202,7 +267,7 @@ export function ExportModal({
             </button>
             <button
               type="button"
-              disabled={exportMut.isPending || loading || products.length === 0}
+              disabled={busy}
               onClick={() => void handleShare()}
               className="btn-primary h-12 flex-1 gap-2 shadow-xl shadow-primary-600/20 sm:px-8"
             >
