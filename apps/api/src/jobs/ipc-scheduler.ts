@@ -77,6 +77,14 @@ export async function runIpcJob(): Promise<void> {
       const result = await fetchPersistAndReturnLatestIpc()
 
       if (!isNewIpcPublication(before, result)) {
+        // Catch-up: índice ya en DB pero sin notificaciones (p. ej. sync admin previo)
+        if (!(await hasIpcNotificationForPeriod(result.period))) {
+          const { notifications, emailsPro } = await notifyUsersOfNewIpc(result)
+          console.info(
+            `[scheduler][IPC] catch-up notifs ${result.period.toISOString().slice(0, 7)}: ${notifications}, emails-pro: ${emailsPro}`,
+          )
+          return
+        }
         console.info(
           `[scheduler][IPC] sin novedad (${result.period.toISOString().slice(0, 7)} ${result.valuePct.toFixed(3)}%)`,
         )

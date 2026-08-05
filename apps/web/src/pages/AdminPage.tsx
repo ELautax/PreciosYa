@@ -87,12 +87,16 @@ export default function AdminPage() {
     ? indexPeriodYearMonth(indicesQ.data[0].period)
     : null
   const periodMismatch = Boolean(responsePeriodYm && responsePeriodYm !== manualPeriod)
+  const selectedMonthLabel = formatIndexMonth(`${manualPeriod}-01T00:00:00.000Z`)
+  const dataMonthLabel = indicesQ.data?.[0]?.period
+    ? formatIndexMonth(indicesQ.data[0].period)
+    : null
 
   const latestPeriodLabel = periodMismatch
-    ? formatIndexMonth(`${manualPeriod}-01T00:00:00.000Z`)
-    : indicesQ.data?.[0]?.period
-      ? formatIndexMonth(indicesQ.data[0].period)
-      : formatIndexMonth(`${manualPeriod}-01T00:00:00.000Z`)
+    ? `Elegido: ${selectedMonthLabel} · datos: ${dataMonthLabel}`
+    : dataMonthLabel
+      ? dataMonthLabel
+      : `Sin datos para ${selectedMonthLabel}`
 
   const ipcHomogeneous =
     (indicesQ.data?.length ?? 0) > 1 &&
@@ -146,9 +150,9 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="page-shell">
-      <div className="page-wrap space-y-10 animate-fade-in">
-        <header className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+    <div className="page-shell overflow-x-hidden">
+      <div className="page-wrap min-w-0 max-w-full space-y-10 animate-fade-in">
+        <header className="flex min-w-0 flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-danger-600 text-white shadow-lg shadow-danger-600/20">
                 <ShieldCheck size={24} strokeWidth={2.5} />
@@ -245,16 +249,16 @@ export default function AdminPage() {
           />
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-3">
+        <div className="grid min-w-0 gap-8 lg:grid-cols-3">
            {/* User Management Section */}
-           <section className="lg:col-span-2 space-y-6">
+           <section className="min-w-0 space-y-6 lg:col-span-2">
               <div className="flex items-center gap-3">
                  <h2 className="heading-lg">Usuarios</h2>
                  <div className="h-px flex-1 bg-border" />
               </div>
 
-              <div className="surface-card overflow-hidden shadow-xl shadow-primary-600/5">
-                 <div className="p-5 border-b border-border bg-surface-soft/30">
+              <div className="surface-card min-w-0 max-w-full overflow-hidden shadow-xl shadow-primary-600/5">
+                 <div className="border-b border-border bg-surface-soft/30 p-4 sm:p-5">
                     <div className="relative group">
                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-subtle group-focus-within:text-primary-600 transition-colors">
                           <Search size={18} />
@@ -263,26 +267,26 @@ export default function AdminPage() {
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
                           placeholder="Buscar usuarios..."
-                          className="w-full pl-10 pr-4 h-11"
+                          className="h-11 w-full min-w-0 pl-10 pr-4"
                        />
                     </div>
                  </div>
 
                  {/* User Cards for Mobile */}
-                 <div className="grid gap-3 p-4 sm:p-5 lg:hidden">
+                 <div className="grid gap-3 p-3 sm:p-5 lg:hidden">
                    {usersQ.data?.items.map((u) => (
-                     <div key={u.id} className="rounded-xl border border-border bg-surface p-4 space-y-4 shadow-sm">
-                       <div className="flex items-center gap-3">
-                         <div className="h-10 w-10 rounded-full bg-surface-soft border border-border flex items-center justify-center font-bold text-text-muted">
+                     <div key={u.id} className="min-w-0 space-y-4 rounded-xl border border-border bg-surface p-3 shadow-sm sm:p-4">
+                       <div className="flex min-w-0 items-center gap-3">
+                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-surface-soft font-bold text-text-muted">
                             {u.name?.charAt(0)}
                          </div>
                          <div className="min-w-0 flex-1">
-                            <p className="font-extrabold text-text-main truncate">{u.name}</p>
-                            <p className="text-[10px] font-bold text-text-subtle truncate flex items-center gap-1 uppercase tracking-tighter">
-                               <Mail size={10} /> {u.email}
+                            <p className="truncate font-extrabold text-text-main">{u.name}</p>
+                            <p className="flex items-center gap-1 truncate text-[10px] font-bold uppercase tracking-tighter text-text-subtle">
+                               <Mail size={10} className="shrink-0" /> {u.email}
                             </p>
                          </div>
-                         <span className={`inline-flex rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-widest border ${
+                         <span className={`inline-flex shrink-0 rounded-lg border px-2.5 py-1 text-[10px] font-black uppercase tracking-widest ${
                             u.plan === 'AGENCY' ? 'border-accent-200 bg-accent-50 text-accent-700' : 
                             u.plan === 'PRO' ? 'border-primary-100 bg-primary-50 text-primary-700' : 
                             'border-border bg-surface-soft text-text-subtle'
@@ -290,8 +294,8 @@ export default function AdminPage() {
                             {u.plan}
                          </span>
                        </div>
-                       <div className="flex items-center gap-3 pt-3 border-t border-border/50">
-                          <span className="text-[10px] font-black text-text-subtle uppercase whitespace-nowrap">Plan:</span>
+                       <div className="flex min-w-0 items-center gap-3 border-t border-border/50 pt-3">
+                          <span className="shrink-0 text-[10px] font-black uppercase text-text-subtle">Plan:</span>
                           <select
                              defaultValue={u.plan}
                              onChange={(e) =>
@@ -300,7 +304,7 @@ export default function AdminPage() {
                                  plan: e.target.value as 'FREE' | 'PRO' | 'AGENCY',
                                })
                              }
-                             className="h-10 flex-1 text-[10px] font-black uppercase tracking-widest px-3 rounded-lg bg-surface-soft border-none focus:ring-2 ring-primary-600/20"
+                             className="h-10 min-w-0 flex-1 rounded-lg border-none bg-surface-soft px-3 text-[10px] font-black uppercase tracking-widest focus:ring-2 ring-primary-600/20"
                           >
                              <option value="FREE">LIBRE</option>
                              <option value="PRO">PRO</option>
@@ -374,7 +378,7 @@ export default function AdminPage() {
            </section>
 
            {/* Economic Indices Section */}
-           <aside className="space-y-6">
+           <aside className="min-w-0 space-y-6">
               <div className="flex items-center gap-3">
                  <h2 className="heading-lg">Índices IPC</h2>
                  <div className="h-px flex-1 bg-border" />

@@ -4,10 +4,15 @@ import { IndexType, PlanType } from '@prisma/client'
 import { prisma } from '../lib/prisma.js'
 import { AppError } from '../utils/AppError.js'
 import {
+  getLatestIpcCached,
   serializeEconomicIndex,
   upsertIpcIndec,
 } from './economic-index.service.js'
 import { fetchAndPersistAllIpcSeries } from './ipc-fetch/ipc-fetch.service.js'
+import {
+  createNewIpcNotificationsForActiveUsers,
+  hasIpcNotificationForPeriod,
+} from './notification.service.js'
 
 const IPC_INDEX_TYPES = Object.values(IndexType).filter((t) => t.startsWith('IPC_'))
 
@@ -122,6 +127,7 @@ export async function getAdminIndices(periodYm?: string) {
 }
 
 export async function forceFetchIpcFromAdmin() {
+  const before = await getLatestIpcCached()
   const { results, general, source, alphacastFailureReason } =
     await fetchAndPersistAllIpcSeries()
   if (results.length === 0) {
@@ -135,6 +141,16 @@ export async function forceFetchIpcFromAdmin() {
   const fallback = results[0]!
   const period = general?.period ?? fallback.period
   const valuePct = general?.valuePct ?? fallback.valuePct
+
+  // Admin sync también debe avisar si hay período nuevo o si faltan notifs (p. ej. julio sin aviso)
+  let notificationsCreated = 0
+  const alreadyNotified = await hasIpcNotificationForPeriod(period)
+  if (!alreadyNotified) {
+    notificationsCreated = await createNewIpcNotificationsForActiveUsers({
+      valuePct,
+      period,
+    })
+  }
 
   let warning: string | undefined
   if (source === 'argly') {
@@ -161,11 +177,16 @@ export async function forceFetchIpcFromAdmin() {
     }
   }
 
+  const periodAdvanced =
+    !before || period.getTime() > before.period.getTime()
+
   return {
     period: period.toISOString(),
     valuePct,
     source,
     seriesUpdated: results.length,
+    notificationsCreated,
+    periodAdvanced,
     indices: results.map((r) => ({
       type: r.indexType,
       period: r.period.toISOString(),
@@ -216,9 +237,19 @@ export async function upsertManualIpcFromAdmin(input: {
     saved.push(serializeEconomicIndex(row))
   }
 
+  const general = saved.find((r) => r.type === IndexType.IPC_INDEC)
+  let notificationsCreated = 0
+  if (general && !(await hasIpcNotificationForPeriod(periodDate))) {
+    notificationsCreated = await createNewIpcNotificationsForActiveUsers({
+      valuePct: general.valuePct,
+      period: periodDate,
+    })
+  }
+
   return {
     period: periodDate.toISOString(),
     count: saved.length,
+    notificationsCreated,
     indices: saved,
   }
 }
