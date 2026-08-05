@@ -83,12 +83,14 @@ export function PlanPricingCard({
     <article
       className={`relative flex h-full flex-col rounded-[2rem] border p-5 sm:p-6 transition-shadow ${
         plan.featured
-          ? 'border-primary-600/40 bg-primary-50/10 shadow-xl shadow-primary-600/10 ring-1 ring-primary-600/20'
+          ? `border-primary-600/40 bg-primary-50/10 shadow-xl shadow-primary-600/10 ring-1 ring-primary-600/20${
+              !isCurrent && currentPlan === 'FREE' ? ' pt-10' : ''
+            }`
           : 'border-border/60 bg-surface-soft/80'
       } ${plan.id === 'AGENCY' ? 'border-border-strong/80' : ''}`}
     >
       {plan.featured && !isCurrent && currentPlan === 'FREE' && (
-        <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-primary-600 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-md">
+        <span className="absolute top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-primary-600 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-md">
           Recomendado
         </span>
       )}

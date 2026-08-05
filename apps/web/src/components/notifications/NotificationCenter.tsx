@@ -185,7 +185,7 @@ export function NotificationCenter() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`relative flex h-11 w-11 items-center justify-center rounded-full transition-all active:scale-90 ${
+        className={`relative flex h-12 w-12 items-center justify-center rounded-full transition-all active:scale-90 ${
           open
             ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20'
             : 'bg-surface-soft/80 text-text-muted hover:bg-border/50'
@@ -203,7 +203,7 @@ export function NotificationCenter() {
       </button>
 
       {open ? (
-        <div className="absolute right-0 z-50 mt-4 w-[calc(100vw-2rem)] overflow-hidden animate-slide-down rounded-3xl border border-border bg-surface shadow-2xl sm:w-[400px]">
+        <div className="fixed inset-x-4 top-[calc(4.5rem+env(safe-area-inset-top,0px))] z-50 max-h-[min(70dvh,420px)] overflow-hidden animate-slide-down rounded-3xl border border-border bg-surface shadow-2xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:mt-4 sm:max-h-none sm:w-[400px]">
           <div className="flex items-center justify-between border-b border-border bg-surface px-6 py-5">
             <div>
               <h3 className="text-sm font-black leading-none text-text-main">Notificaciones</h3>

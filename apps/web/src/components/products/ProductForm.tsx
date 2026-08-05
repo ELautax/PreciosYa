@@ -228,7 +228,7 @@ export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }:
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4 animate-fade-in backdrop-blur-sm">
       <div
-        className="surface-card flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
+        className="surface-card flex max-h-[min(92dvh,92vh)] w-full max-w-lg flex-col overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
         role="dialog"
         aria-modal="true"
         aria-labelledby="product-form-title"
@@ -255,7 +255,7 @@ export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }:
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full bg-surface-soft p-2 text-text-subtle transition-all hover:bg-border active:scale-90"
+            className="flex min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-surface-soft text-text-subtle transition-all hover:bg-border active:scale-90"
             aria-label="Cerrar"
           >
             <X size={20} strokeWidth={3} />
@@ -396,7 +396,7 @@ export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }:
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-text-muted">
                   <Box size={14} className="text-primary-600" />
@@ -410,7 +410,7 @@ export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }:
                   ))}
                 </select>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 sm:col-span-1">
                 <label className="flex items-center gap-2 text-xs font-bold text-text-muted">
                   <Tag size={14} className="text-primary-600" />
                   Código
@@ -424,7 +424,7 @@ export function ProductForm({ localId, product, onClose, onOpenBarcodeScanner }:
                   <button
                     type="button"
                     onClick={() => onOpenBarcodeScanner((code) => void handleBarcodeDetected(code))}
-                    className="btn-secondary shrink-0 px-3"
+                    className="btn-secondary min-h-[48px] min-w-[48px] shrink-0 px-3"
                     title="Escanear con cámara"
                     aria-label="Escanear código de barras"
                   >

@@ -94,7 +94,7 @@ export function BulkUpdateModal({
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4 animate-fade-in backdrop-blur-sm">
       <div
-        className="surface-card flex flex-col max-h-[92vh] w-full max-w-xl overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
+        className="surface-card flex max-h-[min(92dvh,92vh)] w-full max-w-xl flex-col overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
         role="dialog"
         aria-modal="true"
       >
@@ -120,10 +120,10 @@ export function BulkUpdateModal({
         {/* Content */}
         <div className="flex-1 overflow-y-auto overscroll-contain p-6 pt-2 scrollbar-hide">
           {/* Tabs */}
-          <div className="flex p-1 rounded-2xl bg-surface-soft border border-border mb-6">
+          <div className="mb-6 flex rounded-2xl border border-border bg-surface-soft p-1">
             <button
               onClick={() => { setTab('percentage'); setResultMsg(null); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
+              className={`flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-[10px] font-black uppercase tracking-widest transition-all ${
                 tab === 'percentage' ? 'bg-surface text-primary-600 shadow-sm' : 'text-text-muted hover:text-text-main'
               }`}
             >
@@ -132,7 +132,7 @@ export function BulkUpdateModal({
             </button>
             <button
               onClick={() => { setTab('ipc'); setResultMsg(null); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
+              className={`flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-[10px] font-black uppercase tracking-widest transition-all ${
                 tab === 'ipc' ? 'bg-surface text-primary-600 shadow-sm' : 'text-text-muted hover:text-text-main'
               }`}
             >
@@ -141,7 +141,7 @@ export function BulkUpdateModal({
             </button>
             <button
               onClick={() => { setTab('usd'); setResultMsg(null); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
+              className={`flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-[10px] font-black uppercase tracking-widest transition-all ${
                 tab === 'usd' ? 'bg-surface text-primary-600 shadow-sm' : 'text-text-muted hover:text-text-main'
               }`}
             >

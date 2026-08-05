@@ -29,7 +29,7 @@ export function SaleQuantityStepper({ value, onChange, step = 1 }: SaleQuantityS
       <button
         type="button"
         onClick={() => onChange(Math.max(step, value - step))}
-        className="flex h-11 w-11 items-center justify-center text-text-muted hover:text-text-main"
+        className="flex h-12 w-12 items-center justify-center text-text-muted hover:text-text-main"
         aria-label="Menos"
       >
         <Minus size={18} strokeWidth={2.5} />
@@ -74,7 +74,7 @@ export function SaleQuantityStepper({ value, onChange, step = 1 }: SaleQuantityS
       <button
         type="button"
         onClick={() => onChange(value + step)}
-        className="flex h-11 w-11 items-center justify-center text-primary-600 hover:text-primary-700"
+        className="flex h-12 w-12 items-center justify-center text-primary-600 hover:text-primary-700"
         aria-label="Más"
       >
         <Plus size={18} strokeWidth={2.5} />

@@ -197,7 +197,7 @@ export function BarcodeScanner({ open, onClose, onDetected }: BarcodeScannerProp
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full bg-white/10 p-2 text-white/80 hover:bg-white/20 hover:text-white"
+          className="flex min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white"
           aria-label="Cerrar escáner"
         >
           <X size={22} />

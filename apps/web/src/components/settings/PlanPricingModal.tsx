@@ -43,7 +43,7 @@ export function PlanPricingModal({
       role="presentation"
     >
       <div
-        className="surface-card flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-t-[2rem] shadow-2xl animate-slide-up sm:rounded-2xl"
+        className="surface-card flex max-h-[min(92dvh,92vh)] w-full max-w-5xl flex-col overflow-hidden rounded-t-[2rem] shadow-2xl animate-slide-up sm:rounded-2xl"
         role="dialog"
         aria-modal="true"
         aria-labelledby="plan-pricing-title"
@@ -68,14 +68,14 @@ export function PlanPricingModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full bg-surface-soft p-2 text-text-subtle transition-all hover:bg-border active:scale-90"
+            className="flex min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-surface-soft text-text-subtle transition-all hover:bg-border active:scale-90"
             aria-label="Cerrar"
           >
             <X size={20} strokeWidth={3} />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto overscroll-contain p-5 scrollbar-hide sm:p-6">
+        <div className="flex-1 overflow-y-auto overscroll-contain p-5 pb-safe scrollbar-hide sm:p-6 sm:pb-6">
           <PlanPricingCards currentPlan={currentPlan} onCheckoutError={onCheckoutError} />
         </div>
       </div>

@@ -88,7 +88,7 @@ export function IndexStatusBanner({
         <button
           type="button"
           onClick={onOpenBulk}
-          className={`h-11 w-full shrink-0 px-5 shadow-lg group/btn sm:w-auto ${
+          className={`min-h-[48px] h-12 w-full shrink-0 px-5 shadow-lg group/btn sm:w-auto ${
             isIpc ? 'btn-warning shadow-accent-600/20' : 'btn-primary shadow-primary-600/20'
           }`}
         >

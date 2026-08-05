@@ -219,9 +219,9 @@ export function AppLayout() {
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
             {wcoActive ? <div className="wco-drag-region" aria-hidden /> : null}
 
-            <div className="flex items-center gap-2 md:hidden">
-              <img src={preciosYaLogo} alt="Logo" className="h-8 w-8" />
-              <p className="text-xl font-black tracking-tighter text-text-main">
+            <div className="flex min-w-0 items-center gap-2 md:hidden">
+              <img src={preciosYaLogo} alt="Logo" className="h-8 w-8 shrink-0" />
+              <p className="truncate text-lg font-black tracking-tighter text-text-main sm:text-xl">
                 Precios<span className="text-primary-600">Ya</span>
               </p>
             </div>
@@ -241,7 +241,7 @@ export function AppLayout() {
               </button>
             </div>
 
-            <div className="flex wco-no-drag items-center gap-3">
+            <div className="flex wco-no-drag shrink-0 items-center gap-1.5 sm:gap-3">
               <div className="hidden sm:block">
                 <InstallPromptButton />
               </div>
@@ -308,6 +308,7 @@ export function AppLayout() {
       <nav
         className={`fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface/90 pb-safe backdrop-blur-xl transition-transform duration-300 md:hidden ${isMoreMenuOpen ? 'translate-y-full' : 'translate-y-0'}`}
         aria-label="Navegación móvil"
+        style={{ ['--nav-height' as string]: '4rem' }}
       >
         <div className="grid h-16 grid-cols-5">
           {mobileNavItems.map((item) => (
@@ -315,7 +316,7 @@ export function AppLayout() {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `relative flex flex-col items-center justify-center gap-1 transition-all ${
+                `relative flex min-h-[48px] flex-col items-center justify-center gap-0.5 px-0.5 transition-all ${
                   isActive ? 'text-primary-600' : 'text-text-subtle'
                 }`
               }
@@ -325,22 +326,24 @@ export function AppLayout() {
                 strokeWidth={location.pathname === item.to ? 2.5 : 2}
                 className={`transition-transform ${location.pathname === item.to ? 'scale-110' : ''}`}
               />
-              <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
+              <span className="max-w-full truncate text-[9px] font-black uppercase tracking-wide">
+                {item.label}
+              </span>
               {location.pathname === item.to ? (
-                <div className="absolute -bottom-1 h-1 w-1 rounded-full bg-primary-600" />
+                <div className="absolute bottom-0.5 h-1 w-1 rounded-full bg-primary-600" />
               ) : null}
             </NavLink>
           ))}
           <button
             type="button"
             onClick={() => setIsMoreMenuOpen(true)}
-            className={`flex flex-col items-center justify-center gap-1 transition-all ${
+            className={`flex min-h-[48px] flex-col items-center justify-center gap-0.5 px-0.5 transition-all ${
               isMoreMenuOpen ? 'text-primary-600' : 'text-text-subtle'
             }`}
             aria-expanded={isMoreMenuOpen}
           >
             <MoreHorizontal size={22} />
-            <span className="text-[10px] font-black uppercase tracking-widest">Más</span>
+            <span className="text-[9px] font-black uppercase tracking-wide">Más</span>
           </button>
         </div>
       </nav>

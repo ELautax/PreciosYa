@@ -7,8 +7,8 @@ export function OfflineBanner() {
   if (!isOffline) return null
 
   return (
-    <div className="fixed top-20 left-1/2 z-[100] w-full max-w-sm -translate-x-1/2 px-4 animate-slide-down pointer-events-none md:top-6">
-      <div className="flex items-center gap-3 rounded-2xl border border-warning-100 bg-warning-50/90 p-4 shadow-warm-lg ring-1 ring-black/5 backdrop-blur-lg pointer-events-auto">
+    <div className="pointer-events-none fixed left-4 right-4 top-[calc(4.5rem+env(safe-area-inset-top,0px))] z-[100] mx-auto w-auto max-w-sm animate-slide-down md:top-6">
+      <div className="pointer-events-auto flex items-center gap-3 rounded-2xl border border-warning-100 bg-warning-50/90 p-4 shadow-warm-lg ring-1 ring-black/5 backdrop-blur-lg">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-warning-600 shadow-sm dark:bg-black/20">
           <WifiOff size={22} strokeWidth={2.5} />
         </div>

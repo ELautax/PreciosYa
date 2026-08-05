@@ -267,7 +267,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                 <button
                   type="button"
                   onClick={() => setIsActionsOpen(!isActionsOpen)}
-                  className={`btn-secondary h-11 px-4 ${isActionsOpen ? 'bg-surface-soft border-border-strong' : ''}`}
+                  className={`btn-secondary min-h-[48px] px-4 ${isActionsOpen ? 'bg-surface-soft border-border-strong' : ''}`}
                 >
                   <MoreHorizontal size={18} className="text-primary-600" />
                   <span className="text-[10px] font-black uppercase tracking-widest">Acciones</span>
@@ -278,7 +278,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                  <button
                    type="button"
                    onClick={() => { setBulkInitialTab('percentage'); setBulkOpen(true); }}
-                   className="btn-secondary flex-1 sm:flex-none h-11 px-4"
+                   className="btn-secondary min-h-[48px] flex-1 px-4 sm:flex-none"
                    title="Actualización Masiva"
                  >
                     <Zap size={18} className="text-accent-600" />
@@ -287,7 +287,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                  <button
                    type="button"
                    onClick={() => setImportOpen(true)}
-                   className="btn-secondary flex-1 sm:flex-none h-11 px-4"
+                   className="btn-secondary min-h-[48px] flex-1 px-4 sm:flex-none"
                    title="Importar CSV"
                  >
                     <Upload size={18} className="text-primary-600" />
@@ -296,7 +296,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                  <button
                    type="button"
                    onClick={() => void openExport()}
-                   className="btn-secondary flex-1 sm:flex-none h-11 px-4"
+                   className="btn-secondary min-h-[48px] flex-1 px-4 sm:flex-none"
                    disabled={productsTotal === 0 && !productsQuery.isLoading}
                    title="Exportar PNG"
                  >
@@ -562,12 +562,13 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
         />
       ) : null}
       {deleteTarget ? (
-        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40 p-4 sm:items-center animate-fade-in backdrop-blur-sm">
+        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4 animate-fade-in backdrop-blur-sm">
           <div
-            className="surface-card w-full max-w-md p-6 shadow-warm-lg animate-slide-up"
+            className="surface-card w-full max-w-md rounded-t-[2rem] p-6 pb-safe shadow-warm-lg animate-slide-up sm:rounded-2xl sm:pb-6"
             role="dialog"
             aria-labelledby="delete-product-title"
           >
+            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-border-strong/40 sm:hidden" />
             <h2 id="delete-product-title" className="text-lg font-black text-text-main">
               Dar de baja producto
             </h2>
@@ -578,7 +579,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
             <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                className="btn-secondary flex-1 sm:flex-none h-12"
+                className="btn-secondary h-12 min-h-[48px] flex-1 sm:flex-none"
                 disabled={deleteMut.isPending}
                 onClick={() => setDeleteTarget(null)}
               >
@@ -586,7 +587,7 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
               </button>
               <button
                 type="button"
-                className="btn-danger flex-1 sm:flex-none h-12"
+                className="btn-danger h-12 min-h-[48px] flex-1 sm:flex-none"
                 disabled={deleteMut.isPending}
                 onClick={() => void confirmDelete()}
               >

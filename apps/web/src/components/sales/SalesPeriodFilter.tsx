@@ -34,7 +34,7 @@ export function SalesPeriodFilter({ value, onChange, isPro }: SalesPeriodFilterP
           key={p}
           type="button"
           onClick={() => onChange(p)}
-          className={`rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all min-h-[44px] active:scale-95 ${
+          className={`rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all min-h-[48px] active:scale-95 ${
             fewOptions ? 'w-full sm:w-auto sm:shrink-0' : 'shrink-0'
           } ${
             value === p

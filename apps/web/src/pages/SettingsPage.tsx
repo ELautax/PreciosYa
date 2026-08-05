@@ -289,17 +289,17 @@ export default function SettingsPage() {
 
                {tab === 'plan' && (
                  <section className="surface-card p-5 sm:p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
-                    <div className="flex items-center justify-between gap-4">
-                       <div className="flex items-center gap-4">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                       <div className="flex min-w-0 items-center gap-4">
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg">
                              <CreditCard size={24} strokeWidth={2.5} />
                           </div>
-                          <div>
+                          <div className="min-w-0">
                              <h2 className="text-xl font-black tracking-tight text-text-main">Plan y Suscripción</h2>
-                             <p className="text-[10px] font-bold text-text-subtle uppercase tracking-widest leading-none mt-1">Capacidad y uso</p>
+                             <p className="mt-1 text-[10px] font-bold uppercase leading-none tracking-widest text-text-subtle">Capacidad y uso</p>
                           </div>
                        </div>
-                       <span className="inline-flex shrink-0 rounded-full bg-accent-500 px-3 py-1 text-[10px] font-black text-white uppercase tracking-widest shadow-sm">
+                       <span className="inline-flex shrink-0 rounded-full bg-accent-500 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-sm">
                           {user?.plan ?? '…'}
                        </span>
                     </div>
@@ -361,7 +361,7 @@ export default function SettingsPage() {
                              <button
                                 type="button"
                                 onClick={() => setPlanModalOpen(true)}
-                                className="btn-primary min-h-[44px] px-4 text-[10px] font-black uppercase tracking-widest"
+                                className="btn-primary min-h-[48px] px-4 text-[10px] font-black uppercase tracking-widest"
                              >
                                 {planActionLabel(currentPlan)}
                              </button>

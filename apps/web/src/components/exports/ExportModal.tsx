@@ -91,7 +91,7 @@ export function ExportModal({
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4 animate-fade-in backdrop-blur-sm">
       <div
-        className="surface-card flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
+        className="surface-card flex max-h-[min(92dvh,92vh)] w-full max-w-4xl flex-col overflow-hidden animate-slide-up shadow-2xl rounded-t-[2rem] sm:rounded-2xl"
         role="dialog"
         aria-modal="true"
       >

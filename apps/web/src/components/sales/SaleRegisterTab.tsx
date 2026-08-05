@@ -96,7 +96,7 @@ export function SaleRegisterTab({ localId }: SaleRegisterTabProps) {
   }
 
   return (
-    <div className="space-y-6 pb-28 sm:pb-0">
+    <div className="space-y-6 pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))] sm:pb-0">
       <div className="flex flex-col gap-3 sm:flex-row">
         <button type="button" onClick={() => setScannerOpen(true)} className="btn-primary flex-1">
           <Barcode size={18} strokeWidth={2.5} />
@@ -169,12 +169,12 @@ export function SaleRegisterTab({ localId }: SaleRegisterTabProps) {
       </div>
 
       {/* bottom-nav ~4rem + safe-area: CTA encima sin taparse */}
-      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] z-40 border-t border-border bg-surface/95 p-3 shadow-warm-lg backdrop-blur-md sm:static sm:z-auto sm:border-none sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
+      <div className="fixed inset-x-0 bottom-[calc(var(--nav-height)+env(safe-area-inset-bottom,0px))] z-[45] border-t border-border bg-surface/95 p-3 shadow-warm-lg backdrop-blur-md sm:static sm:z-auto sm:border-none sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
         <button
           type="button"
           disabled={draft.length === 0 || createMut.isPending}
           onClick={() => void confirmSale()}
-          className="btn-primary w-full shadow-xl shadow-primary-600/20 transition-all active:scale-95"
+          className="btn-primary min-h-[48px] w-full shadow-xl shadow-primary-600/20 transition-all active:scale-95"
         >
           {createMut.isPending
             ? 'Guardando…'

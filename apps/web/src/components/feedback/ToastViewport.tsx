@@ -46,7 +46,7 @@ export function ToastViewport() {
   if (items.length === 0) return null
 
   return (
-    <div className="pointer-events-none fixed right-4 top-4 z-[80] flex w-full max-w-sm flex-col gap-3 sm:right-6 sm:top-6">
+    <div className="pointer-events-none fixed left-4 right-4 top-[calc(0.75rem+env(safe-area-inset-top,0px))] z-[80] mx-auto flex w-auto max-w-sm flex-col gap-3 sm:left-auto sm:right-6 sm:top-6">
       {items.map((item) => {
         const config = TOAST_CONFIG[item.tone]
         const Icon = config.icon

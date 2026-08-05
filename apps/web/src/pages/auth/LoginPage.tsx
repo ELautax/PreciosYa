@@ -90,7 +90,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-12 animate-fade-in">
+    <main className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden px-6 py-12 safe-area-inset-top animate-fade-in pb-safe">
       <div
         className="pointer-events-none absolute inset-0 bg-canvas"
         aria-hidden
