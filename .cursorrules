@@ -45,7 +45,7 @@ preciosya/
 - **Forms:** React Hook Form + Zod
 - **Charts:** Chart.js
 - **HTTP:** Axios with JWT interceptors
-- **Export:** html2canvas (PNG generation, runs in browser)
+- **Export:** html-to-image (PNG generation, runs in browser)
 - **Share:** Web Share API (native WhatsApp sharing)
 - **Supabase SDK:** used ONLY for auth (login/logout) and Realtime (notifications)
 
@@ -749,9 +749,9 @@ Todas las tareas TASK-001 … TASK-044 están implementadas en el monorepo (mayo
   - Storage path convention: `{userId}/{localId}/{timestamp}.png`
 
 - [x] **TASK-033** Frontend: export module
-  - `PriceListTemplate.tsx` — hidden DOM element captured by html2canvas
+  - `PriceListTemplate.tsx` — hidden DOM element captured by html-to-image
   - `ExportModal.tsx` — preview + share/download buttons
-  - `useExport.ts` hook — orchestrates html2canvas → upload → Web Share API
+  - `useExport.ts` hook — orchestrates html-to-image → upload → Web Share API
 
 ---
 

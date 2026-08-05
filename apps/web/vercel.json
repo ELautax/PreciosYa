@@ -5,7 +5,7 @@
       "VITE_API_URL": "https://api-production-3626.up.railway.app"
     }
   },
-  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile --filter web...",
   "buildCommand": "cd ../.. && pnpm --filter web run build",
   "outputDirectory": "dist",
   "rewrites": [
