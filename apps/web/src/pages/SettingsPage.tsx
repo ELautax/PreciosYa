@@ -166,7 +166,7 @@ export default function SettingsPage() {
         <section className="grid gap-8 lg:grid-cols-4">
             {/* Tab Navigation */}
             <aside className="lg:col-span-1">
-               <nav className="flex flex-row md:flex-col gap-1 p-1 rounded-2xl bg-surface-soft border border-border overflow-x-auto scrollbar-hide snap-x">
+               <nav className="grid grid-cols-3 gap-1 rounded-2xl border border-border bg-surface-soft p-1 md:flex md:flex-col md:overflow-visible">
                   <TabButton 
                      active={tab === 'business'} 
                      onClick={() => selectTab('business')} 
@@ -177,7 +177,7 @@ export default function SettingsPage() {
                      active={tab === 'account'} 
                      onClick={() => selectTab('account')} 
                      icon={User} 
-                     label="Mi cuenta" 
+                     label="Cuenta" 
                   />
                   <TabButton 
                      active={tab === 'plan'} 
@@ -190,7 +190,7 @@ export default function SettingsPage() {
 
             <div className="lg:col-span-3 space-y-6">
                {tab === 'business' && (
-                 <section className="surface-card p-5 sm:p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
+                 <section className="surface-card space-y-8 p-5 pb-8 shadow-xl shadow-primary-600/5 animate-fade-in sm:p-8">
                     <div className="flex items-center gap-4">
                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg">
                           <Store size={24} strokeWidth={2.5} />
@@ -214,7 +214,7 @@ export default function SettingsPage() {
 
                          {selectedLocal ? (
                            <div className="space-y-4">
-                           <div className="grid gap-6 sm:grid-cols-2 p-6 rounded-[2rem] bg-surface-soft border border-border/50">
+                           <div className="grid gap-4 rounded-[2rem] border border-border/50 bg-surface-soft p-4 sm:grid-cols-2 sm:gap-6 sm:p-6">
                               <DetailItem label="Nombre" value={selectedLocal.name} />
                               <DetailItem label="Dirección" value={selectedLocal.address || 'Sin especificar'} />
                               <DetailItem label="Moneda" value={selectedLocal.currency} />
@@ -248,7 +248,7 @@ export default function SettingsPage() {
                )}
 
                {tab === 'account' && (
-                 <section className="surface-card p-5 sm:p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
+                 <section className="surface-card space-y-8 p-5 pb-8 shadow-xl shadow-primary-600/5 animate-fade-in sm:p-8">
                     <div className="flex items-center gap-4">
                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-600 text-white shadow-lg">
                           <User size={24} strokeWidth={2.5} />
@@ -288,7 +288,7 @@ export default function SettingsPage() {
                )}
 
                {tab === 'plan' && (
-                 <section className="surface-card p-5 sm:p-8 space-y-8 animate-fade-in shadow-xl shadow-primary-600/5">
+                 <section className="surface-card space-y-8 p-5 pb-8 shadow-xl shadow-primary-600/5 animate-fade-in sm:p-8">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                        <div className="flex min-w-0 items-center gap-4">
                           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-600 text-white shadow-lg">
@@ -388,23 +388,23 @@ function TabButton({ active, onClick, icon: Icon, label }: { active: boolean; on
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-3 px-5 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all snap-start whitespace-nowrap min-w-max md:min-w-0 md:w-full ${
+      className={`flex min-h-[48px] min-w-0 items-center justify-center gap-1.5 rounded-xl px-2 py-3 text-[10px] font-black uppercase tracking-wide transition-all md:w-full md:justify-start md:gap-3 md:px-5 md:text-xs md:tracking-widest ${
         active 
           ? 'bg-surface text-primary-600 shadow-md shadow-primary-600/5 ring-1 ring-border-strong/10' 
           : 'text-text-subtle hover:bg-surface hover:text-text-main'
       }`}
     >
-      <Icon size={18} strokeWidth={active ? 2.5 : 2} className={active ? 'text-primary-600' : ''} />
-      <span>{label}</span>
+      <Icon size={18} strokeWidth={active ? 2.5 : 2} className={`shrink-0 ${active ? 'text-primary-600' : ''}`} />
+      <span className="whitespace-nowrap">{label}</span>
     </button>
   )
 }
 
 function DetailItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="space-y-1.5">
-       <dt className="text-[9px] font-black text-text-subtle uppercase tracking-widest leading-none px-1">{label}</dt>
-       <dd className="text-sm font-bold text-text-main bg-white/50 px-3 py-2.5 rounded-xl border border-border/50 truncate dark:bg-black/10">
+    <div className="space-y-2">
+       <dt className="px-1 text-[10px] font-black uppercase leading-none tracking-wide text-text-subtle">{label}</dt>
+       <dd className="truncate rounded-xl border border-border/50 bg-white/50 px-3 py-3 text-sm font-bold text-text-main dark:bg-black/10">
           {value}
        </dd>
     </div>

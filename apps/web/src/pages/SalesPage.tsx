@@ -27,7 +27,7 @@ type TabId = 'summary' | 'register' | 'history' | 'analysis'
 const TABS: { id: TabId; label: string; icon: typeof Receipt; proOnly?: boolean }[] = [
   { id: 'register', label: 'Registrar', icon: Receipt },
   { id: 'summary', label: 'Resumen', icon: BarChart3 },
-  { id: 'history', label: 'Mis ventas', icon: History },
+  { id: 'history', label: 'Historial', icon: History },
   { id: 'analysis', label: 'Análisis', icon: LineChart, proOnly: true },
 ]
 
@@ -164,14 +164,14 @@ export default function SalesPage() {
                       onClick={() => selectTab(item.id)}
                       aria-label={locked ? `${item.label} (requiere Pro)` : item.label}
                       aria-current={active ? 'page' : undefined}
-                      className={`relative flex min-h-[48px] items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all sm:gap-2 sm:px-3 sm:py-3 lg:w-full lg:justify-start ${
+                      className={`relative flex min-h-[48px] w-full min-w-0 items-center justify-center gap-1 rounded-xl px-1 py-2.5 text-[9px] font-black uppercase tracking-wide transition-all sm:gap-2 sm:px-3 sm:py-3 sm:text-[10px] sm:tracking-widest lg:w-full lg:justify-start ${
                         active
                           ? 'bg-surface text-primary-600 shadow-sm ring-1 ring-border-strong/10'
                           : 'text-text-subtle hover:bg-surface/50 hover:text-text-main'
                       }`}
                     >
                       <item.icon size={16} strokeWidth={active ? 2.5 : 2} className="shrink-0" />
-                      <span className="truncate">{item.label}</span>
+                      <span className="whitespace-nowrap">{item.label}</span>
                       {locked ? (
                         <Lock size={10} strokeWidth={2.5} className="shrink-0 opacity-50 lg:ml-auto" />
                       ) : null}
@@ -182,7 +182,7 @@ export default function SalesPage() {
             </aside>
 
             <div className="min-w-0 lg:col-span-3">
-              <div className="surface-card min-w-0 overflow-hidden p-4 sm:p-6 md:p-8">
+              <div className="surface-card min-w-0 overflow-x-auto overflow-y-visible p-4 sm:overflow-hidden sm:p-6 md:p-8">
                 {tab === 'summary' && localId ? (
                   <SalesSummaryTab
                     localId={localId}

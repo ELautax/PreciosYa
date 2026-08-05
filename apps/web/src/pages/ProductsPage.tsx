@@ -63,7 +63,7 @@ function CategoryFilterSelect({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={q.isLoading}
-        className="w-full min-w-[160px] pl-10 pr-4"
+        className="w-full min-w-0 truncate pl-10 pr-8"
       >
         <option value="">Todos los rubros</option>
         {q.data?.map((c) => (
@@ -262,15 +262,15 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                  </div>
               </div>
 
-              <div className="sm:hidden grid grid-cols-2 gap-2">
+              <div className="flex flex-col gap-2 sm:hidden">
                 <CategoryFilterSelect localId={localId} value={categoryFilter} onChange={setCategoryFilter} />
                 <button
                   type="button"
                   onClick={() => setIsActionsOpen(!isActionsOpen)}
-                  className={`btn-secondary min-h-[48px] px-4 ${isActionsOpen ? 'bg-surface-soft border-border-strong' : ''}`}
+                  className={`btn-secondary min-h-[48px] w-full px-4 ${isActionsOpen ? 'bg-surface-soft border-border-strong' : ''}`}
                 >
                   <MoreHorizontal size={18} className="text-primary-600" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Acciones</span>
+                  <span className="text-[10px] font-black uppercase tracking-wide">Acciones</span>
                 </button>
               </div>
 
