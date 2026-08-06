@@ -15,7 +15,7 @@ type ProductCardProps = {
 
 export function ProductCard({ product, category, onEdit, onDelete }: ProductCardProps) {
   return (
-    <article className="surface-card group relative flex h-full flex-col p-4 sm:p-6 animate-fade-in transition-all duration-300 hover:border-primary-600/30">
+    <article className="surface-card group relative flex h-full w-full min-w-0 max-w-full flex-col p-4 sm:p-6 animate-fade-in transition-all duration-300 hover:border-primary-600/30">
       {/* Acento superior sin overflow-hidden en toda la card (evita recortar badge/botones) */}
       <div
         className={`pointer-events-none absolute inset-x-0 top-0 h-1 rounded-t-2xl ${

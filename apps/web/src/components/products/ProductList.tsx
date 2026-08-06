@@ -18,10 +18,10 @@ export function ProductList({ products, categoryMap, onEdit, onDelete }: Product
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="min-w-0 max-w-full space-y-6 animate-fade-in">
       {/* Desktop Table View */}
-      <div className="hidden xl:block">
-        <div className="surface-card overflow-hidden border-border/50">
+      <div className="hidden min-w-0 xl:block">
+        <div className="surface-card overflow-x-auto border-border/50">
           <table className="w-full text-left text-sm border-collapse">
             <thead>
               <tr className="border-b border-border bg-surface-soft/40">
@@ -119,15 +119,15 @@ export function ProductList({ products, categoryMap, onEdit, onDelete }: Product
         </div>
       </div>
 
-      {/* Mobile/Tablet Card Grid View */}
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:hidden">
+      {/* Mobile/Tablet Card Grid View — min-w-0 evita que el grid se ensanche del viewport */}
+      <ul className="grid min-w-0 max-w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:hidden">
         {products.map((p) => (
-          <li key={p.id} className="h-full">
-            <ProductCard 
-              product={p} 
-              category={p.categoryId ? categoryMap?.get(p.categoryId) : undefined} 
-              onEdit={onEdit} 
-              onDelete={onDelete} 
+          <li key={p.id} className="min-w-0 max-w-full h-full">
+            <ProductCard
+              product={p}
+              category={p.categoryId ? categoryMap?.get(p.categoryId) : undefined}
+              onEdit={onEdit}
+              onDelete={onDelete}
             />
           </li>
         ))}

@@ -239,13 +239,13 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
           </div>
         </header>
 
-        <section className="grid gap-4">
+        <section className="grid min-w-0 max-w-full gap-4">
            {/* Contextual Action Bar */}
-           <div className="surface-card p-3 sm:p-4 flex flex-col gap-3 lg:flex-row lg:items-center">
-              <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-3">
+           <div className="surface-card flex min-w-0 max-w-full flex-col gap-3 p-3 sm:p-4 lg:flex-row lg:items-center">
+              <div className="flex min-w-0 flex-1 flex-col items-stretch gap-3 sm:flex-row sm:items-center">
                  <LocalSelector locals={locals} value={localId} onChange={setLocalId} />
                  
-                 <div className="relative flex-1 group">
+                 <div className="relative min-w-0 flex-1 group">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-subtle group-focus-within:text-primary-600 transition-colors">
                        <Search size={18} />
                     </div>
@@ -253,16 +253,16 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder="Buscar productos..."
-                      className="w-full pl-10 pr-4"
+                      className="w-full min-w-0 pl-10 pr-4"
                     />
                  </div>
 
-                 <div className="hidden sm:block">
+                 <div className="hidden min-w-0 sm:block">
                    <CategoryFilterSelect localId={localId} value={categoryFilter} onChange={setCategoryFilter} />
                  </div>
               </div>
 
-              <div className="flex flex-col gap-2 sm:hidden">
+              <div className="flex min-w-0 flex-col gap-2 sm:hidden">
                 <CategoryFilterSelect localId={localId} value={categoryFilter} onChange={setCategoryFilter} />
                 <button
                   type="button"
@@ -274,55 +274,55 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
                 </button>
               </div>
 
-              <div className={`${isActionsOpen ? 'flex' : 'hidden lg:flex'} flex-wrap items-center gap-2 border-t border-border pt-4 lg:border-t-0 lg:pt-0 lg:pl-4 lg:border-l`}>
+              <div className={`${isActionsOpen ? 'flex' : 'hidden lg:flex'} min-w-0 flex-wrap items-center gap-2 border-t border-border pt-4 lg:border-t-0 lg:border-l lg:pl-4 lg:pt-0`}>
                  <button
                    type="button"
                    onClick={() => { setBulkInitialTab('percentage'); setBulkOpen(true); }}
-                   className="btn-secondary min-h-[48px] flex-1 px-4 sm:flex-none"
+                   className="btn-secondary min-h-[48px] min-w-0 flex-1 px-4 sm:flex-none"
                    title="Actualización Masiva"
                  >
-                    <Zap size={18} className="text-accent-600" />
-                    <span className="text-xs font-bold">Actualizar</span>
+                    <Zap size={18} className="shrink-0 text-accent-600" />
+                    <span className="truncate text-xs font-bold">Actualizar</span>
                  </button>
                  <button
                    type="button"
                    onClick={() => setImportOpen(true)}
-                   className="btn-secondary min-h-[48px] flex-1 px-4 sm:flex-none"
+                   className="btn-secondary min-h-[48px] min-w-0 flex-1 px-4 sm:flex-none"
                    title="Importar CSV"
                  >
-                    <Upload size={18} className="text-primary-600" />
-                    <span className="text-xs font-bold">Importar</span>
+                    <Upload size={18} className="shrink-0 text-primary-600" />
+                    <span className="truncate text-xs font-bold">Importar</span>
                  </button>
                  <button
                    type="button"
                    onClick={() => void openExport()}
-                   className="btn-secondary min-h-[48px] flex-1 px-4 sm:flex-none"
+                   className="btn-secondary min-h-[48px] min-w-0 flex-1 px-4 sm:flex-none"
                    disabled={productsTotal === 0 && !productsQuery.isLoading}
                    title="Exportar PNG"
                  >
-                    <Download size={18} className="text-primary-600" />
-                    <span className="text-xs font-bold">Exportar</span>
+                    <Download size={18} className="shrink-0 text-primary-600" />
+                    <span className="truncate text-xs font-bold">Exportar</span>
                  </button>
               </div>
            </div>
 
-           {/* Links Bar - Scrollable Chips */}
-           <div className="relative group">
-             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
-                <Link to="/categories" className="btn-secondary h-11 px-4 gap-2 whitespace-nowrap rounded-xl snap-start text-xs font-bold shadow-sm border-border-strong/20 bg-surface">
+           {/* Links Bar - scroll interno, no ensancha la página */}
+           <div className="relative min-w-0 max-w-full group">
+             <div className="flex max-w-full gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+                <Link to="/categories" className="btn-secondary h-11 shrink-0 gap-2 whitespace-nowrap rounded-xl border-border-strong/20 bg-surface px-4 text-xs font-bold shadow-sm snap-start">
                   <Tags size={16} className="text-primary-600" />
                   Rubros
                 </Link>
-                <Link to="/history" className="btn-secondary h-11 px-4 gap-2 whitespace-nowrap rounded-xl snap-start text-xs font-bold shadow-sm border-border-strong/20 bg-surface">
+                <Link to="/history" className="btn-secondary h-11 shrink-0 gap-2 whitespace-nowrap rounded-xl border-border-strong/20 bg-surface px-4 text-xs font-bold shadow-sm snap-start">
                   <History size={16} className="text-primary-600" />
                   Historial
                 </Link>
-                <Link to="/locals" className="btn-secondary h-11 px-4 gap-2 whitespace-nowrap rounded-xl snap-start text-xs font-bold shadow-sm border-border-strong/20 bg-surface">
+                <Link to="/locals" className="btn-secondary h-11 shrink-0 gap-2 whitespace-nowrap rounded-xl border-border-strong/20 bg-surface px-4 text-xs font-bold shadow-sm snap-start">
                   <Store size={16} className="text-primary-600" />
                   Locales
                 </Link>
              </div>
-             <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-canvas to-transparent pointer-events-none sm:hidden" />
+             <div className="pointer-events-none absolute bottom-2 right-0 top-0 w-8 bg-gradient-to-l from-canvas to-transparent sm:hidden" />
            </div>
         </section>
 
@@ -401,11 +401,11 @@ function ProductsMain({ locals }: { locals: LocalDto[] }) {
           </p>
         ) : null}
 
-        <div className="min-h-[400px]">
+        <div className="min-h-[400px] min-w-0 max-w-full">
           {waitingForLocal || productsQuery.isLoading ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="skeleton h-48 w-full" />
+                <div key={i} className="skeleton h-48 w-full min-w-0" />
               ))}
             </div>
           ) : products.length === 0 ? (
